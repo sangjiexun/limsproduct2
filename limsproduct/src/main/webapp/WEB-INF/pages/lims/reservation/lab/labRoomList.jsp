@@ -62,7 +62,6 @@
 			<%--<div class="layui-main">--%>
 			<div>
 				<input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
-				<input type="hidden" id="username" value="${username}" />
 				<div class="tool-box">
 					<table>
 						<tr>

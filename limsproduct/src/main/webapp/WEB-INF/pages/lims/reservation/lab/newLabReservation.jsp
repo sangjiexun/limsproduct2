@@ -80,11 +80,8 @@
 		</fieldset>
 		<form class="layui-form" action="" lay-filter="cappointment_tab">
 			<input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
-            <input type="hidden" id="auditServerUrl" value="${auditServerUrl}" />
-            <input type="hidden" id="projectName" value="${projectName}" />
 			<input type="hidden" id="dateorsection" value="${dateorsection}" />
 			<input type="hidden" id="labRoomId" value="${labRoomId}" />
-			<input type="hidden" id="username" value="${user.username}" />
 			<div class="layui-row layui-col-space10 layui-form-item">
 				<div class="layui-col-lg4">
 					<label class="layui-form-label">当前学期：</label>
@@ -194,7 +191,7 @@
 							</select>
 						</div>
 						<div class="layui-input-block" id="number_input" style="display: none">
-							<input type="number" id="activitynumber_input" lay-verify="required" placeholder="请填写活动人数" autocomplete="off" class="layui-input">
+							<input type="number" id="activitynumber_input" placeholder="请填写活动人数" autocomplete="off" class="layui-input">
 						</div>
 						<a onclick="changeTypeNum()">切换填写模式(区间/精确)</a>
 						<input type="hidden" name="activitynumber"/>

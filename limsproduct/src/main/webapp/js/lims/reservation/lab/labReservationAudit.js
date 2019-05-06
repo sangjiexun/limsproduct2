@@ -3,18 +3,15 @@
  */
 var contextPath = $("meta[name='contextPath']").attr("content");
 var zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
-var auditUrl =$("#auditServerUrl").val();
 var parentProject;
 // function showDetail(initjson) {
 layui.use(['form'], function() {
     var form = layui.form;
     var layer = layui.layer;
     var labRId = $('#labRId').val();
-    var username = $('#username').val();
-    var projectName = $('#projectName').val();
     // console.log(parent.layer.methodConfig);
     // console.log(initjson.parentProject);
-    var daata = {username:username,labRId:labRId,auditServerUrl:auditUrl,projectName:projectName};
+    var daata = {labRId:labRId};
     var jsonData = JSON.stringify(daata)
     $.ajax({
        url: zuulUrl  + "api/labReservation/apiLabRoomReservationAudit",
@@ -116,8 +113,11 @@ layui.use(['form'], function() {
             headers: {Authorization: getJWTAuthority()},
             contentType: "application/json;charset=UTF-8",
             success:function (res) {
-                console.log(res);
-                alert(res);
+                if(res == "success"){
+                    alert("审核完成！");
+                }else{
+                    alert("审核失败！");
+                }
                 var index=parent.layer.getFrameIndex(window.name);
                 parent.layer.close(index);
                 parent.location.reload();

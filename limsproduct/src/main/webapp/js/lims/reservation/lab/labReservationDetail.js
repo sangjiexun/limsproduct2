@@ -21,6 +21,7 @@ layui.use(['form'], function() {
        data: jsonData,
        async: false,
        type: "POST",
+        headers: {Authorization: getJWTAuthority()},
        contentType: "application/json;charset=UTF-8",
     	success:function (res) {
            //父项目详情表单初始赋值
@@ -88,4 +89,18 @@ layui.use(['form'], function() {
     })
 
 });
+function getJWTAuthority() {
+    var authorization = "";
+    initDirectoryEngine({
+        getHostsUrl: contextPath + "/shareApi/getHosts",
+        getAuthorizationUrl: contextPath + "/shareApi/getAuthorization"
+    });
+    getAuthorization({
+        async: false,
+        success: function (data) {
+            authorization = data;
+        }
+    });
+    return authorization;
+}
 // }

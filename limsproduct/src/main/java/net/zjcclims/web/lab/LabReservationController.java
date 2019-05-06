@@ -981,6 +981,7 @@ public class LabReservationController<JsonResult> {
 		mav.addObject("device", labRoom);
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("page", currpage);
+		mav.addObject("currpage", currpage);
 
 		// 开放范围
 		List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();

@@ -66,10 +66,7 @@
         <div class="layui-col-lg8">
             <form class="layui-form" action="" lay-filter="labReservationAudit">
                 <input id="labRoomId" type="hidden" value="${labRoomId}"/>
-                <input id="username" type="hidden" value="${username}"/>
                 <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
-                <input type="hidden" id="projectName" value="${projectName}" />
-                <input type="hidden" id="auditServerUrl" value="${auditServerUrl}" />
                 <div class="detail_item">
                     <div class="layui-row">
                         <input type="hidden" id="grandSonId" value="${grandSonProject.id}" />

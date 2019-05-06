@@ -1,6 +1,5 @@
 var contextPath = $("meta[name='contextPath']").attr("content");
 var zuulUrl ="";
-var username = $("#username").val();
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     productsearch("", curnum, limitcount);
@@ -44,7 +43,7 @@ function productsearch(search, start, limitsize) {
             ,contentType: 'application/json'
             ,url: url
             , toolbar: 'true'
-            , where:{search:search,sort:"id",sortOrder:"id",username:username} //传参*/
+            , where:{search:search,sort:"id",sortOrder:"id"} //传参*/
             , request: {
                 page: 'page' //页码的参数名称，默认：page
                 , limit: 'nums' //每页数据量的参数名，默认：limit
