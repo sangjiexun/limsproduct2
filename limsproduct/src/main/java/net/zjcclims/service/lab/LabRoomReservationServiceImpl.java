@@ -262,9 +262,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		if(acno!=null&&!acno.equals("-1")) {
 			// 开放范围
-			hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where openSAs.academyNumber = '" +
-					acno +
-					"')";
+			hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))";
 			hql += " order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
 		}
 		return labRoomDAO.executeQuery(hql, (currpage - 1) * pageSize, pageSize);
@@ -1477,9 +1475,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if(acno!=null && !acno.equals("-1")){
 
             // 开放范围
-            hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where openSAs.academyNumber = '" +
-                    acno +
-                    "')";
+            hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))";
 			hql +=" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
 		}
 		return labRoomDAO.executeQuery(hql,(currpage-1)*pageSize,pageSize);

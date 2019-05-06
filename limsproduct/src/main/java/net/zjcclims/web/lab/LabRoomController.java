@@ -367,91 +367,107 @@ public class LabRoomController<JsonResult> {
     public ModelAndView saveLabRoom(@ModelAttribute LabRoom labRoom,int type,
                               HttpServletRequest request,@ModelAttribute("selected_academy") String acno,int page) {
         ModelAndView mav=new ModelAndView();
+        //开放范围
+        LabRoom labRoom1 = labRoomDAO.findLabRoomByPrimaryKey(labRoom.getId());
+        if (labRoom1 == null) {
+            labRoom1 = new LabRoom();
+        }
+
         // 学院
-        if(acno!=null && !acno.equals("-1")) {
-            labRoom.setSchoolAcademy(shareService.findSchoolAcademyByPrimaryKey(acno));
-        }else if(labRoom.getLabCenter()!=null && labRoom.getLabCenter().getSchoolAcademy()!=null
+        if(labRoom.getLabCenter()!=null && labRoom.getLabCenter().getSchoolAcademy()!=null
                 && labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber()!=null) {
-            labRoom.setSchoolAcademy(labRoom.getLabCenter().getSchoolAcademy());
+            labRoom1.setSchoolAcademy(labRoom.getLabCenter().getSchoolAcademy());
+        }else if(acno!=null && !acno.equals("-1")) {
+            labRoom1.setSchoolAcademy(shareService.findSchoolAcademyByPrimaryKey(acno));
         }
         if(!EmptyUtil.isObjectEmpty(labRoom) && !EmptyUtil.isObjectEmpty(labRoom.getLabBase())
                 && !EmptyUtil.isIntegerEmpty(labRoom.getLabBase().getId())) {
-            labRoom.setLabBase(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabBase().getId()));
+            labRoom1.setLabBase(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabBase().getId()));
         }else {
-            labRoom.setLabBase(null);
+            labRoom1.setLabBase(null);
         }
         if(!EmptyUtil.isObjectEmpty(labRoom) && !EmptyUtil.isObjectEmpty(labRoom.getLabAnnex())
                 && !EmptyUtil.isIntegerEmpty(labRoom.getLabAnnex().getId())) {
-            labRoom.setLabAnnex(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabAnnex().getId()));
+            labRoom1.setLabAnnex(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabAnnex().getId()));
         }else {
-            labRoom.setLabAnnex(null);
+            labRoom1.setLabAnnex(null);
         }
         // 实验室类型
         if(labRoom.getCDictionaryByLabRoom()==null || labRoom.getCDictionaryByLabRoom().getId()==null) {
-            labRoom.setCDictionaryByLabRoom(null);
+            labRoom1.setCDictionaryByLabRoom(null);
+        }else {
+            labRoom1.setCDictionaryByLabRoom(labRoom.getCDictionaryByLabRoom());
         }
         // 实验室类别
         if(labRoom.getCDictionaryByLabRoomClassification()==null || labRoom.getCDictionaryByLabRoomClassification().getId()==null) {
-            labRoom.setCDictionaryByLabRoomClassification(null);
+            labRoom1.setCDictionaryByLabRoomClassification(null);
+        }else {
+            labRoom1.setCDictionaryByLabRoomClassification(labRoom.getCDictionaryByLabRoomClassification());
         }
         // 所属学科
         if(labRoom.getSystemSubject12()==null || labRoom.getSystemSubject12().getSNumber()==null
                 || labRoom.getSystemSubject12().getSNumber().equals("")) {
-            labRoom.setSystemSubject12(null);
+            labRoom1.setSystemSubject12(null);
+        }else {
+            labRoom1.setSystemSubject12(labRoom.getSystemSubject12());
         }
         // 实验室分类
         if(labRoom.getCDictionaryByLabRoomSort()==null || labRoom.getCDictionaryByLabRoomSort().getId()==null) {
-            labRoom.setCDictionaryByLabRoomSort(null);
+            labRoom1.setCDictionaryByLabRoomSort(null);
+        }else {
+            labRoom1.setCDictionaryByLabRoomSort(labRoom.getCDictionaryByLabRoomSort());
         }
         // 多媒体
         if(labRoom.getCDictionaryByIsMultimedia()==null || labRoom.getCDictionaryByIsMultimedia().getId()==null) {
-            labRoom.setCDictionaryByIsMultimedia(null);
+            labRoom1.setCDictionaryByIsMultimedia(null);
+        }else {
+            labRoom1.setCDictionaryByIsMultimedia(labRoom.getCDictionaryByIsMultimedia());
         }
         // 地点
         if(labRoom.getSystemRoom()==null || EmptyUtil.isStringEmpty(labRoom.getSystemRoom().getRoomNumber())) {
-            labRoom.setSystemRoom(null);
+            labRoom1.setSystemRoom(null);
+        }else {
+            labRoom1.setSystemRoom(labRoom.getSystemRoom());
+//            labRoom1.setLabRoomAddress(labRoom.getSystemRoom().getRoomName());
         }
         // 审核
         if(labRoom.getCDictionaryByIsAudit()==null || labRoom.getCDictionaryByIsAudit().getId()==null) {
-            labRoom.setCDictionaryByIsAudit(null);
+            labRoom1.setCDictionaryByIsAudit(null);
+        }else {
+            labRoom1.setCDictionaryByIsAudit(labRoom.getCDictionaryByIsAudit());
         }
         // 借用
         if(labRoom.getCDictionaryByAllowLending()==null || labRoom.getCDictionaryByAllowLending().getId()==null) {
-            labRoom.setCDictionaryByAllowLending(null);
+            labRoom1.setCDictionaryByAllowLending(null);
+        }else {
+            labRoom1.setCDictionaryByAllowLending(labRoom.getCDictionaryByAllowLending());
         }
         // 安全准入
         if(labRoom.getCDictionaryByAllowSecurityAccess()==null || labRoom.getCDictionaryByAllowSecurityAccess().getId()==null) {
-            labRoom.setCDictionaryByAllowSecurityAccess(null);
+            labRoom1.setCDictionaryByAllowSecurityAccess(null);
+        }else {
+            labRoom1.setCDictionaryByAllowSecurityAccess(labRoom.getCDictionaryByAllowSecurityAccess());
         }
         // 培训形式
         if(labRoom.getCDictionaryByTrainType()==null || labRoom.getCDictionaryByTrainType().getId()==null) {
-            labRoom.setCDictionaryByTrainType(null);
+            labRoom1.setCDictionaryByTrainType(null);
+        }else {
+            labRoom1.setCDictionaryByTrainType(labRoom.getCDictionaryByTrainType());
         }
-        //开放范围
-        LabRoom labRoom1 = labRoomDAO.findLabRoomByPrimaryKey(labRoom.getId());
-        if(labRoom1!=null && labRoom1.getOpenSchoolAcademies()!=null && labRoom1.getOpenSchoolAcademies().size()>0) {
-            labRoom.setOpenSchoolAcademies(labRoom1.getOpenSchoolAcademies());
-        }else{
-            labRoom.setOpenSchoolAcademies(null);
-        }
-//        if(labRoom1 != null) {
-//            labRoom.setCDictionaryByAllowLending(labRoom1.getCDictionaryByAllowLending());
-//            labRoom.setCDictionaryByIsAudit(labRoom1.getCDictionaryByIsAudit());
-//        }
 
-        labRoom.setIsUsed(1);
-        labRoom.setReservationNumber(1);
+        labRoom1.setIsUsed(1);
+        labRoom1.setReservationNumber(1);
         if(type==ConstantInterface.LAB_FOR_ROOM){
-            labRoom.setLabCategory(1);
+            labRoom1.setLabCategory(1);
             mav.setViewName("redirect:/labRoom/listLabRoom?currpage="+page+"&orderBy=9&type=1");
         }else if(type==ConstantInterface.LAB_FOR_WORKSPACE){
-            labRoom.setLabCategory(2);
+            labRoom1.setLabCategory(2);
             mav.setViewName("redirect:/labRoom/listLabRoom?currpage="+page+"&orderBy=9&type=2");
         }else if(type==ConstantInterface.LAB_FOR_MEETING){
-            labRoom.setLabCategory(3);
+            labRoom1.setLabCategory(3);
             CDictionary cDictionary=cDictionaryDAO.findCDictionaryById(labRoom.getCDictionaryByIsMultimedia().getId());
-            labRoom.setCDictionaryByIsMultimedia(cDictionary);
-            labRoom=labRoomService.saveLabRoom(labRoom);
+            labRoom1.setCDictionaryByIsMultimedia(cDictionary);
+            labRoom1=labRoomService.saveLabRoom(labRoom1);
 //            String username=request.getParameter("labRoomAdmin");
 //            User user=userDAO.findUserByUsername(username);
 //            LabRoomAdmin labRoomAdmin=new LabRoomAdmin();
@@ -461,10 +477,10 @@ public class LabRoomController<JsonResult> {
 //            labRoomAdminDAO.store(labRoomAdmin);
             mav.setViewName("redirect:/labRoom/listLabRoom?currpage="+page+"&orderBy=9&type=3");
         }else if(type==ConstantInterface.LAB_FOR_CLASSROOM){
-            labRoom.setLabCategory(4);
+            labRoom1.setLabCategory(4);
             mav.setViewName("redirect:/labRoom/listLabRoom?currpage="+page+"&orderBy=9&type=4");
         }
-        labRoomService.saveLabRoom(labRoom);
+        labRoomService.saveLabRoom(labRoom1);
         return  mav;
     }
     /**

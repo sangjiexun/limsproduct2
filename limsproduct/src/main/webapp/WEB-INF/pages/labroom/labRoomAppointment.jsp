@@ -723,7 +723,7 @@
                                         <td>${i.count+(currpage-1)*pageSize }</td>
                                         <td>${s.labRoomNumber}</td>
                                         <td>${s.labRoomName}</td>
-                                        <td>${s.labRoomAddress}</td>
+                                        <td>${s.systemRoom.roomName}</td>
                                         <c:if test="${s.labRoomLevel eq 0}">
                                             <td>特级</td>
                                         </c:if>
