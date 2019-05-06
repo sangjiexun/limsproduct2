@@ -2526,11 +2526,8 @@ public class LabRoomServiceImpl implements LabRoomService {
 			hql.append(" and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')");
 		}
 		if (acno != null && !acno.equals("-1")) {
-
-			// 开放范围
-			hql.append(" and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where openSAs.academyNumber = '" +
-					acno +
-					"')");
+			// 开放范围{20190506为全校}
+			hql.append(" and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))");
 			hql.append(" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ");
 		}
 		List<LabRoom> labRooms = labRoomDAO.executeQuery(hql.toString(), 0, -1);

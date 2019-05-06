@@ -1133,9 +1133,6 @@ public class LabReservationController<JsonResult> {
 		if (needAllowSecurityAccess1 != -1) {
 			labRoom.setCDictionaryByAllowSecurityAccess(cDictionaryDAO.findCDictionaryById(needAllowSecurityAccess1));
 		}
-		/*if (trainType1 != -1) {
-			labRoom.setCDictionaryByTrainType(cDictionaryDAO.findCDictionaryById(trainType1));
-		}*/
 		if (appointment1 != -1) {
 			labRoom.setLabRoomReservation(appointment1);
 		}
@@ -1144,8 +1141,13 @@ public class LabReservationController<JsonResult> {
 		Set<SchoolAcademy> schoolAcademies = new HashSet<>();
 		if (academies != null && academies.length != 0 && !"-1".equals(academies[0])) {
 			for (String s : academies) {
-				SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(s);
-				schoolAcademies.add(schoolAcademy);
+				if(s.equals("-2")) {//全校
+					schoolAcademies.addAll(schoolAcademyDAO.findAllSchoolAcademys());
+					break;
+				}else {
+					SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(s);
+					schoolAcademies.add(schoolAcademy);
+				}
 			}
 		}
 		labRoom.setOpenSchoolAcademies(schoolAcademies);
