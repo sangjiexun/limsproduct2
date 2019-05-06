@@ -1,0 +1,523 @@
+@charset "utf-8";
+/* CSS Document 
+   项目管理平台特异版
+*/
+
+body,
+html {
+	color:#102a5a;
+    font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
+    font-size: 97%;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    height: 100%;
+    width: 100%;
+    min-width: 500px;
+    _width: expression((document.documentElement.clientWidth||document.body.clientWidth)>500?"500px": "");
+    overflow-y: visible;
+    background: #fff;
+}
+
+.iStyle_RightInner{
+	width:100%!important;
+}
+
+.iStyle_Feelings_Conteiner {
+    float: left;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    height: 100%;
+    width: 100%;
+    min-height: 400px;
+    /*background: url(../images/conteiner_bg.jpg) repeat-x;*/
+}
+.choose_center{height:30px;
+	line-height:30px;
+	  
+	  
+}
+.choose_center a{color:#fff;
+	text-decoration:none;
+	background-color: #823B17;
+	  opacity:0.8;
+		filter:alpha(opacity=80);
+	display:block;
+	text-indent: 1px;
+}
+.choose_center a:hover{
+	opacity:0.9;
+	filter:alpha(opacity=90);
+}
+.iStyle_Feelings_Header,
+.iStyle_Feelings_Maininner,
+.iStyle_Feelings_Footer {
+    position: relative;
+    float: left;
+    z-index: 2;
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.iStyle_Feelings_Header {
+    box-sizing: border-box;
+    width: 200px;
+    height: 66px;
+    text-align:center;
+    font-family: -webkit-pictograph;
+    font-weight: bold;
+    color: #efefef;
+    font-size: 13px;
+    background: #3e454c;
+    z-index:3;
+}
+
+.iStyle_Feelings_Header img{
+	height: 44px;
+    margin: 11px 0 0;
+}
+
+.system_tit{
+    float: left;
+    margin: 0 0 0 21px;
+    font-size: 19px;
+    /* font-family: 幼圆; */
+    font-weight: bold;
+    letter-spacing: 3px;
+    color: #505961;
+    line-height: 66px;
+    /* text-shadow: rgba(0, 0, 0, 0.4) 0.5px 0px 0px, 
+    rgba(0, 0, 0, 0.4) 0px 0.5px 0px, 
+    rgba(0, 0, 0, 0.4) 0px -0.5px 0px, 
+    rgba(0, 0, 0, 0.4) -0.5px 0px 0px, 
+    rgba(0, 0, 0, 0.4) 0.5px 0px 0.6px, 
+    rgba(0, 0, 0, 0.4) 0px 0.5px 0.5px, 
+    rgba(0, 0, 0, 0.4) 0px -0.5px 0.5px, 
+    rgba(0, 0, 0, 0.4) -0.5px 0px 0.5px; */
+}
+
+.iStyle_Feelings_UsersBox {
+    box-sizing: border-box;
+    text-align: right;
+    position:relative;
+    right: 0;
+    font-size: 12px;
+    height:65px;
+    margin-right: 0px;
+    color: #3e454c;
+    background: #f6f6f9;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    /* border-bottom:1px solid #d5d8de; */
+    box-shadow: 0 0 6px 0 rgba(0,0,0,.1);
+    -webkit-box-shadow: 0 0 6px 0 rgba(0,0,0,.1);
+    -moz-box-shadow: 0 0 6px 0 rgba(0,0,0,.1);
+    z-index: 3;
+}
+
+.iStyle_Feelings_UsersBox a {
+    color: #77BACE;
+    text-decoration:none;
+        color: #D0D0D0;
+}
+.iStyle_Feelings_UsersBox a:hover {
+    color: #fff;
+}
+
+.iStyle_Feelings_MainMenu {
+    text-indent: 0px;
+    position: absolute;
+    color: #FFFFFF;
+    bottom: 0px;
+    width: 100%;
+    font-size: 16px;
+    line-height: 16px;
+    height: 22px;
+    float: left;
+}
+
+.iStyle_Feelings_MainMenuBox {
+    position: relative;
+    /*top: 22px;
+    left: -20px;*/
+    
+    float: right;
+    width: auto;
+    overflow: hidden;
+    background: #FFFFFF;
+}
+
+.iStyle_Feelings_MainMenu_Items {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    height: 100%;
+    float: left;
+    line-height: 23px;
+    min-width: 4em;
+    padding: 0em 1em 0em 1em;
+    font-size: 14px;
+    text-align: center;
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #898989;
+    border-left: 2px #67676a solid;
+}
+
+.iStyle_Feelings_MainMenu_Items_Actived {
+    background: url(../images/iStyle_Feelings_ActiveMark.png) #FFFFFF repeat-x left top;
+    border-left: none;
+    color: #151515;
+}
+
+.iStyle_Feelings_Tree {
+	box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    padding: 66px 0 0;
+    height: 100%!important;
+    background: #2c3136;
+    z-index: 1;
+    font-size: 12px;
+    width: 200px;
+    height: 1200px;
+    overflow: hidden;
+    z-index: 2;
+    margin: 0;
+    border: 0;
+}
+
+.iStyle_Feelings_Tree_SlideButton {
+    position: absolute;
+    top: 0px;
+    background-image: url(../images/iStyle_Feelings_ActiveFold.png);
+    background-repeat: no-repeat;
+        background-position: 0px center;
+    color: #FFFFFF;
+    text-indent: 40px;
+    cursor: pointer;
+    z-index: 5;
+    height: 22px;
+    line-height: 22px;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 24px;
+    height: 50px;
+    background-color: #666;
+}
+
+.iStyle_Feelings_Tree_SlideButton_Folded {
+    background-image: url(../images/iStyle_Feelings_ActiveMore.png);
+    background-repeat: no-repeat;
+        background-position: 0px center;
+        background-color: #13548a;
+}
+
+.iStyle_Feelings_Tree_Buttons {
+    position: relative;
+    overflow-y: auto;
+    margin-top: 0px;
+    height: 100%;
+    width:217px;
+}
+
+/*.iStyle_Feelings_Tree_Buttons::-webkit-scrollbar{display: none;}
+.iStyle_Feelings_Tree_Buttons{
+    -ms-overflow-style:none;
+    overflow:-moz-scrollbars-none;
+}*/
+
+.iStyle_Feelings_Tree_Trunks,
+.iStyle_Feelings_Tree_Leaves,
+.iStyle_Feelings_Tree_TrunkTitle {
+    height: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.iStyle_Feelings_Tree_Trunks {
+    position: relative;
+    top: 0!important;
+    z-index: 0;
+}
+
+.iStyle_Feelings_Tree_Leaves {
+    float: left;
+    width: 100%;
+    height: auto;
+    /* margin-bottom: 1px; */
+}
+
+.iStyle_Feelings_Tree_Trunk {
+    float: left;
+    width: 100%;
+    height: auto;
+}
+
+.is_SlideButton {
+    background-color: #4EC01F;
+}
+
+.iStyle_Feelings_Tree_Leaf,
+.iStyle_Feelings_Tree_TrunkTitle {
+    display: block;
+    float: left;
+    text-decoration: none;
+    color: #dadbdc;
+    cursor: pointer;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 22px;
+    font-size: 13px;
+    line-height: 21px;
+}
+/*.iStyle_Feelings_Tree_Leaf:hover,.iStyle_Feelings_Tree_TrunkTitle:hover{
+		background-color:#1c2830;
+		color:#E9F2FD;
+		}*/
+
+.iStyle_Feelings_Tree_TrunkTitle {
+    font-weight: 500;
+    height: 47px;
+    line-height:47px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    text-indent: 0.1em;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+}
+
+.iStyle_Feelings_Tree_TrunkTitle:hover{
+	background: #444b52;
+	padding:0 10px 0 17px;
+}
+
+.iStyle_Feelings_Tree_Icon {
+   margin-right: 17px;
+   margin-left: 7px;
+   font-size: 18px;
+}
+
+.iStyle_Feelings_Tree_Icon:before{
+	width:18px!important;
+}
+
+.iStyle_Feelings_Tree_Leaf {
+    color: #afc0d4;
+    float: left;
+    width: 100%;
+    text-indent: 3em;
+    /*background: #C0C0C0 url(../images/iStyle_LeafShadow.jpg) repeat-y right top;*/
+    font-size: 13px;
+    /* border-bottom: 1px solid #eee; */
+    height: 35px;
+    line-height: 35px;
+    background: #555e67;
+}
+
+.iStyle_Feelings_Tree_Leaf:hover{
+	background:#68737d;
+}
+
+.iStyle_Feelings_Tree_Opened {
+    /*background: url(../images/iStyle_Feelings_OpenedTitle.png) right top no-repeat;*/
+    color: #fff;
+    background:#444b52;
+}
+
+.iStyle_Feelings_Tree_TrunkTitlelink {
+    background: #02294e url(../images/iStyle_Feelings_ActiveLink.png) right top no-repeat;
+}
+
+.iStyle_Feelings_Tree_ActiveLeaf {
+	box-sizing:border-box;
+    color: #3669dc;
+    border-left:5px solid #3669dc;
+    font-weight: 500;
+    /*background: url(../images/iStyle_ActivedLeaf.jpg) #FFFFFF repeat-x left top;*/
+    background:#fff!important;
+    height:45px;
+    line-height:45px;
+    opacity: 1;
+}
+
+.iStyle_Feelings_Tree_UniqueActiveLeaf {
+    background: #949494;
+    color: #FFFFFF;
+        background: #265265;
+}
+
+.iStyle_Feelings_Tree_ScrollBox {
+    position: absolute;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 25%;
+    min-width: 1.8em;
+    max-width: 3.5em;
+    cursor: row-resize;
+    background: url(../images/iStyle_Feelings_Opacitybg.png) repeat;
+}
+
+.iStyle_Feelings_Tree_Scroller {
+    position: relative;
+    background-color: #FFFFFF;
+    height: 100%;
+    width: 0em;
+    cursor: n-resize;
+}
+
+.iStyle_Feelings_Tree_Dragger {
+    position: absolute;
+    width: 100%;
+    background-color: #222222;
+    cursor: pointer;
+    z-index: 11;
+}
+/*.iStyle_Feelings_Tree_ActiveLeaf:hover{
+		background-color:#a1e7ff;
+		color:#0A0A0A;
+		}*/
+
+.iStyle_Feelings_Maininner {
+    overflow: hidden;
+    box-sizing: border-box;
+    height: 100%!important;
+    float: left;
+    right: 0!important;
+    top: 0px!important;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    z-index: 0;
+}
+
+.iStyle_Feelings_Iframe {
+    position: relative;
+    top: -66px;
+    padding: 66px 0 20px 0px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    border: none;
+    border: 0px;
+}
+
+.iStyle_Feelings_Footer {
+       width: 100%;
+    background: #d4d4d4;
+    text-align: right;
+    color: #71727f;
+    font-size: 12px;
+    position: relative;
+    top: -90px;
+    box-sizing: border-box;
+    padding: 1px 26px 2px;
+    border-top:1px solid #bfc4d0
+}
+.iStyle_Feelings_Footer font{
+	transform:scale(0.7);
+}
+.iStyle_Feelings_Tree_WidthDragger {
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    width: 20px;
+    z-index: 1;
+    background: url(../images/iStyle_Feelings_Opacitybg.png) repeat;
+    cursor: w-resize;
+}
+
+.message_number{
+	font-family:"microsoft yahei";
+	background: #5e82d5!important;
+    border: none;
+    padding: 0 4px;
+    margin: 0 0 0 7px;
+    border-radius: 5px;
+    color: #fff!important;
+    font-weight: bold;
+    font-size: 12px;
+    cursor:pointer;
+}
+
+
+/* 顶部图标修改 */
+.button_above .button{	
+	color:#3e454c;
+	margin:0 0 0 22px;
+}
+.button_above .button:hover{
+	color:#5187e8;
+	text-shadow: 4px 4px 2px rgba(0,0,0,0.2);	
+}
+.button_above .button:before{
+	font-size:22px!important;
+}
+.button_above .fa-power-off{
+	background:#6a6f74;
+    color: #fff;
+}
+.button_above .fa-power-off:hover{
+	color:#ff0000;
+}
+.fa-home:before {
+    content: "\f015"!important;
+}
+.fa-university:before{
+	content: "\f19c"!important;
+}
+.fa-ils:before{
+	content: "\f20b"!important;
+}
+.fa-slideshare:before {
+    content: "\f1e7"!important;
+}
+.fa-power-off:before {
+    content: "\f011"!important;
+    background: #3e454c;
+    width: 64px;
+    text-align: center;
+    line-height: 64px;
+}
+
+/* 左侧图标修改 */
+.fa-tachometer:before{
+	content: "\f0e4"!important;
+	color: #ce1b1b;
+}
+.fa-eye:before{
+	content: "\f0e8"!important;
+	color: #b749af;
+}
+.fa-flask:before {
+    content: "\f0c3"!important;
+    color: #5d77d6;
+}
+.fa-eyedropper:before{
+	content: "\f1fb"!important;
+	color: #54c338;
+}
+.fa-calendar:before {
+    content: "\f274"!important;
+    color: #e8961b;
+}
+.fa-cog:before {
+    content: "\f013"!important;
+    color: #9c9328;
+}
+.fa-bar-chart:before {
+    content: "\f080"!important;
+    color: #98a7b7;
+}

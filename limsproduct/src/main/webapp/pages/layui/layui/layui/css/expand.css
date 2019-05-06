@@ -1,0 +1,59 @@
+/*layui基础样式修改开始*/
+*{
+	font-size:13px;
+}
+.layui-form-item {
+	margin-bottom: 10px;
+}
+.layui-table-tool {
+	min-height: 40px;
+	line-height: 30px;
+	padding: 5px 10px;
+}
+.layui-table-tool-self {
+	right:10px;
+	top: 4px;
+}
+
+.layui-table-view .layui-table td, .layui-table-view .layui-table th{
+	padding: 3px 0;
+}
+.layui-btn,
+.layui-table td, .layui-table th{
+	font-size: 13px;
+}
+
+.layui-btn-sm {
+	font-size: 12px!important;
+}
+
+/*layui基础样式修改结束*/
+
+.labroom{
+    float: left;
+	width: 30px;
+    margin: 6px 10px 0 0;
+}
+
+.labroom_info{
+	float: right;
+	color: #009688;
+}
+
+.breadcrumb_top{
+	float: right;
+	margin: -23px 20px 0 0;
+	background: #fff;
+	padding: 0 10px;
+}
+
+.breadcrumb_top .breadcrumb_select{
+	background:#5FB878;
+	color:#fff!important;
+	padding: 3px 10px;
+	border-radius: 22px;
+}
+
+.breadcrumb_top .breadcrumb_select:hover{
+	color:#fff!important;
+}

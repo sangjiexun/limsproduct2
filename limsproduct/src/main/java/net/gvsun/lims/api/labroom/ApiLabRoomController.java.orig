@@ -1,0 +1,168 @@
+package net.gvsun.lims.api.labroom;
+
+import net.gvsun.lims.dto.common.BaseDTO;
+import net.gvsun.lims.dto.common.JsonValueDTO;
+import net.gvsun.lims.dto.common.SelectDTO;
+import net.gvsun.lims.dto.timetable.TimetableParamVO;
+import net.gvsun.lims.service.labroom.LabRoomService;
+import net.gvsun.lims.service.school.SchoolCourseStudentService;
+import net.gvsun.lims.service.timetable.TimetableCommonService;
+import net.gvsun.lims.service.user.UserService;
+import net.zjcclims.dao.LabRoomDAO;
+import net.zjcclims.dao.SchoolCourseDAO;
+import net.zjcclims.dao.SchoolCourseDetailDAO;
+import net.zjcclims.domain.SchoolCourse;
+import net.zjcclims.domain.SchoolCourseDetail;
+import org.apache.commons.lang3.ArrayUtils;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+/****************************************************************************
+ * Descriptions：教务排课管理模块
+ *
+ * @作者：魏诚
+ * @时间：2018-09-04
+ ****************************************************************************/
+@Controller("apiLabRoomController")
+@SessionAttributes("selected_academy")
+@RequestMapping("/lims/api/labroom")
+public class ApiLabRoomController<JsonResult> {
+    @Autowired
+    private SchoolCourseDetailDAO schoolCourseDetailDAO;
+    @Autowired
+    private LabRoomService labRoomService;
+    @Autowired
+    private TimetableCommonService timetableCommonService;
+    @Autowired
+    private LabRoomDAO labRoomDAO;
+    @Autowired
+    private SchoolCourseDAO schoolCourseDAO;
+
+    /**************************************************************************
+     * Description 教务排课-查看课程库列表-获取数据
+     *
+     * @author 魏诚
+     * @date 2018年8月22日
+     **************************************************************************/
+    @ResponseBody
+    @RequestMapping("/apiLabRoomListBySelect")
+    public SelectDTO apiUserListBySelect(String academyNumber, String search, String soft, int term, int weekday, String classes, String weeks, String courseDetailNo) {
+        TimetableParamVO timetableParamVO = new TimetableParamVO();
+        timetableParamVO.setWeekday(weekday);
+        //转换参数，将逗号分隔字符串，转换为int数组
+        String[] strClasses = classes.split(",");
+        int[] intClasses = new int[strClasses.length];
+        for (int i = 0; i < intClasses.length; i++) {
+            if (!"".equals(strClasses[i]) && Objects.nonNull(strClasses[i])) {
+                intClasses[i] = Integer.parseInt(strClasses[i]);
+            }
+        }
+        //转换参数，将逗号分隔字符串，转换为int数组
+        String[] strWeeks = weeks.split(",");
+        int[] intWeeks = new int[strWeeks.length];
+        for (int i = 0; i < intWeeks.length; i++) {
+            if (!"".equals(strWeeks[i]) && Objects.nonNull(strWeeks[i])) {
+                intWeeks[i] = Integer.parseInt(strWeeks[i]);
+            }
+        }
+        //如果为调整排课，传递的courseDetailNo同时传递school_course_detail指定的星期
+        if (weekday == 0) {
+            timetableParamVO.setWeekday(schoolCourseDetailDAO.findSchoolCourseDetailByCourseDetailNo(courseDetailNo).getWeekday());
+        } else {
+            timetableParamVO.setWeekday(weekday);
+        }
+        timetableParamVO.setTerm(term);
+        timetableParamVO.setClasses(intClasses);
+        timetableParamVO.setWeeks(intWeeks);
+        //获取查询课程库列表
+        List<JsonValueDTO> jsonValueDTOs = labRoomService.getLabRoomListBySelect(academyNumber, search, soft);
+        int[] labrooms = new int[jsonValueDTOs.size()];
+        for (int i = 0; i < jsonValueDTOs.size(); i++) {
+            if (!"".equals(jsonValueDTOs.get(i).getId()) && Objects.nonNull(jsonValueDTOs.get(i).getId())) {
+                labrooms[i] = Integer.parseInt(jsonValueDTOs.get(i).getId());
+            }
+        }
+        timetableParamVO.setLabRoomIds(labrooms);
+        List<Integer> validDTOs = timetableCommonService.getTimetableValidLabRoomsList(timetableParamVO);
+        List<JsonValueDTO> valueDTOs = new ArrayList<JsonValueDTO>();
+        for (Integer valid : validDTOs) {
+            if (ArrayUtils.contains(labrooms, valid)) {
+                JsonValueDTO jsonValueDTO = new JsonValueDTO();
+                jsonValueDTO.setId(valid.toString());
+                jsonValueDTO.setText(labRoomDAO.findLabRoomById(valid).getLabRoomName() + "[" + valid.toString() + "]");
+                valueDTOs.add(jsonValueDTO);
+            }
+        }
+        //
+        SelectDTO selectDTO = new SelectDTO();
+        selectDTO.setResults(valueDTOs);
+        return selectDTO;
+    }
+
+    /**************************************************************************
+     * Description 教务排课-查看课程库列表-获取数据
+     *
+     * @author 魏诚
+     * @date 2018年8月22日
+     **************************************************************************/
+    @ResponseBody
+    @RequestMapping("/apiLabRoomListByDirectSelect")
+    public SelectDTO apiLabRoomListByDirectSelect(String academyNumber, String search, String soft,String courseNo) {
+        SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(courseNo);
+        List<Integer> inValidDTOs = new ArrayList<Integer>();
+        TimetableParamVO timetableParamVO = new TimetableParamVO();
+        for (SchoolCourseDetail schoolCourseDetail : schoolCourse.getSchoolCourseDetails()) {
+
+            timetableParamVO.setWeekday(schoolCourseDetail.getWeekday());
+            //转换参数，将逗号分隔字符串，转换为int数组
+            int[] intClasses = new int[schoolCourseDetail.getEndClass() - schoolCourseDetail.getStartClass() + 1];
+            for (int i = schoolCourseDetail.getStartClass(); i < intClasses.length; i++) {
+                intClasses[i] = i;
+            }
+            //转换参数，将逗号分隔字符串，转换为int数组
+            int[] intWeeks = new int[schoolCourseDetail.getEndWeek() - schoolCourseDetail.getStartWeek() + 1];
+            for (int i = 0; i < intWeeks.length; i++) {
+                intWeeks[i] = i;
+            }
+
+            timetableParamVO.setTerm(schoolCourse.getSchoolTerm().getId());
+            timetableParamVO.setClasses(intClasses);
+            timetableParamVO.setWeeks(intWeeks);
+            //获取查询实验室列表
+            List<JsonValueDTO> jsonValueDTOs = labRoomService.getLabRoomListBySelect(academyNumber, search, soft);
+            int[] labrooms = new int[jsonValueDTOs.size()];
+            for (int i = 0; i < jsonValueDTOs.size(); i++) {
+                if (!"".equals(jsonValueDTOs.get(i).getId()) && Objects.nonNull(jsonValueDTOs.get(i).getId())) {
+                    labrooms[i] = Integer.parseInt(jsonValueDTOs.get(i).getId());
+                }
+            }
+            timetableParamVO.setLabRoomIds(labrooms);
+            inValidDTOs.addAll(timetableCommonService.getTimetableInValidLabRoomsList(timetableParamVO));
+
+        }
+        //获取所有可用的实验室
+        List<Integer> allLabRoomIds = Arrays.asList(ArrayUtils.toObject(timetableParamVO.getLabRoomIds()));
+        allLabRoomIds = new ArrayList<Integer>(allLabRoomIds);
+        //移除冲突实验室
+        allLabRoomIds.removeAll(inValidDTOs);
+        List<JsonValueDTO> valueDTOs = new ArrayList<JsonValueDTO>();
+        for (Integer valid : allLabRoomIds) {
+                JsonValueDTO jsonValueDTO = new JsonValueDTO();
+                jsonValueDTO.setId(valid.toString());
+                jsonValueDTO.setText(labRoomDAO.findLabRoomById(valid).getLabRoomName() + "[" + valid.toString() + "]");
+                valueDTOs.add(jsonValueDTO);
+        }
+        SelectDTO selectDTO = new SelectDTO();
+        selectDTO.setResults(valueDTOs);
+        return selectDTO;
+    }
+}

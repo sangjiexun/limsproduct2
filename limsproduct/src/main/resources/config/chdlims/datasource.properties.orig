@@ -1,0 +1,24 @@
+
+zjcclimsConn.dialect=org.hibernate.dialect.MySQLDialect
+
+zjcclimsConn.show_sql=false
+
+zjcclimsConn.generateDdl=false
+
+zjcclimsConn.minPoolSize=1
+
+zjcclimsConn.maxPoolSize=20000
+
+<<<<<<< working copy
+zjcclimsConn.connection.url=jdbc\:mysql\://localhost:3306/limsproduct?useUnicode\=true&characterEncoding\=UTF-8&zeroDateTimeBehavior\=convertToNull
+=======
+zjcclimsConn.connection.url=jdbc\:mysql\://121.43.180.91/limsproduct?useUnicode\=true&characterEncoding\=UTF-8&zeroDateTimeBehavior\=convertToNull
+>>>>>>> destination
+#zjcclimsConn.connection.url=jdbc\:mysql\://localhost\:3306/limsproduction?useUnicode\=true&characterEncoding\=UTF-8&zeroDateTimeBehavior\=convertToNull
+
+zjcclimsConn.connection.username=root
+
+zjcclimsConn.connection.password=gvsun@123
+#zjcclimsConn.connection.password=gengshang
+zjcclimsConn.connection.driver_class=com.mysql.jdbc.Driver
+

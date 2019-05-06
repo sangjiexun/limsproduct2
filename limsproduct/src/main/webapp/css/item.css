@@ -1,0 +1,47 @@
+* {
+    font-size: 14px;
+    color: #606266;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    list-style: none;
+    text-decoration: none;
+    font-family: "微软雅黑";
+}
+.intro{
+    width: 30%;
+    display:inline-block;
+    padding: 0 15px;
+}
+.top{
+    width: 80%;
+    margin:auto;
+}
+table{
+    width: 80%;
+    margin: 5px auto;
+    border-collapse: collapse;
+    word-break:break-all;
+}
+table tr{
+    line-height: 30px;
+}
+table td{
+    text-align: center;
+    height: 30px;
+}
+.title{
+    width: 80%;
+    text-align: center;
+    margin: 5% auto;
+    font-size: 20px;
+    border-bottom: 2px solid #979a9d;
+}
+.title span{
+    font-size: 24px;
+}
+.bottom{
+    width: 80%;
+    margin: 30px auto;
+
+}

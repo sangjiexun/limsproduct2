@@ -1,0 +1,37 @@
+
+/*# sourceMappingURL=global.css.map */
+.nav_li {
+	float:left;
+	height:35px;
+	line-height:35px;
+	padding:5px 8px;
+	border:1px solid #264e7f;
+	width:130px;
+	text-align:center;
+	
+}
+.nav_li a{
+	color:#333;
+	font-size:16px;
+}
+.li_selected{
+	background:#4f81bd;
+}
+.nav_li.li_selected a{
+	color:#fff;
+}
+/*clear float*/
+.cf:after{
+    display:block; 
+    content:"gvsun"; 
+    height:0; 
+    clear:both; 
+    overflow:hidden; 
+    visibility:hidden;}
+    .content-box thead tr th, .content-box td {
+    min-height: 30px !important;
+    padding: 8px 2px;
+    /* text-align: left; */
+    border: 1px solid #333;
+    text-align:center;
+    }

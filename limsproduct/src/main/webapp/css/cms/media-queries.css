@@ -1,0 +1,195 @@
+/************************************************************************************
+bigger than 980 
+*************************************************************************************/
+@media screen and (min-width: 1080px) {
+
+	body{background:#fff;}
+	.naver,.new,.link,.content,.footer{width:80%;}
+	.content-box{width:33.3%;
+		float:left;
+		border-bottom:0px solid #000;}
+	.link li{width:33.3%}
+	.logo img{width:490px;}
+	.mobile-icon{display:none;}
+	.naver{display:block}
+	.naver li{width:11%;}
+	.menu li{width:100%;}
+	.logo{text-align:center;}
+	.nav{position:relative;
+		right:0;
+		top:0;
+		}
+	.mobile-action{display:none;}
+
+}
+
+
+
+
+
+/************************************************************************************
+smaller than 980 
+*************************************************************************************/
+@media screen and (max-width: 1080px) {
+
+	body{background:#fff;}
+	.naver,.new,.link,.content,.footer{width:80%;}
+	.content-box{width:33.3%;
+		float:left;
+		border-bottom:0px solid #000;}
+	.link li{width:33.3%}
+	.logo img{width:399px;}
+	.mobile-icon{display:none;}
+	.naver{display:block}
+	.naver li{width:20%;}
+	.menu li{width:100%;}
+	.logo{text-align:center;}
+	.nav{position:relative;
+		right:0;
+		top:0;
+		}
+	.mobile-action{display:none;}
+	.list-box{width:100%;}
+
+
+
+}
+
+
+
+
+/************************************************************************************
+smaller than 760
+*************************************************************************************/
+@media screen and (max-width: 760px) {
+
+	body{background:#fff;}
+	.new,.link,.footer{width:90%;}
+	.content{width:100%}
+	.content-box{width:100%;
+		float:left;
+		border-bottom:1px solid #000;}
+	.naver,.list-box{width:100%}
+	.link li{width:33.3%}
+	.logo img{width:399px;}
+	.mobile-icon{display:none;}
+	.naver{display:block}
+	.naver li{width:20%;}
+	.menu li{width:100%;}
+	.logo{text-align:center;}
+	.nav{position:relative;
+		right:0;
+		top:0;
+		}
+	.mobile-action{display:none;}
+
+
+
+
+}
+
+
+
+
+
+
+/************************************************************************************
+smaller than 650
+*************************************************************************************/
+@media screen and (max-width: 650px) {
+
+	body{background:#fff;}
+	.new,.link,.footer,.content{width:100%;}
+	.content-box{width:100%;
+		float:none;
+		border-bottom:1px solid #000;}
+	.naver{width:100%}
+	.naver li{width:20%;}
+	.link li{width:33.3%}
+	.menu li{width:100%;}
+	.logo img{width:399px;}
+	.mobile-icon{display:none;}
+	.naver{display:block}
+	.logo{text-align:center;}
+	.nav{position:relative;
+		right:0;
+		top:0;
+		}
+	.mobile-action{display:none;}
+	.list-nav-box,.list-content-box{float:none;
+		width:100%;}
+	.nav-content-box ul{display:none;}
+	.nav-content-box{float:left;}
+	.nav-content-box .tit .more{display:none;}
+
+	
+
+
+
+}
+
+
+/************************************************************************************
+smaller than 480
+*************************************************************************************/
+@media screen and (max-width: 480px) {
+	body{background:#fff;}
+	.naver,.new,.link,.footer,.content{width:100%;}
+	.content-box{width:100%;
+		float:left;
+		border-bottom:1px solid #000;}
+	.link li{width:33.3%;}
+	.logo img{width:300px;}
+	.mobile-icon{display:block;
+	text-align:right;
+		}
+	.mobile-icon img{width:20px;}
+	.mobile-action{display:block;
+		background:none;
+		height:52px;
+		position:absolute;
+		z-index:9;
+		width:100%;}
+	.naver{display:none;
+		width:100%;}
+	.logo{text-align:center;
+		position:fixed;
+		width:100%;
+		top:0px;
+		z-index:9;
+		background:#fff;
+	}
+	.nav{position:fixed;
+		right:0px;
+		top:79px;
+		z-index:9;
+		width:100%;
+		background:rgba(0,0,0,0.8)
+		}
+	.naver li{float:none;
+		width:100%;
+		text-align:left;}
+	.naver .menu{display:none !important;}
+	.naver li a:hover{color:#fff;}
+	.friend {
+		margin-left: 0px;}
+	.time{display:block;
+		width:100%;
+		}
+	.link img{display:none;}
+	.slider{margin-top:77px;}
+	.list-box .data {
+		position:relative;
+		display:block;
+		left:5px;
+		}
+	.picture-box li{float:none;
+		width:100%;}
+	.center-pic{margin:0px;}
+	.equipment-box table{width:100%;}
+
+}
+
+
+
+

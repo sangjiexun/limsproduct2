@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf8">
+		<title>实验室预约列表</title>
+		<meta name="decorator" content="iframe"/>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="../layui/css/expand.css" media="all">
+		<!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+		<style>
+			.layui-table-cell:first-child {
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-main">
+				<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+					<legend>实验室预约列表</legend>
+				</fieldset>
+				<div class="layui-form layui-form-pane">
+					<div class="layui-form-item">
+
+						<div class="layui-inline">
+							<label class="layui-form-label">综合查询</label>
+							<div class="layui-input-inline">
+								<input id="capacity" type="text"  placeholder="多字段查询" class="layui-input" />
+							</div>
+						</div>
+
+						<div class="layui-inline">
+							<button class="layui-btn" data-type="reload">搜索</button>
+							<button class="layui-btn">取消搜索</button>
+						</div>
+					</div>
+				</div>
+				<table class="layui-hide" id="LAY_table_user" lay-filter="LAY_table_user"></table>
+			</div>
+		</div>
+		<script type="text/html" id="toolbarDemo">
+			<div class="layui-btn-container">
+				<button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+				<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+				<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+			</div>
+		</script>
+		<script type="text/html" id="indexTpl">
+			{{d.LAY_TABLE_INDEX+1}}
+		</script>
+		<script src="../layui/layui.js" charset="utf-8"></script>
+		<script src="lab_table.js" charset="utf-8"></script>
+		<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+	</body>
+
+</html>

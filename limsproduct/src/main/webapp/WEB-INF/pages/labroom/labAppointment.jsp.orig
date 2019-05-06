@@ -1,0 +1,1024 @@
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" isELIgnored="false"
+	contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<jsp:directive.include file="/WEB-INF/sitemesh-decorators/include.jsp" />
+<fmt:setBundle basename="bundles.lab-resources" />
+<head>
+<meta name="decorator" content="iframe" />
+<link href="${pageContext.request.contextPath}/css/iconFont.css" rel="stylesheet">
+<!-- 下拉框的样式 -->
+<link type="text/css" rel="stylesheet"
+	href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
+<link type="text/css" rel="stylesheet"
+	href="${pageContext.request.contextPath}/chosen/chosen.css" />
+	
+	<link type="text/css" rel="stylesheet"
+	href="${pageContext.request.contextPath}/js/jquery-easyui/themes/default/easyui.css" />
+<!-- 下拉的样式结束 -->
+<!-- 打印插件的引用 -->
+  <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.jqprint-0.3.js"></script>
+  <!-- 弹窗 -->
+  <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
+    <script src="${pageContext.request.contextPath}/js/jquery-easyui/jquery.easyui.min.js" type="text/javascript"></script>
+  <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+  //取消查询
+  function cancel(){
+	  window.location.href="${pageContext.request.contextPath}/lab/labAnnexList?currpage=1"
+  }
+  //分页跳转
+  function targetUrl(url)
+  {
+    document.form.action=url;
+    document.form.submit();
+  }
+  //弹出学生预约框
+  function showLabRoomReservation(labRoomId){
+	  layer.ready(function(){
+	        layer.open({
+	            type: 2,
+	            title: '实训室预约',
+	            fix: true,
+	            maxmin:true,
+	            shift:-1,
+	            closeBtn: 1,
+	            shadeClose: true,
+	            move:false,
+	            maxmin: false,
+	            area: ['1000px', '420px'],
+	            content: '../LabRoomReservation/showLabRoomReservation?labRoomId='+labRoomId,
+	            end: function(){
+	            }
+	        });
+	    });
+  }
+  //弹出教师预约框
+  function showLabRoomReservationTeacher(labRoomId){
+	  layer.ready(function(){
+	        layer.open({
+	            type: 2,
+	            title: '教师-实训室预约',
+	            fix: true,
+	            maxmin:true,
+	            shift:-1,
+	            closeBtn: 1,
+	            shadeClose: true,
+	            move:false,
+	            maxmin: false,
+	            area: ['1000px', '420px'],
+	            content: '../LabRoomReservation/showLabRoomReservationTeacher?labRoomId='+labRoomId,
+	            end: function(){
+	            }
+	        });
+	    });
+  }
+    //弹出实验室实况框
+  function viewNow(labRoomId){
+	  layer.ready(function(){
+	        layer.open({
+	            type: 2,
+	            title: '实训室实况',
+	            fix: true,
+	            maxmin:true,
+	            shift:-1,
+	            closeBtn: 1,
+	            shadeClose: true,
+	            move:false,
+	            maxmin: false,
+	            area: ['1000px', '420px'],
+	            content: '../LabRoomReservation/showLabRoomNow?labRoomId='+labRoomId,
+	            end: function(){
+	            }
+	        });
+	    });
+  }
+//弹出软件详情
+  function showLabRoomSoftware(labRoomId){
+	  layer.ready(function(){
+	        layer.open({
+	            type: 2,
+	            title: '实训室软件详情',
+	            fix: true,
+	            maxmin:true,
+	            shift:-1,
+	            closeBtn: 1,
+	            shadeClose: true,
+	            move:false,
+	            maxmin: false,
+	            area: ['1000px', '420px'],
+	            content: '../LabRoomReservation/showLabRoomSoftware?labRoomId='+labRoomId,
+	            end: function(){
+	            }
+	        });
+	    });
+  }
+//弹出设备详情
+  function showLabRoomDevice(labRoomId){
+	  layer.ready(function(){
+	        layer.open({
+	            type: 2,
+	            title: '实训室设备详情',
+	            fix: true,
+	            maxmin:true,
+	            shift:-1,
+	            closeBtn: 1,
+	            shadeClose: true,
+	            move:false,
+	            maxmin: false,
+	            area: ['1000px', '420px'],
+	            content: '../LabRoomReservation/showLabRoomDevice?labRoomId='+labRoomId,
+	            end: function(){
+	            }
+	        });
+	    });
+  }
+  //学生预约资格判断
+  function judgeAccess(labRoomId){
+	  $.ajax({
+			type: "POST",
+			url: "${pageContext.request.contextPath}/LabRoomReservation/judgeAccess?labRoomId="+labRoomId,
+			data: '',
+			dataType:'text',
+			success:function(data){
+				if(data == "noSetting"){
+					layer.msg('该实训室未进行初始化设置，不可预约', {icon: 5});
+				}else if(data == "noAccess"){
+					layer.msg('该实训室需要参加培训并通过后方可预约', {icon: 5});
+				}else if(data == "noPassTest"){
+					layer.msg('该实训室需要参加网上测试并通过后方可预约', {icon: 5});
+				}else if(data == "noCreditScore"){
+					layer.msg('您的信誉积分低于80分，不可预约', {icon: 5});
+				}else if(data == "noDean"){
+					layer.msg('系统未查到您所属的系主任/系教学秘书，不可预约', {icon: 5});
+				}else{
+					//可预约，跳出弹框
+					 showLabRoomReservation(labRoomId);
+				}
+			},
+		  error: function(){
+				layer.msg('发生未知错误', {icon: 5});
+			}
+	 	})
+  }
+//教师预约预约资格判断
+  function judgeAccessTeacher(labRoomId){
+	  $.ajax({
+			type: "POST",
+			url: "${pageContext.request.contextPath}/LabRoomReservation/judgeAccess?labRoomId="+labRoomId,
+			data: '',
+			dataType:'text',
+			success:function(data){
+				if(data == "noSetting"){
+					layer.msg('该实训室未进行初始化设置，不可预约', {icon: 5});
+				}else if(data == "noAccess"){
+					layer.msg('该实训室需要参加培训并通过后方可预约', {icon: 5});
+				}else if(data == "noPassTest"){
+					layer.msg('该实训室需要参加网上测试并通过后方可预约', {icon: 5});
+				}else if(data == "noCreditScore"){
+					layer.msg('您的信誉积分低于80分，不可预约', {icon: 5});
+				}else if(data == "noDean"){
+					layer.msg('系统未查到您所属的系主任/系教学秘书，不可预约', {icon: 5});
+				}else{
+					//可预约，跳出弹框
+					showLabRoomReservationTeacher(labRoomId);
+				}
+			},
+	  		error:function(){
+	  			layer.msg('发生未知错误', {icon: 5});
+	  		}
+	 	})
+  }
+//实验室设置
+  function openSetupLink(labRoomId,currpage){//将labRoomId page传递到后台
+  	//alert(labRoomId);
+  	var url ="${pageContext.request.contextPath}/device/editLabRoomSettingRest/"+labRoomId+"/"+currpage;
+  	
+  	window.location.href=url;
+  }
+//培训预约(编辑--针对老师)
+  function editLabRoomTrainingRest(id){
+      var labRoom_id = $("#labRoom_id").val();
+      var schoolDevice_deviceNumber = $("#schoolDevice_deviceNumber").val();
+      var schoolDevice_deviceName =$("#schoolDevice_deviceName").val();
+      var schoolDevice_allowAppointment = $("#schoolDevice_allowAppointment").val();
+      var username = $("#username").val();
+      //alert(schoolDevice_deviceName);
+  	if($("#labRoom_id").val()==""){
+  	  labRoom_id ="-1";
+  	}
+  	if($("#schoolDevice_deviceNumber").val()==""){
+  	  schoolDevice_deviceNumber ="-1";
+  	}
+  	if($("#schoolDevice_deviceName").val()==""){
+  	  schoolDevice_deviceName ="-1";
+  	}
+  	if($("#username").val()==""){
+  		username ="-1";
+  	}
+  	if($("#schoolDevice_allowAppointment").val()==""){
+  		schoolDevice_allowAppointment ="-1";
+  	}
+  	var url = "${pageContext.request.contextPath}/device/editLabRoomTrainingRest/"+ labRoom_id + "/"+ schoolDevice_deviceNumber + "/" + schoolDevice_deviceName + "/" + username +"/${page}/" + id+"/"+schoolDevice_allowAppointment;
+  	//alert(url);
+  	window.location.href=url;
+  }
+//培训预约(查看--针对学生)
+  function viewLabRoomTrainingRest(id){
+      var labRoom_id = -1;
+      var schoolDevice_deviceNumber = -1;
+      var schoolDevice_deviceName =-1;
+      var username = -1;
+      var labRoom_allowAppointment = -1;
+
+  	var url = "${pageContext.request.contextPath}/labReservation/viewLabRoomTrainingRest/" +labRoom_id + "/"+schoolDevice_deviceNumber + "/" + schoolDevice_deviceName + "/" + username +"/"+1+"/" + id+"/"+labRoom_allowAppointment;
+  	
+  	window.location.href=url;
+  }
+  
+//考试
+  function findTestListForAdmin(labRoomId){//将labRoomId deviceNumber deviceName page传递到后台
+	//alert("11");
+	var page = ${currpage};
+	var status = -1;
+  	var url = "${pageContext.request.contextPath}/teaching/test/labRoomTestList/" + labRoomId + "/"+page+"/"+status;
+  	window.location.href=url;
+  }
+//考试
+  function findTestList(labRoomId){//将labRoomId deviceNumber deviceName page传递到后台
+  	var page = ${currpage};
+  	var status = -1;
+  	var url = "${pageContext.request.contextPath}/teaching/test/labRoomTestListForStudentAndTeacher/" + labRoomId + "/"+page+"/"+status;
+  	window.location.href=url;
+  }
+  </script>
+<script type="text/javascript">
+		 $(document).ready(function () {  
+		 			/* $(".addStudent") */
+		 			$("#addStudent").attr("style","display:none;");
+            }); 
+		 
+		 function checkObj(){
+					var obj = document.getElementById("usingObj").value;
+					if(obj == 1){
+						$("#addStudent").show();
+					}else{
+						$("#addStudent").attr("style","display:none;");
+					}
+		}
+		
+		//ajax查询用户的班级表  
+  function getSchoolClasses(grade){ 		
+  	$.ajax({
+  		type: "POST",
+  		url: "${pageContext.request.contextPath}/timetable/selfTimetable/getSchoolClasses",
+  		data: {'grade':grade},
+  		dataType:'json',
+  		success:function(data){
+  			var jslength=1;
+  			var currLine=1;
+  			for(var js2 in data){jslength++;}
+  			if(jslength==0){alert("本周无课程数据");}else{}
+  			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td colspan=3><b>选择班级</b></td></tr>";//新建html字符
+  			$.each(data,function(key,values){  
+  			   if(currLine%3==0){
+  		           tableStr = tableStr + "<td><a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClassesUser("+ key +")'>" + values + "</a></td><tr>";
+  			   }else  if(currLine%3==1){
+  			       tableStr = tableStr + "<tr><td><a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClassesUser("+ key +")'>" + values + "</a></td>";
+  			   }
+  			   else  if(currLine%3==2){
+  			       tableStr = tableStr + "<td><a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClassesUser("+ key +")'>" + values + "</a></td>";
+  			   }
+  			   currLine=currLine+1
+  			   jslength=jslength+1;
+  			 }); 
+  			 tableStr = tableStr + "</tr></table>";
+  			 document.getElementById('schoolClasses').innerHTML=tableStr; 	
+  		},
+  		error:function(){
+  			//alert("加载课表失败!");
+  			}
+  	});
+  }
+  
+  //ajax查询班级用户列表  
+  function putSchoolClassesUser(){ 		
+  	 var obj = document.getElementsByName("username");
+  	 var s='';//如果这样定义var s;变量s中会默认被赋个null值
+       for(var i=0;i<obj.length;i++){
+           if(obj[i].checked) //取到对象数组后，我们来循环检测它是不是被选中
+           s+=obj[i].value+",";   //如果选中，将value添加到变量s中    
+       }
+       var str = $('#students').val() +"," +s;
+       $('#students').val(s);
+       $("#newStudents").window('close');
+  }
+//ajax查询班级用户列表  
+  function getSchoolClassesUser(classNumber){ 		
+  	$.ajax({
+  		type: "POST",
+  		url: "${pageContext.request.contextPath}/timetable/selfTimetable/getSchoolClassesUser",
+  		data: {'classNumber':classNumber},
+  		dataType:'json',
+  		success:function(data){
+  			var jslength=1;
+  			var currLine=1;
+  			var allLine=1;
+  			for(var js2 in data){jslength++;}
+  			if(jslength==0){alert("本周无课程数据");}else{}
+
+  			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td><b>选择学生</b></td><td colspan=3><a class='btn btn-common' href='javascript:void(0)' onclick='putSchoolClassesUser()'>提交</a></td></tr>";//新建html字符
+  			$.each(data,function(key,values){  
+  			   if(currLine%4==0){
+  		           tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td><tr>";
+  			   }else  if(currLine%4==1){
+  			       tableStr = tableStr + "<tr><td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+  			   }else  if(currLine%4==2){
+  			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+  			   }else if(currLine%4==3){
+  			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+  			   }
+  			   //currLine=currLine%4;
+  			   jslength=jslength+1;
+  			   currLine = currLine +1;
+  			   allLine =allLine+1;
+  			 }); 
+  			 if(currLine%4==0){
+  			   tableStr = tableStr + "</table>";
+  			 }else if(currLine%4==1){
+  			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td><td&nbsp;></td></tr></table>";
+  			 }else if(currLine%4==2){
+  			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td></tr></table>";
+  			 }else if(currLine%4==3){
+  			   tableStr = tableStr + "<td>&nbsp;</td></tr></table>";
+  			 }
+  			
+  			 document.getElementById('schoolClassesUser').innerHTML=tableStr; 	
+  		},
+  		error:function(){
+  			//alert("加载课表失败!");
+  			}
+  	});
+  }
+  
+  //查询剩余工位数
+ function findRestStations(){
+	//console.log($("input[name='reservationtime']") .val());
+	 if($("input[name='reservationtime']") .val() == ""){
+		 alert("请选择日期");
+		 return false;
+	 }
+	 if($("#starttime").val()){
+	 }else{
+		 alert("请选择开始时间");
+		 return false;
+	 }
+	 if($("#endtime").val()){
+	 }else{
+		 alert("请选择结束时间");
+		 return false;
+	 }
+	 if($("#starttime").val() > $("#endtime").val()){
+		 alert("开始时间不可大于结束时间");
+		 return false;
+	 }
+	 
+	 var myData = {
+		 'reservationTime':$("input[name='reservationtime']") .val(),
+		 'startTime':$("#starttime").val(),
+		 'endTime':$("#endtime").val()
+	 }
+	 var labRoomId = document.getElementById("labRoom").value;
+	 $.ajax({
+		type: "POST",
+		url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
+		data: myData,
+		dataType:'json',
+		success:function(data){
+			$("#restStations").val(data);
+		},
+		error:function(){
+  			alert("查询失败！后台出了点问题！");
+  		} 
+ 	})
+ }
+ </script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/js/labreservation/labreservation.js"></script>
+<script type="text/javascript">
+function cancel(){
+	window.location.href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1";
+}
+</script>
+<style type="text/css">
+        .btn_reser{
+            text-align:center;  
+            border: none!important;
+            padding: 10px 0!important;
+            background:#eee;
+            border-bottom:1px solid #eee!important;
+            position:relative;
+        }
+        .btn_reser:hover{
+            opacity:0.9;
+        }
+        .btn_reser:after{
+           content: "";
+           height: 100%;
+           width: 6px;
+           padding: 0 0 2px 0;
+           background: #fff;
+           position: absolute;
+           right: 0;
+           top: -1px;
+        }
+        .br_top{
+           position:absolute;
+           left:-1px;
+           top:-1px;
+           width:100%;
+           height:4px;
+           background:#fff;
+        }
+        .br_btm{
+           position:absolute;
+           left:-1px;
+           bottom:-1px;
+           width:100%;
+           height:4px;
+           background:#fff;
+        }
+        .btn_reser a{
+            display:block;
+            width:20px;
+            color:#777;
+            line-height: 18px;
+            white-space:normal;
+            margin: 0 0 0 4px;
+            font-weight:normal;            
+            padding: 0 9px!important;
+        }
+        .br_selected{
+            background:#77bace;
+            border-bottom:1px solid #77bace!important;
+        }
+        .br_selected a{
+            color:#fff;
+        }
+        .cf:after{
+		    display:block; 
+		    content:"gvsun"; 
+		    height:0; 
+		    clear:both; 
+		    overflow:hidden; 
+		    visibility:hidden;}
+		.tool-box input{
+			float:none;
+		}
+		#labRoom_chzn,#usingObj_chzn{
+			width:200px !important;
+		}
+		.content-box .tab_lab{
+	    	width: 100%;
+            left: 0;
+            margin: -1px;
+		}
+		.tab_lab{
+		width:100%;
+		}
+		.tab_lab th,
+		.tab_lab td{
+		    border:1px solid #e4e5e7;
+		}
+		
+		.tab_lab{
+		border-left:none;
+		}
+		.tab_lab th{
+		    background:#fafafa;
+		    width:90px;
+		    padding:0 15px 0 0;
+		    text-align:right;
+		}
+		.tab_lab td{
+		    text-align:left;
+	    	padding:10px;
+		}
+		.tab_lab td input[type="text"],
+		.tab_lab td textarea,		
+		.tab_lab td .spinner,
+		.tab_lab td .combo{
+		    resize:none;
+		    border: 1px solid #cdcdcd;
+		    border-radius:3px;
+		    line-height:22px;
+		    padding:0 10px;
+		    outline:none;
+		}
+		.tab_lab td .spinner,
+		.tab_lab td .combo{
+		padding:1px 0;
+		}
+		.tab_lab td input[type="text"]{
+		width:124px;
+		}
+		.tab_lab td .spinner input[type="text"],
+		.tab_lab td .combo input[type="text"]{
+		    border:none;
+		}
+		.tab_lab td textarea{
+		    width:100%;
+		    box-sizing:border-box;
+		}
+		.tab_lab td input[type="text"]:focus,
+		.tab_lab td textarea:focus{
+		    border:1px solid #f3ce7a;
+		}
+		.tab_fix td{
+		    text-align:left;
+            white-space:nowrap;
+            padding-right:20px;
+		}
+		.tab_fix td input[type="text"]{
+		   height: 24px;
+           width: 100%;
+           box-sizing: border-box;
+           min-width: 210px;
+		}
+        .tab_fix th{
+            font-weight:normal;
+            width: 95px;
+            text-align: right;
+            white-space:nowrap;
+        }
+        .space{
+        margin:0 12px 0 0;
+        }
+</style>
+</head>
+<body> 
+<!--导航  -->
+<div class="navigation">
+	<div id="navigation">
+		<ul>
+			<li><a href="javascript:void(0)">开放预约 </a></li>
+			<li class="end"><a href="javascript:void(0)">实训室预约</a></li>
+		</ul>
+	</div>
+</div>
+<!--导航结束  -->
+<div id="TabbedPanels1" class="TabbedPanels">
+	<ul class="TabbedPanelsTabGroup" style="margin-bottom:10px;">
+		<li class="TabbedPanelsTab selected" id="s1"><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1">实训室预约</a></li>
+		<li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=2">我的申请</a></li>
+		<li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">我的审核</a></li>
+	</ul>
+</div>
+<div class="right-content">
+<div id="TabbedPanels1" class="TabbedPanels">
+<div class="TabbedPanelsTabGroup-box">
+<div class="TabbedPanelsContentGroup">
+<div class="TabbedPanelsContent">
+	<%--<ul class="btn_reser cf">
+		<li><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a></li>
+		<li><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1">实训室预约</a></li>
+	</ul>
+	--%><form id="formid" method="POST">
+				<table class="tab_lab">
+					<tr>
+					    <td rowspan="2" class="btn_reser br_selected">
+					        <div class="br_btm"></div>
+					        <a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a>
+					    </td>
+						<th>
+							<input type="hidden" id="deviceType" name="deviceType">
+							实训室名称
+						</th>
+						<td>
+							<select class="chzn-select" id="labRoom">
+							<c:forEach items="${listLabRoom}" var="labRoom">
+								<option value="${labRoom.id}">${labRoom.labRoomName }</option>
+							</c:forEach>
+							</select>
+						</td>
+						<th>选择日期</th>
+						<td>
+							<input  class="easyui-datebox"  id="reservationtime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>
+						<font class="space"></font>
+						预约开始时间&nbsp;:
+							<input  class="easyui-timespinner"  id="starttime" name="starttime" type="text"  style="width:80px;"
+    required="required" />
+						<font class="space"></font>
+						预约结束时间&nbsp;:
+							<input  class="easyui-timespinner"  id="endtime" name="endtime"  type="text" style="width:80px;"
+    required="required"/>
+							<a onclick="findRestStations()">查询</a>
+						</td>
+					</tr>
+					<tr>
+					<c:if test="${user.userRole ne 0 }">
+					<th>
+						使用对象
+					</th>
+					<td>
+						<select class="chzn-select" id="usingObj" name="userRole" onchange="checkObj()">
+								<option value="2">教师</option>
+								<option value="1">学生</option>
+						</select>
+					</td>
+					</c:if>
+					<c:if test="${user.userRole eq 0 }">
+                          <input id="usingObj" name="userRole"  type="hidden"  value="1" />
+					</c:if>
+					<th>剩余工位数</th>
+					<td>
+					<input id="restStations" type="text" readonly="readonly"/>
+					<font style="color: red">请选择准确时间以查询剩余的工位数量</font>
+					</td>
+					</tr>
+					<tr>					
+					    <td rowspan="2" class="btn_reser">
+					        <div class="br_top"></div>
+					        <a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1">实训室预约</a
+					    </td>
+						<th>预约原因</th>
+						<td colspan="3">
+							<textarea id="reason" type="text" rows="5"></textarea>
+						</td>
+						<%--<c:if test="${dean eq 1}">系主任这一级的刷选逻辑修改了，不需要自己选
+						<th>选择审核系主任</th>
+						<td>
+						<select id="dean" style="height: 25px;width: 80px;">
+						<c:forEach items="${deanList}" var="s">
+						<option value="${s.username}">${s.cname}</option>
+						</c:forEach>
+						</select>
+						</td>
+						</c:if>
+					--%>
+					</tr>
+					<c:if test="${user.userRole ne 0 }">
+						<tr id="addStudent">
+							<th style="min-width:120px;text-align:right;">添加学生<a class="btn btn-common" href='javascript:void(0)'	onclick='newStudents()'>选择添加</a>
+								<br/>(或输入学生学号，以逗号分开)
+							</th>
+							<td style="text-align:left;"><textarea rows="" cols=""
+								name="students" id="students"
+								style="width: 400px;height: 60px;padding: 5px"></textarea></td>
+							<td></td>
+						</tr>
+					</c:if>
+					<tr>
+						<td colspan="4" style="text-align:right;"><input class="btn" type="button" value="提交" onclick="saveLabRoomReservation()"></td>
+					</tr>
+				</table>					
+			</form>	
+<div class="right-content">
+			<div class="content-box">
+				<div class="tool-box">
+					<table class="tab_fix">
+						<form:form name="form" action="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1" method="post" modelAttribute="labRoom">
+							<tr>
+							<th>实训室名称：</th>
+							<td colspan="3"><form:input path="labRoomName" /></td>
+							<%--<tr><td>工位数：<form:input path="labRoomWorker" onkeyup="value=value.replace(/[^\d]/g,'')"/></td></tr>
+							--%>
+							<th>软件名称：</th>
+							<td><form:input path="labRoomEnName"/></td><%--这里并不是labRoomEnName 只是为了放这个条件--%>
+							</tr>
+							<tr>
+							<th>设备名称：</th>
+							<td><form:input path="labRoonAbbreviation"/></td><%--这里并不是labRoonAbbreviation 只是为了放这个条件--%>
+							<th style="padding-left:35px;">可预约工位数：</th>
+							<td><select name="searchflg" id="searchflg">
+								<option value="">-请选择-</option>
+								<option value="1" <c:if test="${'1' eq searchflg}">selected</c:if>>等于</option>
+								<option value="2" <c:if test="${'2' eq searchflg}">selected</c:if>>大于</option>
+								<option value="3" <c:if test="${'3' eq searchflg}">selected</c:if>>小于</option>
+							</select>
+							<input type="text" id="worker" name="worker" value="${worker}" style="float: none;width:auto;">
+							</td>
+							<td colspan="2" style="text-align:right;">
+							    <input type="submit" value="搜索"/>
+							    <input type="button" onclick="cancel()" value="取消"/>
+							</td>
+							</tr>
+						</form:form>
+					</table>
+				</div>
+				</div>
+			</div>
+			<div class="content-box">
+				<table>
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>实训室编号</th>
+							<th>实训室名称</th>
+							<th>实训室地址</th>
+							<th>实训室等级</th>
+							<th>实训室容量</th>
+							<th>可预约工位数</th>
+							<th>设备详情</th>
+							<th>软件详情</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach items="${listLabRoom}" var="s" varStatus="i">
+							<tr >
+								<td>${i.count+(currpage-1)*pageSize }</td>
+								<td>${s.labRoomNumber}</td>
+								<td>${s.labRoomName}</td>
+								<td>${s.labRoomAddress}</td>
+								<c:if test="${s.labRoomLevel eq 0}">
+									<td>特级</td>
+								</c:if>
+								<c:if test="${s.labRoomLevel eq 1}">
+									<td>一级</td>
+								</c:if>
+								<c:if test="${s.labRoomLevel eq 2}">
+									<td>二级</td>
+								</c:if>
+								<c:if test="${empty s.labRoomLevel}">
+									<td>未设置</td>
+								</c:if>
+								<td>${s.labRoomCapacity}</td>
+								<td>${s.labRoomWorker}</td>
+								<td><a onclick="showLabRoomDevice(${s.id})" href="javascript:void(0)"  >设备详情</a></td>
+								<td><a onclick="showLabRoomSoftware(${s.id})" href="javascript:void(0)"  >软件详情</a></td>
+								<td>
+								<c:if test="${not empty s.labRoomLevel}">
+								<c:if test="${s.labRoomLevel ne 0}">
+								<sec:authorize ifNotGranted="ROLE_STUDENT">
+								<%-- <a onclick="judgeAccessTeacher(${s.id})" href="javascript:void(0)">预约</a> --%>
+								<a onclick="viewNow(${s.id})" href="javascript:void(0)">实况</a>
+								</sec:authorize>
+								<sec:authorize ifAnyGranted="ROLE_STUDENT">
+								<%-- <a onclick="judgeAccess(${s.id})" href="javascript:void(0)">预约</a> --%>
+								<a onclick="viewNow(${s.id})" href="javascript:void(0)">实况</a>
+								</sec:authorize>
+								</c:if>
+								<c:if test="${s.labRoomLevel eq 0}">
+								<font style="color: red">特级实训室不开放</font>
+								</c:if>
+								</c:if>
+								<c:if test="${empty s.labRoomLevel}">
+								<font style="color: red">未设置实训室等级</font>
+								</c:if>
+								<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR">
+                        		<a  href="javascript:void(0)" onclick="openSetupLink(${s.id},${currpage})" title="设置">设置</a>
+                        		</sec:authorize>
+                        		<c:if test="${(s.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && s.CDictionaryByAllowSecurityAccess.CNumber == 1 && s.CDictionaryByTrainType.CNumber == 1)}">
+                                <%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EQUIPMENTADMIN">
+                                <a href="#" onclick="editLabRoomTrainingRest(${s.id})";>培训申请</a>
+                                </sec:authorize>
+                                --%><sec:authorize ifAnyGranted="ROLE_STUDENT,ROLE_TEACHER"> 
+                                <sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EQUIPMENTADMIN">
+                                <a href="#" onclick="viewLabRoomTrainingRest(${s.id})";>培训申请</a>
+                                </sec:authorize> 
+                                </sec:authorize>
+                                </c:if>
+                                <c:if test="${(s.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && s.CDictionaryByAllowSecurityAccess.CNumber == 1 && s.CDictionaryByTrainType.CNumber == 3)}">
+                                <sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN">
+                               		<%--<a href="#" onclick="findTestListForAdmin(${s.id})";>考试设置</a>
+                               		--%><a href="#" onclick="findTestList(${s.id})";>考试</a>
+                               	</sec:authorize>
+                                <sec:authorize ifAnyGranted="ROLE_STUDENT">
+	                                <sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN">
+	                                	<a href="#" onclick="findTestList(${s.id})";>考试</a>
+	                                </sec:authorize>
+                                </sec:authorize>
+                                </c:if>
+								</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+				
+				<div class="page">
+					${totalRecords}条记录 &nbsp;   共${pageModel.totalPage}页 &nbsp; 
+					<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1')" target="_self">首页</a> 
+					<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
+					<input type="hidden" value="${pageModel.lastPage}" id="totalpage" />&nbsp; <input type="hidden" value="${currpage}" id="currpage" /> 
+					&nbsp;第 
+					<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
+					   <option value="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=${currpage}">${currpage}</option>
+					   <c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	
+			           <c:if test="${j.index!=currpage}">
+			           <option value="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=${j.index}">${j.index}</option>
+			           </c:if>
+			           </c:forEach>
+           			</select>页&nbsp;
+					 
+					<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
+					<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=${pageModel.lastPage}')" target="_self">末页</a>
+				</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 弹出选择学生窗口 -->
+<div id="newStudents" class="easyui-window" title="选择添加学生" modal="true" dosize="true" maximizable="true" collapsible="true" minimizable="false" closed="true" iconcls="icon-add" style="width:800px; height:600px;">
+	<div class="TabbedPanelsContentGroup">
+	<div class="TabbedPanelsContent">
+	
+	<div class="content-box">
+	<form:form action="" method="post">
+	<fieldset class="introduce-box">
+         <legend>年级信息</legend>
+         <div>
+         <table id="listTable" width="85%" cellpadding="0">
+          <tr><td><b>选择年级</b></td><tr>
+          <tr>
+         	<td>
+         	<c:forEach items="${grade }" var="s" varStatus="i">
+         	<c:if test="${s.grade>2010 }">
+			 <a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClasses(${s.grade})' >${s.grade}</a>	
+			</c:if>
+			</c:forEach></td>
+         </tr>
+         </table>
+         </div>
+         <div id="schoolClasses"></div>
+         <div id="schoolClassesUser"></div>
+	</fieldset>
+	</form:form>
+	</div>
+	</div>
+	</div>
+	
+</div>
+		<!-- 下拉框的js -->
+
+		<script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js"  type="text/javascript"></script>
+
+		<script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+						    var config = {
+						      '.chzn-select': {search_contains : true},
+						      '.chzn-select-deselect'  : {allow_single_deselect:true},
+						      '.chzn-select-no-single' : {disable_search_threshold:10},
+						      '.chzn-select-no-results': {no_results_text:'选项, 没有发现!'},
+						      '.chzn-select-width'     : {width:"95%"}
+						    }
+						    for (var selector in config) {
+						      $(selector).chosen(config[selector]);
+						    }
+						  //弹出选择学生窗口
+						    function newStudents() {
+						        var sessionId=$("#sessionId").val();
+						        //获取当前屏幕的绝对位置
+						        var topPos = window.pageYOffset;
+						        //使得弹出框在屏幕顶端可见
+						        $('#newStudents').window({left:"0px", top:topPos+"px"}); 
+						        $("#newStudents").window('open');
+						    }
+						  //ajax查询班级用户列表  
+						    function getSchoolClassesUser(classNumber){ 		
+						    	$.ajax({
+						    		type: "POST",
+						    		url: "${pageContext.request.contextPath}/timetable/selfTimetable/getSchoolClassesUser",
+						    		data: {'classNumber':classNumber},
+						    		dataType:'json',
+						    		success:function(data){
+						    			var jslength=1;
+						    			var currLine=1;
+						    			var allLine=1;
+						    			for(var js2 in data){jslength++;}
+						    			if(jslength==0){alert("本周无课程数据");}else{}
+
+						    			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td><b>选择学生</b></td><td colspan=3><a class='btn btn-common' href='javascript:void(0)' onclick='putSchoolClassesUser()'>提交</a></td></tr>";//新建html字符
+						    			$.each(data,function(key,values){  
+						    			   if(currLine%4==0){
+						    		           tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td><tr>";
+						    			   }else  if(currLine%4==1){
+						    			       tableStr = tableStr + "<tr><td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+						    			   }else  if(currLine%4==2){
+						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+						    			   }else if(currLine%4==3){
+						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+						    			   }
+						    			   //currLine=currLine%4;
+						    			   jslength=jslength+1;
+						    			   currLine = currLine +1;
+						    			   allLine =allLine+1;
+						    			 }); 
+						    			 if(currLine%4==0){
+						    			   tableStr = tableStr + "</table>";
+						    			 }else if(currLine%4==1){
+						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td><td&nbsp;></td></tr></table>";
+						    			 }else if(currLine%4==2){
+						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td></tr></table>";
+						    			 }else if(currLine%4==3){
+						    			   tableStr = tableStr + "<td>&nbsp;</td></tr></table>";
+						    			 }
+						    			
+						    			 document.getElementById('schoolClassesUser').innerHTML=tableStr; 	
+						    		},
+						    		error:function(){
+						    			//alert("加载课表失败!");
+						    			}
+						    	});
+						    }
+						  //保存实训室预约
+						    function saveLabRoomReservation(){
+						    	//console.log($("input[name='reservationtime']") .val());
+						    	var dean = "${dean}";
+						    	var dean1 = $('#dean option:selected').val();
+						    	/* if(flag == 1 ){
+						    		 alert("正在保存预约，请勿重复提交！");
+						    		 return false;
+						    	 } */
+						    	//更改标志位
+						    	flag = 1;
+						    	 if($("input[name='reservationtime']") .val() == ""){
+						    		 alert("请选择日期");
+						    		 flag = 0;
+						    		 return false;
+						    	 }
+						    	 if($("#starttime").val()){
+						    	 }else{
+						    		 alert("请选择开始时间");
+						    		 flag = 0;
+						    		 return false;
+						    	 }
+						    	 if($("#endtime").val()){
+						    	 }else{
+						    		 alert("请选择结束时间");
+						    		 flag = 0;
+						    		 return false;
+						    	 }
+						    	 var obj = document.getElementById("usingObj").value;
+						    	 if(obj == 1){
+						    	 	if($("#students").val() == ""){
+						    		 	alert("学生不可为空");
+						    		 	flag = 0;
+						    		 	return false;
+						    	 	}
+						    	 }
+						    	 if($("#starttime").val() > $("#endtime").val()){
+						    		 alert("开始时间不可大于结束时间");
+						    		 flag = 0;
+						    		 return false;
+						    	 }
+						    	 /*if(dean == "1"){-----------------系主任这一级的刷选逻辑修改了，不需要自己选
+						    		 if($('#dean option:selected').val()){
+						    		 }else{
+						    			 alert("请选择审核系主任");
+						    			 flag = 0;
+						    			 return false;
+						    		 }
+						    	 }else{
+						    		 dean1 = -1;
+						    	 }*/
+						    	 
+						    	 var myData = {
+						    		 'reservationTime':$("input[name='reservationtime']") .val(),
+						    		 'startTime':$("#starttime").val(),
+						    		 'endTime':$("#endtime").val(),
+						    		 'reason':$("#reason").val(),
+						    		 'students':$("#students").val(),
+						    		 'userRole':$("#usingObj").val(),
+						    		 //'dean':dean1
+						    	 }
+						    	 var labRoomId = document.getElementById("labRoom").value;
+						    	 $.ajax({
+						    		type: "POST",
+						    		url: "${pageContext.request.contextPath}/LabRoomReservation/saveLabRoomReservationTeacher?labRoomId="+labRoomId,
+						    		data: myData,
+						    		dataType:'text',
+						    		success:function(data){
+						    			console.log(data);
+						    			if(data=="over"){
+						    				alert("预约失败，您选的时间段工位数不够！");
+						    			}else if(data=="success1"){
+						    				alert("预约成功，等待相关人员审核");
+						    				flag = 0;
+						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+						                    parent.layer.close(index);//关闭弹窗
+						    			}else if(data=="success2"){
+						    				alert("预约成功，二级实训室无需审核");
+						    				flag = 0;
+						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+						                    parent.layer.close(index);//关闭弹窗
+						    			}else{
+						    				layer.msg('预约失败！'+data+'不是合法学号', {icon: 5});
+						    			}
+						    			flag = 0;
+						    		},
+						    		error:function(){
+						      			alert("预约失败！后台出了点问题！");
+						      			flag = 0;
+						      		}
+						     	})
+						    }
+						    
+						   
+						</script>
+	</div></div>

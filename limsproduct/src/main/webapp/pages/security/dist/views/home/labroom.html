@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>实验室平台</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+		<!--地图引用开始-->
+		<link href="../../layuiadmin/static/plugins/datademo/css/style.css" rel="stylesheet" type="text/css" media="all" />
+		<script src="../../layuiadmin/static/plugins/datademo/js/echarts.min.js" charset="utf-8"></script>
+		<!--地图引用结束-->
+		<!--统一样式引用-->
+		<link rel="stylesheet" href="../../layuiadmin/static/css/expand.css" media="all">
+	</head>
+
+	<body>
+		<div class="bnt">
+			<div class="topbnt_left fl">
+				<ul>
+				</ul>
+			</div>
+			<h1 class="tith1 fl">XX学院平台</h1>
+			<div class=" fr topbnt_right">
+				<ul>
+					<li>
+						<a href="#">应急</a>
+					</li>
+					<li>
+						<a href="#">制度</a>
+					</li>
+					<li>
+						<a href="#">检查</a>
+					</li>
+					<li>
+						<a href="#">风险</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!-- bnt end -->
+		<div class="left1 pleft1">
+			<div class="lefttime">
+				<h2 class="tith2">统计时间</h2>
+				<div class="lefttime_text">
+					<ul>
+						<li class="bg active">今日</li>
+						<li></li>
+						<li class="bg">本周</li>
+						<li></li>
+						<li class="bg">本月</li>
+						<li></li>
+						<li class="bg">本季</li>
+						<li></li>
+						<li class="bg">本年</li>
+					</ul>
+				</div>
+			</div>
+			<div class="plefttoday">
+				<h2 class="tith2">今日活动统计</h2>
+				<div class="lefttoday_tit" style=" height:8%">
+					<p class="fl">地区：</p>
+					<p class="fr">2018-06-14</p>
+				</div>
+				<div class="lefttoday_number">
+					<div class="widget-inline-box text-center fl">
+						<p>活动总数</p>
+						<h3 class="ceeb1fd">54</h3>
+						<h4 class="text-muted">环比<img src="../../layuiadmin/static/plugins/datademo/img/iconup.png" height="16" />2%</h4>
+					</div>
+					<div class="widget-inline-box text-center fl">
+						<p>日常检查</p>
+						<h3 class="c24c9ff">54</h3>
+						<h4 class="text-muted">环比<img src="../../layuiadmin/static/plugins/datademo/img/icondown.png" height="16" />3%</h4>
+					</div>
+					<div class="widget-inline-box text-center fl">
+						<p>活动人次</p>
+						<h3 class="cffff00">4</h3>
+						<h4 class="text-muted">环比<img src="../../layuiadmin/static/plugins/datademo/img/icondown.png" height="16" />3%</h4>
+					</div>
+					<div class="widget-inline-box text-center fl">
+						<p>其他活动</p>
+						<h3 class="c11e2dd">4</h3>
+						<h4 class="text-muted">环比<img src="../../layuiadmin/static/plugins/datademo/img/icondown.png" height="16" />3%</h4>
+					</div>
+				</div>
+				<!-- lefttoday_number end -->
+				<!--  lefttoday_bar end-->
+			</div>
+			<div class="lpeftmidbot">
+				<h2 class="tith2">三废处理</h2>
+				<div id="lpeftbot" class="lpeftmidbotcont"></div>
+			</div>
+			<div class="lpeftbot">
+				<h2 class="tith2">安全检查分析</h2>
+				<div id="lpeftmidbot" class="lpeftbotcont"></div>
+			</div>
+		</div>
+		<!--  left1 end -->
+		<div class="left2">
+			<div class="pleftbox2top">
+				<h2 class="tith2">危险源分布</h2>
+				<div id="pleftbox2top" class="pleftbox2topcont"></div>
+			</div>
+			<div class="pleftbox2midd">
+				<h2 class="tith2">实验室风险分析</h2>
+				<!-- <div id="pleftbox2midd" class="pleftbox2middcont"></div> -->
+				<div class="pvr fl  lpeftb2otcont1 hdtop" style=" height:82%;">
+					<ul>
+						<li class="hot1">1</li>
+						<li class="hot2">2</li>
+						<li class="hot3">3</li>
+						<!--<li class="hot4">4</li>
+						<li class="hot5">5</li>-->
+					</ul>
+					<div id="pleftbox2bott_cont" class="pleftbox2middcont" style=" height:100%;"></div>
+				</div>
+			</div>
+			<div class="lpeft2bot">
+				<h2 class="tith2 ">安全培训分析</h2>
+				<div id="prbottom_box1" class="lpeftb2otcont"></div>
+
+			</div>
+		</div>
+		</div>
+		<div class="mrbox prbox">
+			<div class="hdmrbox_top">
+				<div class="mrbox_top_midd">
+					<div class="hdmrboxtm-mbox">
+						<h2 class="tith2 pt1">地图分析</h2>
+						<div class="cover_box lab_box">
+							<div class="cover_box_limit">
+								<!--<img class="college_map" src="../../layuiadmin/static/images/college.png" />-->
+								<img class="college_map" src="../../layuiadmin/static/images/lab.png" />
+								<a class="link_pos lp1" lay-href="home/labinfo.html" lay-tips="实验室可视化" lay-text="实验室可视化">
+									<img src="../../layuiadmin/static/images/position_icon.png" />
+									<label>进入实验室1</label>
+								</a>
+								<a class="link_pos lp2" lay-href="home/abinfo.html" lay-tips="实验室可视化" lay-text="实验室可视化">
+									<img src="../../layuiadmin/static/images/position_icon.png" />
+									<label>进入实验室2</label>
+								</a>
+							</div>
+						</div>
+						<!--<div class="lefttoday_tit font14" style=" height:13%">
+							<p class="fl"><i class="ricontop redr">12</i>民事活动</p>
+							<p class="fr"><i class="ricontop bluer">12</i>佛事活动</p>
+						</div>
+						<div class="mrboxtm-map hdmrboxtm-map">
+							<ul>
+								<li class="bluer" style="top:28%;left:12%">15</li>
+								<li class="redr" style="top:31%;left:18%">13</li>
+							</ul>
+						</div>-->
+					</div>
+					<!--  map end-->
+					<!-- <div class="pmrboxbottom"><h2 class="tith2 pt1">涉稳警情</h2>
+                    <div id="pmrboxbottom" class="pmrboxbottomcont" ></div>
+                </div> -->
+					<div class="mrbox_bottom_bott">
+						<div class="rbottom_box1 hdwid">
+							<h2 class="tith2">安全事件分析</h2>
+							<div id="prbottom_box2" class="prbottom_box1cont"></div>
+						</div>
+						<div class="rbottom_box2 hdwid">
+							<h2 class="tith2">隐患整改分析</h2>
+							<div id="pleftbox2midd" class="prbottom_box1cont"></div>
+						</div>
+					</div>
+
+				</div>
+				<!-- mrbox_top_midd end -->
+				<div class="mrbox_top_right">
+					<div class="hdrightboxtop">
+						<h2 class="tith2">今日实验室使用状态</h2>
+						<div class="lefttoday_tit" style="height:4%">
+							<p class="fl">已调节</p>
+							<p class="fr">时间段：2018-06-10</p>
+						</div>
+						<div class="left2_table hdleft2_table">
+							<ul>
+								<li>
+									<p class="fl"><b>2017化学分析</b><br> 【实验室定量分析】&nbsp;第1、2节
+										<br> 教师：李梅
+										<br> 2017&nbsp;无机材料&nbsp; 54人
+									</p>
+									<p class="fr pt17">2018-06-22</p>
+								</li>
+								<li class="bg">
+									<p class="fl"><b>2003物理化学</b><br> 预约&nbsp;第1、2节
+										<br> 研究对象：张敬
+										<br>
+									</p>
+									<p class="fr pt17">2018-06-22</p>
+								</li>
+								<li>
+									<p class="fl"><b>2017化学分析</b><br> 【实验室定量分析】&nbsp;第1、2节
+										<br> 教师：李梅
+										<br> 2017&nbsp;无机材料&nbsp; 54人
+									</p>
+									<p class="fr pt17">2018-06-22</p>
+								</li>
+								<li class="bg">
+									<p class="fl"><b>2003物理化学</b><br> 预约&nbsp;第1、2节
+										<br> 研究对象：张敬
+										<br>
+									</p>
+									<p class="fr pt17">2018-06-22</p>
+								</li>
+								<li>
+									<p class="fl"><b>2017化学分析</b><br> 【实验室定量分析】&nbsp;第1、2节
+										<br> 教师：李梅
+										<br> 2017&nbsp;无机材料&nbsp; 54人
+									</p>
+									<p class="fr pt17">2018-06-22</p>
+								</li>
+								<li class="bg">
+									<p class="fl"><b>2003物理化学</b><br> 预约&nbsp;第1、2节
+										<br> 研究对象：张敬
+										<br>
+									</p>
+									<p class="fr pt17">2018-06-22</p>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<!-- <div class="mrbox_bottom">
+          <div class="rbottom_box1"><h2 class="tith2">高危人员分类分析</h2>
+          <div id="prbottom_box2" class="prbottom_box1cont"></div></div>
+          <div class="rbottom_box2"><h2 class="tith2">活动人口统计</h2>
+          <div id="pleftbox2midd" class="prbottom_box1cont" ></div></div>
+          <div class="rbottom_box3"><h2 class="tith2 pt2">流动人口年龄分析</h2>
+          <div id="prbottom_box3" class="prbottom_box1cont"></div></div>
+
+      </div> -->
+				</div>
+				<a class="return" lay-href="home/college.html" lay-tips="院级平台可视化" lay-text="院级平台可视化">返回院级可视化</a>
+				<a lay-href="home/labroom.html" lay-tips="实验中心可视化" lay-text="实验中心可视化" class="mainbtn_left">实验中心</a>
+				<a lay-href="simplevisual/coretab.html" lay-tips="实验中心可视化监管" class="mainbtn_right">数据可视化</a>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('lpeftmidbot'));
+					option = {
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 50,
+							right: 20,
+							top: 45,
+							bottom: 30
+						},
+						legend: {
+							top: 5,
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.7)'
+							},
+							data: ['', '', '']
+						},
+						// toolbox: {
+						//     feature: {
+						//         dataView: {show: true, readOnly: false},
+						//         magicType: {show: true, type: ['line', 'bar']},
+						//         restore: {show: true},
+						//         saveAsImage: {show: true}
+						//     }
+						// },
+						// legend: {
+						//   top:10,
+						//   left:10,
+						//   textStyle:{
+						//     fontSize: 10,
+						//     color:'rgba(255,255,255,.7)'
+						//   },
+						//     data:['男','女','总数']
+						// },
+						xAxis: [{
+							type: 'category',
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.2)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							},
+							axisLabel: {
+								color: "rgba(255,255,255,.7)"
+							},
+
+							data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+							axisPointer: {
+								type: 'shadow'
+							}
+						}],
+						yAxis: [{
+								type: 'value',
+								name: '',
+								min: 0,
+								max: 250,
+								interval: 50,
+								axisLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,.3)'
+									}
+								},
+								splitLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,.01)'
+									}
+								},
+
+								axisLabel: {
+									formatter: '{value}'
+								}
+							}
+
+						],
+						series: [{
+								name: '',
+								type: 'bar',
+								itemStyle: {
+									normal: {
+										color: '#00a0e9'
+										// color: new echarts.graphic.LinearGradient(
+										//     0, 0, 0, 1,
+										//     [
+										//         {offset: 0, color: '#b266ff'},
+										//         {offset: 1, color: '#121b87'}
+										//     ]
+										// )
+									}
+								},
+								data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+							},
+							{
+								name: '',
+								type: 'bar',
+								itemStyle: {
+									normal: {
+										color: '#fff799'
+										// color: new echarts.graphic.LinearGradient(
+										//     0, 0, 0, 1,
+										//     [
+										//         {offset: 0, color: '#00f0ff'},
+										//         {offset: 1, color: '#032a72'}
+										//     ]
+										// )
+									}
+								},
+								data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+							},
+							{
+								name: '',
+								type: 'bar',
+								itemStyle: {
+									normal: {
+										color: '#6fcc8c'
+										// color: new echarts.graphic.LinearGradient(
+										//     0, 0, 0, 1,
+										//     [
+										//         {offset: 0, color: '#fffb34'},
+										//         {offset: 1, color: '#032a72'}
+										//     ]
+										// )
+									}
+								},
+								data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+							}
+						]
+					};
+					myChart.setOption(option);
+				</script>
+
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('lpeftbot'));
+					option = {
+						color: ['#00b7ee', '#f8e19a', '#f19ec2', '#5ebbeb', '#d16ad8', '#f8e19a', '#00b7ee', '#81dabe', '#5fc5ce'],
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 20,
+							right: 20,
+							top: 0,
+							bottom: 20
+						},
+						legend: {
+							top: 10,
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.7)'
+							},
+							data: ['排放', '废液', '废渣']
+						},
+						series: [{
+							name: '访问来源',
+							type: 'pie',
+							radius: '55%',
+							center: ['50%', '55%'],
+							data: [{
+									value: 335,
+									name: '排放'
+								},
+								{
+									value: 310,
+									name: '废液'
+								},
+								{
+									value: 370,
+									name: '废渣'
+								}
+
+							],
+							itemStyle: {
+								emphasis: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('pleftbox2top'));
+					option = {
+						color: ['#d2d17c', '#00b7ee', '#5578cf', '#5ebbeb', '#d16ad8', '#f8e19a', '#00b7ee', '#81dabe', '#5fc5ce'],
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 20,
+							right: 20,
+							top: 0,
+							bottom: 20
+						},
+						legend: {
+							top: 10,
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.7)'
+							},
+							data: ['物品', '环境', '管理', '操作', '其他']
+						},
+						series: [{
+							name: '访问来源',
+							type: 'pie',
+							radius: '55%',
+							center: ['50%', '55%'],
+							data: [{
+									value: 335,
+									name: '物品'
+								},
+								{
+									value: 310,
+									name: '环境'
+								},
+								{
+									value: 234,
+									name: '管理'
+								},
+								{
+									value: 135,
+									name: '操作'
+								},
+								{
+									value: 158,
+									name: '其他'
+								}
+
+							],
+							itemStyle: {
+								emphasis: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('pleftbox2midd'));
+					option = {
+						color: ['#f8e19a', '#00b7ee', '#5578cf', '#5ebbeb', '#d16ad8', '#f8e19a', '#00b7ee', '#81dabe', '#5fc5ce'],
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 20,
+							right: 20,
+							top: 0,
+							bottom: 20
+						},
+						legend: {
+							top: 10,
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.7)'
+							},
+							data: ['发现', '已整改']
+						},
+						series: [{
+							name: '访问来源',
+							type: 'pie',
+							radius: '55%',
+							center: ['50%', '65%'],
+							data: [{
+									value: 335,
+									name: '发现'
+								},
+								{
+									value: 310,
+									name: '已整改'
+								}
+							],
+							itemStyle: {
+								emphasis: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('pmrboxbottom'));
+					option = {
+						color: ['#d2d17c', '#00b7ee', '#5578cf', '#5ebbeb', '#d16ad8', '#f8e19a', '#00b7ee', '#81dabe', '#5fc5ce'],
+						backgroundColor: 'rgba(1,202,217,.2)',
+						legend: {
+							top: 10,
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.7)'
+							},
+							data: ['涉恐人员', '涉稳人员', '涉毒人员', '在逃人员', '重点上访人员', '肇事肇祸精神病人', '刑事犯罪前科人员']
+						},
+						grid: {
+							left: 10,
+							right: 10,
+							top: 40,
+							bottom: 10,
+							containLabel: true
+						},
+
+						xAxis: [{
+							type: 'category',
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.3)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.01)'
+								}
+							},
+							data: ['康定市', '泸定县', '丹巴县', '九龙县', '新龙县', '巴塘县', '得荣县', '理塘县', '甘孜县', '道孚县', '德格县', '色达县']
+						}],
+						yAxis: [{
+								axisLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,.3)'
+									}
+								},
+								splitLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,.01)'
+									}
+								},
+
+								axisLabel: {
+									formatter: '{value} ml'
+								},
+								type: 'value'
+							}
+
+						],
+						series: [
+
+							{
+								name: '涉恐人员',
+								type: 'bar',
+								barWidth: 30,
+								stack: '搜索引擎',
+								data: [620, 732, 701, 734, 1090, 1130, 1120, 620, 732, 701, 734, 1090, ]
+							},
+							{
+								name: '涉稳人员',
+								type: 'bar',
+								stack: '搜索引擎',
+								data: [120, 132, 101, 134, 290, 230, 220, 101, 134, 290, 230, 220]
+							},
+							{
+								name: '涉毒人员',
+								type: 'bar',
+								stack: '搜索引擎',
+								data: [60, 72, 71, 74, 190, 130, 110, 71, 74, 190, 130, 110]
+							}, ,
+							{
+								name: '在逃人员',
+								type: 'bar',
+								stack: '搜索引擎',
+								data: [120, 132, 101, 134, 290, 230, 220, 101, 134, 290, 230, 220]
+							},
+							{
+								name: '重点上访人员',
+								type: 'bar',
+								stack: '搜索引擎',
+								data: [60, 72, 71, 74, 190, 130, 110, 71, 74, 190, 130, 110]
+							},
+							{
+								name: '肇事肇祸精神病人',
+								type: 'bar',
+								stack: '搜索引擎',
+								data: [60, 72, 71, 74, 190, 130, 110, 71, 74, 190, 130, 110]
+							},
+							{
+								name: '重大刑事犯罪前科人员',
+								type: 'bar',
+								stack: '搜索引擎',
+								data: [62, 82, 91, 84, 109, 110, 120, 91, 84, 109, 110, 120]
+							}
+						]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('pleftbox2bott_cont'));
+					option = {
+						color: ['#7ecef4'],
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 40,
+							right: 20,
+							top: 30,
+							bottom: 0,
+							containLabel: true
+						},
+
+						xAxis: {
+							type: 'value',
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,0)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,0)'
+								}
+							},
+							axisLabel: {
+								color: "rgba(255,255,255,0)"
+							},
+							boundaryGap: [0, 0.01]
+						},
+						yAxis: {
+							type: 'category',
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.5)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							},
+							axisLabel: {
+								color: "rgba(255,255,255,.5)"
+							},
+							data: ['2210', '2000', '2017', '2100', '2203']
+						},
+						series: [{
+							name: '2011年',
+							type: 'bar',
+							barWidth: 20,
+							itemStyle: {
+								normal: {
+									color: new echarts.graphic.LinearGradient(
+										1, 0, 0, 1, [{
+												offset: 0,
+												color: 'rgba(230,253,139,.7)'
+											},
+											{
+												offset: 1,
+												color: 'rgba(41,220,205,.7)'
+											}
+										]
+									)
+								}
+							},
+							data: [18203, 23489, 29034, 104970, 131744]
+						}]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('prbottom_box1'));
+					option = {
+						color: ['#d2d17c', '#7fd7b1', '#5578cf', '#5ebbeb', '#d16ad8', '#f8e19a', '#00b7ee', '#81dabe', '#5fc5ce'],
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 20,
+							right: 30,
+							top: 0,
+							bottom: 20
+						},
+						legend: {
+							top: 5,
+
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.6)'
+							},
+							data: ['通用', '化学', '应急']
+						},
+						grid: {
+							left: 20,
+							right: 30,
+							top: 40,
+							bottom: 10,
+							containLabel: true
+						},
+						toolbox: {
+							feature: {
+								saveAsImage: {}
+							}
+						},
+						xAxis: {
+							type: 'category',
+							boundaryGap: false,
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.2)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							},
+							axisLabel: {
+								color: "rgba(255,255,255,.7)"
+							},
+							data: ['通用', '', '化学', '', '应急']
+						},
+						yAxis: {
+							type: 'value',
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.2)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							},
+							axisLabel: {
+								color: "rgba(255,255,255,.7)"
+							},
+						},
+						series: [{
+								name: '男',
+								type: 'line',
+								stack: '总量',
+								areaStyle: {
+									normal: {}
+								},
+								data: [120, 132, 101, 134, 90]
+							},
+							{
+								name: '女',
+								type: 'line',
+								stack: '总量',
+								data: [220, 182, 191, 234, 290]
+							},
+							{
+								name: '总数',
+								type: 'line',
+								stack: '总量',
+								data: [150, 232, 201, 154, 190]
+							}
+						]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('prbottom_box2'));
+					option = {
+						backgroundColor: 'rgba(1,202,217,.2)',
+						color: ['#7ecef4', '#7fd7b1'],
+						grid: {
+							left: 30,
+							right: 20,
+							top: 20,
+							bottom: 40
+						},
+						xAxis: {
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.7)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							},
+							data: ['燃烧', '感染', '腐蚀', '爆炸', '触电', '中毒']
+						},
+						yAxis: {
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.2)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							}
+						},
+						series: [{
+							symbolSize: 20,
+							data: [
+								[0.0, 8.04],
+								[2.0, 6.95],
+								[3.0, 7.58],
+								[5.0, 8.81],
+								[0.4, 8.33],
+								[4.0, 1.96],
+								[0.3, 7.24],
+								[4.6, 4.26],
+								[2.0, 4.84],
+								[2.0, 4.82],
+								[5.0, 5.68]
+							],
+							type: 'scatter'
+						}]
+					};
+					myChart.setOption(option);
+				</script>
+
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('prbottom_box3'));
+					option = {
+						backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 60,
+							right: 20,
+							top: 40,
+							bottom: 40
+						},
+
+						toolbox: {
+							feature: {
+								dataView: {
+									show: true,
+									readOnly: false
+								},
+								magicType: {
+									show: true,
+									type: ['line', 'bar']
+								},
+								restore: {
+									show: true
+								},
+								saveAsImage: {
+									show: true
+								}
+							}
+						},
+						legend: {
+							top: 10,
+							textStyle: {
+								fontSize: 10,
+								color: 'rgba(255,255,255,.7)'
+							},
+							data: ['男', '女', '总数']
+						},
+						xAxis: [{
+							type: 'category',
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.2)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: 'rgba(255,255,255,.1)'
+								}
+							},
+							axisLabel: {
+								color: "rgba(255,255,255,.7)"
+							},
+
+							data: ['0-6', '6-18', '18-28', '28-55', '55以上'],
+							axisPointer: {
+								type: 'shadow'
+							}
+						}],
+						yAxis: [{
+								type: 'value',
+								name: '',
+								min: 0,
+								max: 250,
+								interval: 50,
+								axisLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,.3)'
+									}
+								},
+								splitLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,.01)'
+									}
+								},
+
+								axisLabel: {
+									formatter: '{value} ml'
+								}
+							},
+							{
+								type: 'value',
+								name: '',
+								max: 25,
+								interval: 5,
+								axisLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,0)'
+									}
+								},
+								splitLine: {
+									lineStyle: {
+										color: 'rgba(255,255,255,0)'
+									}
+								}
+							}
+						],
+						series: [
+
+							{
+								name: '男',
+								type: 'bar',
+								itemStyle: {
+									normal: {
+										color: new echarts.graphic.LinearGradient(
+											0, 0, 0, 1, [{
+													offset: 0,
+													color: '#b266ff'
+												},
+												{
+													offset: 1,
+													color: '#121b87'
+												}
+											]
+										)
+									}
+								},
+								data: [2.0, 4.9, 7.0, 23.2, 25.6]
+							},
+							{
+								name: '女',
+								type: 'bar',
+								itemStyle: {
+									normal: {
+										color: new echarts.graphic.LinearGradient(
+											0, 0, 0, 1, [{
+													offset: 0,
+													color: '#00f0ff'
+												},
+												{
+													offset: 1,
+													color: '#032a72'
+												}
+											]
+										)
+									}
+								},
+								data: [8.6, 5.9, 9.0, 26.4, 28.7]
+							},
+							{
+								name: '总数',
+								type: 'bar',
+								itemStyle: {
+									normal: {
+										color: new echarts.graphic.LinearGradient(
+											0, 0, 0, 1, [{
+													offset: 0,
+													color: '#fffb34'
+												},
+												{
+													offset: 1,
+													color: '#032a72'
+												}
+											]
+										)
+									}
+								},
+								yAxisIndex: 1,
+								data: [6.0, 5.2, 3.3, 4.5, 6.3]
+							}
+						]
+					};
+					myChart.setOption(option);
+				</script>
+				<script type="text/javascript">
+					var myChart = echarts.init(document.getElementById('pmrmidd'));
+					option = {
+						color: ['#f1ff00', '#00c1ff', '#61a0a8', '#d48265', '#91c7ae', '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+						// backgroundColor: 'rgba(1,202,217,.2)',
+						grid: {
+							left: 20,
+							right: 20,
+							top: 30,
+							bottom: 30
+						},
+						radar: {
+							name: {
+								textStyle: {
+									fontSize: 10,
+									color: 'rgba(255,255,255,.8)'
+								}
+							},
+							splitLine: {
+								lineStyle: {
+									color: [
+										'rgba(1,202,217,.01)', 'rgba(1,202,217,.01)'
+									].reverse()
+								}
+							},
+							splitArea: {
+								show: false
+							},
+							axisLine: {
+								lineStyle: {
+									color: 'rgba(1,202,217,.7)'
+								}
+							},
+							indicator: [{
+									name: '红色警情',
+									max: 6500
+								},
+								{
+									name: '橙色警情',
+									max: 16000
+								},
+								{
+									name: '黄色警情',
+									max: 30000
+								},
+								{
+									name: '绿色警情',
+									max: 44000
+								}
+							]
+						},
+						series: [{
+							name: '',
+							type: 'radar',
+							radius: [5, 100],
+							center: ['50%', '50%'],
+							data: [{
+									value: [4300, 10000, 28000, 19000],
+									name: ''
+								},
+								{
+									value: [5000, 14000, 22000, 41000],
+									name: ''
+								}
+							]
+						}]
+					};
+					myChart.setOption(option);
+				</script>
+				<script src="../../layuiadmin/layui/layui.js?t=1"></script>
+				<script>
+					layui.config({
+						base: '../../layuiadmin/' //静态资源所在路径
+					}).extend({
+						index: 'lib/index' //主入口模块
+					}).use(['index', 'labroom']);
+				</script>
+	</body>
+
+</html>

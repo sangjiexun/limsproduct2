@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>校级平台</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+		<!--统一样式引用-->
+		<link rel="stylesheet" href="../../layuiadmin/static/css/expand.css" media="all">
+	</head>
+
+	<body>
+		<img class="security_map" src="../../layuiadmin/static/images/tabbg.jpg" />
+		<div class="visual_tab">
+			<table class="layui-hide add_progress" id="schooltab" lay-filter="schooltabhead"></table>
+			<script type="text/html" id="levelOne">
+				<a class="layui-btn layui-btn-xs level_four">严重预警</a>
+			</script>
+			<script type="text/html" id="levelTwo">
+				<a class="layui-btn layui-btn-xs level_one">轻度预警</a>
+			</script>
+			<script type="text/html" id="levelTree">
+				<a class="layui-btn layui-btn-xs level_one">轻度</a>
+				<a class="layui-btn layui-btn-xs level_excellent">正常</a>
+			</script>
+			<script type="text/html" id="levelFour">
+				<a class="layui-btn layui-btn-xs level_excellent">正常</a>
+				<a class="layui-btn layui-btn-xs level_excellent">正常</a>
+			</script>
+		</div>
+		<div class="cover_box simple_visual">
+			<div class="cover_box_limit">
+				<img class="school_map" src="../../layuiadmin/static/images/school.png" />
+				<a class="link_pos sp1" lay-href="simplevisual/collegetab.html" lay-tips="院级可视化监管" lay-text="院级可视化监管">
+					<img src="../../layuiadmin/static/images/position_icon.png" />
+					<label>进入材化学院</label>
+				</a>
+				<a class="link_pos sp2" lay-href="simplevisual/collegetab.html" lay-tips="院级可视化监管" lay-text="院级可视化监管">
+					<img src="../../layuiadmin/static/images/position_icon.png" />
+					<label>进入纺织学院</label>
+				</a>
+				<a class="link_pos sp3" lay-href="simplevisual/collegetab.html" lay-tips="院级可视化监管" lay-text="院级可视化监管">
+					<img src="../../layuiadmin/static/images/position_icon.png" />
+					<label>进入工程训练中心</label>
+				</a>
+			</div>
+		</div>
+		<a lay-href="home/school.html" lay-tips="校级平台可视化" lay-text="校级平台可视化" class="mainbtn_left">校级平台</a>
+		<a lay-href="simplevisual/schooltab.html" lay-tips="校级平台可视化监管" class="mainbtn_right">数据可视化</a>
+
+		<!--演示地图结束-->
+		<script src="../../layuiadmin/layui/layui.js?t=1"></script>
+		<script>
+			layui.config({
+				base: '../../layuiadmin/' //静态资源所在路径
+			}).extend({
+				index: 'lib/index' //主入口模块
+			}).use(['index', 'simplevisual']);
+		</script>
+	</body>
+
+</html>

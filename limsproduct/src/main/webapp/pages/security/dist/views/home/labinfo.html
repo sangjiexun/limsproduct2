@@ -1,0 +1,1743 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0076)http://116.62.188.238/limsproduct/visualization/show/floor?buildNumber=56998 -->
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<style class="vjs-styles-defaults">
+			.video-js {
+				width: 300px;
+				height: 150px;
+			}
+			
+			.vjs-fluid {
+				padding-top: 56.25%
+			}
+		</style>
+		<style class="vjs-styles-dimensions"></style>
+		<title>庚商实验室</title>
+		<meta name="decorator" content="none">
+		<meta name="Generator" content="gvsun">
+		<meta name="Author" content="lyyyyyy">
+		<meta name="Keywords" content="">
+		<meta name="Description" content="">
+
+		<meta content="IE=Edge,chrome=1" http-equiv="X-UA-Compatible">
+
+		<meta name="renderer" content="webkit">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link href="./labinfo_files/style.css" rel="stylesheet" type="text/css">
+		<link href="./labinfo_files/table.css" rel="stylesheet" type="text/css">
+		<link href="./labinfo_files/layout_header.css" rel="stylesheet" type="text/css">
+		<link href="./labinfo_files/video-js.css" rel="stylesheet">
+		<script src="./labinfo_files/video.js.下载"></script>
+		<script type="text/javascript" src="./labinfo_files/jquery-1.11.0.min.js.下载"></script>
+		<script type="text/javascript" src="./labinfo_files/jquery.nav.js.下载"></script>
+		<script type="text/javascript" src="./labinfo_files/jquery.rotate.min.js.下载"></script>
+		<script type="text/javascript">
+			function showlabroom(id) {
+				$.ajax({
+					type: 'POST',
+					url: '/limsproduct/labRoom/openVideoForV',
+					data: {
+						'roomId': id
+					},
+					success: function(data) {
+						window.location.href = data;
+					}
+				});
+			}
+
+			function openVideo2(id) {
+				var url = "/limsproduct/labRoom/appointment/openVideo2?id=" + id;
+				// window.location.href=url;  // 本窗口
+				window.open(url); // 新窗口
+			}
+		</script>
+
+		<script type="text/javascript">
+			function changeDeviceByName() {
+				var name = $("#DeviceName").val();
+				var id = $("#DeviceRoomId").val();
+				var lend = 0;
+				var appoint = 0;
+				if($("#ifLend").is(':checked')) {
+					alert("lend")
+					lend = 1
+				}
+				if($("#ifAppointment").is(':checked')) {
+					alert("appoint")
+					appoint = 1;
+				}
+				$.ajax({
+					type: 'POST',
+					url: '/limsproduct/visualization/show/changeRoomDeviceSearched',
+					data: {
+						'id': id,
+						'lend': lend,
+						'appoint': appoint,
+						'name': name
+					},
+					success: function(data) {
+						$("#deviceTbody tr:gt(0)").empty();
+						$("#deviceTbody tr").not(':eq(0)').empty()
+						$("#deviceTbody").append(data);
+					}
+				});
+			}
+
+			$(function() {
+				//一进来判断显示视频
+				changeRoomMovie($("#labRoomListForSelect").val());
+				//加载后调整视频尺寸的方法
+				changSize();
+				//浏览器窗口改变时触发
+				$(window).resize(function() {
+					changSize();
+				})
+
+				function changSize() {
+					$("#my-video").width($(window).width());
+					$("#my-video").height($(window).height());
+
+					var Height = $(window).height();
+					var Width = $(window).width()
+				};
+
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomTimeTableMap",
+					data: {
+						'id': $("#labRoomListForSelect").val()
+					},
+					dataType: 'json',
+					success: function(data) {
+						$.each(data, function(key, values) {
+							document.getElementById(key).innerHTML = values;
+							$("#" + key).val("" + values);
+						});
+					},
+					error: function() {
+						console.log("暂无该房间当前课表！");
+					}
+				});
+
+			})
+			setInterval("TT()", 10);
+
+			function TT() {
+				var Height = $(window).height();
+				var Width = $(window).width()
+				/* $(".room_panorama").height(Height); */
+				var s = $(".room_list li").length;
+				var a = 900 / (s - 1);
+				for(var i = 0; i < s; i++) {
+					var d = a * i
+					$(".room_list li").eq(i).css("left", d);
+
+				}
+			}
+		</script>
+		<script type="text/javascript">
+			//楼层
+			function changeFloor(buildNumber, floor, floorName) {
+				//获取楼层li
+				var floorLis = document.getElementById('floorUl').getElementsByTagName('li');
+				//切换楼层的房间列表
+				$.ajax({
+					type: 'POST',
+					url: '/limsproduct/visualization/show/changeFloor',
+					data: {
+						'buildNumber': buildNumber,
+						'floor': floor
+					},
+					success: function(data) {
+						$("#room_list").html(data.substring(0, data.indexOf("%")));
+						//右边点击自动更改左边楼层
+						$(".floor_nav_floor").val(floor);
+						//左边点击自动更改右边楼层
+						var tmp = floorName + "楼";
+						for(var i = 1; i <= floorLis.length; i++) {
+							// $("#floor" + i).attr("class", "");
+							$("a[name=floorChange]").attr("class", "");
+						}
+						$("#floor" + floor).attr("class", "selected_floor");
+
+						$("#showfloor").html("");
+						$("#showfloor").append(tmp);
+						$("#showfloor1").hide();
+						$("#showfloor").show();
+
+						changeRoom(data.substring(data.indexOf("%") + 1));
+					}
+				});
+
+				$.ajax({
+					type: 'GET',
+					url: '/limsproduct/visualization/show/changeSystemFloorPic',
+					data: {
+						'buildNumber': buildNumber,
+						'floor': floor
+					},
+					dataType: "text",
+					success: function(data) {
+						$(".floor_img").attr("src", "/limsproduct/" + data);
+					},
+					error: function(data) {
+						console.log("请求失败2");
+					}
+				});
+			}
+
+			//切换实训室
+			//切换实训室展示信息
+			function changeRoom(id) {
+				if(document.getElementById("positionAppoint") != null) {
+					document.getElementById("positionAppoint").setAttribute("href", "/limsproduct/LabRoomReservation/labRoomStationList1?currpage=1&selectedRoomId=" + id);
+				}
+				document.getElementById("labAppoint").setAttribute("href", "/limsproduct/LabRoomReservation/labRoomList1?currpage=1&selectedRoomId=" + id);
+				document.getElementById("deviceAppoint").setAttribute("href", "/limsproduct/device/listLabRoomDevice?page=1&isReservation=1&isOrder=1&selectedRoomId=" + id);
+				if(document.getElementById("deviceLend") != null) {
+					document.getElementById("deviceLend").setAttribute("href", "/limsproduct/device/allLendableDeviceList?currpage=1&selectedRoomId=" + id);
+				}
+				$.ajax({
+					type: 'POST',
+					url: '/limsproduct/visualization/show/changeRoomNew',
+					data: {
+						'id': id
+					},
+					success: function(data) {
+						$("#room_banner").html(data[0]);
+						$("#deviceIcon").empty();
+						$.each(data[1], function(index, value) {
+							$("#deviceIcon").append($("<div id=" + value.id + " class=\"equipment_icon\"" +
+								"style=\"left:" + 100 * value.xCoordinate + "%;top:" + 100 * value.yCoordinate + "%;\" title=\"查看详情\">" +
+								"<a href='javascript:void(0)' id=\"lookdevice\" onmouseup=\"lookDevice(" + value.id + ")\">" +
+								"<img src=\"/limsproduct/images/visualization/floor/icon.png\"></a>" +
+								"</div>"));
+						});
+					}
+				});
+
+				document.getElementById('iframe').contentWindow.location.reload(true);
+
+				//切换实训室的视频
+				changeRoomMovie(id);
+
+				//切换实训室全景图
+				$.ajax({
+					type: 'POST',
+					url: '/limsproduct/visualization/show/changeRoomImage',
+					data: {
+						'id': id,
+						'type': 3
+					},
+					success: function(data) {
+						//var str = "<img src='/limsproduct/"+data+"' >";
+						//document.getElementById('panorama').innerHTML = str;
+						if(data != null && data != "") {
+							$(".demo_photo").attr("src", "/limsproduct/" + data);
+							$(".demo_photo").show();
+							$("#btnchangeimg").val("切换实时画面")
+						} else {
+							console.log("这个实训室没有全景图");
+						}
+					},
+					error: function(data) {
+						console.log("请求失败2");
+					}
+				});
+				//切换实训室详细信息map
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomMap",
+					data: {
+						'id': id
+					},
+					dataType: 'json',
+					success: function(data) {
+						$.each(data, function(key, values) {
+							if(key == "isUsed" || key == "appointment") {
+								if(values == 0) {
+									$("#" + key + "2").attr("checked", "checked");
+									$("#label" + key + "2").css("background-image", "url('/limsproduct/images/visualization/floor/radio.png')");
+									$("#" + key + "1").removeAttr("checked");
+									$("#label" + key + "1").css("background-image", "url('/limsproduct/images/visualization/floor/unradio.png')");
+								} else {
+									$("#" + key + "1").attr("checked", "checked");
+									$("#label" + key + "1").css("background-image", "url('/limsproduct/images/visualization/floor/radio.png')");
+									$("#" + key + "2").removeAttr("checked");
+									$("#label" + key + "2").css("background-image", "url('/limsproduct/images/visualization/floor/unradio.png')");
+								}
+
+							} else {
+								document.getElementById(key).innerHTML = values;
+								$("#" + key).val("" + values);
+							}
+						});
+					},
+					error: function() {
+						console.log("请求失败-暂无该房间信息！");
+					}
+				});
+
+				$("#DeviceRoomId").val(id);
+
+				chageroomAjaxlalala(id);
+
+				//切换实训室 当前课表详细信息map
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomTimeTableMap",
+					data: {
+						'id': id
+					},
+					dataType: 'json',
+					success: function(data) {
+
+						$.each(data, function(key, values) {
+							document.getElementById(key).innerHTML = values;
+							$("#" + key).val("" + values);
+
+						});
+					},
+					error: function() {
+						console.log("请求失败-暂无该房间当前课表！");
+					}
+				});
+
+				//切换实训室 当前视频硬件列表
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomAgentList",
+					data: {
+						'id': id
+					},
+					dataType: 'text',
+					success: function(data) {
+						$("#selectAgent").html(data);
+					},
+					error: function() {
+						console.log("暂无该房间视频信息！");
+					}
+				});
+
+				//切换实训室 软件详细信息map
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomSoftwareMap",
+					data: {
+						'id': id
+					},
+					dataType: 'text',
+					success: function(data) {
+						/* alert(data+"333"); */
+						$("#softwareDetail tr:gt(0)").empty();
+						$("#softwareDetail tr").not(':eq(0)').empty()
+						$("#softwareDetail").append(data);
+					},
+					error: function() {
+						console.log("暂无该房间软件信息！");
+					}
+				});
+
+			}
+
+			function chageroomAjaxlalala(id) {
+				//切换实训室 设备 详细信息map
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomDeviceMap",
+					data: {
+						'id': id
+					},
+					dataType: 'text',
+					success: function(data) {
+						/* alert(data+"333"); */
+						/* $("#deviceTbody").html(data); */
+						$("#deviceTbody tr:gt(0)").empty();
+
+						$("#deviceTbody tr").not(':eq(0)').empty()
+						$("#deviceTbody").append(data);
+					},
+					error: function() {
+						console.log("暂无该房间设备信息！");
+					}
+				});
+
+			}
+
+			function changeRoomMovie(id) {
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomMovie",
+					data: {
+						'id': id
+					},
+					dataType: 'text', //json or text
+					success: function(data) {
+						console.log("【" + data + "】视频data");
+						//有视频就设置只有视频显示，其他图片隐藏。
+						if(data == "") {
+							//没有视频
+							$("#my-video").hide();
+						} else {
+							//videojs里的改src的方法
+							videojs("my-video", {}).ready(function() {
+								var myPlayer = this;
+								myPlayer.src(data);
+								myPlayer.play();
+							});
+							$("#my-video").show();
+							$(".demo_photo").hide();
+						}
+						$("#btnchangeimg").val("切换全景图片");
+					},
+					error: function(data) {
+						console.log(data);
+					}
+				});
+			}
+			$(function() {
+				var labroomId = "763";
+				chageroomAjaxlalala(labroomId);
+			})
+
+			function changeRoomMovie2(id, agentId) {
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/changeRoomMovie2",
+					data: {
+						'id': id,
+						'agentId': agentId
+					},
+					dataType: 'text', //json or text
+					success: function(data) {
+						console.log("【" + data + "】视频data");
+						//有视频就设置只有视频显示，其他图片隐藏。
+						if(data == "") {
+							//没有视频
+							$("#my-video").hide();
+						} else {
+							//videojs里的改src的方法
+							videojs("my-video", {}).ready(function() {
+								var myPlayer = this;
+								myPlayer.src(data);
+								myPlayer.play();
+							});
+							$("#my-video").show();
+							$(".demo_photo").hide();
+						}
+						$("#btnchangeimg").val("切换全景图片");
+					},
+					error: function(data) {
+						console.log(data);
+					}
+				});
+			}
+
+			function roomDetails() {
+				$('html,body').animate({
+					scrollTop: $('.floor_info').offset().top
+				}, 200);
+
+			}
+
+			//切换楼宇
+			function changeBuilding(buildNumber) {
+				window.location = '/limsproduct/visualization/show/floor?buildNumber=' + buildNumber;
+			}
+
+			function changeVideoPic(obj) {
+				if(obj.value == "切换实时画面") {
+					$("#my-video").show();
+					$(".demo_photo").hide();
+					obj.value = "切换全景图片";
+				} else {
+					$("#my-video").hide();
+					$(".demo_photo").show();
+					obj.value = "切换实时画面";
+				}
+			}
+
+			//查看设备
+			function lookDevice(id) {
+				$.ajax({
+					type: "POST",
+					url: "/limsproduct/visualization/show/lookDeviceNew",
+					data: {
+						'id': id
+					},
+					dataType: 'json',
+					success: function(data) {
+						$.each(data, function(key, values) {
+							//alert(key+"="+values);
+							if(key == "qRCodeUrl") {
+								$("#qRCodeUrl").attr("src", $("#contextPath").val() + values);
+							} else if(key == "dimensionalCode") {
+								$("#dimensionalCode").attr("src", $("#contextPath").val() + "/" + values);
+
+							} else if(key == "labRoomDeviceId") {
+								$("#dimensionalCode").attr("onclick", "turnDeviceQR(" + values + ")");
+							} else if(key == "videoValue") {
+								$("#qRCodeUrl").attr("onclick", "turnVideoQR(" + values + ")");
+							} else {
+								if(values != null) {
+									//document.getEleme ntById(key).innerHTML=values;
+									$("#" + key).text("" + values);
+									$("#" + key).val("" + values);
+								}
+							}
+						});
+					},
+					error: function() {
+						//alert("加载课表失败!");
+						alert(id);
+					}
+				});
+				$(".equipment_inforamtion").show()
+			}
+			//关闭设备窗口
+			function cancel() {
+				$(".equipment_inforamtion").hide()
+			}
+
+			function turnDeviceQR(id) {
+				window.open("/limsproduct/cmsshow/showDevice?id=" + id);
+			}
+
+			function turnVideoQR(folderId, type) {
+				window.location.href = "/limsproduct/tcoursesite/videoLook?folderId=" + folderId + "&moduleType=" + type;
+			}
+		</script>
+
+		<style type="text/css">
+			.lpc_limit {
+				position: relative;
+				width: 100%;
+				height: 0;
+				padding: 27% 0 0 0;
+			}
+			
+			.layout_panorama_container {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: #2c3136;
+				overflow: hidden;
+				box-sizing: border-box;
+				padding: 10px;
+				overflow: visible;
+			}
+			
+			.banner_left {
+				float: left;
+				width: 15%;
+				height: 100%;
+			}
+			
+			.banner_left>a {
+				display: block;
+				background: #3e454c;
+				height: 20%;
+				width: 100%;
+				text-align: center;
+			}
+			
+			.banner_left>a img {
+				height: 65%;
+				position: relative;
+				top: 17%;
+				left: 4%;
+			}
+			
+			.banner_left ul {
+				width: 100%;
+				height: 60%;
+				overflow: hidden;
+			}
+			
+			.banner_left li {
+				float: left;
+				width: 50%;
+				height: 50%;
+				box-sizing: border-box;
+				padding: 11px 5px 0;
+			}
+			
+			.banner_left li a {
+				display: block;
+				width: 100%;
+				height: 100%;
+				box-sizing: border-box;
+				background: rgba(255, 255, 255, 0.2);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				position: relative;
+				text-align: center;
+				transition: all 0.3s;
+			}
+			
+			.banner_left li a:hover {
+				background: rgba(255, 255, 255, 0.3);
+				border: 1px solid #5d77d6;
+			}
+			
+			.banner_left li a:hover div {
+				color: #fff;
+			}
+			
+			.banner_left li a img {
+				position: absolute;
+				width: auto;
+				height: 81%;
+				box-sizing: border-box;
+				padding: 19% 0 18px;
+				left: 0;
+				right: 0;
+				top: 0;
+				margin: auto;
+			}
+			
+			.banner_left li a div {
+				position: absolute;
+				bottom: 13%;
+				width: 100%;
+				font-size: 12px;
+				color: rgba(255, 255, 255, 0.6);
+				line-height: 16px;
+				text-decoretion: none;
+				text-align: center;
+			}
+			
+			.banner_left ul span {
+				color: white;
+				margin-left: 4px;
+			}
+			
+			.lpc_btm {
+				box-sizing: border-box;
+				width: 100%;
+				height: 20%;
+				position: relative;
+			}
+			
+			.lpc_btm div {
+				font-size: 13px;
+				text-align: center;
+				margin: 0 0 9px 0;
+				padding: 10px 2px;
+			}
+			
+			.lpc_btm div span {
+				background: #2c3136;
+				color: rgba(255, 255, 255, 0.8);
+				padding: 0 10px;
+			}
+			
+			.lpc_btm div hr {
+				border: none;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+				margin: -9px 0 0;
+			}
+			
+			.lpc_btm lable {
+				position: absolute;
+				bottom: 0;
+				box-sizing: border-box;
+				width: 100%;
+				height: 100%;
+				padding: 38px 0 0;
+			}
+			
+			.lpc_btm select {
+				box-sizing: border-box;
+				font-size: 12px;
+				letter-spacing: 0.5px;
+				width: 100%!important;
+				height: 100%;
+				padding: 0 5px;
+				background: rgba(255, 255, 255, 0.75);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				color: #353535;
+			}
+			
+			.div1,
+			.div2 {
+				width: 100%;
+				margin: 0 0 60px;
+				overflow: hidden;
+			}
+			
+			#div2 {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 9;
+				box-sizing: border-box;
+				padding: 50px;
+			}
+			
+			#div2 iframe {
+				width: 100%;
+				height: 100%;
+				background: #fff;
+				border: none;
+			}
+			
+			.close_btn {
+				position: absolute;
+				right: 0;
+				top: 0;
+				font-size: 35px;
+				width: 50px;
+				text-align: center;
+				line-height: 50px;
+				font-weight: bold;
+				color: #eee;
+				text-shadow: 0 0 1px #000;
+				z-index: 10;
+				transition: all 0.3s;
+			}
+			
+			.close_btn:hover {
+				color: #ff0000;
+				cursor: pointer;
+			}
+			
+			.intro1 {
+				width: 58%;
+				float: left;
+			}
+			
+			.intro2 {
+				box-sizing: border-box;
+				width: 42%;
+				display: inline-block;
+				float: right;
+				padding-left: 30px;
+			}
+			
+			.layout_link_container {
+				clear: both;
+			}
+			
+			#in1,
+			#in2 {
+				width: 17px;
+				height: 17px;
+				margin: 0 5px 0 0;
+				position: relative;
+				top: 1px;
+			}
+			
+			#in1:hover,
+			#in2:hover {
+				color: #484848 !important;
+				cursor: pointer;
+			}
+			
+			#btnchangeimg {
+				position: absolute;
+				right: 0;
+				top: 0;
+				background: #2c3136;
+				border-radius: 0;
+				font-size: 14px;
+				color: #fff;
+				padding: 5px 10px;
+				height: auto;
+				letter-spacing: 1px;
+				z-index: 9;
+				transition: all 0.3s;
+			}
+			
+			#btnchangeimg:hover {
+				background: #fff;
+				color: #2c3136;
+			}
+			
+			.room_panorama {
+				float: left;
+				width: 70%;
+				height: 100%;
+				box-sizing: border-box;
+				padding: 0 10px;
+			}
+			
+			.rp_limit {
+				width: 100%;
+				height: 100%;
+				background: #6b6b6b;
+				position: relative;
+			}
+			
+			.room_panorama img {
+				height: 100%;
+				width: 100%;
+				margin-left: 0;
+			}
+			
+			img {
+				border: none;
+			}
+			
+			.room_list_bg {
+				filter: progid:DXImageTransform.Microsoft.Alpha(opacity=20);
+				*display: none;
+				_display: none;
+			}
+			
+			.banner_room {
+				*background: #aaa;
+				/*IE7 背景变灰色*/
+				_background: #aaa;
+				/*IE6 背景变灰色*/
+			}
+			
+			.room_list li {
+				*top: 4px;
+				_top: 4px;
+				*position: static;
+				_position: static;
+				*float: left;
+				_float: left;
+			}
+			
+			#replaceMovie {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				text-align: center;
+			}
+			
+			#my-video {
+				width: auto !important;
+				max-width: 100%;
+				height: 100% !important;
+				margin: auto;
+				background: #949494;
+				z-index: -100;
+				/* 设置默认，ajax设置显示 */
+				display: none;
+			}
+			
+			#my-video>div {
+				width: 100%;
+				height: 100%;
+			}
+			
+			#my-video video {
+				width: 100%;
+				height: 100%;
+			}
+			
+			.rec {
+				position: absolute;
+				left: 2%;
+				top: 3%;
+				font-size: 17px;
+				font-weight: bold;
+				color: #ff0000;
+				text-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+				letter-spacing: 1px;
+				z-index: 2;
+			}
+			
+			.rec font {
+				font-size: 17px;
+				font-weight: bold;
+				color: #ff0000;
+				text-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+				margin: 0 3px 0 0;
+			}
+			
+			.autoSize {
+				/* position:absolute;
+                       min-width: 100%;
+                       min-height: 100%;
+                       width: auto;
+                       height: auto; */
+			}
+			
+			.bottom {
+				z-index: -200;
+			}
+			
+			.layout_nav_slidebar {
+				position: relative;
+				float: right;
+				width: 15%;
+				height: 100%;
+				right: 0;
+				top: 0;
+				z-index: 1;
+				overflow: visible;
+			}
+			
+			.position_label {
+				width: 100%;
+				height: 40%;
+				margin-bottom: 0;
+				background: none;
+				overflow: visible;
+				position: relative;
+				box-sizing: border-box;
+				padding: 0 0 10px;
+			}
+			
+			#school {
+				width: 100%;
+				height: 100%;
+			}
+			
+			#building_position_icon {
+				/*坐标定死暂时隐藏*/
+				display: none;
+				top: 69px;
+				right: 55px;
+				width: 14px;
+			}
+			
+			.fp_limit {
+				width: 100%;
+				height: 100%;
+				background: none;
+				position: relative;
+			}
+			
+			.floor_position img {
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				max-height: 100%;
+				box-sizing: border-box;
+				padding: 0 73px 0 0;
+			}
+			
+			.floor_nav {
+				text-align: right;
+				width: 100%;
+			}
+			
+			.floor_nav select {
+				background: none;
+				color: #fff;
+				margin: 0 0 10px;
+			}
+			
+			.floor_nav_floor {
+				display: inline-block;
+			}
+			
+			.showfloor {
+				display: inline-block;
+				font-size: 24px;
+				color: #fff;
+				padding: 0 5px 0 20px
+			}
+			
+			.showfloor_box:hover .showfloor {
+				color: #ffa341;
+				cursor: pointer;
+			}
+			
+			#floorUl {
+				position: absolute;
+				right: 0;
+				top: 150%;
+				white-space: nowrap;
+				width: 100%;
+				height: 0;
+				background: rgba(90, 90, 90, 0.9);
+				z-index: 6;
+				opacity: 0;
+				overflow: hidden;
+				transition: 0.4s;
+			}
+			
+			.showfloor_box:hover #floorUl {
+				height: auto;
+				top: 100%;
+				opacity: 1;
+				transition: 0.4s;
+			}
+			
+			.floor_nav_floor li {
+				text-align: center;
+				float: left;
+				width: 33.3%;
+				line-height: 33px;
+			}
+			
+			.floor_nav_floor li a {
+				display: block;
+				font-size: 14px;
+				padding-right: 0;
+				color: #d4d4d4;
+			}
+			
+			.floor_nav_floor li a:hover {
+				color: #ffa341;
+				background: rgba(255, 255, 255, 0.2);
+			}
+			
+			.floor_info_container {
+				width: 100%;
+				position: relative;
+				overflow: hidden;
+				margin: 40px 0 0;
+			}
+			
+			#nav {
+				float: left;
+				position: relative;
+				left: 0;
+				top: 0px;
+				width: 15%;
+				padding: 0 0px 0 10px;
+			}
+			
+			#nav li {
+				width: 100%;
+				margin: 0 0 17px 0;
+			}
+			
+			#nav a {
+				display: block;
+				box-sizing: border-box;
+				padding: 12px 0;
+				color: #6d6d7d;
+				text-align: center;
+				border: 1px solid #e4e4e4;
+				background-color: #ededed;
+				text-decoration: none;
+			}
+			
+			.wrap {
+				float: right;
+				width: 85%;
+				box-sizing: border-box;
+				padding: 0 40px 0 30px;
+				margin: 0 -10px 0 0;
+			}
+			
+			.layout_intro_tit {
+				display: inline;
+				height: 24px;
+				line-height: 22px;
+				margin: 0 20px 0 0;
+				padding: 0 0 0 10px;
+				border-left: 5px solid #6197ea;
+				letter-spacing: 0.5px;
+				color: #484848;
+				transition: all 0.3s;
+			}
+			
+			.not_chosen {
+				color: #a0a0a0 !important;
+				border: none !important;
+			}
+			
+			.data_container table td,
+			.data_container table th {
+				border-top: 1px solid #e4e5e7;
+				border-bottom: 1px solid #e4e5e7;
+				padding: 4px 8px;
+			}
+			
+			.data_container table th {
+				white-space: nowrap;
+				letter-spacing: 0.5px;
+			}
+			
+			.data_container table tr:nth-child(odd) {
+				background: #f9f9f9;
+			}
+			
+			.equip_search {
+				margin: 20px 0 0;
+				font-size: 12px;
+			}
+			
+			.equip_search input[type="text"] {
+				font-size: 12px;
+				border: 1px solid #bdbdbd;
+				border-radius: 3px;
+				padding: 5px 5px;
+			}
+			
+			.equip_search input[type="checkbox"] {
+				margin: 0 0 0 10px;
+			}
+			
+			.equip_search input[type="button"] {
+				width: auto;
+				height: auto;
+				padding: 3px 6px;
+				border: none;
+				background: #6297ea;
+				color: #fff;
+				letter-spacing: 2px;
+				text-indent: 1px;
+				margin: 0 0 0 10px;
+			}
+			
+			.title_box {
+				margin: 0 0 25px;
+			}
+			
+			.clear {
+				clear: both;
+			}
+			
+			.large_room {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body style="" class="selected_floor">
+		<div class="lpc_limit">
+			<div class="layout_panorama_container">
+				<div class="banner_left">
+					<a href="http://116.62.188.238/limsproduct/visualization/show/index">
+						<img src="./labinfo_files/zjcclogo.png">
+					</a>
+					<ul>
+
+						<li>
+							<a id="positionAppoint" href="http://116.62.188.238/limsproduct/LabRoomReservation/labRoomStationList?currpage=1" target="_blank">
+								<img src="./labinfo_files/icon1.png">
+								<div>工位预约</div>
+							</a>
+						</li>
+
+						<li>
+							<a id="labAppoint" onclick="targetUrl(&#39;/limsproduct/LabRoomReservation/labRoomList?currpage=1&#39;)" target="_blank">
+								<img src="./labinfo_files/icon2.png">
+								<div>实验室预约</div>
+							</a>
+						</li>
+						<li>
+							<a id="deviceAppoint" href="http://116.62.188.238/limsproduct/device/listLabRoomDevice?page=1&amp;isReservation=1&amp;isOrder=1" target="_blank">
+								<img src="./labinfo_files/icon4.png">
+								<div>设备预约</div>
+							</a>
+						</li>
+
+						<li>
+							<a id="deviceLend" href="http://116.62.188.238/limsproduct/device/allLendableDeviceList?currpage=1" target="_blank">
+								<img src="./labinfo_files/icon3.png">
+								<div>设备借用</div>
+							</a>
+						</li>
+
+					</ul>
+					<div class="lpc_btm">
+
+						<div>
+							<span>实时视频</span>
+							<hr>
+						</div>
+						<lable id="selectAgent">
+							<select onchange="changeRoomMovie2(this.options[this.options.selectedIndex].value.split(&#39;/&#39;)[0] , this.options[this.options.selectedIndex].value.split(&#39;/&#39;)[1])">
+								<option>摄像头1</option>
+								<option>摄像头2</option>
+								<option>摄像头3</option>
+							</select>
+						</lable>
+
+					</div>
+				</div>
+				<div id="panorama" class="room_panorama ">
+					<div class="rp_limit">
+						<div id="deviceIcon">
+
+						</div>
+
+						<input type="button" onclick="changeVideoPic(this)" id="btnchangeimg" value="切换实时画面">
+						<img class="large_room" src="./labinfo_files/room.jpg" />
+						<!-- 视频 -->
+						<div id="replaceMovie">
+
+							<div poster="" muted="true" loop="true" id="my-video" class="vjs-paused vjs-controls-disabled vjs-error vjs-user-inactive">
+								<!--<video id="my-video_html5_api" loop="" muted="" poster="" class="vjs-tech">
+									<source src="http://:8080/live/.m3u8" type="application/x-mpegURL">
+								</video>-->
+								<div class="rec">
+									<font>●</font>REC</div>
+								<video controls="controls">
+									<source src="http://www.gvsun.net:65533/live/sz2.m3u8" type="application/x-mpegURL">
+									<source src="rtmp://www.gvsun.net:1935/live/sz2" type="rtmp/flv">
+								</video>
+							</div>
+
+						</div>
+						<!-- 视频结束  -->
+					</div>
+				</div>
+				<!-- 窗口 -->
+				<div class="equipment_inforamtion">
+					<img class="close" src="./labinfo_files/msg_close.png" onclick="cancel()">
+					<form id="myForm" action="http://116.62.188.238/limsproduct/visualization/saveDevice" method="POST">
+						<div class="">
+							<h2 class="equipment_name" id="deviceName1"></h2>
+						</div>
+						--&gt;
+						<table class="equipment_info">
+							<tbody>
+								<tr style="display:none">
+									<th>鼠标X轴:</th>
+									<td><input id="xCoordinate" name="xCoordinate" type="text" value=""></td>
+									<th>鼠标Y轴:</th>
+									<td><input id="yCoordinate" name="yCoordinate" type="text" value=""></td>
+								</tr>
+								<tr>
+									<th>设备编号:</th>
+									<td><input id="deviceNumber" name="schoolDevice.deviceNumber" type="text" readonly="readonly" value=""></td>
+									<th>生产厂家:</th>
+									<td><input id="deviceSupplier" name="schoolDevice.manufacturer" type="text" readonly="readonly" value=""></td>
+									<td><input id="deviceFormat" name="schoolDevice.deviceNumber" type="text" value=""></td>
+								</tr>
+								<tr>
+									<th>仪器型号:</th>
+									<td><input id="devicePattern" name="schoolDevice.deviceNumber" type="text" readonly="readonly" value=""></td>
+
+									<th>所属学院:</th>
+									<td><input id="academyName" name="schoolDevice.schoolAcademy.academyName" type="text" readonly="readonly" value=""></td>
+								</tr>
+								<tr>
+									<th>设备信息:</th>
+									<td colspan="4">
+										<img id="dimensionalCode" src="./labinfo_files/msg_close.png" style="wdith:100px;height:100px;margin-left:100px;" onclick="turnDeviceQR()">
+									</td>
+									<th>知识视频:</th>
+									<td colspan="4">
+										<img id="qRCodeUrl" src="./labinfo_files/msg_close.png" style="wdith:100px;height:100px;margin-left:100px;">
+									</td>
+								</tr>
+								<tr style="display:none;">
+									<td>实验设备id</td>
+									<td><input id="labRoomDeviceId" name="id" type="text" value=""></td>
+									<th>实验室编号</th>
+									<td><input id="labRoomId" name="labRoom.id" type="text" value=""></td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
+				<div class="layout_nav_slidebar">
+					<div class="building_position position_label">
+						<img src="./labinfo_files/systemCampusPic2.png" id="school"> <img src="./labinfo_files/icon.png" id="building_position_icon" style="left:">
+						<script>
+							var L =
+
+								var T =
+
+									var l = L * 100 + "%"
+							var t = T * 100 + "%"
+							$("#building_position_icon").css({
+								left: l,
+								top: t
+							})
+						</script>
+
+					</div>
+					<div class="floor_position position_label">
+						<div class="fp_limit">
+							<img src="./labinfo_files/floor_1.png" usemap="#floor_map" id="floor_img" class="floor_img">
+							<div class="floor_nav">
+								<select onchange="changeBuilding(this.options[this.selectedIndex].value);">
+
+									<option value="56890">上海庚商</option>
+
+									<option value="56894">苏州庚商</option>
+
+									<option value="56896">西安庚商</option>
+
+									<option value="56897">珠海庚商</option>
+
+									<option value="56898">南京庚商</option>
+
+									<option value="56986">第二教学楼</option>
+
+									<option value="56992">二号学院楼</option>
+
+									<option value="56997">三号学院楼</option>
+
+									<option value="56998" selected="selected">四号学院楼</option>
+
+									<option value="927001">1号办公楼</option>
+
+								</select>
+								<div class="clear"></div>
+								<!-- 楼层显示 -->
+								<ul class="floor_nav_floor showfloor_box">
+									<div class="showfloor" id="showfloor1" title="选择楼层">一楼</div>
+									<div class="showfloor" id="showfloor" title="选择楼层" style="display: none"></div>
+
+									<ul id="floorUl">
+
+										<li>
+											<a id="floor1" name="floorChange" href="javascript:void(0)" onclick="changeFloor(&#39;56998&#39;,1, &#39;一&#39;)">一楼</a>
+										</li>
+
+										<li>
+											<a id="floor2" name="floorChange" href="javascript:void(0)" onclick="changeFloor(&#39;56998&#39;,2, &#39;二&#39;)">二楼</a>
+										</li>
+
+										<li>
+											<a id="floor3" name="floorChange" href="javascript:void(0)" onclick="changeFloor(&#39;56998&#39;,3, &#39;三&#39;)">三楼</a>
+										</li>
+
+										<li>
+											<a id="floor4" name="floorChange" href="javascript:void(0)" onclick="changeFloor(&#39;56998&#39;,4, &#39;四&#39;)">四楼</a>
+										</li>
+
+										<li>
+											<a id="floor5" name="floorChange" href="javascript:void(0)" onclick="changeFloor(&#39;56998&#39;,5, &#39;五&#39;)">五楼</a>
+										</li>
+
+										<li>
+											<a id="floor6" name="floorChange" href="javascript:void(0)" onclick="changeFloor(&#39;56998&#39;,6, &#39;六&#39;)">六楼</a>
+										</li>
+
+									</ul>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="room_list" class="lpc_btm">
+						<div>
+							<span>请选择房间</span>
+							<hr>
+						</div>
+						<lable>
+							<select id="labRoomListForSelect" onchange="changeRoom(this.options[this.selectedIndex].value);">
+
+								<option value="763">1004</option>
+								763
+
+								<option value="551">卓越工程师实训基地</option>
+								551
+
+								<option value="645">机气控技术实验室-1023pk1</option>
+								645
+
+								<option value="731">机气控技术实验室</option>
+								731
+
+								<option value="646">液压传动技术实验室</option>
+								646
+
+								<option value="639">机构测绘室-1033</option>
+								639
+
+								<option value="800">机构测绘室-1033pk1</option>
+								800
+
+								<option value="801">机构测绘室-1037pk1</option>
+								801
+
+								<option value="730">机构测绘室-1037</option>
+								730
+
+								<option value="640">机构认知室</option>
+								640
+
+								<option value="641">多体动力学实验室</option>
+								641
+
+								<option value="654">机加工室</option>
+								654
+
+								<option value="634">硬度计室1054</option>
+								634
+
+								<option value="635">金相样品制备室1056</option>
+								635
+
+								<option value="691">数控与精密制造实验室</option>
+								691
+
+								<option value="636">材料表面处理实验室1060</option>
+								636
+
+								<option value="638">材料热处理实验室1064</option>
+								638
+
+								<option value="729">材料热处理实验室1066</option>
+								729
+
+								<option value="361">细胞工程实验室</option>
+								361
+
+								<option value="360">微生物工程实验室</option>
+								360
+
+								<option value="362">高效液相色谱实验室</option>
+								362
+
+								<option value="359">生化工程实验室</option>
+								359
+
+								<option value="358">发酵工程实验室</option>
+								358
+
+								<option value="1142">质谱实验室</option>
+								1142
+
+								<option value="166">仪器存储室</option>
+								166
+
+								<option value="449">水污染控制实验室I</option>
+								449
+
+								<option value="454">烘箱室</option>
+								454
+
+								<option value="415">热工基础实验室</option>
+								415
+
+								<option value="431">锅炉/燃烧实验室</option>
+								431
+
+								<option value="409">暖通空调实验室 Ⅰ </option>
+								409
+
+								<option value="430">流体流动测试实验室</option>
+								430
+
+								<option value="410">暖通空调实验室 Ⅱ</option>
+								410
+
+								<option value="426">制冷技术实验室</option>
+								426
+
+								<option value="407">大气控制实验室</option>
+								407
+
+								<option value="451">通风除尘实验室</option>
+								451
+
+								<option value="453">大气控制实验室</option>
+								453
+
+								<option value="456">通风除尘实验室</option>
+								456
+
+								<option value="478">大气控制实验室</option>
+								478
+
+								<option value="424">热质交换实验室</option>
+								424
+
+								<option value="406">通风除尘实验室</option>
+								406
+
+								<option value="422">空调综合实验室</option>
+								422
+
+							</select>
+						</lable>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="floor_info_container">
+			<ul id="nav">
+				<li>
+					<a href="http://116.62.188.238/limsproduct/visualization/show/floor?buildNumber=56998#intro">实验室详情</a>
+				</li>
+				<li>
+					<a class="exception" lay-href="home/labroom.html" lay-tips="院级平台可视化" lay-text="院级平台可视化">返回上级</a>
+				</li>
+			</ul>
+			<div class="wrap">
+				<div class="div1">
+					<div class="intro1" id="intro">
+						<div class="title_box">
+							<h2 class="layout_intro_tit">实验室详情</h2>
+						</div>
+						<div class="data_container">
+							<form id="labRoom" name="form" action="http://116.62.188.238/limsproduct/visualization/show/floor?buildNumber=56998" method="post">
+								<input id="id" name="id" type="hidden" value="763">
+							</form>
+							<table>
+								<tbody>
+									<tr>
+										<th style="width:10%">实验室名称</th>
+										<td id="labRoomName">&nbsp;&nbsp;1004</td>
+										<th style="width:10%">实验室地点</th>
+										<td id="adress">松江校区
+											<!-- 校区 -->
+											四号学院楼
+											<!-- 楼栋 -->
+											机构创新实验室、测绘实验室(1004-1010)
+										</td>
+										<th style="width:10%">管理机构</th>
+										<td id="departmentNumber"></td>
+									</tr>
+									<tr>
+										<th>实验室编号</th>
+										<td id="labRoomNumber">1004</td>
+										<th>实验室类型</th>
+										<td id="CLabRoomType">无</td>
+										<th>实验室容量</th>
+										<td id="labRoomCapacity">人</td>
+									</tr>
+									<tr>
+										<th>是否可用</th>
+										<td id="CActiveByLabRoomActive" style="white-space:nowrap;"><input name="isUsed" type="radio" disabled="true" id="isUsed1" value="1" checked="checked"><label for="isUsed1">是</label> &nbsp; <input name="isUsed" type="radio" disabled="true" id="isUsed2" value="0"><label for="isUsed2">否</label></td>
+										<th>是否可预约</th>
+										<td id="CActiveByLabRoomReservation" style="white-space:nowrap;"><input name="isappointment" type="radio" disabled="true" id="appointment1" value="1" checked="checked"><label for="appointment1">是</label> &nbsp; <input name="isappointment" type="radio" disabled="true" id="appointment2" value="0"><label for="appointment2">否</label></td>
+										<th>使用面积</th>
+										<td id="labRoomArea">平方米</td>
+									</tr>
+									<tr>
+										<th>实验室管理员</th>
+										<td id="labRoomAdmin">
+
+										</td>
+										<th>总资产</th>
+										<td id="totalAssets">0元</td>
+									</tr>
+									<tr>
+										<th>实验室简介</th>
+										<td id="labRoomIntroduction" colspan="5">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+					</div>
+					<div class="intro2">
+						<div class="title_box">
+							<h2 id="in1" class="layout_intro_tit">实时课表</h2>
+							<h2 id="in2" class="layout_intro_tit not_chosen" title="查看我的课表">我的课表</h2>
+						</div>
+						<div class="data_container" id="div1">
+							<table>
+								<tbody>
+									<tr>
+										<th style="vertical-align:middle; text-align:center;">正在上课的课程</th>
+										<th style="vertical-align:middle; text-align:center;">授课教师</th>
+										<th style="vertical-align:middle; text-align:center;">正在上课的班级</th>
+									</tr>
+									<tr id="currentTimetable">
+										<td style="vertical-align:middle; text-align:center;" id="currentCourseName"></td>
+										<td style="vertical-align:middle; text-align:center;" id="currentCourseTeacher"></td>
+										<td style="vertical-align:middle; text-align:center;" id="currentClassName"></td>
+
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="data_container" id="div2">
+							<div class="close_btn">×</div>
+							<iframe id="iframe" src="./labinfo_files/listGeneralTimetable.html" align="middle"></iframe>
+						</div>
+					</div>
+				</div>
+				<!--    设备编号、设备名称、品牌、型号、规格、单价、领用人、领用单位、购置日期； -->
+				<div class="div2">
+					<div class="intro1">
+						<div class="title_box">
+							<h2 class="layout_intro_tit">设备详情</h2>
+							<form class="equip_search">
+								<label for="name">设备名称</label> <input type="text" id="DeviceName" class="form-control" placeholder="设备名称">
+								<label> <input type="checkbox" id="ifLend">可借用 </label>
+								<label> <input type="checkbox" id="ifAppointment">可预约 </label>
+								<input type="button" onclick="changeDeviceByName()" value="查询">
+							</form>
+						</div>
+						<div class="data_container">
+							<input id="DeviceRoomId" value="763" hidden="">
+							<table id="deviceTbody">
+								<tbody>
+									<tr>
+										<th style="vertical-align:middle; text-align:center;">序号</th>
+										<th style="vertical-align:middle; text-align:center;">设备编号</th>
+										<th style="vertical-align:middle; text-align:center;">设备名称</th>
+										<th style="vertical-align:middle; text-align:center;">型号</th>
+										<th style="vertical-align:middle; text-align:center;">单价</th>
+										<th style="vertical-align:middle; text-align:center;">是否可借用</th>
+										<th style="vertical-align:middle; text-align:center;">是否可预约</th>
+										<th style="vertical-align:middle; text-align:center;">操作</th>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="layout_link_container">
+
+			<div class="layout_link_box">
+				<div class="address">
+					<div class="link_title">联系我们</div>
+					<font style="font-size:12px;">庚商实验室</font>
+
+				</div>
+				<div class="link_box">
+					<div class="link_title">友情链接</div>
+					<ul class="link_list">
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="layout_footer">
+
+			<div class="layout_power">
+				<p class="copyright">Copyright © 2016 庚商实验室</p>
+				<p class="power">
+					power by
+					<a href="http://www.gvsun.com/">Gvsun</a>
+				</p>
+			</div>
+		</div>
+		<script>
+			/* 视频的js */
+			var player = videojs('my-video');
+			player.play();
+			$(".room_list li").hover(
+				function() {
+					var id = $(this).find("p").html(); //教室id
+					//$(".room_img").attr("src", "/limsproduct/images/visualization/floor/room"+56998+str+".png");
+					$.ajax({
+						type: 'POST',
+						url: '/limsproduct/visualization/show/changeRoomImage',
+						data: {
+							'id': id,
+							'type': 1
+						},
+						success: function(data) {
+							$(".room_img").attr("src", "/limsproduct/" + data);
+						}
+					});
+				}
+			)
+			$(".news_list_container").hover(
+				function() {
+					$(this).find(".news_list").show();
+					$(this).addClass("news_selected");
+					$(this).siblings().find(".news_list").hide();
+					$(this).siblings().removeClass("news_selected")
+				},
+				function() {
+					/*$(this).find(".news_list").hide()*/
+				}
+			);
+
+			$(".room_list li a").click(
+				function() {
+
+					$(".building_banner").stop().fadeIn(150)
+				}
+			)
+			$(".room_list li").first().addClass("room_selected");
+			$(".room_list li").click(
+				function() {
+					$(this).addClass("room_selected")
+					$(this).siblings().removeClass("room_selected")
+				}
+			)
+			var s = $(".room_list li").length;
+			var a = 900 / (s - 2);
+			/*console.log(a);*/
+			for(var i = 0; i < s; i++) {
+				var d = a * i
+				$(".room_list li").eq(i).css("left", d);
+
+			}
+			$(function() {
+				var elm = $('#nav');
+				var startPos = $(elm).offset().top;
+				$.event.add(window, "scroll", function() {
+					var p = $(window).scrollTop();
+					$(elm).css('position', ((p) > startPos) ? 'fixed' : 'absolute');
+					$(elm).css('top', ((p) > startPos) ? '100px' : '');
+				});
+			});
+
+			$(function() {
+				$('#nav').onePageNav({
+					filter: ':not(.exception)'
+				});
+			});
+			$('.room_list li').each(function() {
+				$(this).addClass("rot50");
+			});
+			$(".floor_nav_floor li").click(
+				function() {
+					$(this).find("a").addClass("selected_floor");
+					$(this).siblings().find("a").removeClass("selected_floor");
+				}
+			);
+
+			//打开视频
+			function openVideo(agentId) {
+				var url = "/limsproduct/labRoom/appointment/openVideo?agentId=" + agentId;
+				// window.location.href=url;  // 本窗口
+				window.open(url); // 新窗口
+			}
+		</script>
+		<script>
+			$(function() {
+				$("#in1").click(function() {
+					$(this).removeClass("not_chosen");
+					$("#in2").addClass("not_chosen");
+					$("#div2").css("display", "none");
+					$("#div1").css("display", "block");
+				});
+				$(".close_btn").click(function() {
+					$("#in1").removeClass("not_chosen");
+					$("#in2").addClass("not_chosen");
+					$("#div2").css("display", "none");
+					$("#div1").css("display", "block");
+				});
+				$("#in2").click(function() {
+					$(this).removeClass("not_chosen");
+					$("#in1").addClass("not_chosen");
+					$("#div2").css("display", "block");
+				});
+			});
+		</script>
+
+		<script>
+			//
+			function targetUrl(url) {
+				document.form.action = url;
+				document.form.submit();
+			}
+		</script>
+		<script src="../../layuiadmin/layui/layui.js?t=1"></script>
+		<script>
+			layui.config({
+				base: '../../layuiadmin/' //静态资源所在路径
+			}).extend({
+				index: 'lib/index' //主入口模块
+			}).use(['index', 'labinfo']);
+		</script>
+
+	</body>
+
+</html>

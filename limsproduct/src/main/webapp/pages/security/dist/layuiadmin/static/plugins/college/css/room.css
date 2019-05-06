@@ -1,0 +1,375 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	font-size: 12px;
+	font-family: '微软雅黑'
+}
+
+body {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#main {
+	width: 100%;
+	height: 100%;
+	background: url(../images/war_room_main.jpg) center no-repeat;
+	background-size: 100% 100%;
+	overflow: hidden;
+}
+
+.main_box_top,
+.main_box_bottom {
+	box-sizing: border-box;
+	padding: 0 1%;
+}
+
+.main_box_top {
+	width: 100%;
+	height: 45.5%;
+	position: relative;
+	top: 12%;
+	overflow: hidden;
+}
+
+.main_box_bottom {
+	width: 100%;
+	height: 32%;
+	position: relative;
+	top: 20%;
+	overflow: hidden;
+}
+
+.main_box {
+	float: left;
+	width: 23%;
+	margin: 0 1%;
+	height: 100%;
+	position: relative;
+	box-sizing: border-box;
+	padding: 0 0 40px;
+}
+
+.main_box:nth-child(1) {
+	margin: 0 1.5% 0 0.5%;
+}
+
+
+/*下钻按钮*/
+
+.contentButton {
+	width: 50px;
+	height: 20px;
+	position: absolute;
+	left: 0!important;
+	right: 0;
+	left: 0!important;
+	top: auto!important;
+	bottom: 0;
+	margin: auto;
+}
+
+.contentButton a {
+	width: 50px;
+	height: 20px;
+	display: inline-block;
+	background: url(../images/content_comm.png) no-repeat top left;
+	background-size: 100%;
+}
+
+.contentButton a:hover {
+	display: inline-block;
+	background: url(../images/content_down.png) no-repeat top left;
+	background-size: 100%;
+}
+
+.contentButton .a1 {
+	width: 50px;
+	height: 20px;
+	display: inline-block;
+	background: url(../images/content_comm1.png) no-repeat top left;
+	background-size: 100%;
+}
+
+.contentButton .a1:hover {
+	display: inline-block;
+	background: url(../images/content_down1.png) no-repeat top left;
+	background-size: 100%;
+}
+
+
+/*弹出窗口*/
+
+#popWindow {
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	position: absolute;
+	top: 240px;
+	left: 1070px;
+	background-color: #06274A;
+	border: 1px solid #09f
+}
+
+
+/*年的进度条*/
+
+.y_gauge {
+	width: 100%;
+	height: 38%;
+	overflow: hidden;
+}
+
+#y_gauge1,
+#y_gauge2,
+#y_gauge3,
+#y_gauge4 {
+	float: left;
+	width: 25%;
+	height: 100%;
+	position: relative;
+	left: 0;
+	top: 0;
+}
+
+#y_gauge1>div:first-child,
+#y_gauge2>div:first-child,
+#y_gauge3>div:first-child,
+#y_gauge4>div:first-child {
+	width: 100%!important;
+}
+
+#y_gauge1 canvas,
+#y_gauge2 canvas,
+#y_gauge3 canvas,
+#y_gauge4 canvas {
+	/*transform: scale(0.5);*/
+}
+
+
+/*螺旋DNA*/
+
+#orderStatus {
+	width: 100%;
+	height: 80%;
+	position: relative;
+	left: 0;
+	top: -5%;
+}
+
+
+/*监控的仪表盘*/
+
+#gauge1 {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	left: 2200px;
+	top: 280px;
+}
+
+#gauge2 {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	left: 2550px;
+	top: 280px;
+}
+
+#gauge3 {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	left: 2910px;
+	top: 280px;
+}
+
+#gauge4 {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	left: 2380px;
+	top: 550px;
+}
+
+#gauge5 {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	left: 2730px;
+	top: 550px;
+}
+
+
+/*仪表盘文字*/
+
+.gaugeTitle {
+	width: 250px;
+	height: 40px;
+	position: absolute;
+	left: 0px;
+	top: 200px;
+	color: #B7E1FF;
+	font-size: 12px;
+	display: inline-block;
+	text-align: center;
+	font-family: Arial;
+}
+
+
+/*地图*/
+
+#map {
+	width: 1100px;
+	height: 800px;
+	position: absolute;
+	left: 1080px;
+	top: 170px;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+}
+
+#productPie {
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+	top: 18%;
+}
+
+#productPie>div:first-child {
+	width: 100%!important;
+	height: 100%!important;
+}
+
+
+/*业务进展图*/
+
+#businessProgress {
+	width: 106%;
+	height: 105%;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+	position: relative;
+	top: 5%;
+}
+
+
+#businessProgress div{
+	line-height: 20px!important;
+}
+
+
+
+/*计划完成情况*/
+
+#plan {
+	width: 100%;
+	height: 115%;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+	position: relative;
+	top: -10%;
+}
+
+
+/*质量指标分析*/
+
+#quality {
+	width: 100%;
+	height: 115%;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+	position: relative;
+	top: -10%;
+}
+
+
+/*舆情文字云*/
+
+#wordCloud {
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+}
+
+#wordCloud>div:first-child {
+	width: 100%!important;
+	height: 100%!important;
+}
+
+
+/*投诉情况展示表*/
+
+#produce {
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	color: #B7E2FF;
+	font-size: 12px;
+}
+
+#produce table {
+	width: 100%;
+	font-size: 12px;
+	margin: 8% 0 0;
+}
+
+#produce table td {
+	text-align: center;
+	border: 1px solid #069
+}
+
+#produce table .row1 {}
+
+#produce table .row2 {}
+
+
+/*视频*/
+
+#video {
+	width: 960px;
+	height: 540px;
+	position: absolute;
+	left: 3280px;
+	top: 140px;
+	display: inline-block;
+}
+
+
+/*监控视频*/
+
+#Monitor {
+	width: 960px;
+	height: 540px;
+	position: absolute;
+	left: 3280px;
+	top: 940px;
+	display: inline-block;
+	color: #E1E1E1;
+	font-size: 12px;
+}
+
+
+/*刷新时间*/
+
+#refresh {
+	width: 800px;
+	position: absolute;
+	left: 3350px;
+	top: 40px;
+	display: inline-block;
+	color: #FFF;
+	font-size: 12px;
+}

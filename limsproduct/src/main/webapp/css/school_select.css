@@ -1,0 +1,278 @@
+* {
+	font-size: 14px;
+	margin: 0;
+	padding: 0;
+	outline: none;
+	list-style: none;
+	text-decoration: none;
+	font-family: -apple-system, "Helvetica", "Arial", "Roboto", "PingFang SC", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+	box-sizing: border-box;
+}
+
+
+/*所有字体不可复制*/
+
+* {
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+
+html {
+	font-family: sans-serif;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%
+}
+
+
+/*输入框提示字符,此处样式不可合并，合并失效*/
+
+input::-webkit-input-placeholder {
+	color: #c3cdd6;
+}
+
+input:-moz-placeholder {
+	color: #c3cdd6;
+}
+
+input::-moz-placeholder {
+	color: #c3cdd6;
+}
+
+input:-ms-input-placeholder {
+	color: #c3cdd6;
+}
+
+
+/*单屏模型盒子*/
+
+.model_box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	min-width: 215px;
+	height: 100%;
+	overflow: auto;
+}
+
+.model_tit {
+	font-size: 20px;
+	color: #fff;
+	text-align: center;
+	height: 50px;
+	line-height: 50px;
+	margin: 0 0 20px;
+	background: #68a5dc;
+}
+
+
+/*搜索框*/
+
+.search_box_limit {
+	width: 100%;
+	padding: 0 20px;
+}
+
+.search_box {
+	position: relative;
+	display: inline-block;
+	width: 33%;
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.search_box input[type="text"] {
+	font-size: 16px;
+	font-family: "微软雅黑";
+	letter-spacing: 0.5px;
+	padding: 0 50px 0 10px;
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background: #f4f4f4;
+	border: 1px solid #f4f4f4;
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.search_box input[type="text"]:hover {
+	background: #f9f9f9;
+}
+
+.search_box input[type="text"]:focus {
+	background: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.search_btn {
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: 18px;
+	color: #929292;
+	text-align: center;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+	border-radius: 0 3px 3px 0;
+	cursor: pointer;
+}
+
+.search_box input[type="text"]:focus+.search_btn {
+	color: #fff;
+	background: #68a5dc;
+}
+
+.search_box input[type="text"]:active+.search_btn,
+.search_box input[type="text"]:focus+.search_btn:hover {
+	color: #fff;
+	background: #63b4e4;
+}
+
+
+/*学校盒子*/
+
+.school_content_limit {
+	width: 100%;
+	height: 100%;
+	margin: -110px 0 0;
+	padding: 130px 10px 20px 20px;
+}
+
+.school_content {
+	font-size: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0 10px 0 0;
+	overflow: auto;
+}
+
+
+/*滚动条*/
+
+.scrollbar::-webkit-scrollbar {
+	width: 10px;
+	background: #dfdfdf;
+	border-radius: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background: -webkit-linear-gradient(top, #bfbfbf, rgba(234, 249, 255, 0.5));
+	background: #bfbfbf;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+	background: #62a8d1;
+}
+
+.scrollbar {
+	scrollbar-arrow-color: #aaa;
+	scrollbar-face-color: #aaa;
+	scrollbar-shadow-color: #bbb;
+	scrollbar-track-color: #ccc;
+}
+
+
+/*学校模块*/
+
+.school_box {
+	display: inline-block;
+	width: 33.3%;
+	padding: 20px 0 0;
+}
+
+.school_box:first-child,
+.school_box:nth-child(3) {
+	padding: 0;
+}
+
+.school_box div {
+	font-size: 16px;
+	color: #40495a;
+	line-height: 20px;
+	text-align: left;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	padding: 9px 10px;
+	border-radius: 3px;
+	border: 1px solid RGBA(0, 0, 0, 0.1);
+	overflow: hidden;
+	transition: all 0.4s;
+	cursor: pointer;
+}
+
+.school_box div:hover {
+	color: #fff;
+	padding: 9px 10px 9px 20px;
+	background: #68a5dc;
+	border: 1px solid #68a5dc;
+}
+
+@media only screen and (max-width: 900px) {
+	.search_box {
+		width: 100%;
+	}
+	.school_box {
+		width: 100%;
+		padding: 0!important;
+	}
+	.school_box div {
+		padding: 14.5px 10px;
+		border: none;
+		border-bottom: 1px solid RGBA(0, 0, 0, 0.1);
+		border-radius: 0;
+		transition: all 0s;
+	}
+	.school_box div:hover {
+		padding: 14.5px 10px;
+		border: none;
+		border-bottom: 1px solid RGBA(0, 0, 0, 0.1);
+	}
+}
+
+@media only screen and (min-width:901px) and (max-width: 1026px) {
+	.search_box,
+	.school_box {
+		width: 50%;
+	}
+	.school_box:nth-child(2n+1) {
+		padding: 20px 10px 0 0;
+	}
+	.school_box:nth-child(2n+2) {
+		padding: 20px 0 0 10px;
+	}
+	.school_box:nth-child(1) {
+		padding: 0 10px 0 0;
+	}
+	.school_box:nth-child(2) {
+		padding: 0 0 0 10px;
+	}
+}
+
+@media only screen and (min-width: 1027px) {
+	.school_box:nth-child(3n+1) {
+		padding: 20px 10px 0 0;
+	}
+	.school_box:nth-child(3n+2) {
+		padding: 20px 10px 0;
+	}
+	.school_box:nth-child(3n+3) {
+		padding: 20px 0 0 10px;
+	}
+	.school_box:nth-child(1) {
+		padding: 0 10px 0 0;
+	}
+	.school_box:nth-child(2) {
+		padding: 0 10px;
+	}
+	.school_box:nth-child(3) {
+		padding: 0 0 0 10px;
+	}
+}

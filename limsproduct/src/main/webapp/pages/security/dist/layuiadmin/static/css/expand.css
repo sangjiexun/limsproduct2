@@ -1,0 +1,266 @@
+body {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.about_img {
+	width: 100%;
+}
+
+
+/*地图定位*/
+
+.mainbtn_left,
+.mainbtn_right{
+	display: inline-block;
+    font-size: 13px;
+    color: #b6e2fd;
+    height: 25px;
+    line-height: 25px;
+    padding: 0 15px;
+    background: rgba(15, 122, 197, 0.6);
+    border-radius: 9px;
+    margin: -12.5px 0 0;
+	position: absolute;
+	top: 8%;
+	transition: all 0.3s;
+	cursor: pointer;
+}
+.mainbtn_left{
+    right: 56%;
+}
+.mainbtn_right{
+    left: 56%;
+}
+
+.mainbtn_left:hover,
+.mainbtn_right:hover{
+	color: #fff;
+    background: rgba(15, 122, 197, 0.8);	
+}
+
+.cover_box {
+	position: absolute;
+	top: 20%;
+	left: 26%;
+	right: auto;
+	width: 23%;
+}
+
+.cover_box_limit {
+	position: relative;
+	width: 100%;
+	height: 0;
+	padding: 75% 0 0;
+}
+
+.lab_box {
+	position: absolute;
+	top: 9%;
+	left: 10%;
+	width: 80%;
+}
+
+.security_map {
+	width: 100%;
+	height: 100%;
+}
+
+.school_map,
+.college_map {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.link_pos {
+	position: absolute;
+	margin: -38px 0 0 -15px;
+}
+
+.sp1 {
+	top: 15%;
+	left: 28%;
+}
+
+.sp2 {
+	top: 64%;
+	left: 30%;
+}
+
+.sp3 {
+	top: 35%;
+	left: 70%;
+}
+
+.cp1 {
+	top: 5%;
+	left: 5%;
+}
+
+.cp2 {
+	top: 21%;
+	left: 71%;
+}
+
+.lp1 {
+	top: 12%;
+	left: 66%;
+}
+
+.lp2 {
+	top: 76%;
+	left: 27%;
+}
+
+.link_pos img {
+	width: 30px;
+	height: 38px;
+	height: auto;
+	position: relative;
+	transition: all 0.5s;
+	-webkit-animation: float 1.4s infinite cubic-bezier(1, 1, 1, 1);
+	animation: float 1.4s infinite cubic-bezier(1, 1, 1, 1);
+}
+
+@-webkit-keyframes float {
+	0% {
+		top: 0;
+		opacity: 1;
+		filter: brightness(200%);
+	}
+	50% {
+		top: 6px;
+		opacity: 0.8;
+		filter: brightness(100%);
+	}
+	100% {
+		top: 0;
+		opacity: 1;
+		filter: brightness(200%);
+	}
+}
+
+@keyframes float {
+	0% {
+		top: 0;
+		opacity: 1;
+		filter: brightness(200%);
+	}
+	50% {
+		top: 6px;
+		opacity: 0.8;
+		filter: brightness(100%);
+	}
+	100% {
+		top: 0;
+		opacity: 1;
+		filter: brightness(200%);
+	}
+}
+
+.link_pos:hover>img {
+	transform: rotateY(180deg) scale(1.1);
+}
+
+.link_pos:hover {
+	cursor: pointer;
+}
+
+.link_pos label {
+	position: absolute;
+	top: 0;
+	left: 33px;
+	font-size: 13px;
+	color: #032443;
+	display: block;
+	white-space: nowrap;
+	background: rgba(255, 255, 255, 0.8);
+	padding: 4px;
+	border-radius: 3px;
+}
+
+.link_pos:hover label {
+	background: #fff;
+}
+
+.return {
+	display: inline-block;
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	font-size: 14px;
+	color: #1760ab;
+	background: rgba(255, 255, 255, 0.9);
+	padding: 5px 15px;
+}
+
+.return:hover {
+	background: #fff;
+}
+
+.readonlydisabled {
+	font-size: 12px;
+	color: #fff;
+	text-align: center;
+	min-width: 19px;
+	height: 19px;
+	line-height: 20px;
+	background: #c1c1c1;
+	border: none;
+	border-radius: 19px;
+	cursor: not-allowed;
+}
+
+table a:hover {
+	text-decoration: underline;
+}
+
+
+/*简易版地图*/
+
+.visual_tab {
+	position: absolute;
+	top: 20%;
+	left: 5%;
+	width: 43%;
+}
+
+.visual_tab .layui-table-page {
+	background: #fff;
+}
+
+.simple_visual {
+	margin: 9px 0 0;
+	left: auto;
+	right: 5%;
+	width: 42%;
+}
+
+.level_four {
+	background: #783535;
+}
+
+.level_three {
+	background: #d21e1e;
+}
+
+.level_two {
+	background: #ff7a7a;
+}
+
+.level_one {
+	background: #ffbc66;
+}
+
+.level_one {
+	background: #ffbc66;
+}
+
+.level_excellent {
+	background: #468847;
+}

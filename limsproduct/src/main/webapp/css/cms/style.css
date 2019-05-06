@@ -1,0 +1,1084 @@
+.content-box {
+    width: 33.3%;
+    float: left;
+}
+
+.naver,
+.new,
+.link,
+.content,
+.footer,
+.list-box {
+    width: 80%;
+}
+.link-box{
+	background: #f2f2f2;
+	border-top:1px solid #388E8E;
+}
+.link{
+	padding-top:15px;
+	line-height:30px;
+	position:relative;
+}
+.common-title{
+	background-image:url(../../images/titbg.png);
+	background-repeat:repeat-x;
+	width:80px;
+	height:30px;
+	position:absolute;
+	left:43%;
+	top:-12px;
+	text-align:center;
+}
+.list-box {
+    margin: auto;
+}
+
+img {
+    border: 0px;
+}
+
+body {
+    font-size: 100%;
+    font-size: 15px;
+}
+
+body {
+    background: #fff;
+    margin: 0px;
+    padding: 0px;
+}
+
+ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+li {
+    list-style: none;
+    position: relative;
+}
+
+# {
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+a:link {
+    background: none;
+}
+
+a:visited {
+    background: none;
+}
+
+a:hover {
+    background: none;
+}
+
+a:active {
+    background: none;
+}
+
+.naver {
+    overflow: visible;
+    margin: auto;
+}
+
+.logo {
+    text-align: center;
+    padding: 25px 0 20px 0;
+}
+
+.naver li {
+    float: left;
+    position: relative;
+    width: 10%;
+    text-align: center;
+}
+
+.naver li a {
+    display: block;
+    width: 100%;
+}
+
+.menu {
+    position: absolute;
+    z-index: 9;
+    background: rgba(0, 0, 0, 0.7);
+    width: 100%;
+}
+
+.naver li a {
+    font-size: 15px;
+    color: #999999;
+        color: #555;
+    line-height: 30px;
+    font-family: microsoft yahei;
+}
+
+.naver li .selected {
+    color: #000;
+}
+
+.menu {
+    display: none;
+}
+
+.menu li {
+    width: 100%;
+}
+
+.menu li a {
+    color: #cac9c9;
+    DISPLAY: BLOCK;
+}
+
+.menu li a:hover {
+    color: #fff;
+}
+
+.content {
+    overflow: hidden;
+    padding-top: 20px;
+}
+
+.content-box {
+    background: #fff;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.box {
+    width: 100%;
+    height: 100%;
+    line-height: 5;
+    text-align: center;
+    font-size: 5em;
+    color: #fff;
+    text-transform: capitalize;
+    vertical-align: middle;
+    background-color:#b0c5d2!important;
+}
+
+.box img{
+	width:100%;
+	min-height:100%;
+}
+/**/
+/**/
+/**/
+/*幻灯片样式*/
+/*
+ | ------------------------------------------
+ | Glide styles
+ | ------------------------------------------
+ | Here are slider styles
+ | 
+*/
+
+.slider {
+    position: relative;
+    width: 100%;
+    height: 310px;
+    overflow: hidden;
+}
+
+.slides {
+    height: 100%;
+    /* Simple clear fix */
+    
+    overflow: hidden;
+    /**	
+		 * Prevent blinking issue
+		 * Not tested. Experimental.
+		 */
+    
+    -webkit-backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    /**
+		 * Here is CSS transitions 
+		 * responsible for slider animation in modern broswers
+		 */
+    
+    -webkit-transition: all 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
+    -moz-transition: all 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
+    -ms-transition: all 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
+    -o-transition: all 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
+    transition: all 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
+}
+
+.slide {
+    height: 100%;
+    float: left;
+    clear: none;
+}
+
+.slider-arrows {}
+
+.slider-arrow {
+    position: absolute;
+    display: block;
+    margin-bottom: -20px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    font-size: 2em;
+    background-color: #333;
+    background-color: rgba(50, 50, 50, .3);
+    border-radius: 50%;
+}
+
+.slider-arrow--right {
+    bottom: 50%;
+    right: 30px;
+}
+
+.slider-arrow--left {
+    bottom: 50%;
+    left: 30px;
+}
+
+.slider-nav {
+    position: absolute;
+    bottom: 30px;
+}
+
+.slider-nav__item {
+    width: 12px;
+    height: 12px;
+    float: left;
+    clear: none;
+    display: block;
+    margin: 0 5px;
+    background: #fff;
+}
+
+.slider-nav__item:hover {
+    background: #ccc;
+}
+
+.slider-nav__item--current {
+    background: #ccc;
+}
+/**/
+/**/
+/**/
+/*幻灯片样式结束*/
+
+.new-box {
+    border-top: 1px solid #033760;
+    background: #f0f0f0
+}
+
+.list-new-box {
+    border-top: 1px solid #033760;
+    background: #f0f0f0;
+    margin-top: 20px;
+}
+
+.link,
+.new,
+.content,
+.footer {
+    margin: auto;
+}
+
+.link li {
+    float: left;
+}
+
+.title {
+    font-size: 14px;
+    font-family: microsoft yahei;
+    line-height: 30px;
+}
+
+.content-box ul {
+    margin-top: 5px;
+}
+
+.content-box ul li a {
+    font-size: 0.75em;
+    font-size: 0.85em;
+    line-height: 22px;
+}
+
+.content-box ul li a:hover {
+    color: #000;
+}
+
+.icon-box .title {
+    margin-top: 5px;
+}
+
+.new ul li a,
+.new ul li span {
+    font-size: 0.75em;
+    font-size: 0.85em;
+    line-height: 25px;
+    float: left;
+}
+
+.new ul li span {
+    margin-right: 20px;
+}
+
+.new ul li a:hover {
+    color: #000;
+}
+
+.new ul li,
+.link,
+.footer {
+    overflow: hidden;
+}
+
+.new {
+    padding-bottom: 25px;
+    margin-top: 8px;
+}
+
+.new-tit a {
+    width: 80px;
+    margin: auto;
+    display: block;
+    text-align: center;
+    background-image: url(../images/titbg.png);
+    line-height: 20px;
+    top: -12PX;
+    font-size: 14px;
+    position: relative;
+}
+
+.new {
+    position: relative;
+}
+
+.link-box {
+    padding: 0px 0;
+}
+
+.list-link-box {
+    padding: 0px 0;
+    background: #f0f5f7;
+}
+
+.address,
+.friend {
+    float: left;
+}
+
+.address {
+    width: 60%;
+}
+
+.friend {
+    width: 40%
+}
+
+.address-tit {
+    background-image: url(../images/address-bg.png);
+}
+
+.friend-tit {
+    background-image: url(../images/link-bg.png);
+}
+
+.friend-tit,
+.address-tit {
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
+.footer-box a,
+.footer-box {
+    color: #fff;
+    line-height: 30px;
+}
+
+.footer-box li a,
+.footer-box li {
+    font-size: 10px;
+}
+
+.footer-box .title {
+    font-size: 14px;
+    text-indent: 20px;
+}
+
+.footer-box {
+    background: #121d26;
+}
+
+.power {
+    font-size: 10px;
+    font-family: arial;
+    text-align: center;
+    border-top: 1px solid #32323b;
+}
+
+.footer {
+    padding: 10px 0;
+}
+
+.lab {
+    border-bottom: 0px !important
+}
+
+.show {
+    display: none;
+}
+
+.link li a {
+    width: 100%;
+    overflow: hidden;
+    font-size: 0.75em;
+    font-size: 0.85em;
+    text-overflow: ellipsis;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+/**/
+/**/
+/**/
+/*list页面*/
+/**/
+/**/
+/**/
+
+.list-box {
+    overflow: hidden;
+    padding-top: 10px;
+    position: relative;
+}
+
+.list-box li {
+    position: relative;
+}
+
+.list-content-box {
+    width: 65%;
+    float: left;
+    position: relative;
+}
+.list-content-box-w100p {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.list-nav-box {
+    width: 32%;
+    float: right;
+}
+
+.list-box .tit,
+.search-box .tit,
+.article-tit {
+    position: relative;
+    font-size: 0.875em;
+    font-family: microsoft yahei;
+    line-height: 31px;
+    border-bottom: 1px solid #A7A7A7;
+    height: 30px;
+}
+
+.article-tit {
+    text-align: center;
+}
+
+.list-box .tltle,
+.search-box .tltle {
+    display: block;
+    height: 30px;
+    border-bottom: 1px solid #02355d;
+    width: 120px;
+    text-indent: 5px;
+}
+
+.list-nav-box {
+    overflow: hidden;
+}
+
+.list-box ul li a,
+.search-box ul li a,
+.list-content-box ul li a,
+.list-nav-box ul li a,
+.list-box .data,
+.search-box .data {
+    color: #666;
+    font-size: 0.75em;
+    line-height: 24px;
+    font-size: 0.85em;
+    line-height: 28px;
+}
+
+.search-box {
+    width: 80%;
+    margin: auto;
+    top: 30px;
+    position: relative;
+}
+
+.list-content-box ul li a:hover,
+.list-nav-box ul li a:hover {
+    color: #000
+}
+
+.list-box .data,
+.search-box .data {
+    position: absolute;
+    right: 5px;
+    top: 0px;
+}
+
+.pages {
+    overflow: hidden;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+}
+
+.article,
+.list {
+    padding-bottom: 45px;
+}
+
+.paging {
+    float: left;
+}
+
+.jPag-control-back,
+.updown,
+.jPag-control-front {
+    float: left;
+}
+
+.jPag-control-back {
+    margin-right: 20px;
+}
+
+.jPag-control-front {
+    margin-left: 20px;
+}
+
+.updown li {
+    float: left;
+    margin: 0 10px;
+}
+
+.page_list {
+    float: right;
+}
+
+.pages a,
+.pages {
+    color: #666;
+    font-size: 0.75em;
+    line-height: 22px;
+}
+
+.section {
+    color: #02355d !important
+}
+
+.more {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+}
+
+.article p {
+    font-size: 12px;
+    color: #333;
+    line-height: 24px;
+}
+
+.article-tltle {
+    font-size: 1em;
+    font-family: microsoft yahei;
+    line-height: 31px;
+    color: #033760;
+}
+
+.release {
+    font-size: 10px;
+    color: #666;
+    line-height: 30px;
+    text-align: center;
+}
+/*设备预约页面*/
+/*设备预约页面*/
+/*设备预约页面*/
+
+.picture-box li {
+    float: left;
+    width: 30%;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+
+.picture-box li img {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #eee;
+}
+
+.center-pic {
+    margin: 0 5%;
+}
+
+.pic-tit {
+    font-size: 12px;
+    color: #333;
+    text-align: center;
+    line-height: 20px;
+}
+
+.equipment-name {
+    font-size: 20px;
+    font-family: microsoft yahei;
+    color: #000;
+    text-align: center;
+    line-height: 30px;
+    margin-bottom: 20px;
+}
+
+.equipment-box {
+    text-align: center;
+}
+
+.equipment-box img {
+    width: 500px;
+    height: 300px;
+}
+
+.equipment-box table {
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.equipment-box table th {
+    color: #666;
+    text-align: right;
+    width: 20%;
+    line-height: 20px;
+}
+
+.equipment-box table td {
+    color: #333;
+    text-align: left;
+    line-height: 20px;
+}
+
+.tool-box {
+    position: relative;
+    width: 80%; 
+    margin: auto;
+    z-index: 99;
+   top: -200px; 
+    padding: 10px;
+}
+
+.log-in a,
+.search input {
+    background: rgba(255, 255, 255, 0.8);
+    margin-bottom: 10px;
+    float: left;
+    line-height: 30px;
+    display: block;
+    overflow: hidden;
+    border: 1px solid #979797;
+    margin-top: 10px;
+}
+
+.search-input {
+    width: 210px;
+    border-right: 0px !important;
+}
+
+.log-in {
+    overflow: hidden;
+    width: 250px;
+    padding: 20px;
+    border: 1px solid #FFF;
+    background: rgba(255, 255, 255, 0.4);    
+    position: absolute;
+    right: 0px;
+}
+
+.log-in a,
+.search-input,
+.search-btn {
+    font-size: 14px;
+    font-family: microsoft yahei;
+    display: block;
+}
+
+.search {
+    overflow: hidden;
+    clear: both;
+}
+
+.search-btn {
+    width: 42px;
+    background: #BDBDBD !important;
+    border-left: 0px !important;
+    background-repeat: no-repeat;
+    background-image: url(images/yy-icon.png);
+}
+
+.log-in a {
+    text-align: center;
+    width: 60px;
+}
+
+.search-btn {
+    text-align: center;
+    cursor: pointer
+}
+
+.log-in input {
+    float: left;
+    margin-left: 70px;
+}
+
+#log{
+	background: rgba(255, 255, 255, 0.8);
+    margin-bottom: 10px;
+    line-height: 30px;
+    display: block;
+    border: 1px solid #979797;
+     width: 168px;	
+     cursor: pointer;
+}
+
+.keywords {
+    color: #333;
+    font-size: 14px;
+    font-family: microsoft yahei;
+    line-height: 30px;
+    font-weight: bold;
+}
+
+.username,
+.password {
+    margin: 5px 0px;
+    overflow: hidden;
+}
+
+.username span,
+.password span {
+    width: 70px;
+    display: block;
+    color: #fff;
+    font-family: microsoft yahei;
+    font-size: 14px;
+}
+
+.username input,
+.password input {
+    height: 30px;
+    margin: 0px;
+    border: 0px;
+    background: rgba(255, 255, 255, 0.8)
+}
+
+.username span,
+.username input,
+.password span,
+.password input {
+    float: left;
+    line-height: 30px;
+}
+
+.link li span {
+    height: 50px;
+    display: block;
+    line-height: 40px;
+    padding: 0 0 0 5px;
+    float: left;
+}
+
+.link li img {
+    float: left;
+    height:34px;
+}
+
+.address li,
+.friend li {
+    float: left;
+    padding: 0 25px 0 0;
+}
+
+.link_school {
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.link_friend {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.link_friend li span{
+    height:auto;
+    line-height: 35px;
+}
+
+	  .black_overlay { 
+     position: fixed;
+     top: 0;
+     right: 0;
+     bottom: 0;
+     left: 0;
+     background: rgba(0,0,0,.3);
+     z-index: 99998;
+ }
+ .login_frame{ 
+     position: fixed;
+     background: #fff;
+     top: 50%;
+     left: 50%;
+     width: 480px;
+     margin: -155px 0 0 -260px;
+     text-align: center;
+     padding: 30px 0 20px;
+     box-shadow: 0 2px 5px rgba(0,0,0,.3);
+     border-radius: 4px;
+     z-index:9999;
+ }
+ .login_frame img{
+     top: 0px;
+     margin: 15px 0px 15px 20px;
+ }
+ 
+ .holder{
+   width: 286px;
+   margin: 0 auto;
+   position: relative;
+ }
+ .login{
+   margin-bottom: 20px;
+ }
+ .login_input {
+     box-sizing: border-box;
+     width: 100%;
+     padding: 0 10px;
+     height: 36px;
+     font-size: 16px;
+     border: 1px solid #ccc;
+     margin-bottom: 15px;
+     border-radius:3px;
+     color:#333;
+ }
+  .login_frame .text{
+   color:#fff;
+ }
+ 
+ .btnl{
+     display:block;
+     font-size: 18px;
+     padding: 0 15px;
+     border-radius: 3px;
+     height: 36px;
+     line-height: 36px;
+     background-color:#1abc9c;
+     border:none;
+ }
+ .login_frame .close {
+     width: 36px;
+     height: 36px;
+     position: absolute;
+     right: 0;
+     top: 0;
+     cursor: pointer;
+ }
+ 
+ 
+ .login_frame .close i {
+     width: 20px;
+     height: 20px;
+     position: absolute;
+     left: 50%;
+     top: 50%;
+     margin: -10px 0 0 -10px;
+     background:url(../../images/cms/msg_close.png) 0 0 no-repeat;
+ }
+ 
+ 
+ 
+  .tool-box{
+	position: absolute;
+    width: 90%;
+    margin: auto;
+    z-index: 99;
+    top: 80px;
+    padding: 10px;
+    background:none;
+}
+.log-in ,.log-opcity{
+    overflow: hidden;
+    position:absolute;
+    right:0;
+    
+    width: 250px;
+	height:72px;
+    padding: 20px;
+    border: 1px solid #FFF;
+    background-image: url(../images-dh/login-bg.png);
+}
+.log-opcity{
+	background:#fff;
+	opacity:0.5;
+}
+.username, .password {
+    margin: 8px 0px;
+    overflow: hidden;
+    font-family:"microsoft yahei";
+}
+.username span, .username input, .password span, .password input {
+    float: left;
+     line-height: 30px; 
+}
+.username span {
+    width: 70px; 
+    margin-right: 10px;
+    display: block;
+    color: #fff;
+    font-family: microsoft yahei;
+    font-size: 14px;
+}
+.log-in a {
+    text-align: center;
+    width: 60px;
+    color: #fff;
+}
+.log-in input, .log-in a, .search-input, .search-btn {
+    font-size: 14px;
+    font-family: microsoft yahei;
+    display: block;
+}
+.sds a {
+    background: none;
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+    color: #043962;
+    border: none;
+}
+
+.titt {
+  border-bottom: 1px solid #a7a7a7;
+  font-family: microsoft yahei;
+  font-size: 0.875em;
+  height: 30px;
+  position: relative;
+}
+
+.titlet{
+border-bottom: 1px solid #02355d;
+    display: block;
+    height: 30px;
+    text-indent: 5px;
+    width: 300px;
+    font-size: 14px;
+    letter-spacing:1px;
+   /*  color:#043962 */
+}
+
+.titt_ul{
+	position:absolute;
+	right:0;
+	top:0;
+	font-size:13px;
+}
+
+.titt_ul li{
+	float:left;
+	margin:0 0 0 5px;
+}
+
+.sec_selected{
+	border: 1px solid #1abc9c;}
+
+.titt_ul input{
+	outline:none;
+}
+
+.titt_ul input[type="text"]{
+	font-size:12px;
+	color:#000;
+}
+
+.titt_ul input[type="button"]{
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    /* box-shadow: 0 0 3px white inset, -1px 1px 0.5px rgba(0, 0, 0, 0.1); */
+    border: 1px solid #ccc;
+    color: #333;
+    border-radius: 4px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    height: 25px;
+    width:40px;
+    text-align:center;
+}
+
+.titt_ul input[type="button"]:hover{
+	color:#77bace;
+	height:21px;
+	width:39px;
+	margin:-0.5px 0.5px 0;
+	border: 1px solid #cfcfcf;
+	cursor:pointer;
+}
+	
+.experiment_tb{
+	border-collapse: collapse;
+	table-layout:fixed;
+}
+
+.experiment_tb th,.experiment_tb td{
+	word-break:break-all;
+	line-height:28px;
+	font-size:12px;
+}
+
+.experiment_tb th {
+    border-bottom: 1px dotted #ccc;
+    min-height: 20px;
+    text-align: left;
+}
+
+.experiment_tb tr td {
+    border-bottom: 1px dotted #CCCCCC;
+    min-height: 20px;
+    padding: 10px 2px;
+}
+
+td a {
+    color: #77bace;
+    font-weight: bold;
+}
+
+.page{
+	font-size:12px;
+	margin:15px 0 0 0;
+}
+
+.page a{
+	color: #77bace;
+    font-weight: bold;
+}

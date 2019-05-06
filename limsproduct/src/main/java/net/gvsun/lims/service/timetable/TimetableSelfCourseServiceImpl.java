@@ -1,0 +1,774 @@
+package net.gvsun.lims.service.timetable;
+
+import api.net.gvsunlims.constant.ConstantInterface;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.BaseActionAuthDTO;
+import net.gvsun.lims.dto.common.BaseDTO;
+import net.gvsun.lims.dto.timetable.TimetableCourseStudentDTO;
+import net.gvsun.lims.dto.timetable.TimetableMergeDTO;
+import net.gvsun.lims.dto.timetable.TimetableParamVO;
+import net.gvsun.lims.dto.timetable.TimetableSelfCourseDTO;
+import net.gvsun.lims.service.user.UserActionService;
+import net.gvsun.lims.vo.timtable.engineer.EduCourseListVO;
+import net.zjcclims.constant.CommonConstantInterface;
+import net.zjcclims.dao.*;
+import net.zjcclims.domain.*;
+import net.zjcclims.service.common.ShareService;
+import net.zjcclims.util.HttpClientUtil;
+import net.zjcclims.web.common.PConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.*;
+
+@Service("timetableSelfCourseService")
+public class TimetableSelfCourseServiceImpl implements TimetableSelfCourseService {
+    @Autowired
+    private TimetableAppointmentDAO timetableAppointmentDAO;
+    @Autowired
+    private UserActionService userActionService;
+    @Autowired
+    private TimetableCommonService timetableCommonService;
+    @Autowired
+    private ShareService shareService;
+    @Autowired
+    private TimetableSelfCourseDAO timetableSelfCourseDAO;
+    @Autowired
+    private TimetableGroupDAO timetableGroupDAO;
+    @Autowired
+    private TimetableGroupStudentsDAO timetableGroupStudentsDAO;
+    @Autowired
+    private SchoolAcademyDAO schoolAcademyDAO;
+    @Autowired
+    private SchoolTermDAO schoolTermDAO;
+    @Autowired
+    private UserDAO userDAO;
+    @Autowired
+    private SchoolCourseInfoDAO schoolCourseInfoDAO;
+    @Autowired
+    private TimetableCourseStudentDAO timetableCourseStudentDAO;
+    @Autowired
+    private TimetableManagerService timetableManagerService;
+    @Autowired
+    private PConfig pConfig;
+
+
+    /*************************************************************************************
+     * Description:教务课程-获取课程库列表
+     *
+     * @author： 魏誠
+     * @date：2018-08-03
+     *************************************************************************************/
+    public BaseDTO apiSelfCourseListByPage(int termId, String search, String status, int curpage, String sort, String sortOrder, HttpServletRequest request) {
+        //获取列表主查询语句
+        StringBuffer sql = new StringBuffer("select distinct c from TimetableSelfCourse c ");
+        //如果是学生，则只能查看自己的选课
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" inner join c.timetableCourseStudents student ");
+            sql.append(" inner join c.timetableAppointments timetable inner join timetable.timetableGroups groups ");
+            sql.append(" inner join timetable.timetableLabRelateds labRelated ");
+            //sql.append(" inner join timetable.timetableGroups group ");
+        } else {
+            sql.append(" left join c.timetableAppointments timetable ");
+        }
+        sql.append(" where c.schoolTerm.id=" + termId);
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" and  student.user.username like '" + shareService.getUser().getUsername() + "'");
+            sql.append(" and  groups.timetableBatch.ifselect=1 ");
+            sql.append(" and timetable.status=1");
+        }
+        //查询条件
+        if (search != null && !"".equals(search)) {
+            //sql.append(" and (c.courseNo like '%" + search + "%' or");
+            sql.append("  and (c.user.cname like '%" + search + "%' or");
+            sql.append(" c.schoolAcademy.academyName like '%" + search + "%' or");
+            sql.append(" c.user.username like '%" + search + "%' or");
+            //sql.append(" labRelated.labRoom.labRoomName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseNumber like '%" + search + "%') ");
+            ;
+        }
+        if (status != null && !"".equals(status)) {
+            //未排课
+            if (status.equals("NO_TIMETABLE")) {
+                sql.append(" and timetable.status is null ");
+            }else if (status.equals("TIMETABLEING") ){
+                sql.append(" and timetable.status = 10");
+            }else if (status.equals("REFUSE") ){
+                sql.append(" and timetable.status = 4");
+            }else if ("ALL".equals(status)){
+                sql.append(" and (timetable.status = 4 or timetable.status = 10 or timetable.status is null)");
+            }
+
+        }
+
+        //判断显示
+        //获取权限显示
+        BaseActionAuthDTO baseActionAuthDTO = userActionService.getBaseActionAuthDTO(ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE, request.getSession().getAttribute("selected_role").toString(), shareService.getUser().getUsername());
+        if(!baseActionAuthDTO.isCrossAcademyActionAuth()){
+            sql.append(" and c.schoolAcademy.academyNumber like '").append(shareService.getUserDetail().getSchoolAcademy().getAcademyNumber()).append("' ");
+        }
+
+        //排序
+        if ("courseName".equals(sort) || "courseNumber".equals(sort)) {
+            sql.append(" order by c.schoolCourseInfo." + sort + " " + sortOrder);
+        } else if ("cname".equals(sort) || "username".equals(sort)) {
+            sql.append(" order by c.user." + sort + " " + sortOrder);
+        }else{
+            sql.append(" order by case when c.schoolAcademy.academyNumber='" +
+                    request.getSession().getAttribute("selected_academy")+
+                    "' then 0 else 1 end ");
+        }
+        // 执行sb语句
+        List<TimetableSelfCourse> courses = timetableSelfCourseDAO.executeQuery(sql.toString(), curpage * CommonConstantInterface.INT_PAGESIZE, CommonConstantInterface.INT_PAGESIZE);
+        //获取总记录数主查询语句
+        sql = new StringBuffer("select count(distinct c) from TimetableSelfCourse c ");
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" inner join c.timetableCourseStudents student ");
+            sql.append(" inner join c.timetableAppointments timetable inner join timetable.timetableGroups groups ");
+            sql.append(" inner join timetable.timetableLabRelateds labRelated ");
+            //sql.append(" inner join timetable.timetableGroups group ");
+        } else {
+            sql.append(" left join c.timetableAppointments timetable ");
+        }
+        sql.append(" where c.schoolTerm.id=" + termId);
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" and  student.user.username like '" + shareService.getUser().getUsername() + "'");
+            sql.append(" and  groups.timetableBatch.ifselect=1 ");
+            sql.append(" and timetable.status=1");
+        }
+        //查询条件
+        if (search != null && !"".equals(search)) {
+            sql.append("  and (c.user.cname like '%" + search + "%' or");
+            sql.append(" c.schoolAcademy.academyName like '%" + search + "%' or");
+            sql.append(" c.user.username like '%" + search + "%' or");
+            //sql.append(" labRelated.labRoom.labRoomName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseNumber like '%" + search + "%')");
+        }
+        if (status != null && !"".equals(status)) {
+            //未排课
+            if (status.equals("NO_TIMETABLE")) {
+                sql.append(" and timetable.status is null ");
+            }else if (status.equals("TIMETABLEING") ){
+                sql.append(" and timetable.status = 10");
+            }else if (status.equals("REFUSE") ){
+                sql.append(" and timetable.status = 4");
+            }else if ("ALL".equals(status)){
+                sql.append(" and (timetable.status = 4 or timetable.status = 10 or timetable.status is null)");
+            }
+        }
+
+        //判断显示
+        //获取权限显示
+        if(!baseActionAuthDTO.isCrossAcademyActionAuth()){
+            sql.append(" and c.schoolAcademy.academyNumber like '").append(shareService.getUserDetail().getSchoolAcademy().getAcademyNumber()).append("' ");
+        }
+
+        int total = ((Long) timetableSelfCourseDAO.createQuerySingleResult(sql.toString()).getSingleResult()).intValue();
+        //封装VO
+        List<EduCourseListVO> eduCourseListVOs = new ArrayList<EduCourseListVO>();
+        for (TimetableSelfCourse timetableSelfCourse : courses) {
+            EduCourseListVO eduCourseListVO = new EduCourseListVO();
+            //设置selfid
+            eduCourseListVO.setSelfId(timetableSelfCourse.getId());
+            //设置课程名称
+            eduCourseListVO.setCourseName(timetableSelfCourse.getSchoolCourseInfo().getCourseName());
+            eduCourseListVO.setStudent(timetableSelfCourse.getTimetableCourseStudents().size());
+            //设置班级信息
+            String classInfo = "";
+            //设置课程编号
+            eduCourseListVO.setCourseNumber(timetableSelfCourse.getSchoolCourseInfo().getCourseNumber());
+            //设置学期
+            eduCourseListVO.setTermName(timetableSelfCourse.getSchoolTerm().getTermName());
+            eduCourseListVO.setTermId(timetableSelfCourse.getSchoolTerm().getId());
+            eduCourseListVO.setAcademyName(timetableSelfCourse.getSchoolAcademy().getAcademyName());
+            //设置上课教师
+            eduCourseListVO.setCname(timetableSelfCourse.getUser().getCname());
+            eduCourseListVO.setUsername(timetableSelfCourse.getUser().getUsername());
+            //设置是否排课
+            if (timetableSelfCourse.getTimetableAppointments().size() == ConstantInterface.TIMETABLE_STATUS_NO_APPOINTMENT) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_NO_APPOINTMENT);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_PUBLIC);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_TOBE_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_TOBE_PUBLIC);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_NO_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_NO_PUBLIC);
+            }else if(timetableSelfCourse.getTimetableAppointments().size()>0&&timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus()==ConstantInterface.TIMETABLE_STATUS_AUDIT_ACCESS){
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_AUDIT_ACCESS);
+            }else if(timetableSelfCourse.getTimetableAppointments().size()>0&&timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus()==ConstantInterface.TIMETABLE_STATUS_AUDIT_REFUSE){
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_AUDIT_REFUSE);
+            }
+            //获取权限显示
+            //BaseActionAuthDTO baseActionAuthDTO = userActionService.getBaseActionAuthDTO(ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE, request.getSession().getAttribute("selected_role").toString(), null);
+            eduCourseListVO.setBaseActionAuthDTO(baseActionAuthDTO);
+            if (timetableSelfCourse.getTimetableAppointments().size() > 0) {
+                eduCourseListVO.setTimetableStyle(timetableSelfCourse.getTimetableAppointments().iterator().next().getTimetableStyle());
+                //判断是否当前学生选课
+                for (TimetableAppointment timetableAppointment : timetableSelfCourse.getTimetableAppointments()) {
+                    for (TimetableGroup timetableGroup : timetableAppointment.getTimetableGroups()) {
+                        if (timetableGroup.getTimetableBatch().getIfselect() == 1 && timetableGroup.getTimetableBatch().getStartDate().getTime().before(new Date()) && timetableGroup.getTimetableBatch().getEndDate().getTime().after(new Date())) {
+                            //条件满足，设置学生选课状态
+                            eduCourseListVO.setIsSelect(ConstantInterface.TIMETABLE_BATCH_IS_SELECT);
+                            break;
+                        }
+                    }
+                }
+            }
+            TimetableMergeDTO timetableMergeDTO = new TimetableMergeDTO();
+            timetableMergeDTO.setTerm(timetableSelfCourse.getSchoolTerm().getId());
+            //增加排课
+            //eduCourseListVO.setTimetableMergeDTOs(timetableCommonService.apiGetMergeTimetableClassAndWeek(timetableMergeDTO));
+            eduCourseListVO.setTimetableDTOs(timetableCommonService.apiTimetableDTOs(timetableSelfCourse.getId()));
+            eduCourseListVOs.add(eduCourseListVO);
+        }
+        BaseDTO baseVO = new BaseDTO();
+        baseVO.setRows(eduCourseListVOs);
+        baseVO.setTotal(total);
+        return baseVO;
+    }
+
+    /**************************************************************************
+     * Description 自主排课-查看排课管理列表-获取数据
+     *
+     * @author 魏诚
+     * @date 2018年10月17日
+     **************************************************************************/
+    public BaseDTO apiSelfCourseManageByPage(int termId, String search, String status, int curpage, String sort, String sortOrder, HttpServletRequest request) {
+        //获取列表主查询语句
+        StringBuffer sql = new StringBuffer("select distinct c from TimetableSelfCourse c ");
+        //如果是学生，则只能查看自己的选课
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" inner join c.timetableCourseStudents student ");
+            sql.append(" inner join c.timetableAppointments timetable inner join timetable.timetableGroups groups ");
+            sql.append(" inner join timetable.timetableLabRelateds labRelated ");
+            //sql.append(" inner join timetable.timetableGroups group ");
+        }
+        // 如果是实验室管理员，则只能查看自己实验室的选课
+        else if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER")){
+            sql.append(" inner join c.timetableAppointments timetable ");
+            sql.append(" left join timetable.timetableLabRelateds timetableLabRelated ");
+            sql.append(" left join timetableLabRelated.labRoom.labRoomAdmins labRoomAdmin ");
+        } else {
+            sql.append(" left join c.timetableAppointments timetable ");
+        }
+        sql.append(" where c.schoolTerm.id=" + termId);
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" and  student.user.username like '" + shareService.getUser().getUsername() + "'");
+            sql.append(" and  groups.timetableBatch.ifselect=1 ");
+            sql.append(" and timetable.status=1");
+        }
+        //查询条件
+        if (search != null && !"".equals(search)) {
+            //sql.append(" and (c.courseNo like '%" + search + "%' or");
+            sql.append("  and (c.user.cname like '%" + search + "%' or");
+            sql.append(" c.schoolAcademy.academyName like '%" + search + "%' or");
+            sql.append(" c.user.username like '%" + search + "%' or");
+            //sql.append(" labRelated.labRoom.labRoomName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseNumber like '%" + search + "%' or");
+            ;
+        }
+        if (status != null && !"".equals(status)) {
+            //待发布
+            if (status.equals("STAND_TO_RELEASE") ) {
+                sql.append(" and timetable.status=3 ");
+            }
+            //已发布
+            if (status.equals("RELEASED") ) {
+                sql.append(" and timetable.status=1 ");
+            }
+            if ("ALL".equals(status)){
+                sql.append(" and (timetable.status = 1 or timetable.status = 2 or timetable.status = 3)");
+            }
+            //待审核
+            if (status.equals("STAND_TO_AUDIT") ) {
+                sql.append(" and timetable.status=2");
+            }
+        }
+        // 如果是实验室管理员则只能看到自己实验室上的课
+        if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER")){
+            sql.append(" and labRoomAdmin.user.username like '").append(shareService.getUserDetail().getUsername()).append("'");
+        }
+
+        //判断显示
+        //获取权限显示
+        BaseActionAuthDTO baseActionAuthDTO = userActionService.getBaseActionAuthDTO(ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE, request.getSession().getAttribute("selected_role").toString(), shareService.getUser().getUsername());
+        if(!baseActionAuthDTO.isCrossAcademyActionAuth()){
+            sql.append(" and c.schoolAcademy.academyNumber like '").append(shareService.getUserDetail().getSchoolAcademy().getAcademyNumber()).append("' ");
+        }
+
+
+        //排序
+        if ("courseName".equals(sort) || "courseNumber".equals(sort)) {
+            sql.append(" order by c.schoolCourseInfo." + sort + " " + sortOrder);
+        } else if ("cname".equals(sort) || "username".equals(sort)) {
+            sql.append(" order by c.user." + sort + " " + sortOrder);
+        }else{
+            sql.append(" order by case when c.schoolAcademy.academyNumber='" +
+                    request.getSession().getAttribute("selected_academy")+
+                    "' then 0 else 1 end ");
+        }
+        // 执行sb语句
+        List<TimetableSelfCourse> courses = timetableSelfCourseDAO.executeQuery(sql.toString(), curpage * CommonConstantInterface.INT_PAGESIZE, CommonConstantInterface.INT_PAGESIZE);
+        //获取总记录数主查询语句
+        sql = new StringBuffer("select count(distinct c) from TimetableSelfCourse c ");
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" inner join c.timetableCourseStudents student ");
+            sql.append(" inner join c.timetableAppointments timetable inner join timetable.timetableGroups groups ");
+            sql.append(" inner join timetable.timetableLabRelateds labRelated ");
+            //sql.append(" inner join timetable.timetableGroups group ");
+        }
+        // 如果是实验室管理员，则只能查看自己实验室的选课
+        else if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER")){
+            sql.append(" inner join c.timetableAppointments timetable ");
+            sql.append(" left join timetable.timetableLabRelateds timetableLabRelated ");
+            sql.append(" left join timetableLabRelated.labRoom.labRoomAdmins labRoomAdmin ");
+        }else {
+            sql.append(" left join c.timetableAppointments timetable ");
+        }
+        sql.append(" where c.schoolTerm.id=" + termId);
+        if (request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT")) {
+            sql.append(" and  student.user.username like '" + shareService.getUser().getUsername() + "'");
+            sql.append(" and  groups.timetableBatch.ifselect=1 ");
+            sql.append(" and timetable.status=1");
+        }
+        //查询条件
+        if (search != null && !"".equals(search)) {
+            sql.append("  and (c.userByTeacher.cname like '%" + search + "%' or");
+            sql.append(" c.schoolAcademy.academyName like '%" + search + "%' or");
+            sql.append(" c.user.username like '%" + search + "%' or");
+            //sql.append(" labRelated.labRoom.labRoomName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseName like '%" + search + "%' or");
+            sql.append(" c.schoolCourseInfo.courseNumber like '%" + search + "%' or");
+        }
+        if (status != null && !"".equals(status)) {
+            //待发布
+            if (status.equals("STAND_TO_RELEASE") ) {
+                sql.append(" and timetable.status=3 ");
+            }
+            //已发布
+            if (status.equals("RELEASED") ) {
+                sql.append(" and timetable.status=1 ");
+            }
+            if ("ALL".equals(status)){
+                sql.append(" and (timetable.status = 1 or timetable.status = 2 or timetable.status = 3)");
+            }
+            //待审核
+            if (status.equals("STAND_TO_AUDIT") ) {
+                sql.append(" and timetable.status=2");
+            }
+        }
+        // 如果是实验室管理员则只能看到自己实验室上的课
+        if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER")){
+            sql.append(" and labRoomAdmin.user.username like '").append(shareService.getUserDetail().getUsername()).append("'");
+        }
+
+        //判断显示
+        //获取权限显示
+        if(!baseActionAuthDTO.isCrossAcademyActionAuth()){
+            sql.append(" and c.schoolAcademy.academyNumber like '").append(shareService.getUserDetail().getSchoolAcademy().getAcademyNumber()).append("' ");
+        }
+
+        int total = ((Long) timetableSelfCourseDAO.createQuerySingleResult(sql.toString()).getSingleResult()).intValue();
+        //封装VO
+        List<EduCourseListVO> eduCourseListVOs = new ArrayList<EduCourseListVO>();
+        for (TimetableSelfCourse timetableSelfCourse : courses) {
+            EduCourseListVO eduCourseListVO = new EduCourseListVO();
+            //设置courseCode
+            eduCourseListVO.setSelfId(timetableSelfCourse.getId());
+            eduCourseListVO.setStudent(timetableSelfCourse.getTimetableCourseStudents().size());
+            //设置课程名称
+            eduCourseListVO.setCourseName(timetableSelfCourse.getSchoolCourseInfo().getCourseName());
+            //设置班级信息
+            String classInfo = "";
+            //设置课程编号
+            eduCourseListVO.setCourseNumber(timetableSelfCourse.getSchoolCourseInfo().getCourseNumber());
+            //设置学期
+            eduCourseListVO.setTermName(timetableSelfCourse.getSchoolTerm().getTermName());
+            eduCourseListVO.setTermId(timetableSelfCourse.getSchoolTerm().getId());
+            eduCourseListVO.setAcademyName(timetableSelfCourse.getSchoolAcademy().getAcademyName());
+            //设置上课教师
+            eduCourseListVO.setCname(timetableSelfCourse.getUser().getCname());
+            eduCourseListVO.setUsername(timetableSelfCourse.getUser().getUsername());
+            //设置是否排课
+            if (timetableSelfCourse.getTimetableAppointments().size() == ConstantInterface.TIMETABLE_STATUS_NO_APPOINTMENT) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_NO_APPOINTMENT);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_PUBLIC);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_TOBE_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_TOBE_PUBLIC);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_NO_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_NO_PUBLIC);
+            }else if(timetableSelfCourse.getTimetableAppointments().size()>0&&timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus()==ConstantInterface.TIMETABLE_STATUS_AUDIT_ACCESS){
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_AUDIT_ACCESS);
+            }else if(timetableSelfCourse.getTimetableAppointments().size()>0&&timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus()==ConstantInterface.TIMETABLE_STATUS_AUDIT_REFUSE){
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_AUDIT_REFUSE);
+            }
+            //获取权限显示
+            //BaseActionAuthDTO baseActionAuthDTO = userActionService.getBaseActionAuthDTO(ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE, request.getSession().getAttribute("selected_role").toString(), timetableSelfCourse.getUser().getUsername());
+            // 获取审核权限
+//            BaseActionAuthDTO temp = baseActionAuthDTO;
+//            baseActionAuthDTO = new BaseActionAuthDTO();
+//            baseActionAuthDTO.copy(temp);
+//            baseActionAuthDTO.setAuditActionAuth(false);
+            Map<String, String> params = new HashMap<>();
+            String businessType = "SelfTimetableAudit";
+            params.put("businessAppUid", timetableSelfCourse.getId().toString());
+            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+            JSONObject jsonObject = JSON.parseObject(curStr);
+            String curStatus = jsonObject.getString("status");
+            if ("success".equals(curStatus)) {
+                if(jsonObject.getJSONArray("data") != null &&jsonObject.getJSONArray("data").size()>0 ) {
+                    JSONObject curJSONObject = jsonObject.getJSONArray("data").getJSONObject(0);
+                    String authName = curJSONObject.getString("result");
+                    if (request.getSession().getAttribute("selected_role").equals("ROLE_" + authName)) {
+                        baseActionAuthDTO.setAuditActionAuth(true);
+                    }
+                }
+            }
+            eduCourseListVO.setBaseActionAuthDTO(baseActionAuthDTO);
+            if (timetableSelfCourse.getTimetableAppointments().size() > 0) {
+                eduCourseListVO.setTimetableStyle(timetableSelfCourse.getTimetableAppointments().iterator().next().getTimetableStyle());
+                //判断是否当前学生选课
+                for (TimetableAppointment timetableAppointment : timetableSelfCourse.getTimetableAppointments()) {
+                    for (TimetableGroup timetableGroup : timetableAppointment.getTimetableGroups()) {
+                        if (timetableGroup.getTimetableBatch().getIfselect() == 1 && timetableGroup.getTimetableBatch().getStartDate().getTime().before(new Date()) && timetableGroup.getTimetableBatch().getEndDate().getTime().after(new Date())) {
+                            //条件满足，设置学生选课状态
+                            eduCourseListVO.setIsSelect(ConstantInterface.TIMETABLE_BATCH_IS_SELECT);
+                            break;
+                        }
+                    }
+                }
+            }
+            //增加排课
+            eduCourseListVO.setTimetableDTOs(timetableCommonService.apiTimetableDTOs(timetableSelfCourse.getId()));
+            eduCourseListVOs.add(eduCourseListVO);
+        }
+        BaseDTO baseVO = new BaseDTO();
+        baseVO.setRows(eduCourseListVOs);
+        baseVO.setTotal(total);
+        return baseVO;
+    }
+
+    /*************************************************************************************
+     * Description:自主排课-保存二次排课
+     *
+     * @author： 魏誠
+     * @date：2018-08-03
+     *************************************************************************************/
+    @Transactional
+    public boolean apiSaveSelfReTimetable(TimetableParamVO timetableParamVO) {
+        //如果为编辑，先删除
+        if(timetableParamVO.getSameNumberId()!=-1&&timetableParamVO.getSameNumberId()>0){
+            timetableManagerService.deleteTimetableByBySameNumberId(timetableParamVO.getSameNumberId());
+        }
+        // 初始化排课预约对象
+        // 获取当前教学班下的排课计划
+        TimetableAppointment timetableAppointment = new TimetableAppointment();
+        TimetableSelfCourse timetableSelfCourse = timetableSelfCourseDAO.findTimetableSelfCourseById(timetableParamVO.getSelfId());
+        //获取当前的星期
+        //星期根据所选计划：school_course_detail的weekday反算获取
+        //根据选课组courseCode遍历SchoolCourseDetail，
+        //保存学期
+        timetableAppointment.setSchoolTerm(timetableSelfCourse.getSchoolTerm());
+        timetableAppointment.setCreatedBy(shareService.getUserDetail().getUsername());
+        timetableAppointment.setCreatedDate(Calendar.getInstance());
+        timetableAppointment.setUpdatedDate(Calendar.getInstance());
+        //timetableAppointment.setSchoolCourseDetail(schoolCourseDetail);
+        // 设置发布状态为待发布
+        timetableAppointment.setStatus(timetableParamVO.getStatus());
+        // 设置排课方式
+        timetableAppointment.setTimetableStyle(timetableParamVO.getTimetableStyle());
+        // 设置排课方式
+        timetableAppointment.setDeviceOrLab(ConstantInterface.TIMETABLE_OBJECT_LAB);
+        // 设置选课组编号
+        timetableAppointment.setCourseCode(timetableSelfCourse.getCourseCode());
+        // 设置排课的内容
+        timetableAppointment.setWeekday(timetableParamVO.getWeekday());
+        timetableAppointment.setSchoolCourseInfo((timetableSelfCourse.getSchoolCourseInfo()));
+        timetableAppointment.setPreparation("");
+        timetableAppointment.setGroups(-1);
+        timetableAppointment.setLabhours(-1);
+        timetableAppointment.setGroupCount(-1);
+        timetableAppointment.setTimetableSelfCourse(timetableSelfCourse);
+        timetableAppointment.setConsumablesCosts(new BigDecimal(-1));
+        // ttimetableAppointment.setStatus(status);
+        // 保存排课预约表
+        TimetableAppointment timetableAppointmentSaved = timetableAppointmentDAO.store(timetableAppointment);
+        TimetableGroup timetableGroup = timetableGroupDAO.findTimetableGroupById(timetableParamVO.getGroupId());
+        //学生情况下，保存分组，并保存计划定义的学生名单
+        if (Objects.nonNull(timetableGroup)) {
+            Set<TimetableAppointment> timetableAppointments = new HashSet<TimetableAppointment>();
+            timetableAppointments = timetableGroup.getTimetableAppointments();
+            timetableAppointments.add(timetableAppointmentSaved);
+            timetableGroup.setTimetableAppointments(timetableAppointments);
+            timetableGroup = timetableGroupDAO.store(timetableGroup);
+            if (timetableGroup.getTimetableBatch().getIfselect() == 0) {
+                timetableGroup = this.apiSaveTimetableGroupStudent(timetableGroup);//
+            }
+        }
+        //保存AppointmentSameNumber
+        timetableParamVO.setTimetableId(timetableAppointmentSaved.getId());
+        timetableCommonService.saveTimetableAppointmentSameNumber(timetableParamVO);
+        // 设置此次排课的针对对象（实验室）
+        timetableCommonService.saveTimetableLabRooms(timetableParamVO);
+        // 设置此次排课的针对对象（授课教师）
+        timetableCommonService.saveTimetableTeachers(timetableParamVO);
+        // 设置此次排课的针对对象（指导教师）
+        timetableCommonService.saveTimetableTutors(timetableParamVO);
+        // 设置此次排课的针对对象（实验项目）
+        timetableCommonService.saveTimetableItems(timetableParamVO);
+        return true;
+    }
+
+    /*************************************************************************************
+     * Description:自主排课-删除教学班信息
+     *
+     * @author： 魏誠
+     * @date：2018-10-27
+     *************************************************************************************/
+    @Transactional
+    public boolean apiDeleteTimetableSelfCourse(Integer selfId){
+        //删除
+        for(TimetableCourseStudent timetableCourseStudent:timetableCourseStudentDAO.executeQuery("select c from TimetableCourseStudent c where c.timetableSelfCourse.id="+selfId)){
+            timetableCourseStudentDAO.remove(timetableCourseStudent);
+        }
+
+        timetableSelfCourseDAO.remove(timetableSelfCourseDAO.findTimetableSelfCourseById(selfId));
+        return true;
+
+    }
+
+    /*************************************************************************************
+     * Description:自主排课-保存教学班信息
+     *
+     * @author： 魏誠
+     * @date：2018-10-27
+     *************************************************************************************/
+    @Transactional
+    public boolean apiSaveTimetableSelfCourse(TimetableSelfCourseDTO timetableSelfCourseDTO) {
+        // 初始化排课预约对象
+        // 获取当前教学班下的排课计划
+        TimetableSelfCourse timetableSelfCourse = new TimetableSelfCourse();
+        if (timetableSelfCourseDTO.getId() != null) {
+            timetableSelfCourse = timetableSelfCourseDAO.findTimetableSelfCourseById(timetableSelfCourseDTO.getId());
+
+        }
+        //获取当前的星期
+        //星期根据所选计划：school_course_detail的weekday反算获取
+        //根据选课组courseCode遍历SchoolCourseDetail，
+        //保存学期
+        timetableSelfCourse.setSchoolAcademy(schoolAcademyDAO.findSchoolAcademyByAcademyNumber(timetableSelfCourseDTO.getAcademyNumber()));
+        timetableSelfCourse.setCourseCode(timetableSelfCourseDTO.getCourseCode());
+        timetableSelfCourse.setName(timetableSelfCourseDTO.getName());
+        timetableSelfCourse.setSchoolTerm(schoolTermDAO.findSchoolTermById(timetableSelfCourseDTO.getTerm()));
+        //timetableAppointment.setSchoolCourseDetail(schoolCourseDetail);
+        // 设置发布状态为待发布
+        timetableSelfCourse.setStatus(timetableSelfCourseDTO.getStatus());
+        // 设置排课方式
+        timetableSelfCourse.setUser(userDAO.findUserByPrimaryKey(timetableSelfCourseDTO.getTeacher()));
+        // 设置排课方式
+        timetableSelfCourse.setCourseCount(timetableSelfCourseDTO.getCourseCount());
+        // 设置选课组编号
+        timetableSelfCourse.setSchoolCourseInfo(schoolCourseInfoDAO.findSchoolCourseInfoByCourseNumber(timetableSelfCourseDTO.getCourseNumber()));
+        // 保存
+        TimetableSelfCourse timetableSelfCourseSaved = timetableSelfCourseDAO.merge(timetableSelfCourse);
+        // 删除原有的课程学生名单
+        for (TimetableCourseStudent student : timetableCourseStudentDAO
+                .executeQuery("select c from TimetableCourseStudent c where c.timetableSelfCourse.id="
+                        + timetableSelfCourseSaved.getId())) {
+            timetableCourseStudentDAO.remove(student);
+        }
+        // 保存学生名单
+        String[] sStudents = timetableSelfCourseDTO.getStudents().replaceAll("\n", ";").replaceAll("\t", ";").replaceAll("\r\n", ";").split(";");
+        for (String student : sStudents) {
+            if (student == null || student.equals("") || student.equals("\t")) {
+                continue;
+            }
+            TimetableCourseStudent timetableCourseStudent = new TimetableCourseStudent();
+            timetableCourseStudent.setTimetableSelfCourse(timetableSelfCourseSaved);
+            timetableCourseStudent.setUser(userDAO.findUserByPrimaryKey(student));
+            // 判断是否重复
+            if (timetableCourseStudentDAO.executeQuery(
+                    "select c from TimetableCourseStudent c where c.user.username like '" + student
+                            + "' and c.timetableSelfCourse =" + timetableSelfCourseSaved.getId()).size() == 0) {
+                timetableCourseStudentDAO.store(timetableCourseStudent);
+                timetableCourseStudentDAO.flush();
+            }
+        }
+        return true;
+    }
+
+    /*************************************************************************************
+     * Description:自主排课-保存分组学生
+     *
+     * @author： 魏誠
+     * @date：2018-08-03
+     *************************************************************************************/
+    public TimetableGroup apiSaveTimetableGroupStudent(TimetableGroup timetableGroup) {
+        //如果timetableGroup不为空且分组名单未满
+        //获取尚未排TimetableGroupStudents
+        TimetableGroup timetableGroupReturn = timetableGroup;
+        if (Objects.nonNull(timetableGroup) && Objects.nonNull(timetableGroup.getTimetableGroupStudentses())
+                && timetableGroup.getNumbers() > timetableGroup.getTimetableGroupStudentses().size()
+                || (Objects.nonNull(timetableGroup) && Objects.isNull(timetableGroup.getTimetableGroupStudentses()))) {
+            int startNumber = 0;
+            if (Objects.nonNull(timetableGroup) && Objects.nonNull(timetableGroup.getTimetableGroupStudentses())) {
+                startNumber = timetableGroup.getTimetableGroupStudentses().size();
+            }
+            Set<TimetableAppointment> timetableAppointments = timetableGroup.getTimetableAppointments();
+            Set<TimetableCourseStudent> timetableCourseStudents = new HashSet<TimetableCourseStudent>();
+            if (Objects.nonNull(timetableAppointments) && timetableAppointments.iterator().hasNext() && Objects.nonNull(timetableAppointments.iterator().next().getTimetableSelfCourse()) && timetableAppointments.iterator().next().getTimetableSelfCourse().getTimetableCourseStudents().iterator().hasNext()) {
+                timetableCourseStudents = timetableAppointments.iterator().next().getTimetableSelfCourse().getTimetableCourseStudents();
+            }
+            //
+            for (TimetableCourseStudent timetableCourseStudent : timetableCourseStudents) {
+                String sql = "select c from TimetableGroupStudents c where c.timetableGroup.timetableBatch=" + timetableGroup.getTimetableBatch().getId() + " and c.user.username like '" + timetableCourseStudent.getUser().getUsername() + "'";
+                List<TimetableGroupStudents> timetableGroupStudentses = timetableGroupStudentsDAO.executeQuery(sql);
+                if ((Objects.isNull(timetableGroupStudentses) || timetableGroupStudentses.size() == 0) && timetableGroup.getNumbers() - timetableGroup.getTimetableGroupStudentses().size() > 0) {
+                    TimetableGroupStudents timetableGroupStudents = new TimetableGroupStudents();
+                    timetableGroupStudents.setTimetableGroup(timetableGroup);
+                    timetableGroupStudents.setUser(timetableCourseStudent.getUser());
+                    timetableGroupStudents = timetableGroupStudentsDAO.store(timetableGroupStudents);
+                    timetableGroupReturn = timetableGroupStudents.getTimetableGroup();
+                    Set<TimetableGroupStudents> timetableGroupStudentss = timetableGroupReturn.getTimetableGroupStudentses();
+                    timetableGroupStudentss.add(timetableGroupStudents);
+                    timetableGroupReturn.setTimetableGroupStudentses(timetableGroupStudentss);
+                    timetableGroupReturn = timetableGroupDAO.store(timetableGroupReturn);
+                }
+            }
+        }
+        return timetableGroupReturn;
+    }
+
+    /*************************************************************************************
+     * Description: 自主排课-获取查找自建课程信息记录数
+     *
+     * @作者： 魏诚
+     * @日期：2018-10-26
+     *************************************************************************************/
+    @Transactional
+    public int getTimetableSelfCourseTotalRecords() {
+        // 得出用户数量（由于用户的数据量比较多，不能够使用userDAO.findAllUsers()方法查找用户）
+        return ((Long) timetableSelfCourseDAO.createQuerySingleResult(
+                "select count(*) from TimetableSelfCourse c where 1=1 and c.schoolAcademy.academyNumber like '"
+                        + shareService.getUserDetail().getSchoolAcademy().getAcademyNumber() + "'").getSingleResult())
+                .intValue();
+    }
+
+    /*************************************************************************************
+     * Description:自主课程-获取学生选课列表
+     *
+     * @author： 魏誠
+     * @date：2018-10-29
+     *************************************************************************************/
+    public BaseDTO apiTimetableCourseStudentList(int termId, int selfId, String sort, String order) {
+        //获取列表主查询语句
+        StringBuffer sql = new StringBuffer("select c from TimetableCourseStudent c where  c.timetableSelfCourse.schoolTerm.id=" + termId);
+        //查询条件
+        sql.append(" and (c.timetableSelfCourse.id = " + selfId + ")");
+        sql.append(" group by c.user.username ");
+        // 执行sb语句
+        List<TimetableCourseStudent> timetableCourseStudents = timetableCourseStudentDAO.executeQuery(sql.toString(), 0, -1);
+        int total = timetableCourseStudents.size();
+        //封装VO
+        List<TimetableCourseStudentDTO> timetableCourseStudentDTOs = new ArrayList<TimetableCourseStudentDTO>();
+        for (TimetableCourseStudent timetableCourseStudent : timetableCourseStudents) {
+            TimetableCourseStudentDTO timetableCourseStudentDTO = new TimetableCourseStudentDTO();
+            //设置courseCode
+            timetableCourseStudentDTO.setSelfId(timetableCourseStudent.getTimetableSelfCourse().getId());
+            //设置课程名称
+            timetableCourseStudentDTO.setCourseName(timetableCourseStudent.getTimetableSelfCourse().getSchoolCourseInfo().getCourseName());
+            //设置课程编号
+            timetableCourseStudentDTO.setCourseNumber(timetableCourseStudent.getTimetableSelfCourse().getSchoolCourseInfo().getCourseNumber());
+            //设置学期
+            timetableCourseStudentDTO.setTermName(timetableCourseStudent.getTimetableSelfCourse().getSchoolTerm().getTermName());
+            timetableCourseStudentDTO.setTermId(timetableCourseStudent.getTimetableSelfCourse().getId());
+            //设置学院
+            timetableCourseStudentDTO.setAcademyName(timetableCourseStudent.getTimetableSelfCourse().getSchoolAcademy().getAcademyName());
+            //设置学院
+            timetableCourseStudentDTO.setAcademyNumber(timetableCourseStudent.getTimetableSelfCourse().getSchoolAcademy().getAcademyNumber());
+            //设置学生信息
+            timetableCourseStudentDTO.setCname(timetableCourseStudent.getUser().getCname());
+            timetableCourseStudentDTO.setUsername(timetableCourseStudent.getUser().getUsername());
+            //设置上课教师
+            timetableCourseStudentDTO.setTeacherName(timetableCourseStudent.getTimetableSelfCourse().getUser().getCname());
+            timetableCourseStudentDTO.setTeacherNumber(timetableCourseStudent.getTimetableSelfCourse().getUser().getUsername());
+            // 班级信息
+            timetableCourseStudentDTO.setClassName(timetableCourseStudent.getUser().getSchoolClasses().getClassName());
+            timetableCourseStudentDTOs.add(timetableCourseStudentDTO);
+        }
+        BaseDTO baseVO = new BaseDTO();
+        baseVO.setRows(timetableCourseStudentDTOs);
+        baseVO.setTotal(total);
+        return baseVO;
+    }
+
+    /**************************************************************************
+     * Description 审核排课-获取审核课程对象信息-自主
+     * @param termId
+     * @param search
+     * @return
+     * @author 陈乐为 2019-1-17
+     **************************************************************************/
+    public BaseDTO apiEduSelfCourseForAudit(int termId, String search) {
+        //获取列表主查询语句
+        StringBuffer sql = new StringBuffer("select distinct c from TimetableSelfCourse c ");
+        sql.append(" left join c.timetableAppointments timetable ");
+        sql.append(" where c.schoolTerm.id=" + termId);
+        //查询条件
+        if (search != null && !"".equals(search)) {
+            sql.append(" and c.id = " + Integer.valueOf(search));
+        }
+
+        // 执行sb语句
+        List<TimetableSelfCourse> courses = timetableSelfCourseDAO.executeQuery(sql.toString(), 0, -1);
+        //封装VO
+        List<EduCourseListVO> eduCourseListVOs = new ArrayList<EduCourseListVO>();
+        for (TimetableSelfCourse timetableSelfCourse : courses) {
+            EduCourseListVO eduCourseListVO = new EduCourseListVO();
+            //设置courseCode
+            eduCourseListVO.setSelfId(timetableSelfCourse.getId());
+            eduCourseListVO.setStudent(timetableSelfCourse.getTimetableCourseStudents().size());
+            //设置课程名称
+            eduCourseListVO.setCourseName(timetableSelfCourse.getSchoolCourseInfo().getCourseName());
+            //设置课程编号
+            eduCourseListVO.setCourseNumber(timetableSelfCourse.getSchoolCourseInfo().getCourseNumber());
+            //设置学期
+            eduCourseListVO.setTermName(timetableSelfCourse.getSchoolTerm().getTermName());
+            eduCourseListVO.setTermId(timetableSelfCourse.getSchoolTerm().getId());
+            eduCourseListVO.setAcademyName(timetableSelfCourse.getSchoolAcademy().getAcademyName());
+            //设置上课教师
+            eduCourseListVO.setCname(timetableSelfCourse.getUser().getCname());
+            eduCourseListVO.setUsername(timetableSelfCourse.getUser().getUsername());
+            //设置是否排课
+            if (timetableSelfCourse.getTimetableAppointments().size() == ConstantInterface.TIMETABLE_STATUS_NO_APPOINTMENT) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_NO_APPOINTMENT);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_PUBLIC);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_TOBE_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_TOBE_PUBLIC);
+            } else if (timetableSelfCourse.getTimetableAppointments().size() > 0 && timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus() == ConstantInterface.TIMETABLE_STATUS_NO_PUBLIC) {
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_NO_PUBLIC);
+            }else if(timetableSelfCourse.getTimetableAppointments().size()>0&&timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus()==ConstantInterface.TIMETABLE_STATUS_AUDIT_ACCESS){
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_AUDIT_ACCESS);
+            }else if(timetableSelfCourse.getTimetableAppointments().size()>0&&timetableSelfCourse.getTimetableAppointments().iterator().next().getStatus()==ConstantInterface.TIMETABLE_STATUS_AUDIT_REFUSE){
+                eduCourseListVO.setTimetableStatus(ConstantInterface.TIMETABLE_STATUS_AUDIT_REFUSE);
+            }
+            //增加排课
+            eduCourseListVO.setTimetableDTOs(timetableCommonService.apiTimetableDTOs(timetableSelfCourse.getId()));
+            eduCourseListVOs.add(eduCourseListVO);
+        }
+        BaseDTO baseVO = new BaseDTO();
+        baseVO.setRows(eduCourseListVOs);
+        return baseVO;
+    }
+
+}

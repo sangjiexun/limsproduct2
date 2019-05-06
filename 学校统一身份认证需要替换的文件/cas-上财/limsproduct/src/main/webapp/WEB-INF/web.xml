@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <display-name></display-name>
+    <listener>
+        <listener-class>
+            org.springframework.web.context.request.RequestContextListener
+        </listener-class>
+    </listener>
+    <!-- 所有的请求的getParameter会被替换，如果参数里面 含有敏感词会被替换掉 -->
+    <filter>
+        <filter-name>XssSqlFilter</filter-name>
+        <filter-class>net.zjcclims.common.XssFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>XssSqlFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>spring-profiles.default</param-name>
+            <param-value>zjcclims</param-value>
+        </init-param>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <description>
+            generated-spring-security-session-integration-filter
+        </description>
+        <filter-name>SpringSecuritySessionIntegrationFilter</filter-name>
+        <filter-class>org.springframework.security.web.context.SecurityContextPersistenceFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SpringSecuritySessionIntegrationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <description>generated-persistence-filter</description>
+        <filter-name>zjcclimsConnFilter</filter-name>
+        <filter-class>
+            org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
+        </filter-class>
+        <init-param>
+            <param-name>entityManagerFactoryBeanName</param-name>
+            <param-value>zjcclimsConn</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>zjcclimsConnFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <description>generated-spring-security-filter</description>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <description>generated-sitemesh-filter</description>
+        <filter-name>Sitemesh Filter</filter-name>
+        <filter-class>
+            com.opensymphony.module.sitemesh.filter.PageFilter
+        </filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Sitemesh Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!--上财 cas start -->
+    <!-- 单点登出过滤器 -->
+    <filter>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+    </listener>
+
+    <!-- 认证过滤器，当本地不含登录信息时，跳转到casServerLoginUrl进行身份认证 -->
+    <filter>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <filter-class>com.kingstar.sso.client.filter.SSOAuthenticationFilter</filter-class>
+        <init-param>
+            <param-name>casServerLoginUrl</param-name>
+            <param-value>https://login.sufe.edu.cn/cas/login</param-value> <!-- 单点登录服务器的登录URL -->
+        </init-param>
+        <init-param>
+            <param-name>serverName</param-name>
+            <param-value>http://10.2.47.48</param-value>  <!-- 登陆后返回的服务器地址 -->
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <url-pattern>/sso/login</url-pattern>
+    </filter-mapping>
+    <!-- 解析登录服务器返回的认证信息，可选多种protocol，必须配置 -->
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
+        <init-param>
+            <param-name>casServerUrlPrefix</param-name><!--单点登录服务器的访问地址前缀-->
+            <param-value>https://login.sufe.edu.cn/cas</param-value>
+        </init-param>
+        <init-param>
+            <param-name>serverName</param-name><!-- 客户端服务器的访问地址 -->
+            <param-value>http://10.2.47.48</param-value>
+        </init-param>
+        <init-param>
+            <param-name>redirectAfterValidation</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>encoding</param-name><!--若出现从接口中获取的中文数据存在乱码，则修改encoding -->
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/sso/login</url-pattern>
+    </filter-mapping>
+    <!-- 将上面解析的结果装入request，必须配置 -->
+    <filter>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <url-pattern>/sso/login</url-pattern>
+    </filter-mapping>
+    <!-- 在本地线程保存解析结果，必须配置 -->
+    <filter>
+        <filter-name>CAS Assertion Thread Local Filter</filter-name>
+        <filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Assertion Thread Local Filter</filter-name>
+        <url-pattern>/sso/login</url-pattern>
+    </filter-mapping>
+    <!-- 扩展配置 start -->
+    <filter>
+        <filter-name>SSO Client Filter</filter-name>
+        <filter-class>com.kingstar.sso.client.filter.SSOClientFilter</filter-class>
+        <init-param>
+            <param-name>casServerUrlPrefix</param-name>
+            <param-value>https://login.sufe.edu.cn/cas/</param-value> <!-- 单点登录服务器的地址前缀 -->
+        </init-param>
+        <init-param>
+            <param-name>casServerStatusUrl</param-name>
+            <param-value>https://login.sufe.edu.cn/cas/status.htm</param-value> <!-- 单点登录服务器的状态验证URL -->
+        </init-param>
+        <init-param>
+            <param-name>casServerLoginUrl</param-name>
+            <param-value>https://login.sufe.edu.cn/cas/login</param-value> <!-- 单点登录服务器的登录URL -->
+        </init-param>
+        <init-param>
+            <param-name>casServerLogoutUrl</param-name>
+            <param-value>https://login.sufe.edu.cn/cas/logout</param-value> <!-- 单点登录服务器的登出URL -->
+        </init-param>
+        <init-param>
+            <param-name>casServerTimeout</param-name>
+            <param-value>0</param-value>  <!-- 单点登录服务器测试连接的超时时间 -->
+        </init-param>
+        <init-param>
+            <param-name>appServerName</param-name>
+            <param-value>http://10.2.47.48</param-value>  <!-- 登出后返回的服务器地址 -->
+        </init-param>
+        <init-param>
+            <param-name>appServerLoginUserKey</param-name>
+            <param-value>username</param-value>
+        </init-param>
+        <init-param>
+            <param-name>appServerLoginPassKey</param-name>
+            <param-value>password</param-value>
+        </init-param>
+        <init-param>
+            <param-name>appServerLoginCodeKey</param-name>
+            <param-value>code</param-value>
+        </init-param>
+        <init-param>
+            <param-name>appServerLoginUrl</param-name>
+            <param-value>http://10.2.47.48/shufelims/pages/login.jsp</param-value>  <!-- 应用系统登录界面URL -->
+        </init-param>
+        <init-param>
+            <param-name>appServerWelcomeUrl</param-name>
+            <param-value>http://10.2.47.48/shufelims/home</param-value>  <!-- 登出后返回的应用系统URL -->
+        </init-param>
+        <init-param>
+            <param-name>appServerSecurityResourceRegex</param-name>
+            <param-value>^/shufelims/(?!(sso/)).+(\.jsp)?(\?.+)?$</param-value>    <!-- 须认证后才能访问的页面，用正则表达式定义 -->
+        </init-param>
+        <init-param>
+            <param-name>appServerLocalLoginUrl</param-name>
+            <param-value>http://10.2.47.48/shufelims/pages/sso/LocalLogin.jsp</param-value>  <!-- 应用系统本地认证URL -->
+        </init-param>
+        <!--<init-param>
+            <param-name>appServerLocalLoginClass</param-name>
+            <param-value>localhost.zjcclims.sso.LocalLogin</param-value>
+        </init-param>
+        <init-param>
+            <param-name>appServerLocalLogoutClass</param-name>
+            <param-value>localhost.zjcclims.sso.LocalLogout</param-value>
+        </init-param>
+        <init-param>
+            <param-name>appServerLocalCodeClass</param-name>
+            <param-value>localhost.zjcclims.sso.LocalCode</param-value>
+        </init-param>
+        <init-param>
+            <param-name>appServerLocalValidateClass</param-name>
+            <param-value>localhost.zjcclims.sso.LocalValidate</param-value>
+        </init-param>-->
+     <!--   <init-param>
+            <param-name>appServerLoginUrlSuffix</param-name>
+            <param-value>/sso/login</param-value>    &lt;!&ndash; 须处理CAS登录的请求地址的后缀 &ndash;&gt;
+        </init-param>
+        <init-param>
+            <param-name>appServerLogoutUrlSuffix</param-name>
+            <param-value>/sso/logout</param-value>    &lt;!&ndash; 须处理CAS登出的请求地址的后缀 &ndash;&gt;
+        </init-param>
+        <init-param>
+            <param-name>appServerValidateUrlSuffix</param-name>
+            <param-value>/sso/validate</param-value>    &lt;!&ndash; 须处理本地帐户校验的请求地址的后缀 &ndash;&gt;
+        </init-param>
+        <init-param>
+            <param-name>appServerServiceUrlSuffix</param-name>
+            <param-value>/sso/service</param-value>    &lt;!&ndash; 须处理SSO的请求地址的后缀 &ndash;&gt;
+        </init-param>-->
+        <init-param>
+            <param-name>appCode</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>SSO Client Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- 扩展配置 over -->
+
+    <!--上财 cas over -->
+    <servlet>
+        <description>generated-servlet</description>
+        <servlet-name>zjcclims Servlet</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>
+                classpath:zjcclims-web-context.xml,
+                classpath:applicationContext-profile.xml
+            </param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <description>generated-resources-servlet</description>
+        <servlet-name>Resource Servlet</servlet-name>
+        <servlet-class>
+            org.springframework.js.resource.ResourceServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <description>This is the description of my J2EE component</description>
+        <display-name>This is the display name of my J2EE component</display-name>
+        <servlet-name>Zjcclims</servlet-name>
+        <servlet-class>app.zjcclims.zjcclims</servlet-class>
+    </servlet>
+    <servlet>
+        <description>This is the description of my J2EE component</description>
+        <display-name>This is the display name of my J2EE component</display-name>
+        <servlet-name>AD</servlet-name>
+        <servlet-class>app.zjcclims.AD</servlet-class>
+    </servlet>
+    <servlet>
+        <description>This is the description of my J2EE component</description>
+        <display-name>This is the display name of my J2EE component</display-name>
+        <servlet-name>Reservation</servlet-name>
+        <servlet-class>app.zjcclims.Reservation</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resource Servlet</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>zjcclims Servlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Zjcclims</servlet-name>
+        <url-pattern>/servlet/Zjcclims</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AD</servlet-name>
+        <url-pattern>/servlet/AD</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Reservation</servlet-name>
+        <url-pattern>/servlet/Reservation</url-pattern>
+    </servlet-mapping>
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>zjcclims.root</param-value>
+    </context-param>
+    <context-param>
+        <!--注意！！！切换版本时需要修改这个属性值，他比ide中配的参数加载优先级晚-->
+        <param-name>spring.profiles.active</param-name>
+        <param-value>shufelims</param-value>
+    </context-param>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/applicationContext.xml, classpath:spring-context-flyway.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/pages/error_page/403.jsp</location>
+    </error-page>
+    <!-- 启用OPTIONS方法的漏洞修复 -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>fortune</web-resource-name>
+            <url-pattern>/*</url-pattern>
+            <http-method>PUT</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>HEAD</http-method>
+            <http-method>OPTIONS</http-method>
+            <http-method>TRACE</http-method>
+        </web-resource-collection>
+        <auth-constraint></auth-constraint>
+    </security-constraint>
+</web-app>

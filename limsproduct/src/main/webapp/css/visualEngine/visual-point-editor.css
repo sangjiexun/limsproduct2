@@ -1,0 +1,231 @@
+.editor_Button {
+    width: 70px;
+    height: 30px;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    text-align: center;
+    border-radius: 2px;
+    color: white;
+    display: block;
+    position: absolute;
+    font-size: 18px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    z-index: 6;
+    right: 0;
+    cursor: pointer;
+}
+.editor_Layer {
+    width: 85px;
+    height: 30px;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    text-align: center;
+    border-radius: 2px;
+    color: white;
+    display: block;
+    position: absolute;
+    font-size: 18px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    z-index: 6;
+    /*right: 0;*/
+    cursor: pointer;
+}
+.editor_tool {
+    width: 64px;
+    height: 120px;
+    border: 2px solid #4CAF50;
+    background-color: rgba(134, 251, 215, 0.20);
+    border-radius: 5px;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    display: none;
+    z-index: 3;
+}
+.editor_layer {
+    width: 85px;
+    height: 120px;
+    border: 2px solid #4CAF50;
+    background-color: rgba(134, 251, 215, 0.20);
+    border-radius: 5px;
+    position: absolute;
+    top: 30px;
+    /*right: 0;*/
+    display: none;
+    z-index: 3;
+}
+.layer_p {
+    text-align: center;
+    font-weight: 600;
+}
+.tool_unit {
+    border:1px solid white;
+    height: 28px;
+    width: 100%;
+    cursor: pointer;
+}
+.tool_img{
+    position:absolute;
+    height:25px;
+    left:18px;
+    width: auto!important;
+   
+}
+.editor_confirm_box{
+    display:none;
+    position:absolute;
+    width:120px;
+    height:75px;
+    border:1px solid rgb(0, 119, 248);
+    background-color:rgba(105, 189, 251, 0.40);
+    border-radius:2px;
+    z-index:7;
+}
+.editor_confirm {
+    margin-top: 5px;
+    margin-left: 2px;
+    margin-right: 3px;
+    width: 33px;
+    height: 18px;
+    display: inline-block;
+    border: 1px solid #4CAF50;
+    border-radius: 2px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+.editor_cancel {
+    margin-top: 5px;
+    margin-left: 2px;
+    margin-right: 3px;
+    width: 33px;
+    height: 18px;
+    display: inline-block;
+    border: 1px solid rgb(163, 7, 7);
+    border-radius: 2px;
+    background-color: rgb(163, 7, 7);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+.editor_delete {
+    margin-top: 5px;
+    margin-left: 2px;
+    width: 33px;
+    height: 18px;
+    display: inline-block;
+    border: 1px solid rgb(255, 149, 48);
+    border-radius: 2px;
+    background-color: rgb(255, 149, 48);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+.confirm_input {
+    margin-left:5px;
+    margin-top:2px;
+    width: 110px;
+    height: 18px;
+}
+    .confirm_input span {
+        width: 30px;
+        height: 18px;
+        font-size:12px;
+        overflow:hidden;
+    }
+    .confirm_input input {
+        float:right;
+        width: 70px;
+        height: 18px;
+    }
+
+.editor_tool_line {
+    width: 200px;
+    height: 24px;
+    border: 2px solid rgb(110, 180, 250);
+    background-color: rgba(117, 187, 254, 0.50);
+    border-radius: 5px;
+    position: absolute;
+    right: 70px;
+    display: none;
+    z-index: 3;
+}
+
+.tool_unit_line {
+    display: inline-block;
+    border: 1px solid white;
+    height: 20px;
+    width: 48px;
+    cursor: pointer;
+    box-shadow:none;
+}
+.tool_img_line {
+    position: relative;
+    height: 18px;
+    left: 14px;
+    width: auto!important;
+}
+.editor_tool_points{
+    width: 200px;
+    border: 2px solid rgb(110, 180, 250);
+    background-color: rgba(117, 187, 254, 0.50);
+    border-radius: 5px;
+    position: absolute;
+    top: 30px;
+    right: 70px;
+    display: none;
+    z-index: 3;
+}
+.editor_tool_point_line{
+    height: 28px;
+    width: 100%;
+}
+.editor_tool_point{
+    display: inline-block;
+    height: 28px;
+    cursor: pointer;
+    width: 48px;
+    border: 1px solid white;
+}
+.editor_tool_point img{
+    position: relative;
+    height: 25px;
+    margin: auto;
+    width: auto!important;
+}
+.editor_delete_all{
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 66px;
+    height: 18px;
+    display: inline-block;
+    border: 1px solid rgb(180, 89, 10);
+    border-radius: 2px;
+    background-color: rgb(180, 89, 10);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+.editor_add{
+    margin-top: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 33px;
+    height: 18px;
+    display: inline-block;
+    border: 1px solid rgb(0,155,0);
+    border-radius: 2px;
+    background-color: rgb(0,155,0);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+.resource_file_select_table{
+    width: 50%;
+    display: inline-block;
+}
+.resource_file_select_table table{
+    width: 100%;
+}

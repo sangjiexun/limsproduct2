@@ -1,0 +1,166 @@
+body{
+    margin:0;
+    padding:0;
+    font-size:14px;
+    font-family: Microsoft YaHei;
+}
+ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+td{
+    margin:0;
+    padding:0;
+}
+.hand_one{
+    width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    margin-bottom: 50px;
+}
+.hand_img{
+    margin-top: 50px;
+    font-size: 42px;
+    font-family: "Arial","Hiragino Sans GB", \5fae\8f6f\96c5\9ed1, "Helvetica", "sans-serif";
+}
+.hand_img img{
+    width:530px;
+}
+.tilte_t{
+    font-size: 30px;
+    margin: 50px 0;
+}
+.subtitle{
+    font-size:32px;
+    margin-bottom: 100px;
+}
+.in_put ul{
+    font-size:20px;
+}
+.in_put ul li input{
+    border:0px;
+    border-bottom: 1px solid #000;
+    margin-bottom: 18px;
+}
+.tilte_le{
+    font-size: 18px;
+    margin: 150px 0;
+}
+.new_tlte{
+    float:left;
+    font-size: 20px;
+    margin-bottom: 8px;
+    text-align: left;
+}
+.new_T_tlte{
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+.time_one{
+    height:85px;
+    width:20%;
+}
+.Content_filling{
+    width:16%;
+}
+.Expected_time{
+    width:16%;
+}
+.Content_fill{
+    width:14%;
+}
+.Actual_situation{
+    width:14%;
+}
+.end_e{
+    width:20%;
+}
+.Survey_s{
+    height:86px;
+}
+.measure_m{
+    height:43px;
+}
+.imp_content{
+    border: 1px solid #808080;
+    border-top: 0;
+}
+.fill_content{
+    width:100%;
+    height:100%;
+    margin-top: 8px;
+}
+.xiang_left{
+    float:left;
+}
+.kao_right{
+    float:right;
+}
+.kao_right div input{
+    border:0;
+    border-bottom:1px solid #000;
+    margin:8px 0;
+}
+.kuang_centent{
+    border: 1px solid #808080;
+    overflow: hidden;
+}
+.yang-yan{
+    border-left: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    border-right: 1px solid #808080;
+    overflow: hidden;
+}
+.y_centent_nt{
+    margin:40px 0;
+    font-size: 20px;
+}
+.y_centent_nt p{
+    float:left;
+    margin: 0;
+}
+.kuang_biankong{
+    border: 1px solid #808080;
+    overflow: hidden;
+    border-top:0;
+}
+.kongzhi_kuandu td{
+    width:25%;
+}
+.bottom_tom{
+    margin: 40px 0;
+}
+.shiyan_ceping{
+    float:left;
+}
+.shiyan_ceping p{
+    margin:0;
+    text-align: left;
+}
+.y_YY{
+    overflow:hidden;
+}
+.list_page{
+    text-align: left;
+}
+.page_end{
+    margin-top:40px;
+}
+.in_put{
+    width: 380px;
+    margin: 0px auto;
+    text-align: left !important;
+}
+.in_py span{
+    font-size: 20px;
+}
+.komhzji{
+    width:800px;
+}
+.Y-jifi{
+    width:800px;
+}
+table{
+    border-collapse: collapse;
+}

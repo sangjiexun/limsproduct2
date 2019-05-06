@@ -1,0 +1,466 @@
+/* top header meun*/
+*{
+	font-family:"微软雅黑";
+}
+.top {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-color: #BED9EA;
+    text-indent: 3px;
+}
+
+.header {
+    margin: auto;
+    box-shadow: 0 7px 15px 0px #ADADAD;
+    height: 35px;
+    background: #23928E;
+    /*background: #3EC1BC;*/
+}
+
+.sub_menu,
+.logo_box,
+.header,
+.main_container {
+    max-width: 1280px;
+}
+
+.logo_box {
+    margin: auto;
+    padding: 10px 0px 25px 0px;
+    text-indent: 3px;
+}
+
+.user_info{	
+	position:relative;
+	right:9px;	
+	top:5px;
+}
+
+.user_info .g5:hover{
+    background:#ffffff;
+    color:#000000;
+    border-radius:5px;
+}
+
+.menu_box {
+    overflow: hidden;
+    /* overflow-y: auto; */
+    background: #36b7ab;
+    height: 35px;
+    cursor: pointer;
+}
+
+.menu {
+    height: 80px;
+    display: table;
+    width: 100%;
+}
+
+.add_sub {
+    width: 90%;
+    left: 5%;
+    top: 43px;
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    background: #E4EAEA;
+    margin:auto;
+}
+
+.add_sub ul {
+    position: absolute;
+    left: 10px;
+}
+
+.menu_list {
+    display: table-cell;
+}
+
+.selected {
+    /* height: 25px; */
+}
+
+.menu_list a {
+    white-space: nowrap;
+    text-align: center;
+    letter-spacing:1px;
+/*     font-size:1.209em; */
+}
+.menu_list a:hover{
+	color:#50FFF8;
+}
+.sub_menu {
+    top: 45px;
+    left: 0px;
+    width: 100%;
+}
+
+.sub_menu a {
+    background: none;
+    color: #333
+}
+
+.sub_menu a:hover,
+.sub_list a:hover {
+    color: #36b7ab;
+}
+
+.sub_list a {
+    color: #555;
+}
+
+.sub_selected {
+    background: #F5F5F5;
+}
+
+.sub_selected a {
+    color: #3ec1bc;
+}
+
+.selected a {
+    color: darkcyan;
+    background: #fff;
+} 
+
+.menu_a {
+    moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    /* you could also put this in a class */
+    -webkit-user-select: none;
+    /* and add the CSS class here instead */
+    -ms-user-select: none;
+    user-select: none;
+    /**禁止选中文字*/
+}
+
+.site_name{
+	font-family: "微软雅黑";
+	font-size:17px;
+	letter-spacing: 5px;
+	color:#666666;
+}
+
+.li_1,
+.lo_1,
+.un_1{
+	display:block;
+	width:110%;
+	height:20px;
+	line-height:20px;
+	font-family:"微软雅黑";
+	text-align:center;
+	margin-top:5px;	
+	border-radius:5px;
+	color:#475965;
+	background-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.log_in,
+.log_out,
+.user_name{
+	font-family: "微软雅黑";
+}
+
+/*main_container*/
+
+.main_container {
+    /* top: 40px; */
+    top: 10px;
+}
+
+.t_e,
+.theory_experiment:hover {
+    background: #F96;
+}
+
+.theory,
+.oneself,
+.theory_experiment {
+    color: #6B6B6B;
+}
+
+.t,
+.theory:hover,
+.o,
+.oneself:hover,
+.theory_experiment:hover,
+.t_e,
+.o,
+.theory_experiment_icon,
+.theory_icon,
+.oneself_icon {
+    color: #fff;
+}
+
+.t,
+.theory:hover {
+    background: #3EC1BC;
+}
+
+.o,
+.oneself:hover {
+    background: #5C73A9;
+}
+
+.theory_experiment_icon {
+    background: #F96;
+}
+
+.theory_icon {
+    background: #3EC1BC
+}
+
+.oneself_icon {
+    background: #5C73A9
+}
+
+.theory_experiment_icon:after,
+.theory_icon:after,
+.oneself_icon:after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 30px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.theory_experiment_icon:after {
+    background-image: url(../img/trbg.png);
+}
+
+.theory_icon:after {
+    background-image: url(../img/trbg1.png);
+}
+
+.oneself_icon:after {
+    background-image: url(../img/trbg2.png);
+}
+.week_list{
+    height:25px;
+    width:25px;
+    border-radius: 25px;
+    line-height: 25px;
+    cursor: pointer;
+}
+.weeks_detail li{
+    float: left;
+}
+.weeks_detail li:nth-of-type(odd){
+    background-color: #e6e6e6;
+}
+.course_table{
+    position: relative;
+}
+.course_content {
+    width: 400px;
+    height: 380px;
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: 100px;
+}
+.mask{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 8640px;
+    height:100%;
+    background-color: #000;
+    opacity: 0.5;
+    display: none;
+}
+.course_content .course_close{
+    font-size: 20px;
+    position: absolute;
+    right:0;
+    top:0;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    background-color: #000;
+    color: #ffffff;
+    opacity: 0.6;
+}
+.data_content{
+    width:80%;
+    margin: 0 auto;
+}
+.data_head{
+    text-align: center;
+    margin: 20px  20px;
+}
+.data_content{
+    text-align: center;
+    font-size: 14px;
+}
+.data_content input{
+    width: 100px;
+    margin-left: 20px
+}
+.data_feet button{
+    width: 80px;
+    margin-right: 5px;
+    background: rgb(62, 193, 188);
+    outline: none;
+    border: 2px;
+    color: #fff;
+    line-height: 20px;
+    cursor: pointer;
+}
+.btn0 {
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0 5px;
+    height: 23px;
+    line-height: 23px;
+    font-size: 12px;
+    color: #999;
+    backgroun    cursor:pointer;
+    display: block;
+    d-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.btn0:hover{
+    color:#333;
+}
+.btn {
+border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0 8px;
+    height: 23px;
+    line-height: 23px;
+    font-size: 13px;
+    color: #999;
+    backgroun    cursor:pointer;
+    display: block;
+    d-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.btn:hover{
+	cursor:pointer;
+    color:#333;
+}
+.mt17{margin-top:17px!important;}
+.btn2 {
+    cursor: pointer;
+    display: block;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0 8px;
+    height: 25px;
+    line-height: 25px;
+    letter-spacing:3px;
+    font-size: 70%;
+    font-family: "微软雅黑";
+    color: #999;
+    text-align: center;
+    background-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.btn2:hover{
+    color:#333;
+}
+.btn3 {
+    cursor:pointer;
+    display: block;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0 8px;
+    height: 23px;
+    line-height: 23px;
+    font-size: 13px;
+    color: #999;
+    background-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(-50%, #5C73A9 ), color-stop(20%, #ffffff), color-stop(80%, #f0f0f0), color-stop(150%, #5C73A9));
+    background: -webkit-linear-gradient(#5C73A9  -50%, #ffffff 20%, #f0f0f0 80%, #5C73A9 150%);
+    background: -moz-linear-gradient(#5C73A9  -50%, #ffffff 20%, #f0f0f0 80%, #5C73A9 150%);
+    background: -o-linear-gradient(#5C73A9  -50%, #ffffff 30%, #f0f0f0 80%, #5C73A9 150%);
+    background: linear-gradient(#5C73A9  -50%, #ffffff 20%, #f0f0f0 80%, #5C73A9  150%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.btn3:hover{
+    color:#333;
+}
+.btn4 {
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0 8px;
+    height: 21px;
+    line-height: 25px;
+    font-size: 12.5px;
+    letter-spacing: 0.5px;
+    color: #999;
+    display: block;
+    d-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.btn4:hover{
+    color:#333;
+}
+.btn2-1 {
+    cursor: pointer;
+    display: block;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 0 8px;
+    height: 23px;
+    line-height: 23px;
+    letter-spacing:3px;
+    font-size: 70%;
+    font-family: "微软雅黑";
+    color: #999;
+    text-align: center;
+    background-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+    box-shadow: 0 0 3px white inset, 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.btn2-1:hover{
+    color:#333;
+}
+.main_container .floatL { width: 20px;  position: absolute; z-index:1;height: 36px;background:#333;right: -20px;top: 49%;}
+.main_container .floatL a { font-size:0; text-indent: -999em; display: block;}
+.main_container .btnOpen, .main_container .btnCtn {  position: relative; z-index:9; top:0; left: 0;  background-image: url("../../images/shopnc.png"); background-repeat: no-repeat; display:block; width: 20px; height: 36px;}
+.main_container .btnOpen { background-position: -417px -125px;}
+.main_container .btnCtn { background-position: -457px -125px;}

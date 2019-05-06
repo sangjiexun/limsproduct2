@@ -1,0 +1,203 @@
+*{font-family: microsoft yahei;}
+html{
+	font-size:14px;
+}
+body {
+	background-image:url(../../images/videopublish/bg2.jpg);
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+body{
+	margin:0;
+	padding:0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+}
+li{
+	list-style:none;
+}
+ul{
+	padding:0;
+	margin:0;
+}
+.dmrrr{
+	padding: 0;
+}
+
+.is_flipboard{position:relative;overflow:hidden;}
+#one .is_flipboard{background:#ddd;}
+#two .is_flipboard{background:#fff;}
+
+
+#one{background:#ddd;}
+#two{background:#fff;}
+
+
+#demo {
+	background: none;
+	overflow: hidden;
+	width: 100%;
+	height: 300px;
+	position: absolute;
+}
+#indemo {
+	float: left;
+	width: 1000%;
+}
+#demo1 {
+	float: left;
+}
+#demo2 {
+	float: left;
+}
+
+/*新增rem样式*/
+.header{
+	box-sizing:border-box;
+	height:3rem;
+	margin-top: 1.8rem;
+	padding:0 4%;
+	overflow: hidden;
+}
+
+.header img {
+	height: 100%;
+	width: auto;
+}
+
+.time{
+	float: right;
+}
+
+.time font,
+.time b{
+	font-size:1.35rem;
+	font-weight: normal;
+}
+
+#classlist{
+	position: relative;
+}
+
+#classlist h2 {
+	width: 100%;
+	text-align: center;
+	font-size: 2.1rem;
+	margin: 1.35rem 0 1.6rem;
+	color: #000;
+	font-family: simhei;
+}
+
+#vi-title,#scrolltext{
+	width:92%;
+	margin:auto;
+	overflow:hidden;
+}
+#vi-title{
+	background: #5e99b5;
+}
+#vi-title li {
+	float: left;
+	text-align: center;
+}
+
+#scrolltext li{
+	overflow:hidden;
+}
+#scrolltext li span{
+	display:block;
+	float:left;
+	min-height: 3.4rem;
+	text-align:center;
+}
+
+#vi-title li,
+#scrolltext li span{
+	font-size:1.05rem;
+}
+
+.is_flipboard {
+	position: relative;
+	overflow: hidden;
+}
+
+#vi-title li,
+#scrolltext li span,
+.is_flipboard {
+	height: 3.4rem;
+	line-height:3.4rem;
+}
+
+#classroom,
+#classrooma{
+	width:26%;
+}
+
+#classnum{
+	width:26%;
+}
+
+#teacher{
+	width:12%;
+}
+
+#class{
+	width:12%;
+}
+
+#classa{
+	width:12%;
+}
+
+#studentB,
+#studentb{
+	width:12%;
+}
+
+#classroom,
+#classrooma,
+#classnum,
+#teacher,
+#class,
+#classa,
+#studentB,
+#studentb{
+	background: rgba(255,255,255,0.7);
+}
+
+/*以下为16:9的屏幕样式控制*/
+
+/*720p(1280x720)*/
+@media only screen and (min-width: 960px) and (max-width: 1280px) {
+	html{
+		font-size:16.5px;
+	}
+}
+/*WXGA(1366x768)< LCD TV 面板最常见的分辨率>*/
+@media only screen and (min-width: 1281px) and (max-width: 1366px) {
+	html{
+		font-size:17.5px;
+	}
+}
+/*1080p(1920x1080)< Full HD>*/
+@media only screen and (min-width: 1367px) and (max-width: 1920px) {
+	html{
+		font-size:25px;
+	}
+}
+/*QHD(2560 x 1440)*/
+@media only screen and (min-width: 1921px) and (max-width: 2560px) {
+	html{
+		font-size:33px;
+	}
+}
+/*2160p(3840 x 2140)< Super HD>接近4k*/
+@media only screen and (min-width: 2561px) and (max-width: 3840px) {
+	html{
+		font-size:50px;
+	}
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="layui/css/expand.css" media="all">
+	</head>
+	<body>
+		<div id="week_box" class="layui-form" style="margin:10px auto 0">
+			<!--checkbox形式-->
+			<!--<input type="checkbox" name="" title="test" lay-skin="primary">-->
+			<div class="layui-unselect layui-form-checkbox " value="xxx">
+				<span>第1周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第2周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第3周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第4周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第5周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第6周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第7周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第8周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第9周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+			<div class="layui-unselect layui-form-checkbox ">
+				<span>第10周</span>
+				<i class="layui-icon layui-icon-ok"></i>
+			</div>
+		</div>
+		<hr />
+		<input id='test1' type='button' class='layui-btn' value='获取第一个的value' /><hr>
+		<input id='test2' type='text' class='' placeholder="设置第二个复选框里的value"/><input type='button' class='layui-btn layui-btn-xs' value="确定"/>
+		<hr>
+		<input id='test3' type='button' class='layui-btn' value='获取已经选中的复选框'/>
+		
+		
+		
+		
+	</body>
+	<script src="layui/lay/formselect/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="layui/layui.js" charset="utf-8"></script>
+	<script src="optionRule.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		// 周次
+		$("#week_box .layui-form-checkbox").each(function(i, j) {
+			j.onclick = function() {
+				this.classList.toggle('layui-form-checked');
+				// oldChecked toggle
+				if (this.getAttribute('oldChecked') == null) {
+					this.setAttribute('oldChecked', '');
+				} else {
+					this.removeAttribute('oldChecked');
+				}
+			}
+		});
+			// sample
+		$(function() {
+			// 单双击
+			optionRule('week_box');
+			// 1 获取第一个的value
+			var weekBox = document.querySelector('#week_box');
+			var checkboxs = weekBox.getElementsByClassName('layui-form-checkbox');
+			$("#test1").click(function() {
+				// 获取复选框div
+				
+				// 获取div里的所有复选框 
+				
+				// 获取第一个复选框里的value
+				var bV = checkboxs[0].getAttribute('value');
+				console.log('第一个复选框里的value值：', bV)
+			})
+			// 2 设置value值
+			$("#test2").next().click(function(){
+				var v = $("#test2").val();
+				checkboxs[1].setAttribute("value",v);
+				// 刷新获取
+				checkboxs = weekBox.getElementsByClassName('layui-form-checkbox');
+				console.log("第2个复选框里的value值：["+checkboxs[1].getAttribute('value')+"]")
+			})
+			// 获取week_box里已经选中的复选框
+			$("#test3").click(function(){
+				var checkeds = weekBox.getElementsByClassName('layui-form-checked');
+				console.log(checkeds)
+				
+				var x = checkboxs[9];
+				x.ondblclick = function(){
+					console.log(123)
+				}
+			})
+			// 要获取被选中的复选框就重写checkOn方法
+		})
+		// 重写
+		function checkedOn(ipt, num) {
+			ipt[num].classList.add('layui-form-checked');
+		    ipt[num].setAttribute('oldChecked', '');
+		    // 没有oldChecked 为null 有则为 ''
+			// 获取被选中的value
+			console.log('下标【'+num+'】被双击选中的value值：'+ipt[num].getAttribute('value'))
+			// 存在一个bug,被双击的值会出现两次 还未解决
+		}
+	</script>
+</html>
