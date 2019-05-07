@@ -528,10 +528,7 @@ $(document).ready(function () {
                 data.field.eventType = $("#activity").val();
                 data.field.objectType = $("#userType").val();
                 data.field.reason = $("#reason").val();
-                data.field.username = $("#username").val();
                 data.field.content = $("#content").val();
-                data.field.projectName = $("#projectName").val();
-                data.field.auditServerUrl = $("#auditServerUrl").val();
                 data.field.telephone = $("#telephone").val();
                 if(data.field.outside == "on") {
                     data.field.outside = "1";
@@ -572,13 +569,10 @@ $(document).ready(function () {
                 data.field.term = termId;
                 data.field.date = $('#date-range').val();
                 data.field.labRoom = $("#labRoomId").val();
-                data.field.username = $("#username").val();
                 data.field.eventType = $("#activity").val();
                 data.field.objectType = $("#userType").val();
                 data.field.reason = $("#reason").val();
                 data.field.content = $("#content").val();
-                data.field.projectName = $("#projectName").val();
-                data.field.auditServerUrl = $("#auditServerUrl").val();
                 data.field.telephone = $("#telephone").val();
                 var timess = "";
                 $("#time_box >div").each(function(){

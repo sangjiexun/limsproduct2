@@ -1,7 +1,6 @@
 var contextPath = $("meta[name='contextPath']").attr("content");
 var zuulUrl ="";
 var labRoomId;
-var username = $("#username").val();
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     productsearch("", curnum, limitcount);
@@ -33,7 +32,7 @@ function productsearch(search, start, limitsize) {
         }
     });
 
-    var url = zuulUrl + "api/labReservation/apiGetLabRoomList?search=" + search + "&sort=id&sortOrder=id&username="+ username;
+    var url = zuulUrl + "api/labReservation/apiGetLabRoomList?search=" + search + "&sort=id&sortOrder=id";
 
     layui.use(['table', 'laypage', 'laydate'], function () {
         var table = layui.table,

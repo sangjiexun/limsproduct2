@@ -186,7 +186,7 @@
 							</fieldset>
 							<c:if test="${project eq 'zjcclims'}">
 								<fieldset>
-									<label><spring:message code="all.trainingRoom.labroom"/>是否开放：</label>
+									<label><spring:message code="all.trainingRoom.labroom"/>是否可用：</label>
 									<form:select path="isOpen" required="true">
 										<form:option value="">请选择</form:option>
 										<form:option value="1">是</form:option>

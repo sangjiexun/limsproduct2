@@ -77,7 +77,6 @@ public class LabReservationController<JsonResult> {
         List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("username",shareService.getUser().getUsername());
         mav.setViewName("lims/reservation/lab/labRoomList.jsp");
         return mav;
     }
@@ -94,7 +93,6 @@ public class LabReservationController<JsonResult> {
         List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("username",shareService.getUser().getUsername());
         mav.setViewName("lims/reservation/lab/labReservationList.jsp");
         return mav;
     }
@@ -111,9 +109,6 @@ public class LabReservationController<JsonResult> {
         List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("username",shareService.getUser().getUsername());
-        mav.addObject("projectName", pConfig.PROJECT_NAME);
-        mav.addObject("auditServerUrl",pConfig.auditServerUrl);
         mav.addObject("userRole",request.getSession().getAttribute("selected_role"));
         mav.setViewName("lims/reservation/lab/labReservationAuditList.jsp");
         return mav;
@@ -131,10 +126,7 @@ public class LabReservationController<JsonResult> {
         List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("user", shareService.getUser());
         mav.addObject("labRoomId", labRoomId);
-        mav.addObject("projectName",pConfig.PROJECT_NAME);
-        mav.addObject("auditServerUrl",pConfig.auditServerUrl);
         mav.setViewName("lims/reservation/lab/newLabReservation.jsp");
         return mav;
     }
@@ -149,10 +141,7 @@ public class LabReservationController<JsonResult> {
     public ModelAndView LabRoomReservation(HttpServletRequest request,@ModelAttribute("selected_academy") String acno,String labRoomId) {
         ModelAndView mav = new ModelAndView();
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("username", shareService.getUser().getUsername());
         mav.addObject("labRoomId", labRoomId);
-        mav.addObject("projectName",pConfig.PROJECT_NAME);
-        mav.addObject("auditServerUrl",pConfig.auditServerUrl);
         mav.setViewName("lims/reservation/lab/labReservationDetail.jsp");
         return mav;
     }
@@ -167,10 +156,7 @@ public class LabReservationController<JsonResult> {
     public ModelAndView labReservationAudit(HttpServletRequest request,@ModelAttribute("selected_academy") String acno,String labRId) {
         ModelAndView mav = new ModelAndView();
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("auditServerUrl", pConfig.auditServerUrl);
-        mav.addObject("username", shareService.getUser().getUsername());
         mav.addObject("labRId", labRId);
-        mav.addObject("projectName",pConfig.PROJECT_NAME);
         mav.setViewName("lims/reservation/lab/labReservationAudit.jsp");
         return mav;
     }
