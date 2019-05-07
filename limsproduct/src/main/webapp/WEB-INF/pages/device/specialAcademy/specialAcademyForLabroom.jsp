@@ -126,9 +126,9 @@ function deviceOpenSetting(id){
 	window.location.href="${pageContext.request.contextPath}/device/deviceOpenSetting?deviceId="+id+"&modelId=339";
 }
 
-function generateDimensionalCode(){
+function generateDimensionalCode(id){
 	$.ajax({
-	           url:"${pageContext.request.contextPath}/device/generateDimensionalCode",
+	           url:"${pageContext.request.contextPath}/device/generateDimensionalCode?lab_id="+id ,
 	           type:"POST",
 	           success:function(data){//AJAX查询成功
 	           		if(data=="success"){
@@ -599,7 +599,7 @@ function importLabRoomDevice(){
 				<a class="btn btn-new" onclick='newLabRoomDevice()'>新建</a>
 			</c:if>
 
-            <%--<a class="btn btn-new"  href="javascript:void(0)" onclick="generateDimensionalCode();">生成所有的二维码</a>--%>
+            <a class="btn btn-new"  href="javascript:void(0)" onclick="generateDimensionalCode(${roomId});">生成所有的二维码</a>
             </div>
             <%-- <div class="page" >
 		        ${totalRecords}条记录,共${pageModel.totalPage}页

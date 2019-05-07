@@ -1806,7 +1806,7 @@ System.out.println("二维码路径："+url);
 		// 二维码的保存路径
 		// File.separator windows是\，unix是/
 		String path = "upload" + "/" + "dimensionalCode";
-		String text = "http://"+serverName+showDeviceURL + d.getId();
+		String text = "http://"+serverName + "/" + pConfig.PROJECT_NAME + "/cmsshow/showDevice?id=" + d.getId();
 		int width = 300;
 		int height = 300;
 		// 二维码的图片格式
