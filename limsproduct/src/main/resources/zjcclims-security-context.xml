@@ -45,7 +45,8 @@
 		<intercept-url pattern="/cms/tcoursesite/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/admin/images/systemBack/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="servlet/zjcclims" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<intercept-url pattern="/personal/message/mySelfTimetableApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/> 
+		<intercept-url pattern="/personal/message/mySelfTimetableApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<intercept-url pattern="/personal/linkWeChat" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/labRoom/listLabRoomApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/admin/logRes" access="IS_AUTHENTICATED_ANONYMOUSLY"/>  
 		<intercept-url pattern="/admin/logManage" access="IS_AUTHENTICATED_ANONYMOUSLY"/>  

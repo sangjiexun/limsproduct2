@@ -190,6 +190,9 @@
             maxmin: true,
             shadeClose: true,
             content: "${pageContext.request.contextPath}/device/editLabRoomSettingRest/"+labRoomId+"/"+currpage+"/"+type,
+			end: function(){
+				window.location.href="${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=1&orderBy=9&type=1";
+			}
         });
         layer.full(index);
     }
@@ -254,7 +257,6 @@
             },
             error:function(){
                 alert("无法删除");
-
             }
         });}
     }

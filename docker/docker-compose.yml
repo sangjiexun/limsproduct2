@@ -1,0 +1,15 @@
+version: "3"
+services:
+  tomcat:
+    container_name: tomcat7
+    restart: always
+    image: harbor.gvsun.net:443/tomcat/tomcat7:apr
+    ports:
+      - 80:8080
+    volumes:
+     # - /opt/tomcat7/conf/server.xml:/usr/local/tomcat7/conf/server.xml  #映射 tomcat的配置文件到容器里
+     # - /opt/tomcat7/conf/Catalina/localhost/manager.xml:/usr/local/tomcat7/conf/Catalina/localhost/manager.xml
+      - /opt/tomcat7/web/:/usr/local/tomcat7/webapps/          #映射一个web服务
+      - /opt/tomcat7/logs/:/usr/local/tomcat7/logs/
+    environment:
+      - JVM_OPTS="-server -Xms1024m -Xmx5000m -XX:PermSize=128m -Xss256k -XX:MaxPermSize=128m -XX:NewSize=128m -XX:MaxNewSize=128m -XX:ThreadStackSize=256 -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=380m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dhttp.agent=Sakai -Dorg.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING=false -Dsun.lang.ClassLoader.allowArraySyntax=true -Duser.language=zh -Duser.region=CN -XX:+UseConcMarkSweepGC -XX:CMSFullGCsBeforeCompaction=5 -XX:+UseCMSCompactAtFullCollection -XX:+UseParNewGC"

@@ -57,7 +57,6 @@
 			<%--<div class="layui-main">--%>
 			<div>
 				<input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
-                <input type="hidden" id="username" value="${username}" />
 				<div class="tool-box">
 					<table>
 						<tr>
@@ -71,7 +70,6 @@
 				<table class="layui-hide" id="LAY_table_user" lay-filter="LAY_table_user"></table>
 				<script type="text/html" id="parentbar">
 					<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
-					<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="reverberation">预约</a>
 				</script>
 			</div>
 		</div>
