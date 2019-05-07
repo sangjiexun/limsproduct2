@@ -89,6 +89,27 @@ var s=${isAudit};
 	function fromStation(){
 		window.location.href="${pageContext.request.contextPath}/labRoomLending/labReservationList?tage=0&page=1&isaudit=${isAudit}"
 	}
+  //转到实验室预约
+  function openAuditWindow(id, businessType){
+      layer.ready(function(){
+          var index = layer.open({
+              type: 2,
+              title: '审核',
+              fix: true,
+              maxmin:true,
+              shift:-1,
+              closeBtn: 1,
+              shadeClose: true,
+              move:false,
+              area: ['1000px', '420px'],
+              content: '../auditing/auditList?businessType=' + businessType + '&businessUid=-1&businessAppUid='+id,
+              end: function(){
+                  window.location.reload();
+              }
+          });
+          layer.full(index);
+      });
+  }
 </script>
 
 </head>
@@ -172,13 +193,10 @@ var s=${isAudit};
      </td>
      <td>
      <c:if test="${s.buttonMark eq 0}">
-     	 <a href="${pageContext.request.contextPath}/LabRoomReservation/checkButton?id=${s.id}&tage=${tage}&state=${s.state}&currpage=${currpage}">查看</a>
+     	 <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">查看</a>
      </c:if>
-     <c:if test="${s.buttonMark eq 3}">
-     	 <a href="${pageContext.request.contextPath}/LabRoomReservation/checkButton?id=${s.id}&tage=${tage}&state=${s.state}&currpage=${currpage}"><spring:message code="all.trainingRoom.labroom" />管理员审核</a>
-     </c:if>
-     <c:if test="${s.buttonMark eq 4}">
-     	 <a href="${pageContext.request.contextPath}/LabRoomReservation/checkButton?id=${s.id}&tage=${tage}&state=${s.state}&currpage=${currpage}">实训中心主任审核</a>
+     <c:if test="${s.buttonMark ne 0}">
+     	 <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">审核</a>
      </c:if>
      <c:if test="${s.result==1}">
      <%--实验室管理员才可看到--%>

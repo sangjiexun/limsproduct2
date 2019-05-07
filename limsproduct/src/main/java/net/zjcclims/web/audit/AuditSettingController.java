@@ -115,7 +115,16 @@ public class AuditSettingController<JsonResult> {
             businessType = projectName + businessName;
             allType = 1;
         }else if(flag == 11) {// 工位预约
-            businessName = "StationReservation";
+            // 获取是否开启分级
+            boolean isGraded = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+            String grade = "";
+            if(isGraded){
+                grade = request.getParameter("grade") == null ? "1" : request.getParameter("grade");
+            }
+            map.put("isGraded", isGraded);
+            map.put("grade", grade);
+
+            businessName = grade + "StationReservation";
             businessType = projectName + businessName;
             allType = 1;
         }

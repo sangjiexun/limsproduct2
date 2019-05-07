@@ -207,4 +207,13 @@ public interface LabRoomReservationService {
 
 	@Transactional
 	public void saveReservationStations(Integer labRoomId, Calendar reservationTime,  Calendar startTime,  Calendar endTime,String[] array,String reason,String teacher,String userRole) throws NoSuchAlgorithmException;
+
+	/**
+	 * 获取下一级审核人
+	 * @param nextAuth 下一级审核权限
+	 * @return 审核人列表
+	 * @author 黄保钱 2019-5-7
+	 */
+	@Transactional
+	List<User> getNextAuditUser(String nextAuth, String businessAppUid);
 }

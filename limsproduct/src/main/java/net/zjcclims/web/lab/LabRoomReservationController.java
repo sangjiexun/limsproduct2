@@ -9,6 +9,8 @@ package net.zjcclims.web.lab;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.audit.LabRoomStationReservationAuditDTO;
+import net.gvsun.lims.dto.common.BaseDTO;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.cmsshow.CMSShowService;
@@ -792,27 +794,6 @@ public class LabRoomReservationController<JsonResult> {
             for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
                 //先初始化为0
                 labRoomStationReservation2.setButtonMark(0);
-//                Integer auditNumber = labRoomService.getAuditNumber(labRoomStationReservation2.getLabRoom(), labRoomStationReservation2.getState());
-                Integer auditNumber = labRoomStationReservation2.getState();
-                //未审核和审核中
-                if (labRoomStationReservation2.getResult() == 2 || labRoomStationReservation2.getResult() == 3) {
-                    if (auditNumber != null && isaudit == 1) {
-                        //实训室管理员审核阶段
-                        if (auditNumber == 3) {
-                            //当前登陆人是审核实训室管理员
-                            if (labRoomDeviceService.getLabRoomAdmin(labRoomStationReservation2.getLabRoom().getId(), user.getUsername()) && "ROLE_LABMANAGER".equals(request.getSession().getAttribute("selected_role"))) {
-                                labRoomStationReservation2.setButtonMark(3);
-                            }
-                        }
-                        //实训中心主任审核阶段
-                        if (auditNumber == 4) {
-                            //当前登陆人是审核实验室中心主任
-                            if (user.getUsername().equals(labRoomStationReservation2.getLabRoom().getLabCenter().getUserByCenterManager().getUsername()) && "ROLE_EXCENTERDIRECTOR".equals(request.getSession().getAttribute("selected_role"))) {
-                                labRoomStationReservation2.setButtonMark(4);
-                            }
-                        }
-                    }
-                }
             }
         }
         mav.addObject("user", user);
@@ -823,6 +804,7 @@ public class LabRoomReservationController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("tage", tage);
         mav.addObject("isAudit", isaudit);
+        mav.addObject("isGraded", shareService.getAuditOrNot("LabRoomStationGradedOrNot"));
         mav.setViewName("/labroom/labRoomStationReservationList.jsp");
         return mav;
     }
@@ -2610,6 +2592,54 @@ public class LabRoomReservationController<JsonResult> {
             labRoomReservationService.saveAuditResultDevice(labRoomDeviceReservation, auditResult, remark);
        }
         return "success";
+    }
+
+    /**
+     * 更新状态
+     * @param id
+     * @return
+     */
+    @RequestMapping("/LabRoomReservation/updateStationStatus")
+    @ResponseBody
+    public String updateStationStatus(@RequestParam String businessAppUid, @RequestParam String auditResult) {
+        Integer id = Integer.parseInt(businessAppUid);
+        LabRoomStationReservation stationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
+        if("pass".equals(auditResult)) {
+            stationReservation.setResult(1);
+            stationReservation.setState(6);
+            labRoomStationReservationDAO.store(stationReservation);
+        }else if("fail".equals(auditResult)) {
+            stationReservation.setResult(4);
+            stationReservation.setState(6);
+            labRoomStationReservationDAO.store(stationReservation);
+        }else{
+            stationReservation.setResult(2);
+            labRoomStationReservationDAO.store(stationReservation);
+        }
+        return "success";
+    }
+
+    @ResponseBody
+    @RequestMapping("/LabRoomReservation/getLabRoomStationReservation")
+    public BaseDTO getLabRoomStationReservation(String search) {
+        Integer id = Integer.parseInt(search);
+        LabRoomStationReservation stationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
+        BaseDTO baseDTO = new BaseDTO();
+        List<LabRoomStationReservationAuditDTO> auditDTOS = new ArrayList<>();
+        LabRoomStationReservationAuditDTO auditDTO = new LabRoomStationReservationAuditDTO();
+        auditDTO.setLabRoomName(stationReservation.getLabRoom().getLabRoomName());
+        auditDTO.setLabRoomNumber(stationReservation.getLabRoom().getLabRoomNumber());
+        auditDTO.setCreateUser(stationReservation.getUser().getCname());
+        auditDTO.setCreateUsername(stationReservation.getUser().getUsername());
+        auditDTO.setStationCount(stationReservation.getStationCount());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        auditDTO.setReservationDate(sdf.format(stationReservation.getReservation().getTime()));
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
+        auditDTO.setReservationTime(sdf1.format(stationReservation.getStartTime().getTime()) + "至" + sdf1.format(stationReservation.getEndTime().getTime()));
+        auditDTOS.add(auditDTO);
+        baseDTO.setRows(auditDTOS);
+        baseDTO.setTotal(auditDTOS.size());
+        return baseDTO;
     }
 
 }
