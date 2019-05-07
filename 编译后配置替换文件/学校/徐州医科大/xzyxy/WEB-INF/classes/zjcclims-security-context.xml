@@ -10,8 +10,8 @@
 		http://www.springframework.org/schema/security/spring-security-3.1.xsd
       	http://www.springframework.org/schema/context 
       	http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-      	
-    <http auto-config="true">
+
+	<http entry-point-ref="loginEntryPoint" access-denied-page="/accessDenied.jsp">
 		
 		<intercept-url pattern="/sso/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/pages/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -20,10 +20,7 @@
 		<intercept-url pattern="/upload/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/**/*.css" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<intercept-url pattern="/virtual/reserveVirtualImageCallback" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<!--配置不需要登陆也可以访问 -->
-		<intercept-url pattern="/instrument/getTimeTableAppointmentForInstrument" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="/api/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/labshow/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cmsshow/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/chosen/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -31,7 +28,7 @@
 		<intercept-url pattern="/index.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/report/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cms/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="/home" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/cms" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cms/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/tms/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/movie/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -44,7 +41,8 @@
 		<intercept-url pattern="/cms/device/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cms/tcoursesite/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/admin/images/systemBack/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="servlet/zjcclims" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<intercept-url pattern="servlet/zjcclims" access="IS_AUTHENTICATED_ANONYMOUSLY"/> 
 		<intercept-url pattern="/personal/message/mySelfTimetableApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/> 
 <intercept-url pattern="/personal/linkWeChat" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/labRoom/listLabRoomApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
@@ -61,7 +59,6 @@
 		<intercept-url pattern="/tcoursesite/videoLook" access="IS_AUTHENTICATED_ANONYMOUSLY"/> 
 		<intercept-url pattern="/visualization/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/public/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<intercept-url pattern="/lims/api/open/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/picture/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/classBrand/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cmsReport/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -73,41 +70,53 @@
 		<intercept-url pattern="/jquery/jquery-easyui/jquery.easyui.min.js" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/script/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/test/zhudianya" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="/checkCenter" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<!--<intercept-url pattern="/checkCenter" access="IS_AUTHENTICATED_ANONYMOUSLY" />-->
+		<intercept-url pattern="/asset/auditAssetApps" access="ROLE_SUPERADMIN,ROLE_CABINETADMIN, ROLE_DEPARTMENTHEADER,ROLE_FINANCIALSTAFF" />
+		<intercept-url pattern="/asset/listAssetApps" access="ROLE_SUPERADMIN,ROLE_TEACHER" />
 		<intercept-url pattern="/tcoursesite/weike/index" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/tcoursesite/weike/courses" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		
+		<intercept-url pattern="/report/teachingReport/monthRegister" access="ROLE_EXCENTERDIRECTOR,ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING" />
 
-		<intercept-url pattern="/loginByUsername" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="/loginZjcc" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		
-		<intercept-url pattern="/report/teachingReport/monthRegister" access="ROLE_EXCENTERDIRECTOR,ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_ACADEMYLEVELM" />
-		
 		<intercept-url pattern="/**"
-			access="ROLE_TEACHER,ROLE_STUDENT,ROLE_SUPERADMIN,ROLE_ADMINISTRATOR,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,
-			ROLE_LABMANAGER,ROLE_EXTEACHDIRECTOR,ROLE_EXPERIMENTALTEACHING,ROLE_EQUIPMENTADMIN,ROLE_CFO,ROLE_ASSISTANT,ROLE_SUPERADMIN,
-			ROLE_DEPARTMENTHEADER,ROLE_PRESECTEACHING,ROLE_CABINETADMIN,ROLE_ASSETMANAGEMENT,ROLE_COLLEGELEADER,ROLE_PRESECTEACHING,ROLE_ACADEMYLEVELM,ROLE_ASSETMANAGER,
-			ROLE_SUPERVISIONGROUP,ROLE_FULLTIMEMANAGER,ROLE_STUGROUP,ROLE_OPEARTIONSECURITYMANAGEMENT,ROLE_GRADUATE,ROLE_DEAN,ROLE_PROJECTPURCHASER" />
+					   access="ROLE_TEACHER,ROLE_STUDENT,ROLE_SUPERADMIN,ROLE_ADMINISTRATOR,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EXTEACHDIRECTOR,ROLE_EXPERIMENTALTEACHING,ROLE_EQUIPMENTADMIN,ROLE_ASSISTANT,ROLE_SUPERADMIN" />
 		<intercept-url access="IS_AUTHENTICATED_REMEMBERED"
-			pattern="/secure/*" />
-		<form-login login-page="/home" login-processing-url="/j_spring_security_check"
-			authentication-failure-url="/pages/login.jsp?login_error=true" 
-			default-target-url="/test" />
-		
-		<logout invalidate-session="true" logout-success-url="/pages/logout-redirect.jsp" />
-		<remember-me key="zjcclimsRMKey" user-service-ref="userDetailsService" />
-		<!-- 检测失效的sessionId,超时时定位到另外一个URL -->
-		<session-management invalid-session-url="/pages/sessionTimeout.jsp">
-			<!-- 防止第二次登陆 如果想让第一次登录失效第二次登录启用则不要配置error-if-maximum-exceeded="true" -->
-			<!-- <concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/> -->
-		</session-management>
+					   pattern="/secure/*" />
+		<custom-filter ref="customLoginFilter" position="FORM_LOGIN_FILTER" />
 	</http>
 	<authentication-manager alias="authenticationManager">
 
 		<authentication-provider user-service-ref="userDetailsService">
-			<password-encoder hash="plaintext" />
+			<password-encoder hash="md5" />
 		</authentication-provider>
 	</authentication-manager>
+	<beans:bean id="loginEntryPoint"
+				class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<!-- 默认登录页的url -->
+		<beans:constructor-arg value="/index.jsp" />
+	</beans:bean>
 
+	<beans:bean id="customLoginFilter" class="net.zjcclims.constant.CustomLoginFilter">
+		<!-- 校验登录是否有效的虚拟url -->
+		<beans:property name="filterProcessesUrl" value="/index.jsp" />
+		<beans:property name="authenticationManager" ref="authenticationManager" />
+		<beans:property name="usernameParameter" value="username" />
+		<beans:property name="passwordParameter" value="password" />
+		<beans:property name="authenticationSuccessHandler">
+			<!-- 自定义登录成功后的处理handler -->
+			<beans:bean class="net.zjcclims.constant.CustomLoginHandler">
+				<!-- 登录成功后的默认url -->
+				<beans:property name="defaultTargetUrl" value="/checkCenter" />
+			</beans:bean>
+		</beans:property>
+		<beans:property name="authenticationFailureHandler">
+			<beans:bean
+					class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+				<!-- 登录失败后的默认Url -->
+				<beans:property name="defaultFailureUrl" value="/login?error" />
+			</beans:bean>
+		</beans:property>
+	</beans:bean>
 <beans:bean
 	class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl"
 	id="userDetailsService">
@@ -116,7 +125,7 @@
 	<beans:property name="usersByUsernameQuery"
 		value="SELECT username,password,enabled FROM user WHERE username = ?" />
 	<beans:property name="authoritiesByUsernameQuery"
-		value="SELECT u.username,a.authority_name FROM user u JOIN user_authority ua on u.username = ua.user_id JOIN authority a on ua.authority_id = a.id WHERE u.username = ?" />
+		value="SELECT u.username,a.authorityName FROM user u JOIN user_authority ua on u.username = ua.user_id JOIN authority a on ua.authority_id = a.id WHERE u.username = ?" />
 </beans:bean>
 <global-method-security>
 </global-method-security>
