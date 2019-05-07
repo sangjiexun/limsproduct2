@@ -346,7 +346,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                             </fieldset>
                             <fieldset>
                                 <label>实验隶属大纲<font color="red">*</font>：</label>
-                                <form:select path="operationOutline.id" id="operationOutline" required="true">
+                                <form:select path="operationOutline.id" id="operationOutline" required="true" class="chzn-select">
                                     <form:option value="">- - - -请选择- - - -</form:option>
                                     <form:options items="${operationOutlines}" itemLabel="labOutlineName" itemValue="id"/>
                                 </form:select>
@@ -415,7 +415,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                                         <th>物资名称</th>
                                                         <th>物资类型</th>
                                                         <th>型号/规格</th>
-                                                        <th>单位</th>
+<%--                                                        <th>单位</th>--%>
                                                         <th>数量</th>
 <%--                                                        <th>金额（元）</th>--%>
                                                         <th>操作</th>
@@ -428,7 +428,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                                             <td>${curr.asset.chName}</td>
                                                             <td>${materialKindMap[curr.asset.category]}</td>
                                                             <td>${curr.asset.specifications}</td>
-                                                            <td>${curr.asset.unit}</td>
+<%--                                                            <td>${curr.asset.unit}</td>--%>
                                                             <td>${curr.amount}<div id="unit${i.count}" style="display: inline">${curr.asset.specifications}</div></td>
 <%--                                                            <td>${curr.lpmrAmount}</td>--%>
                                                             <td>
@@ -507,7 +507,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                         <td>
 <%--                                            <input name="id" id="id" type="hidden" value="${itemAssets.id}"/>--%>
                                             <form:hidden path="id" id="itemAssetsId"/>
-                                            <form:select path="asset.id" id="assetId" onChange="getSpec(this)">
+                                            <form:select path="asset.id" id="assetId" onChange="getSpec(this)" class="chzn-select">
                                                 <form:option value="" label="请选择"/>
                                                 <c:forEach items="${assets}" var="curr">
                                                     <form:option value="${curr.id}">${curr.chName}[${curr.specifications}]</form:option>

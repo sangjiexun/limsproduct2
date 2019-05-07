@@ -109,7 +109,6 @@ public class LabReservationController<JsonResult> {
         List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.addObject("userRole",request.getSession().getAttribute("selected_role"));
         mav.setViewName("lims/reservation/lab/labReservationAuditList.jsp");
         return mav;
     }

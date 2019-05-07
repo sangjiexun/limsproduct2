@@ -3141,14 +3141,15 @@ public class DeviceController<JsonResult> {
      ****************************************************************************/
     @RequestMapping("/device/generateDimensionalCode")
     public @ResponseBody
-    String generateDimensionalCode(HttpServletRequest request) {
+    String generateDimensionalCode(HttpServletRequest request, @RequestParam int lab_id) {
 
         // System.out.println(request.getRequestURL());//http://localhost/zjcclims/device/generateDimensionalCode
         // System.out.println(request.getContextPath());///zjcclims
         // System.out.println(request.getServerName());//localhost
         String serverName = request.getServerName() + ":" + request.getServerPort();
         String data = "success";
-        Set<LabRoomDevice> deviceList = labRoomDeviceDAO.findAllLabRoomDevices();
+        LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(lab_id);
+        Set<LabRoomDevice> deviceList = labRoom.getLabRoomDevices();
         for (LabRoomDevice d : deviceList) {
             String url = "";
             try {

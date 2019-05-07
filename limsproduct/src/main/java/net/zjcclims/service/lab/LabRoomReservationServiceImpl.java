@@ -1638,44 +1638,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
 		CDictionary status = shareService.getCDictionaryByCategory("lab_room_station_reservation_user_role", userRole);
 		labRoomStationReservation.setCDictionary(status);
-		//判断实验室等级
-		if(pConfig.PROJECT_NAME.equals("zjcclims") && labRoom.getLabRoomLevel() == 1){
-			//是否需要审核
-			if(labRoom.getCDictionaryByIsAudit() != null ){
-				if(labRoom.getCDictionaryByIsAudit().getCName().equals("是")){
-					labRoomStationReservation.setResult(3);
-					labRoomStationReservation.setRemark("");
-				}else{
-					labRoomStationReservation.setResult(1);
-					labRoomStationReservation.setRemark("该实验室预约不需要审核");
-				}
-			}else{
-				labRoomStationReservation.setResult(1);
-				labRoomStationReservation.setRemark("该实验室预约不需要审核");
-			}
-		}else if(pConfig.PROJECT_NAME.equals("zjcclims")){//二级实验室不需要审核
-			labRoomStationReservation.setResult(1);
-			labRoomStationReservation.setRemark("该实验室预约不需要审核");
-		}else {
-			//是否需要审核
-			if(labRoom.getCDictionaryByIsAudit() != null ){
-				if(labRoom.getCDictionaryByIsAudit().getCName().equals("是")){
-					labRoomStationReservation.setResult(3);
-					labRoomStationReservation.setRemark("");
-				} else {
-					labRoomStationReservation.setResult(1);
-					labRoomStationReservation.setRemark("该实验室预约不需要审核");
-				}
-			} else {
-				labRoomStationReservation.setResult(1);
-				labRoomStationReservation.setRemark("该实验室预约不需要审核");
-			}
-		}
 		if (!teacher.equals("")) {
 			labRoomStationReservation.setUserByTeacher(userDAO.findUserByPrimaryKey(teacher));
 		}
 
 		labRoomStationReservation.setState(3);
+		labRoomStationReservation.setResult(3);
 
 		labRoomStationReservation = labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
@@ -1700,10 +1668,16 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		//消息
 		if(labRoomStationReservation.getResult() != 1) {//需要审核就发信息
 
+			boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+			String grade = "";
+			if(flag){
+				grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
+			}
+
 			// 审核微服务
 			Map<String, String> params = new HashMap<>();
 			//默认教务排课，type=1
-			String businessType = "StationReservation";
+			String businessType = grade + "StationReservation";
 			params.put("businessUid", "-1");
 			params.put("businessType", pConfig.PROJECT_NAME + businessType);
 			params.put("businessAppUid", labRoomStationReservation.getId().toString());
@@ -1728,27 +1702,71 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				curAuthName = o.getString("result");
 			}
 
+			List<User> nextUsers = this.getNextAuditUser(curAuthName, labRoomStationReservation.getId().toString());
+
 			Message message = new Message();
 			Calendar date1 = Calendar.getInstance();
 			message.setSendUser(shareService.getUserDetail().getCname());
 			message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
 			message.setCond(0);
 			message.setTitle("实验室工位预约审核");
-			String content = "<a onclick='changeMessage(this)' href=\"../LabRoomReservation/checkButton?id=" + labRoomStationReservation.getId() + "&tage=0&state=" + labRoomStationReservation.getState() + "&currpage=1\">审核</a>";
+			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">审核</a>";
 			message.setContent(content);
 			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
 			message.setCreateTime(date1);
 			//是否是一级实验室
 			//if (labRoom.getLabRoomLevel() == 1) {
 			//产生实验室管理员的消息
-			if (labRoom.getLabRoomAdmins() != null) {
-				for (LabRoomAdmin labRoomAdmin : labRoom.getLabRoomAdmins()) {
+//			if (labRoom.getLabRoomAdmins() != null) {
+//				for (LabRoomAdmin labRoomAdmin : labRoom.getLabRoomAdmins()) {
+//					message.setTage(2);
+//					shareService.sendMsg(labRoomAdmin.getUser(), message);
+//				}
+//			}
+			for(User user: nextUsers){
 					message.setTage(2);
-					shareService.sendMsg(labRoomAdmin.getUser(), message);
-				}
+					shareService.sendMsg(user, message);
 			}
+			// 给预约人发消息
+			message.setTitle("实验室工位预约提交成功");
+			content = "<a onclick='changeMessage(this)' href=\"..../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
+			message.setContent(content);
+			message.setTage(1);
+			shareService.sendMsg(labRoomStationReservation.getUser(), message);
 			//}
 		}
 
+	}
+
+	/**
+	 * 获取下一级审核人
+	 * @param nextAuth 下一级审核权限
+	 * @return 审核人列表
+	 * @author 黄保钱 2019-5-7
+	 */
+	@Override
+	@Transactional
+	public List<User> getNextAuditUser(String nextAuth, String businessAppUid) {
+		List<User> auditUsers = new ArrayList<>();
+		Integer id = Integer.parseInt(businessAppUid);
+		LabRoomStationReservation stationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
+		switch (nextAuth){
+			case "LABMANAGER":
+				for(LabRoomAdmin labRoomAdmin: stationReservation.getLabRoom().getLabRoomAdmins()){
+					if(labRoomAdmin.getTypeId() == 1){
+						auditUsers.add(labRoomAdmin.getUser());
+					}
+				}
+				break;
+			case "TEACHER":
+				auditUsers.add(stationReservation.getUserByTeacher());
+				break;
+			case "EXCENTERDIRECTOR":
+				auditUsers.add(stationReservation.getLabRoom().getLabCenter().getUserByCenterManager());
+				break;
+			default:
+				auditUsers.addAll(shareService.findUsersByAuthorityNameAndAcno(nextAuth, stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber()));
+		}
+		return auditUsers;
 	}
 }

@@ -1,15 +1,28 @@
+# @Date:   2019-05-07T14:54:32+08:00
+# @Last modified time: 2019-05-07T17:44:14+08:00
+
+
+
 version: "3"
 services:
+  # 服务名称
   tomcat:
+    # 容器名称
     container_name: tomcat7
+    # 是否重启，always为开机启动
     restart: always
+    #启动的镜像
     image: harbor.gvsun.net:443/tomcat/tomcat7:apr
+    # 映射的端口
     ports:
       - 80:8080
+    # 挂载数据卷
     volumes:
-     # - /opt/tomcat7/conf/server.xml:/usr/local/tomcat7/conf/server.xml  #映射 tomcat的配置文件到容器里
-     # - /opt/tomcat7/conf/Catalina/localhost/manager.xml:/usr/local/tomcat7/conf/Catalina/localhost/manager.xml
-      - /opt/tomcat7/web/:/usr/local/tomcat7/webapps/          #映射一个web服务
+      #映射一个web服务,第一个目录是宿主机目录，第二个是镜像内的webapps目录。只要修改第一个即可
+      - /opt/tomcat7/web/:/usr/local/tomcat7/webapps/
+      #tomcat的日志目录logs
       - /opt/tomcat7/logs/:/usr/local/tomcat7/logs/
+    # 环境变量
     environment:
-      - JVM_OPTS="-server -Xms1024m -Xmx5000m -XX:PermSize=128m -Xss256k -XX:MaxPermSize=128m -XX:NewSize=128m -XX:MaxNewSize=128m -XX:ThreadStackSize=256 -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=380m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dhttp.agent=Sakai -Dorg.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING=false -Dsun.lang.ClassLoader.allowArraySyntax=true -Duser.language=zh -Duser.region=CN -XX:+UseConcMarkSweepGC -XX:CMSFullGCsBeforeCompaction=5 -XX:+UseCMSCompactAtFullCollection -XX:+UseParNewGC"
+      # jvm参数
+      - JAVA_OPTS="-Duser.timezone=GMT+08 -Xms4096m -Xmx4096m -XX:PermSize=256m -XX:MaxPermSize=512m -XX:NewSize=256m -XX:MaxNewSize=512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Dhttp.agent=Sakai -Dorg.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING=false -Dsun.lang.ClassLoader.allowArraySyntax=true -Duser.language=zh -Duser.region=CN -Djava.security.egd=file:/dev/./urandom"

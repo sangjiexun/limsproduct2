@@ -602,6 +602,14 @@ $(document).ready(function () {
                             alert('实验室预约成功')
                         }else if(result == "fail"){
                             alert('实验室预约失败')
+                        }else if(result == "NeedContinuation"){
+                            alert('请预约连续节次(时间段)!')
+                        }else if(result == "LIMIT"){
+                            alert('当前预约的时间在实验室禁用时间段内，请重新预约!')
+                        }else if(result == "Conflict"){
+                            alert('当前预约的时间在实验室占用期间，请重新预约!')
+                        }else if(result == "NoOpen"){
+                            alert('当前预约的时间不在实验室开放时间段内，请重新预约!')
                         }
                     }
                 });

@@ -54,13 +54,15 @@
             auditLevelConfig = array.join(",");
             var range = $("#selectedSchoolAcademy").val();
             if (range == null && ${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
-             and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit'}) {
+             and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
+             and businessName ne '1StationReservation' and businessName ne '2StationReservation'}) {
                 alert("确认权限已保存，请选择开放范围！");
                 window.location.reload();
                 return false;
             }
             if (${businessName eq 'OperationItem' or businessName eq 'TimetableAudit'or businessName eq 'VirtualImageReservation' or businessName eq 'SelfTimetableAudit'
-             or businessName eq 'AdjustTimetableAudit' or businessName eq 'CloseTimetableAudit' or businessName eq 'OperationItemNewAudit'}) {
+             or businessName eq 'AdjustTimetableAudit' or businessName eq 'CloseTimetableAudit' or businessName eq 'OperationItemNewAudit' or businessName eq 'StationReservation'
+             or businessName eq '1StationReservation' or businessName eq '2StationReservation'}) {
                 range = "";
             }
             var rangeStr = range.toString();
@@ -141,6 +143,11 @@
                     }
                 }
             });
+        }
+    </script>
+    <script type="text/javascript">
+        function changeGrade() {
+            window.location.href="${pageContext.request.contextPath}/audit/auditSetting?flag=11&grade="+$("#selectedGraded").val();
         }
     </script>
     <style>
@@ -231,8 +238,20 @@
             <div class="TabbedPanelsContent">
                 <div class="content-box">
                     <table class="tab_lab" style="margin:10px 0 0;">
+                        <c:if test="${isGraded}">
+                            <tr>
+                                <th>开放范围</th>
+                                <td colspan="3">
+                                    <select id="selectedGraded" onchange="changeGrade()">
+                                            <option value="1" <c:if test="${grade eq 1}">selected</c:if>>一级</option>
+                                            <option value="2" <c:if test="${grade eq 2}">selected</c:if>>二级</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </c:if>
                         <c:if test="${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
-                         and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit'}">
+                         and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
+                         and businessName ne '1StationReservation' and businessName ne '2StationReservation'}">
                             <tr>
                                 <th>开放范围</th>
                                 <td colspan="3">
