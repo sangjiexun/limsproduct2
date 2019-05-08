@@ -581,12 +581,17 @@ $(document).ready(function () {
                         timess += $(this).attr("value")+",";
                     }
                 });
-                timess = timess.slice(0,timess.length-1);
+                // timess = timess.slice(0,timess.length-1);
                 data.field.time = timess;
                 if(data.field.outside == "on") {
                     data.field.outside = "1";
                 } else {
                     data.field.outside = "0";
+                }
+                if(activitynumberType == 1){
+                    data.field.activitynumber = $('#activitynumber_input').val();
+                }else {
+                    data.field.activitynumber = $('#activitynumber_select').val();
                 }
                 data1 = JSON.stringify(data.field);
                 $.ajax({
