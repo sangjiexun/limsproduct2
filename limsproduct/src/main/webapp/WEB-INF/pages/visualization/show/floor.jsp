@@ -1040,6 +1040,10 @@
         .clear{
             clear:both;
         }
+        .equipment_icon {
+            margin-top: -30px;
+            margin-left: -17px;
+        }
     </style>
 </head>
 
