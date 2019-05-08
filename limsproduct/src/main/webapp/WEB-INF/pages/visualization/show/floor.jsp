@@ -411,10 +411,12 @@
             if (obj.value == "切换实时画面") {
                 $("#my-video").show();
                 $(".demo_photo").hide();
+                $("#deviceIcon").hide();
                 obj.value = "切换全景图片";
             } else {
                 $("#my-video").hide();
                 $(".demo_photo").show();
+                $("#deviceIcon").show();
                 obj.value = "切换实时画面";
             }
         }
