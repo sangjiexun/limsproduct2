@@ -1,9 +1,6 @@
 package net.zjcclims.service.lab;
 
-import net.zjcclims.domain.AuditRefuseBackup;
-import net.zjcclims.domain.LabReservation;
-import net.zjcclims.domain.LabReservationAudit;
-import net.zjcclims.domain.SystemTime;
+import net.zjcclims.domain.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
@@ -108,4 +105,22 @@ public interface LabRoomLendingService {
 	 * @author 黄保钱 2019-1-20
 	 */
 	Integer getCountAuditRefuseBackupForLabReservation(String labName);
+
+	/**
+	 * 实验室预约取消
+	 * @param labReservationId 实验室预约id
+	 * @return 成功的字符串
+	 * @author 黄保钱 2019-5-8
+	 */
+	String cancelLabReservation(Integer labReservationId);
+
+	/**
+	 * 实验室预约取消
+	 * @param labReservationId 实验室预约id
+	 * @return 成功的字符串
+	 * @author 黄保钱 2019-5-8
+	 */
+	String updateCancelLabReservation(Integer labReservationId);
+
+	List<User> getNextUsers(String nextAuth, String businessAppUid);
 }

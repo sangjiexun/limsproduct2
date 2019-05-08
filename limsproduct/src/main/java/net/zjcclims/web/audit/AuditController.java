@@ -11,6 +11,7 @@ import net.gvsun.lims.dto.audit.AuditSaveParamDTO;
 import net.zjcclims.dao.AuthorityDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
+import net.zjcclims.service.lab.LabRoomLendingService;
 import net.zjcclims.service.lab.LabRoomReservationService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
@@ -37,6 +38,8 @@ public class AuditController<JsonResult> {
     private AuthorityDAO authorityDAO;
     @Autowired
     private LabRoomReservationService labRoomReservationService;
+    @Autowired
+    private LabRoomLendingService labRoomLendingService;
 
     @RequestMapping("/auditList")
     public ModelAndView auditList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
@@ -152,8 +155,10 @@ public class AuditController<JsonResult> {
                 case "StationReservation":
                 case "1StationReservation":
                 case "2StationReservation":
-                    isAuditUser = labRoomReservationService.getNextAuditUser(curAuthName, businessAppUid);
+                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
                     break;
+                case "CancelLabRoomReservation":
+                    isAuditUser = labRoomLendingService.getNextUsers(authName, businessAppUid);
                 default:
             }
             // 如果当前登录人的权限是当前审核权限，则判断是否是审核人并且是否当前页面权限是当前审核权限

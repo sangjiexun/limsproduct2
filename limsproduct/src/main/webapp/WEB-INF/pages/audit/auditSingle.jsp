@@ -111,6 +111,9 @@
                     case "2StationReservation":
                         completeUrl = "${pageContext.request.contextPath}/LabRoomReservation/updateStationStatus";
                         break;
+                    case "CancelLabRoomReservation":
+                        completeUrl = "${pageContext.request.contextPath}/labRoomLending/updateCancelLabReservationAudit";
+                        break;
                     default:
                 }
                 $.ajax({
