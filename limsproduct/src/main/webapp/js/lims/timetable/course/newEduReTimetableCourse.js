@@ -163,6 +163,7 @@ $(document).ready(function () {
         placeholderOption: "first",
         ajax: {
             url: zuulUrl + "api/software/apiSoftWareListBySelect",
+            contentType: "application/json;charset=utf-8",
             dataType: "json",
             beforeSend: function(request) {
                 request.setRequestHeader("Authorization", getJWTAuthority());
@@ -170,11 +171,12 @@ $(document).ready(function () {
             delay: 250,//延时0.5秒之后再进行请求
             type: "post",
             data: function (params) {
-                var query = {
-                    search: params.term,
-                    academyNumber: $('#academyNumber').val()
-                }
-                return query;
+                var arr = new Object();
+                arr.search = params.term;
+                arr.academyNumber = $('#academyNumber').val();
+                var arrs = JSON.stringify(arr);
+                return arrs;
+
             },
             results: function (data, page) {
                 return {
