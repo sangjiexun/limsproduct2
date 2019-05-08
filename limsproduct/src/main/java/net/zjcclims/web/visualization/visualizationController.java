@@ -105,7 +105,6 @@ public class visualizationController<JsonResult> {
 	 * 2016年1月23日
 	 ****************************************************************************/
 	@RequestMapping("/visualization/roomList")
-	@ResponseBody
 	public ModelAndView floor(@RequestParam int page,HttpServletRequest request,@ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
 		
@@ -695,7 +694,6 @@ public class visualizationController<JsonResult> {
 	 * @data 2018-10-29
 	 */
 	@RequestMapping("/visualization/systemBuildList")
-	@ResponseBody
 	public ModelAndView systemBuildList(@RequestParam Integer page, HttpServletRequest request, @ModelAttribute("selected_academy") String acno,
 											  @ModelAttribute SystemBuild systemBuild) {
 		ModelAndView mav = new ModelAndView();
@@ -845,7 +843,6 @@ public class visualizationController<JsonResult> {
 	 * @data 2018-11-23
 	 */
 	@RequestMapping("/visualization/systemCampusList")
-	@ResponseBody
 	public ModelAndView systemCampusList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
 		ModelAndView mav = new ModelAndView();
 

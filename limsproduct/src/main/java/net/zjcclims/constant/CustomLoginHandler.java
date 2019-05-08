@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 public class CustomLoginHandler extends
         SavedRequestAwareAuthenticationSuccessHandler {
@@ -19,17 +20,24 @@ public class CustomLoginHandler extends
     public void onAuthenticationSuccess(HttpServletRequest request,
             HttpServletResponse response, Authentication authentication)
             throws ServletException, IOException {
+        SavedRequest savedRequest = (SavedRequest)request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+        if(savedRequest!=null) {
+            String targetUrl = savedRequest.getRedirectUrl();
+            request.getSession().removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
+            response.sendRedirect(targetUrl);
+        }else {
 
-        //这里可以追加开发人员自己的额外处理
-        System.out
-                .println("CustomLoginHandler.onAuthenticationSuccess() is called!");
-        if(cmsUrl!=null&&!cmsUrl.contains("$")&&!cmsUrl.equals("")){
-            javax.servlet.http.HttpSession session = request.getSession(true);
-            Object attribute = session.getAttribute("username");
-            response.sendRedirect(cmsUrl+attribute);
-        }else{
+            //这里可以追加开发人员自己的额外处理
+            System.out
+                    .println("CustomLoginHandler.onAuthenticationSuccess() is called!");
+            if (cmsUrl != null && !cmsUrl.contains("$") && !cmsUrl.equals("")) {
+                javax.servlet.http.HttpSession session = request.getSession(true);
+                Object attribute = session.getAttribute("username");
+                response.sendRedirect(cmsUrl + attribute);
+            } else {
 //            super.onAuthenticationSuccess(request, response, authentication);
-            response.sendRedirect(request.getContextPath()+super.getDefaultTargetUrl());
+                response.sendRedirect(request.getContextPath() + super.getDefaultTargetUrl());
+            }
         }
     }
 
