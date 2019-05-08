@@ -1729,7 +1729,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			}
 			// 给预约人发消息
 			message.setTitle("实验室工位预约提交成功");
-			content = "<a onclick='changeMessage(this)' href=\"..../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
+			content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
 			message.setContent(content);
 			message.setTage(1);
 			shareService.sendMsg(labRoomStationReservation.getUser(), message);

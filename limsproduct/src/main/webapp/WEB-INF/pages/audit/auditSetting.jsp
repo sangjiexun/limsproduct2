@@ -240,7 +240,7 @@
                     <table class="tab_lab" style="margin:10px 0 0;">
                         <c:if test="${isGraded}">
                             <tr>
-                                <th>开放范围</th>
+                                <th>实验室等级</th>
                                 <td colspan="3">
                                     <select id="selectedGraded" onchange="changeGrade()">
                                             <option value="1" <c:if test="${grade eq 1}">selected</c:if>>一级</option>

@@ -118,6 +118,7 @@
                     type: "POST",
                     data: {
                         businessAppUid: businessAppUid,
+                        businessType: businessType,
                         auditResult: data
                     },
                     success: function (result) {
@@ -126,6 +127,7 @@
                 switch (data) {
                     case "pass":
                         alert("审核通过");
+                        parent.location.reload();
                         break;
                     case "fail":
                         alert("审核已拒绝");
