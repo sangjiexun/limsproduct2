@@ -65,6 +65,32 @@
 				  <li>综合查询:
 					  <input type="text" id="roomName" name="roomName" value="${roomName}"/>
 				  </li>
+				  <li>按中心统计:
+					  <select class="chzn-select" id="center_id" name="center_id">
+						  <option value="0">请选择</option>
+						  <c:forEach items="${centers}" var="current">
+							  <c:if test="${current.id == center_id}">
+								  <option value ="${current.id}" selected>${current.centerName} </option>
+							  </c:if>
+							  <c:if test="${current.id != center_id}">
+								  <option value ="${current.id}" >${current.centerName} </option>
+							  </c:if>
+						  </c:forEach>
+					  </select>
+				  </li>
+				  <li>按基地统计:
+					  <select class="chzn-select" id="base_id" name="base_id">
+						  <option value="0">请选择</option>
+						  <c:forEach items="${bases}" var="current">
+							  <c:if test="${current.id == base_id}">
+								  <option value ="${current.id}" selected>${current.labName} </option>
+							  </c:if>
+							  <c:if test="${current.id != base_id}">
+								  <option value ="${current.id}" >${current.labName} </option>
+							  </c:if>
+						  </c:forEach>
+					  </select>
+				  </li>
 				  <input type="submit" value="查询"/>
 				  <input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
 				  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>

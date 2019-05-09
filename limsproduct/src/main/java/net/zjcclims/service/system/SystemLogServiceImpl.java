@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 
 import net.luxunsh.util.EmptyUtil;
+import net.zjcclims.dao.LabAnnexDAO;
 import net.zjcclims.dao.LabCenterDAO;
 import net.zjcclims.dao.OperationItemDAO;
 import net.zjcclims.dao.SystemLogDAO;
@@ -33,6 +34,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 	@Autowired private OperationItemDAO operationItemDAO;
 	@Autowired private SystemLogDAO systemLogDAO;
 	@Autowired private LabCenterDAO labCenterDAO;
+	@Autowired private LabAnnexDAO labAnnexDAO;
 	public SystemLogServiceImpl() {
 	}
 
@@ -373,10 +375,19 @@ public class SystemLogServiceImpl implements SystemLogService {
 		if (term_id != -1) {
 			queryHQL.append(" AND c.term_id = " + term_id );
 		}
-		queryHQL.append(" GROUP BY c.lab_id");
+		// 按照中心统计
+		if (paramsVO.getCenter_id() > 0) {
+			queryHQL.append(" and c.center_id="+ paramsVO.getCenter_id());
+			queryHQL.append(" group by c.center_id");
+		}else if (paramsVO.getBase_id() > 0) {// 按照基地统计
+			queryHQL.append(" and c.base_id="+ paramsVO.getCenter_id());
+			queryHQL.append(" group by c.base_id");
+		}else {
+			queryHQL.append(" GROUP BY c.lab_id");
+		}
+
 		// 执行查询
-		javax.persistence.Query queryList = entityManager
-				.createNativeQuery(queryHQL.toString());
+		javax.persistence.Query queryList = entityManager.createNativeQuery(queryHQL.toString());
 		// 以下两行是分页设置
 		queryList.setMaxResults(paramsVO.getPage_size());
 		queryList.setFirstResult((paramsVO.getCurr_page() - 1) * paramsVO.getPage_size());
@@ -384,16 +395,32 @@ public class SystemLogServiceImpl implements SystemLogService {
 		List<Object[]> queryHQLs = new ArrayList<Object[]>(queryList.getResultList());
 		// 计划外-管理员需要重新获取
 		List<Object[]> list = new ArrayList<>();
-		for(Object[] obj : queryHQLs) {
-			LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(Integer.valueOf(obj[7].toString()));
-			String labAdmin = "";
-			for(LabRoomAdmin admin : labRoom.getLabRoomAdmins()) {
-				if(admin.getTypeId()==1) {
-					labAdmin += admin.getUser().getCname() + " ";
-				}
+		if (paramsVO.getCenter_id() > 0) {
+			for(Object[] obj : queryHQLs) {
+				LabCenter labCenter = labCenterDAO.findLabCenterByPrimaryKey(paramsVO.getCenter_id());
+				obj[0] = labCenter.getCenterName();
+				obj[1] = labCenter.getUserByCenterManager().getCname();
+				list.add(obj);
 			}
-			obj[1] = labAdmin;
-			list.add(obj);
+		}else if (paramsVO.getBase_id() > 0) {
+			for(Object[] obj : queryHQLs) {
+				LabAnnex labAnnex = labAnnexDAO.findLabAnnexByPrimaryKey(paramsVO.getBase_id());
+				obj[0] = labAnnex.getLabName();
+				obj[1] = labAnnex.getLabCenter().getUserByCenterManager().getCname();
+				list.add(obj);
+			}
+		}else {
+			for(Object[] obj : queryHQLs) {
+				LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(Integer.valueOf(obj[7].toString()));
+				String labAdmin = "";
+				for(LabRoomAdmin admin : labRoom.getLabRoomAdmins()) {
+					if(admin.getTypeId()==1) {
+						labAdmin += admin.getUser().getCname() + " ";
+					}
+				}
+				obj[1] = labAdmin;
+				list.add(obj);
+			}
 		}
 		return list;
 	}
@@ -407,6 +434,15 @@ public class SystemLogServiceImpl implements SystemLogService {
 	public Integer allLabRoomUseUnplanCount(QueryParamsVO paramsVO) {
 		// 建立查询
 		StringBuffer queryHQL = new StringBuffer("select count(distinct c.lab_id) from report_plan_lab_rate c where 1=1");
+		// 按照中心统计
+		if (paramsVO.getCenter_id() > 0) {
+			queryHQL = new StringBuffer("select count(distinct c.center_id) from report_plan_lab_rate c where 1=1");
+			queryHQL.append(" and c.center_id="+ paramsVO.getCenter_id());
+		}else if (paramsVO.getBase_id() > 0) {// 按照基地统计
+			queryHQL = new StringBuffer("select count(distinct c.base_id) from report_plan_lab_rate c where 1=1");
+			queryHQL.append(" and c.base_id="+ paramsVO.getCenter_id());
+		}
+
 		if(paramsVO.getType() != 0) {
 			queryHQL.append(" and c.flag = " + paramsVO.getType());
 		}
