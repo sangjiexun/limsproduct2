@@ -111,6 +111,9 @@
                     case "2StationReservation":
                         completeUrl = "${pageContext.request.contextPath}/LabRoomReservation/updateStationStatus";
                         break;
+                    case "CancelLabRoomReservation":
+                        completeUrl = "${pageContext.request.contextPath}/labRoomLending/updateCancelLabReservationAudit";
+                        break;
                     default:
                 }
                 $.ajax({
@@ -118,6 +121,7 @@
                     type: "POST",
                     data: {
                         businessAppUid: businessAppUid,
+                        businessType: businessType,
                         auditResult: data
                     },
                     success: function (result) {
@@ -126,6 +130,7 @@
                 switch (data) {
                     case "pass":
                         alert("审核通过");
+                        parent.location.reload();
                         break;
                     case "fail":
                         alert("审核已拒绝");

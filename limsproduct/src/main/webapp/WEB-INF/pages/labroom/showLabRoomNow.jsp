@@ -99,11 +99,13 @@
 					
 				</div>
 				<div class="station_container">
-					<c:forEach begin="0" end="${labRoom.labRoomCapacity }" var="i">
-						<div class="l ">
-							<i class="fa fa-laptop f40 cg"></i>
-						</div>
-					</c:forEach>
+					<c:if test="${labRoom.labRoomCapacity != 0}">
+						<c:forEach begin="1" end="${labRoom.labRoomCapacity }" var="i">
+							<div class="l ">
+								<i class="fa fa-laptop f40 cg"></i>
+							</div>
+						</c:forEach>
+					</c:if>
 				</div>
 			</div>
 	</form>	

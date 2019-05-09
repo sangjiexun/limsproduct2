@@ -168,4 +168,13 @@ public int findLabAttendance(String username, String cname,String labName,String
 	 * @author 陈乐为 2019-3-7
 	 */
 	public int findAttendanceCourseInfoCount(HttpServletRequest request,String acno);
+
+	/**
+	 * Description 下发考勤名单/上传考勤记录
+	 * @param flag
+	 * @param agent_id
+	 * @return
+	 * @author 陈乐为 2019年5月7日
+	 */
+	public String updateAttendanceByJWT(Integer flag, Integer agent_id);
 }

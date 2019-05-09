@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.LabRoomStationReservationAuditDTO;
 import net.gvsun.lims.dto.common.BaseDTO;
+import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.cmsshow.CMSShowService;
@@ -30,6 +31,7 @@ import net.zjcclims.service.system.SchoolWeekService;
 import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
 import net.zjcclims.util.HttpClientUtil;
+import net.zjcclims.web.audit.AuditController;
 import net.zjcclims.web.common.PConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -796,6 +798,42 @@ public class LabRoomReservationController<JsonResult> {
                 labRoomStationReservation2.setButtonMark(0);
             }
         }
+
+        Object[] objects = new Object[pageSize];
+        boolean isGraded = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+        int count = 0;
+        for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
+            // 审核记录
+            Map<String, String> params = new HashMap<>();
+            params.put("businessUid", "-1");
+            params.put("businessAppUid", stationReservation.getId().toString());
+            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
+                    (stationReservation.getLabRoom().getLabRoomLevel() == null ? "" : stationReservation.getLabRoom().getLabRoomLevel().toString())
+                    : "") + "StationReservation");
+            String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessLevelStatus", params);
+            String returnStr = "";
+            JSONArray curJSONArray = JSONObject.parseObject(s).getJSONArray("data");
+            if (curJSONArray.size() != 0) {
+                for (int i = 0; i < curJSONArray.size(); i++) {
+                    JSONObject curJSONObject = curJSONArray.getJSONObject(i);
+                    String authName = curJSONObject.getString("authName");
+                    Authority authority = authorityDAO.findAuthorityByName(authName);
+                    String color = "未审核".equals(curJSONObject.getString("result")) ? "gray" : "black";
+                    returnStr += "<font style='color: " + color + "'>" + authority.getCname() + " ";
+                    if (curJSONObject.getString("auditUser") != null) {
+                        User auditUser = shareService.findUserByUsername(curJSONObject.getString("auditUser"));
+                        returnStr += auditUser.getCname() + " ";
+                    } else {
+                        returnStr += " ";
+                    }
+                    String result = curJSONObject.getString("result");
+                    returnStr += result + "</font><br>";
+                }
+            }
+            objects[count++] = returnStr;
+        }
+        mav.addObject("auditItems", objects);
+
         mav.addObject("user", user);
         mav.addObject("listLabRoomStationReservation", listLabRoomStationReservation);
         mav.addObject("pageModel", pageModel);
@@ -2601,24 +2639,71 @@ public class LabRoomReservationController<JsonResult> {
      */
     @RequestMapping("/LabRoomReservation/updateStationStatus")
     @ResponseBody
-    public String updateStationStatus(@RequestParam String businessAppUid, @RequestParam String auditResult) {
+    public String updateStationStatus(@RequestParam String businessAppUid, @RequestParam String auditResult, @RequestParam String businessType, HttpServletRequest request) {
         Integer id = Integer.parseInt(businessAppUid);
         LabRoomStationReservation stationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
+        // 消息
+        String authCname = shareService.getAuthorityByName(((String) request.getSession().getAttribute("selected_role")).substring(5)).getCname();
+        Message message = new Message();
+        Calendar date1 = Calendar.getInstance();
+        message.setSendUser(shareService.getUserDetail().getCname());
+        message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
+        message.setCond(0);
+        String title = "";
+        message.setTitle("实验室工位预约审核");
+        String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">审核</a>";
+        message.setContent(content);
+        message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+        message.setCreateTime(date1);
         if("pass".equals(auditResult)) {
+            title = "实验室工位预约" + authCname + shareService.getUserDetail().getCname() + "审核通过，审核全部通过";
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">点击查看</a>";
+            message.setTitle(title);
+            message.setContent(content);
+            message.setTage(1);
+            LabRoomStationReservation labRoomStationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
+            shareService.sendMsg(labRoomStationReservation.getUser(), message);
             stationReservation.setResult(1);
             stationReservation.setState(6);
             labRoomStationReservationDAO.store(stationReservation);
         }else if("fail".equals(auditResult)) {
+            title = "实验室工位预约" + authCname + shareService.getUserDetail().getCname() + "审核拒绝";
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">点击查看</a>";
+            message.setTitle(title);
+            message.setContent(content);
+            message.setTage(1);
+            LabRoomStationReservation labRoomStationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
+            shareService.sendMsg(labRoomStationReservation.getUser(), message);
             stationReservation.setResult(4);
             stationReservation.setState(6);
             labRoomStationReservationDAO.store(stationReservation);
         }else{
+            List<User> nextAuditUser = labRoomReservationService.getNextAuditUser(auditResult, businessAppUid);
+            title = "实验室工位预约" + authCname + shareService.getUserDetail().getCname() + "审核通过";
+            message.setTitle(title);
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">审核</a>";
+            message.setContent(content);
+            for(User user: nextAuditUser){
+                message.setTage(2);
+                shareService.sendMsg(user, message);
+            }
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">点击查看</a>";
+            message.setContent(content);
+            message.setTage(1);
+            LabRoomStationReservation labRoomStationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
+            shareService.sendMsg(labRoomStationReservation.getUser(), message);
             stationReservation.setResult(2);
             labRoomStationReservationDAO.store(stationReservation);
         }
         return "success";
     }
 
+    /**
+     * 获取工位预约数据
+     * @param search 工位预约id
+     * @return bootstrap可读数据
+     * @author 黄保钱 2019-5-8
+     */
     @ResponseBody
     @RequestMapping("/LabRoomReservation/getLabRoomStationReservation")
     public BaseDTO getLabRoomStationReservation(String search) {

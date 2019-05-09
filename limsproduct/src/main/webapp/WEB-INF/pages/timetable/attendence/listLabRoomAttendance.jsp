@@ -74,6 +74,18 @@ table{table-layout:fixed;}
 	function cancelQuery(){
 		window.location.href="${pageContext.request.contextPath}/timetable/Attendance?id="+${id}+"&page=1";
 	}
+
+	//下发/上传考勤
+	function attendance(flag) {
+		var id = ${id};
+		$.post('${pageContext.request.contextPath}/updateAttendance?agent_id='+ id +'&flag='+flag,function(data){  //serialize()序列化
+			if(data=="success"){
+				alert("操作成功");
+			}else{
+				alert("操作失败，请检查网络连接再尝试");
+			}
+		});
+	}
 </script>
 </head>
 
@@ -110,8 +122,10 @@ table{table-layout:fixed;}
 		</li><li>到<input id="endtime" class="Wdate" type="text" name="endtime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;"  readonly />
 		</li>
 	<li >
-	<input type="submit" value="提交">
-	<input class="cancel-submit" type="button" value="取消" onclick="cancelQuery();">
+	<input type="submit" value="提交" />
+	<input class="cancel-submit" type="button" value="取消" onclick="cancelQuery();" />
+		<input type="button" value="下发考勤名单" onclick="attendance(1);" />
+		<input type="button" value="上传考勤记录" onclick="attendance(2);" />
 	</li>
 	
 	</ul>

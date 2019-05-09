@@ -198,6 +198,7 @@ $(document).ready(function () {
                 arr.academyNumber = $('#academyNumber').val();
                 var arrs = JSON.stringify(arr);
                 return arrs;
+
             },
             results: function (data, page) {
                 return {

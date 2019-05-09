@@ -55,14 +55,14 @@
             var range = $("#selectedSchoolAcademy").val();
             if (range == null && ${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
              and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
-             and businessName ne '1StationReservation' and businessName ne '2StationReservation'}) {
+             and businessName ne '1StationReservation' and businessName ne '2StationReservation' and businessName ne 'CancelLabRoomReservation'}) {
                 alert("确认权限已保存，请选择开放范围！");
                 window.location.reload();
                 return false;
             }
             if (${businessName eq 'OperationItem' or businessName eq 'TimetableAudit'or businessName eq 'VirtualImageReservation' or businessName eq 'SelfTimetableAudit'
              or businessName eq 'AdjustTimetableAudit' or businessName eq 'CloseTimetableAudit' or businessName eq 'OperationItemNewAudit' or businessName eq 'StationReservation'
-             or businessName eq '1StationReservation' or businessName eq '2StationReservation'}) {
+             or businessName eq '1StationReservation' or businessName eq '2StationReservation' or businessName eq 'CancelLabRoomReservation'}) {
                 range = "";
             }
             var rangeStr = range.toString();
@@ -233,6 +233,9 @@
             <li class="TabbedPanelsTab" id="s11" onclick="changeTag(11)"><a
                     href="${pageContext.request.contextPath}/audit/auditSetting?flag=11">工位预约审核设置</a>
             </li>
+            <li class="TabbedPanelsTab" id="s12" onclick="changeTag(12)"><a
+                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=12">取消预约审核设置</a>
+            </li>
         </ul>
         <div class="TabbedPanelsContentGroup">
             <div class="TabbedPanelsContent">
@@ -240,7 +243,7 @@
                     <table class="tab_lab" style="margin:10px 0 0;">
                         <c:if test="${isGraded}">
                             <tr>
-                                <th>开放范围</th>
+                                <th>实验室等级</th>
                                 <td colspan="3">
                                     <select id="selectedGraded" onchange="changeGrade()">
                                             <option value="1" <c:if test="${grade eq 1}">selected</c:if>>一级</option>
@@ -251,7 +254,7 @@
                         </c:if>
                         <c:if test="${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
                          and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
-                         and businessName ne '1StationReservation' and businessName ne '2StationReservation'}">
+                         and businessName ne '1StationReservation' and businessName ne '2StationReservation' and businessName ne 'CancelLabRoomReservation'}">
                             <tr>
                                 <th>开放范围</th>
                                 <td colspan="3">
@@ -531,7 +534,7 @@
         });
         // 原来的判断修改为如下
         // 标签栏数量，增加标签栏时需修改此值
-        var titleNum = 11;
+        var titleNum = 12;
         // 遍历所有标签栏修改样式
         for (var i = 1; i <= titleNum; i++) {
             if($.cookie("auditSettingTag") == i){

@@ -31,7 +31,7 @@ function productsearch(search, start, limitsize) {
         }
     });
 
-    var url = zuulUrl + "api/labReservation/apiLabRoomReservationList";
+    var url = zuulUrl + "api/labReservation/apiLabRoomReservationList?search=" + search + "&sort=id&sortOrder=id";
 
     layui.use(['table', 'laypage', 'laydate'], function () {
         var table = layui.table,
@@ -39,11 +39,11 @@ function productsearch(search, start, limitsize) {
             laypage = layui.laypage;
         table.render({
             elem: '#LAY_table_user'
-            ,method:'POST'
-            ,contentType: 'application/json'
+            ,method:'GET'
+            // ,contentType: 'application/json'
             ,url: url
             , toolbar: 'true'
-            , where:{search:search,sort:"id",sortOrder:"id"} //传参*/
+            // , where:{search:search,sort:"id",sortOrder:"id"} //传参*/
             , request: {
                 page: 'page' //页码的参数名称，默认：page
                 , limit: 'nums' //每页数据量的参数名，默认：limit
@@ -76,7 +76,7 @@ function productsearch(search, start, limitsize) {
                     templet: function (d) {
                         return d.startTime+"-"+d.endTime;
                     }
-                }, {
+                }, /*{
                     field: 'eventName',
                     title: '预约用途',
                     minWidth: 75
@@ -84,7 +84,7 @@ function productsearch(search, start, limitsize) {
                     field: 'userObjectName',
                     title: '预约对象',
                     minWidth: 75
-                }, {
+                },*/ {
                     field: 'number',
                     title: '使用人数',
                     minWidth: 50

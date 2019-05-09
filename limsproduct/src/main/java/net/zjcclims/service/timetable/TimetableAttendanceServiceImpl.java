@@ -25,6 +25,7 @@ import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabCenterService;
+import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.timetable.AttendancetableByWeek;
 import net.zjcclims.web.timetable.CheckAttendancetable;
 
@@ -1376,6 +1377,43 @@ public class TimetableAttendanceServiceImpl implements TimetableAttendanceServic
 //		hql.append(" GROUP BY c.course_no,c.class_date,CONCAT(c.start_class,'-',c.end_class)");
 		Query queryList = entityManager.createNativeQuery(hql.toString());
 		return ((BigInteger) queryList.getSingleResult()).intValue();
+	}
+
+	/**
+	 * Description 下发考勤名单/上传考勤记录
+	 * @param flag
+	 * @param agent_id
+	 * @return
+	 * @author 陈乐为 2019年5月7日
+	 */
+	public String updateAttendanceByJWT(Integer flag, Integer agent_id) {
+		// 设备
+		LabRoomAgent labRoomAgent = labRoomAgentDAO.findLabRoomAgentById(agent_id);
+
+//		Map<String, String> params = new HashMap<>();
+//		// 物联设备类型CDictionary的id
+//		params.put("hardwaretype", labRoomAgent.getCDictionary().getId().toString());
+//		// 物联服务器ip
+//		params.put("commonserver", labRoomAgent.getCommonServer().getServerIp());
+//		// 物联服务器端口
+//		params.put("port", labRoomAgent.getCommonServer().getServerSn());
+//		// 硬件IP
+//		params.put("hardwareip", labRoomAgent.getHardwareIp());
+//		// 门号
+//		params.put("doorindex", doorIndex.toString());
+//		String[] jwtStr = new String[2];
+//		// 获取jwt
+//		Authorization a = AuthorizationUtil.getAuthorization(shareService.getUserDetail().getUsername(), params);
+//		jwtStr[0] = "Authorization";
+//		jwtStr[1] = a.getJwtToken();
+		String s = "";
+		// 以jwt形式发送请求
+		if (flag == 1) {// 下发考勤名单
+			s = HttpClientUtil.doPost("http://"+ labRoomAgent.getCommonServer().getServerIp()+":8082/services/ofthings/attendance.asp?cmd=regcard&ip="+labRoomAgent.getHardwareIp());
+		}else {// 上传考勤记录
+			s = HttpClientUtil.doPost("http://"+ labRoomAgent.getCommonServer().getServerIp()+":8082/services/ofthings/attendance.asp?cmd=readlog&ip="+labRoomAgent.getHardwareIp());
+		}
+		return s;
 	}
 
 }

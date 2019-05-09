@@ -2841,7 +2841,7 @@ System.out.println("二维码路径："+url);
 	@Override
 	public List<SystemTime> getNotObsoleteTime() {
 		SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");//设置日期格式
-		StringBuffer hql = new StringBuffer("select c from SystemTime c where c.startDate > '"+df.format(new Date())+"'");
+		StringBuffer hql = new StringBuffer("select c from SystemTime c where c.startDate > '"+df.format(new Date())+"' order by c.startDate");
 		List<SystemTime> systemTimes = systemTimeDAO.executeQuery(hql.toString());
 		return systemTimes;
 	}

@@ -691,7 +691,18 @@ public class TimetableAttendanceController {
 		return "success";
 	}
 
-
+	/**
+	 * Description 下发考勤名单/上传考勤记录
+	 * @param flag
+	 * @param agent_id
+	 * @return
+	 * @author 陈乐为 2019年5月7日
+	 */
+	@RequestMapping("/updateAttendance")
+	public @ResponseBody
+	String updateAttendance(@RequestParam Integer flag, Integer agent_id) {
+		return timetableAttendanceService.updateAttendanceByJWT(flag, agent_id);
+	}
 
 
 }

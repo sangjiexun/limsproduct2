@@ -241,6 +241,14 @@ $(function(){
 										</c:if>
 									</c:forEach>
 								</c:if>
+								<c:if test="${isAudit eq 2 && current.auditStage eq 6 && isBeforeTime[i.count-1]}">
+											<a href="javascript:void(0)"
+											   onclick="cancelLabReservation('${current.id}')">取消预约</a>
+								</c:if>
+								<c:if test="${isAudit eq 1 && current.auditStage eq 7}">
+									<a href="javascript:void(0)"
+									   onclick="openCancelLabReservationAudit('${current.id}')">审核取消</a>
+								</c:if>
 
 			    			</td>
                         </tr>
@@ -291,6 +299,48 @@ $(function(){
 <!-- 下拉框的js -->
 
 <script type="text/javascript">
+	function openCancelLabReservationAudit(id) {
+		layer.ready(function(){
+			var index = layer.open({
+				type: 2,
+				title: '审核',
+				fix: true,
+				maxmin:true,
+				shift:-1,
+				closeBtn: 1,
+				shadeClose: true,
+				move:false,
+				area: ['1000px', '420px'],
+				content: '../auditing/auditList?businessType=CancelLabRoomReservation&businessUid=-1&businessAppUid='+id,
+				end: function(){
+					window.location.reload();
+				}
+			});
+			layer.full(index);
+		});
+	}
+	function cancelLabReservation(id) {
+		if(confirm("确定取消吗")) {
+			$.ajax({
+				url: "${pageContext.request.contextPath}/labRoomLending/cancelLabReservation?labReservationId=" + id,
+				contentType: "application/json;charset=utf-8",
+				dataType: "text",
+				type: "post",
+				async: false,
+				success: function (data) {
+					if (data == "success") {
+						alert("已提交取消的申请，请等待审核");
+						window.location.reload();
+					} else {
+						alert("取消失败");
+					}
+				},
+				error: function () {
+					alert("取消失败");
+				}
+			});
+		}
+	}
 	function obsoleteLabReservation(id) {
 		if(confirm("确定作废吗")) {
 			$.ajax({

@@ -345,7 +345,7 @@ public class LabRoomLendingController<JsonResult> {
             int stu_num = 0;
             if(number != null) {
                 String[] stunum = number.split("-");
-                if(stunum.length > 0) {
+                if(stunum.length > 1) {
                     stu_num = Integer.valueOf(stunum[1]);
                 }else {
                     stu_num = Integer.valueOf(number);
@@ -935,6 +935,9 @@ public class LabRoomLendingController<JsonResult> {
         List<String> auditShow = new ArrayList<>();
         //判断所处审核阶段，关联到前端的按钮
         if (labReservations != null) {
+            Calendar currentTime = Calendar.getInstance();
+            currentTime.add(Calendar.HOUR, Integer.parseInt(pConfig.advanceCancelTime));
+            boolean[] isBeforeTime = new boolean[labReservations.size()];
             for (int i = 0; i < labReservations.size(); i++) {
                 // 获取当前审核状态
                 Map<String, String> params2 = new HashMap<>();
@@ -1045,8 +1048,15 @@ public class LabRoomLendingController<JsonResult> {
                 }else{
                     labReservations.get(i).setButtonMark(0);
                 }
+                Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
+                Calendar theDay = labReservations.get(i).getLendingTime();
+                theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));
+                theDay.set(Calendar.MINUTE, theTime.get(Calendar.MINUTE));
+                isBeforeTime[i] = currentTime.before(theDay);
+
             }
 //            totalRecords = labReservations.size();
+            mav.addObject("isBeforeTime", isBeforeTime);
         }
         // 分页信息
         Map<String, Integer> pageModel = shareService.getPage(page, pageSize,
@@ -1603,7 +1613,7 @@ public class LabRoomLendingController<JsonResult> {
         lendingTime.setTime(lendingTimeDate);
         StringBuilder r = new StringBuilder();
 
-        List<SystemTime> systemTimes = new ArrayList<>(systemTimeDAO.findAllSystemTimes());
+        List<SystemTime> systemTimes = systemTimeDAO.executeQuery("select st from SystemTime st order by st.startDate");
         Date nowDate = sdf.parse(sdf.format(new Date()));
         // 判断是否是当天
         if(lendingTimeDate.getTime()==nowDate.getTime()) {
@@ -1668,7 +1678,7 @@ public class LabRoomLendingController<JsonResult> {
      * 实验室预约作废
      * @param labReservationId 实验室预约id
      * @return 成功的字符串
-     * @author 黄保钱 2019-1-11
+     * @author 黄保钱 2019-5-8
      */
     @RequestMapping("/obsoleteLabReservation")
     public @ResponseBody String obsoleteLabReservation(@RequestParam Integer labReservationId){
@@ -1693,7 +1703,7 @@ public class LabRoomLendingController<JsonResult> {
                 labReservation.getLabRoom() == null ? null : labReservation.getLabRoom().getLabRoomName());
         List<Object[]> items = new ArrayList<>();
         for (AuditRefuseBackup auditRefuseBackup: auditRefuseBackups){
-            Object[] objects = new Object[8];
+            Object[] objects = new Object[9];
             Integer id = Integer.parseInt(auditRefuseBackup.getRefuseItemBackup().iterator().next().getBusinessId());
             LabRoom labRoom = labRoomDAO.findLabRoomById(id);
             objects[0] = labRoom.getLabRoomName() + "(" + labRoom.getId() + ")";
@@ -1713,6 +1723,7 @@ public class LabRoomLendingController<JsonResult> {
             objects[5] = section;
             objects[6] = "审核信息：" + auditRefuseBackup.getAuditInfo() + "<br>审核备注：" + auditRefuseBackup.getAuditContent();
             objects[7] = auditRefuseBackup.getRefuseItemBackup().iterator().next().getOperationItemName();
+            objects[8] = auditRefuseBackup.getRefuseItemBackup().iterator().next().getMemo();
             items.add(objects);
         }
         mav.addObject("items", items);
@@ -1721,5 +1732,73 @@ public class LabRoomLendingController<JsonResult> {
         mav.addObject("pageModel", pageModel);
         mav.setViewName("/lab/lab_lending/labReservationObsoleteList.jsp");
         return mav;
+    }
+
+    /**
+     * 实验室预约取消
+     * @param labReservationId 实验室预约id
+     * @return 成功的字符串
+     * @author 黄保钱 2019-1-11
+     */
+    @RequestMapping("/cancelLabReservation")
+    public @ResponseBody String cancelLabReservation(@RequestParam Integer labReservationId){
+        return labRoomLendingService.cancelLabReservation(labReservationId);
+    }
+
+    /**
+     * 更新状态
+     * @return 成功的字符串
+     * @author 黄保钱 2019-5-8
+     */
+    @RequestMapping("/updateCancelLabReservationAudit")
+    public @ResponseBody String updateCancelLabReservationAudit(@RequestParam String businessAppUid, @RequestParam String auditResult, @RequestParam String businessType, HttpServletRequest request){
+        Integer id = Integer.parseInt(businessAppUid);
+        LabReservation labReservation = labReservationDAO.findLabReservationById(id);
+        // 消息
+        String authCname = shareService.getAuthorityByName(((String) request.getSession().getAttribute("selected_role")).substring(5)).getCname();
+        Message message = new Message();
+        Calendar date1 = Calendar.getInstance();
+        message.setSendUser(shareService.getUserDetail().getCname());
+        message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
+        message.setCond(0);
+        String title = "";
+        message.setTitle("实验室取消预约审核");
+        String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">审核</a>";
+        message.setContent(content);
+        message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+        message.setCreateTime(date1);
+        if("pass".equals(auditResult)) {
+            title = "实验室取消预约" + authCname + shareService.getUserDetail().getCname() + "审核通过，审核全部通过";
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">点击查看</a>";
+            message.setTitle(title);
+            message.setContent(content);
+            message.setTage(1);
+            shareService.sendMsg(labReservation.getUser(), message);
+            labRoomLendingService.updateCancelLabReservation(labReservation.getId());
+        }else if("fail".equals(auditResult)) {
+            title = "实验室取消预约" + authCname + shareService.getUserDetail().getCname() + "审核拒绝";
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">点击查看</a>";
+            message.setTitle(title);
+            message.setContent(content);
+            message.setTage(1);
+            shareService.sendMsg(labReservation.getUser(), message);
+            labReservation.setAuditStage(8);
+            labReservationDAO.store(labReservation);
+        }else{
+            List<User> nextAuditUser = labRoomLendingService.getNextUsers(auditResult, businessAppUid);
+            title = "实验室取消预约" + authCname + shareService.getUserDetail().getCname() + "审核通过";
+            message.setTitle(title);
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">审核</a>";
+            message.setContent(content);
+            for(User user: nextAuditUser){
+                message.setTage(2);
+                shareService.sendMsg(user, message);
+            }
+            content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">点击查看</a>";
+            message.setContent(content);
+            message.setTage(1);
+            shareService.sendMsg(labReservation.getUser(), message);
+        }
+        return "success";
     }
 }

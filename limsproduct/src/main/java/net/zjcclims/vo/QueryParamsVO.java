@@ -15,6 +15,8 @@ public class QueryParamsVO implements Serializable {
     String academy_number;
     // 中心id
     int center_id;
+    // 基地id
+    int base_id;
     // 实验室id
     int lab_id;
     // 教师工号/学生学号等
@@ -61,6 +63,14 @@ public class QueryParamsVO implements Serializable {
 
     public void setCenter_id(int center_id) {
         this.center_id = center_id;
+    }
+
+    public int getBase_id() {
+        return base_id;
+    }
+
+    public void setBase_id(int base_id) {
+        this.base_id = base_id;
     }
 
     public int getLab_id() {

@@ -127,6 +127,10 @@ public class AuditSettingController<JsonResult> {
             businessName = grade + "StationReservation";
             businessType = projectName + businessName;
             allType = 1;
+        }else if(flag == 12){
+            businessName = "CancelLabRoomReservation";
+            businessType = projectName + businessName;
+            allType = 1;
         }
         map.put("businessName", businessName);
         map.put("allType", allType);

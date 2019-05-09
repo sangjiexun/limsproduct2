@@ -184,7 +184,7 @@ var s=${isAudit};
      <td><a onclick="showStudentList(${s.id})" title="查看学生名单">查看学生名单</a></td>
      <td><fmt:formatDate value="${s.reservation.time}" pattern="yyyy-MM-dd"/></td>
      <td><fmt:formatDate value="${s.startTime.time}" pattern="HH:mm"/>至<fmt:formatDate value="${s.endTime.time}" pattern="HH:mm"/></td>
-     <td>${s.remark }</td>
+     <td>${auditItems[i.count-1]}</td>
      <td>
      	 <c:if test="${s.result==1}">审核通过</c:if>
          <c:if test="${s.result==2}">审核中</c:if>

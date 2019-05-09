@@ -95,6 +95,8 @@ public class PConfig {
     public String virtual;
     @Value("${limsUrl}")
     public String limsUrl;
+    @Value("${advanceCancelTime}")
+    public String advanceCancelTime;
 
     @PostConstruct
     public void getApiToken() {

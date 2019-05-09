@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import net.zjcclims.constant.CommonConstantInterface;
+import net.zjcclims.dao.LabAnnexDAO;
+import net.zjcclims.dao.LabCenterDAO;
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.domain.SystemLog;
 import net.zjcclims.service.common.ShareService;
@@ -37,6 +39,9 @@ public class SystemLogController {
 	@Autowired private ShareService shareService;
 	//@Autowired SchoolTermService schoolTermService;
 	@Autowired private VirtualService virtualService;
+	@Autowired private LabCenterDAO labCenterDAO;
+	@Autowired private LabAnnexDAO labAnnexDAO;
+
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register static property editors.
 		binder.registerCustomEditor(java.util.Calendar.class, new org.skyway.spring.util.databinding.CustomCalendarEditor());
@@ -196,6 +201,17 @@ public class SystemLogController {
 		}else {
 			term_id = "-1";
 		}
+		int base_id = 0;
+		int center_id = 0;
+		if (request.getParameter("base_id")!=null) {
+			base_id = Integer.valueOf(request.getParameter("base_id"));
+		}
+		if (request.getParameter("center_id")!=null) {
+			center_id = Integer.valueOf(request.getParameter("center_id"));
+		}
+
+		mav.addObject("center_id", center_id);
+		mav.addObject("base_id", base_id);
 
 		// 页面设置
 		int pageSize = 20;
@@ -206,6 +222,8 @@ public class SystemLogController {
 		paramsVO.setType(type);
 		paramsVO.setCurr_page(currpage);
 		paramsVO.setPage_size(pageSize);
+		paramsVO.setBase_id(base_id);
+		paramsVO.setCenter_id(center_id);
 		// 课程列表
 		int totalRecords = systemLogService.allLabRoomUseUnplanCount(paramsVO);
 		//学期
@@ -217,6 +235,8 @@ public class SystemLogController {
 		mav.addObject("totalRecords", totalRecords);
 		mav.addObject("details", details);
 		mav.addObject("type", type);
+		mav.addObject("centers", labCenterDAO.findAllLabCenters());
+		mav.addObject("bases", labAnnexDAO.findAllLabAnnexs());
 
 		mav.setViewName("reports/systemLog/listLabRoomUseUnplan.jsp");
 		return mav;
