@@ -197,7 +197,7 @@ public class OAuth2Controller<JsonResult> {
      ************************************************************/
     @RequestMapping("/lims/oauth2_logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String logouturl = logoutUrl + "?redirect_uri=" + request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "cms";
+        String logouturl = logoutUrl + "?redirect_uri=" + request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         request.getSession().invalidate();
         response.sendRedirect(logouturl);
     }
