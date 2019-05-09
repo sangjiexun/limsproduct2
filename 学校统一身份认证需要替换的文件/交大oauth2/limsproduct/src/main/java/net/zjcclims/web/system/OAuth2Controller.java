@@ -183,7 +183,7 @@ public class OAuth2Controller<JsonResult> {
         String logintime = sdf.format(time.getTime());
         request.getSession().setAttribute("logintime",logintime);
         //使登录
-        mav.setViewName("redirect:/j_spring_security_check");
+        mav.setViewName("redirect:/xxx");
         return mav;
     }
 

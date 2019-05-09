@@ -9,7 +9,6 @@ package net.zjcclims.web.system;
 
 import net.sf.json.JSONObject;
 import net.zjcclims.dao.UserDAO;
-import net.zjcclims.domain.User;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Map;
 
 /****************************************************************************
  * 功能：系统后台管理模块 作者：魏诚 时间：2014-07-14
@@ -44,7 +44,7 @@ public class OAuth2Controller<JsonResult> {
      *
      ************************************************************/
     @InitBinder
-    public void initBinder(WebDataBinder binder, HttpServletRequest request) {
+    public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register static property editors.
         binder.registerCustomEditor(Calendar.class, new org.skyway.spring.util.databinding.CustomCalendarEditor());
         binder.registerCustomEditor(byte[].class, new org.springframework.web.multipart.support.ByteArrayMultipartFileEditor());
         binder.registerCustomEditor(boolean.class, new org.skyway.spring.util.databinding.EnhancedBooleanEditor(false));
@@ -57,20 +57,27 @@ public class OAuth2Controller<JsonResult> {
         binder.registerCustomEditor(Double.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Double.class, true));
     }
 
+
+    /**
+     * 获取token的url
+     * */
     @Value("${access-token-uri}")
     private String accessTokenUri;
 
+    /**
+     * 获取code的url
+     * */
     @Value("${user-authorization-uri}")
     private String userAuthorizationUri;
 
     @Value("${application-host}")
     private String applicationHost;
 
-    @Value("${user-info-uri:}")
+    /**
+     * 获取用户信息的url
+     * */
+    @Value("${user-info-uri}")
     private String userInfoUri;
-
-    @Value("${user-profile-uri}")
-    private String userProfileUri;
 
     @Value("${client_id}")
     private String clientId;
@@ -81,12 +88,31 @@ public class OAuth2Controller<JsonResult> {
     @Value("${scope}")
     private String scope;
 
+    /**
+     * 退出地址
+     */
     @Value("${logout-url}")
     private String logoutUrl;
 
-    //获取用户username的key
+    /**
+     *回调地址
+     */
+    @Value("${outUrl}")
+    private String outUrl;
+
+    /**
+     *退出地址的参数
+     */
+    @Value("${outKey}")
+    private String outKey;
+
+    /**
+     * 获取用户username的key
+     */
     @Value("${user-key}")
     private String userKey;
+//	@Autowired
+//    private TokenStore tokenStore;
 
     /************************************************************
      * Description：Oauth2认证step1-获取code
@@ -95,19 +121,19 @@ public class OAuth2Controller<JsonResult> {
      * @日期：2017-08-30
      ************************************************************/
     @RequestMapping(value = "/lims/authorization_code", method = RequestMethod.POST)
-    public ModelAndView getOAuth2Code(HttpServletRequest request) throws Exception {
+    public ModelAndView getOAuth2Code(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         Object objName = request.getSession().getAttribute("username");
         if (objName != null) {
             mav.setViewName("redirect:/test");
         } else {
+            mav.addObject("userAuthorizationUri", userAuthorizationUri);
             mav.addObject("redirect_uri", applicationHost + "/authorization_code_callback");
             mav.addObject("client_id", clientId);
-            mav.addObject("accessTokenUri", accessTokenUri);
-            mav.addObject("userAuthorizationUri", userAuthorizationUri);
-            mav.addObject("applicationHost", applicationHost);
-            mav.addObject("scope", scope);
             mav.addObject("response_type", "code");
+            mav.addObject("state", "xvvvf");
+            // 公司oauth2不能传scope
+            // mav.addObject("scope",scope);
             mav.setViewName("lims/oauth2/authorization_code.jsp");
         }
         return mav;
@@ -124,66 +150,46 @@ public class OAuth2Controller<JsonResult> {
     @RequestMapping("/lims/authorization_code_callback")
     public ModelAndView authorization_code_callback(@RequestParam("code") String code, String state, HttpServletRequest request) throws HttpException, IOException {
         ModelAndView mav = new ModelAndView();
-        System.out.println("code="+code);
-
-        //--2 通过code获取access_token
-
         //创建一个客户端，类似打开一个浏览器
-        HttpClient httpClient = new HttpClient();
-        //设置路径，为了通过code获取accessToken
+        HttpClient httpclient = new HttpClient();
         PostMethod postMethod = new PostMethod(accessTokenUri);
-        //设置传输参数
+        //传参
         NameValuePair[] postData = new NameValuePair[6];
-        postData[0] = new NameValuePair("code",code);
-        postData[1] = new NameValuePair("state",state);
-        postData[2] = new NameValuePair("redirect_url",applicationHost+"/authorization_code_callback");
-        postData[3] = new NameValuePair("client_id",clientId);
-        postData[4] = new NameValuePair("client_secret",secretKey);
-        postData[5] = new NameValuePair("grant_type","authorization_code");
-        //添加进去
+        postData[0] = new NameValuePair("code", code);
+        System.out.println("code=" + code);
+        postData[1] = new NameValuePair("state", state);
+        postData[2] = new NameValuePair("redirect_uri", applicationHost + "/authorization_code_callback");
+        postData[3] = new NameValuePair("client_id", clientId);
+        postData[4] = new NameValuePair("client_secret", secretKey);
+        postData[5] = new NameValuePair("grant_type", "authorization_code");
         postMethod.addParameters(postData);
-        //发送请求获取状态码
-        int statusCode = httpClient.executeMethod(postMethod);
-        //获取返回数据
+        httpclient.executeMethod(postMethod);
+        //获取json
         String jsonStr = postMethod.getResponseBodyAsString();
-        //json转换
         JSONObject jb = JSONObject.fromObject(jsonStr);
-        //获取access_token
-        String access_token = jb.get("access_token").toString();
-        //获取用户id
-        String user_id = jb.get("user_id").toString();
-        System.out.println("access_token="+access_token);
-
-        //--3 通过user_id和access_token获取用户信息
-        String url = userProfileUri+"?access_token="+access_token+"&user_id="+user_id;
-        GetMethod userInfoMethod = new GetMethod(userProfileUri+"?access_token="+access_token+"&user_id="+user_id);
-        httpClient.executeMethod(userInfoMethod);
-        String userInfoStr = userInfoMethod.getResponseBodyAsString();
-        JSONObject userInfo = JSONObject.fromObject(userInfoStr);
-        //获取username
-        String username = userInfo.get(this.userKey).toString();
-        if(username.length()<=4){
-            try{
-                Integer.valueOf(username);
-                username = "0"+username;
-            }catch(Exception e){
-                System.out.println("user_no前面加0出错");
-            }
+        Map<String, String> map = (Map<String, String>) jb;
+        String access_token = map.get("access_token");
+        // 获取token
+        System.out.println("token=" + access_token);
+        // 通过token获取用户信息
+        GetMethod userMethod = new GetMethod(userInfoUri + "?access_token=" + access_token);
+        httpclient.executeMethod(userMethod);
+        //获取json
+        String userStr = userMethod.getResponseBodyAsString();
+        JSONObject user = JSONObject.fromObject(userStr);
+        System.out.println(user);
+        if (userKey.contains("$") || userKey == null || userKey.equals("")) {
+            this.userKey = "name";
         }
-        //--4 进行本项目效验
-
-        User user = userDAO.findUserByPrimaryKey(username);
-        if(user!=null){
-            request.getSession().setAttribute("password",user.getPassword());
-        }
-		System.out.println("username="+username);
-        request.getSession().setAttribute("username",username);
+        String username = user.get(this.userKey).toString();
+        System.out.println("username=" + username);
+        System.out.println(request.getSession().isNew());
+        request.getSession().setAttribute("username", username);
         Calendar time = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String logintime = sdf.format(time.getTime());
-        request.getSession().setAttribute("logintime",logintime);
-        //使登录
-        mav.setViewName("redirect:/xxx");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String logintime = df.format(time.getTime());
+        request.getSession().setAttribute("logintime", logintime);
+        mav.setViewName("redirect:/j_spring_security_check");
         return mav;
     }
 
@@ -196,10 +202,24 @@ public class OAuth2Controller<JsonResult> {
      * @日期：2017-12-03
      ************************************************************/
     @RequestMapping("/lims/oauth2_logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String logouturl = logoutUrl + "?redirect_uri=" + request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "cms";
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws HttpException, IOException, Exception {
+        //String logouturl=logoutUrl+"?url="+request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/redirect";
+        String logouturl = logoutUrl;
+        //参数名
+        if (outKey != null && !outKey.contains("$") && !outKey.equals("")) {
+            logouturl += "?" + outKey + "=";
+        } else {
+            logouturl += "?url=";
+        }
+        //退出返回地址
+        if (outUrl != null && !outUrl.contains("$") && !outUrl.equals("")) {
+            logouturl += outUrl;
+        } else {
+            logouturl += request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "cms";
+        }
         request.getSession().invalidate();
         response.sendRedirect(logouturl);
     }
+
 
 }
