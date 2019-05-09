@@ -536,10 +536,9 @@ function importLabRoomDevice(){
 	<div class="content-box">		
         <div class="tool-box">
             <form:form name="queryForm" action="${pageContext.request.contextPath}/device/listLabRoomDeviceNew?roomId=${roomId }&page=1" method="post" modelAttribute="labRoomDevice">
-					<table class="tab_fix">
-						<tr>
-						
-							<th><spring:message code="all.trainingRoom.labroom" />：</th>
+				<table class="tab_fix">
+					<tr>
+						<th><spring:message code="all.trainingRoom.labroom" />：</th>
 							<td>
 								<form:select class="chzn-select" path="labRoom.id" id="labRoom_id">
 								<form:option value="">请选择</form:option>
@@ -585,7 +584,7 @@ function importLabRoomDevice(){
 								<input type="button" value="取消" onclick="cancelQuery();">
 								<input type="submit" value="查询">
 							</td>
-						</tr >
+					</tr >
 				</table>
 				</form:form>	
         </div>
@@ -624,10 +623,12 @@ function importLabRoomDevice(){
 		        	<th>资产编号</th>
 		        	<th>名称</th>
 		        	<th>型号规格</th>
+					<th>品牌</th>
 		        	<th>所属<spring:message code="all.trainingRoom.labroom" /></th>
 		        	<th>价格</th>
 		        	<th>设备状态</th>
 					<th>设备管理员</th>
+					<th>备注</th>
 		        	<th>操作</th>
 		    	</tr>
 			</thead>
@@ -638,89 +639,91 @@ function importLabRoomDevice(){
 		           	<td>${labRoomDevice.schoolDevice.deviceNumber}</td>
 		           	<td>${labRoomDevice.schoolDevice.deviceName}</td>
 		           	<td>${labRoomDevice.schoolDevice.devicePattern}</td>
-		           	<td>${labRoomDevice.labRoom.systemRoom.roomName}</td>
+					<td>${labRoomDevice.schoolDevice.deviceBrand}</td>
+					<td>${labRoomDevice.labRoom.systemRoom.roomName}</td>
 		         	<td>${labRoomDevice.schoolDevice.devicePrice}</td>
 		         	<td>${labRoomDevice.CDictionaryByDeviceStatus.CName}</td>
 					<td>${labRoomDevice.user.cname}(${labRoomDevice.user.username})</td>
+					<td>${labRoomDevice.schoolDevice.memo}</td>
 		           	<td>
-		                            <div>
-		                            <a class="btn btn-new" href="javascript:void(0)" onclick="deleteLabRoomDevice(${labRoomDevice.id})"; >删除</a>
-										<a class="btn btn-new" href="javascript:void(0)" onclick="labRoomDeviceInfo(${labRoomDevice.id})"; >详情</a>
-		                            	<c:if test="${is_reservation eq 1}">
-		                            	<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_TEACHER,ROLE_ASSISTANT,ROLE_STUDENT">
-		                            	<c:if test="${(labRoomDevice.CDictionaryByDeviceStatus.CNumber == 1 || empty labRoomDevice.CDictionaryByDeviceStatus) && labRoomDevice.CDictionaryByAllowAppointment.CNumber==1}">
-		                        		<a class="btn btn-new"  href="javascript:void(0)" onclick="Access('${labRoomDevice.id}');"  >预约</a>
-		                        		</c:if>
+						<div>
+							<a class="btn btn-new" href="javascript:void(0)" onclick="deleteLabRoomDevice(${labRoomDevice.id})"; >删除</a>
+							<a class="btn btn-new" href="javascript:void(0)" onclick="labRoomDeviceInfo(${labRoomDevice.id})"; >详情</a>
+							<c:if test="${is_reservation eq 1}">
+								<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_TEACHER,ROLE_ASSISTANT,ROLE_STUDENT">
+									<c:if test="${(labRoomDevice.CDictionaryByDeviceStatus.CNumber == 1 || empty labRoomDevice.CDictionaryByDeviceStatus) && labRoomDevice.CDictionaryByAllowAppointment.CNumber==1}">
+										<a class="btn btn-new"  href="javascript:void(0)" onclick="Access('${labRoomDevice.id}');"  >预约</a>
+									</c:if>
 		                        		<%--<c:if test="${labRoomDevice.CDictionaryByDeviceStatus.CNumber == 1 && labRoomDevice.CDictionaryByAllowLending.CNumber==1 && labRoomDevice.user.username != null }">
 		                        		<a class="btn btn-new"  href="${pageContext.request.contextPath}/device/deviceLendApply?idKey=${labRoomDevice.id}"> 出借</a>
 		                        		</c:if>--%>
-		                        		<c:if test="${labRoomDevice.CDictionaryByDeviceStatus.CNumber == 4 && labRoomDevice.user.username != null  }">
-		                        		<a class="btn btn-new"   href="${pageContext.request.contextPath}/device/newDeviceService?td=${labRoomDevice.id}"> 报修</a>
-		                        		</c:if>
-		                        		</sec:authorize>
+									<c:if test="${labRoomDevice.CDictionaryByDeviceStatus.CNumber == 4 && labRoomDevice.user.username != null  }">
+										<a class="btn btn-new"   href="${pageContext.request.contextPath}/device/newDeviceService?td=${labRoomDevice.id}"> 报修</a>
+									</c:if>
+								</sec:authorize>
 		                        		
-										<a class="btn btn-new" onclick="viewDeviceInfoRest(${labRoomDevice.id})" href="javascript:void(0)"  title="查看">查看</a>
-		                        		<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_STUDENT">
-		                       			<c:if test="${(labRoomDevice.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && labRoomDevice.CDictionaryByAllowSecurityAccess.CNumber == 1 && labRoomDevice.CDictionaryByTrainType.CNumber == 1)}">
-		                                <sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EQUIPMENTADMIN">
-		                                <a class="btn btn-new" href="javascript:void(0)" onclick="editDeviceTrainingRest(${labRoomDevice.id})";>培训申请</a>
+								<a class="btn btn-new" onclick="viewDeviceInfoRest(${labRoomDevice.id})" href="javascript:void(0)"  title="查看">查看</a>
+								<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_STUDENT">
+									<c:if test="${(labRoomDevice.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && labRoomDevice.CDictionaryByAllowSecurityAccess.CNumber == 1 && labRoomDevice.CDictionaryByTrainType.CNumber == 1)}">
+										<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EQUIPMENTADMIN">
+											<a class="btn btn-new" href="javascript:void(0)" onclick="editDeviceTrainingRest(${labRoomDevice.id})";>培训申请</a>
 		                                </sec:authorize>
-		                                <sec:authorize ifAnyGranted="ROLE_STUDENT,ROLE_TEACHER"> 
-		                                <sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EQUIPMENTADMIN">
-		                                <a class="btn btn-new" href="javascript:void(0)" onclick="viewDeviceTrainingRest(${labRoomDevice.id})";>培训申请</a>
-		                                </sec:authorize> 
-		                                </sec:authorize>
-		                                </c:if>
-		                                <c:if test="${(labRoomDevice.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && labRoomDevice.CDictionaryByAllowSecurityAccess.CNumber == '1' && labRoomDevice.CDictionaryByTrainType.CNumber == '3')}">
-			                                	<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN">
-			                                		<a class="btn btn-new" href="javascript:void(0)" onclick="findTestListForAdmin(${labRoomDevice.id})";>考试设置</a>
-			                                		<a class="btn btn-new" href="javascript:void(0)" onclick="findTestList(${labRoomDevice.id})";>考试</a>
-			                                	</sec:authorize>
-				                                <sec:authorize ifAnyGranted="ROLE_STUDENT">
-					                                <sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN">
-					                                	<a class="btn btn-new" href="javascript:void(0)" onclick="findTestList(${labRoomDevice.id})";>考试</a>
-					                                </sec:authorize>
-				                                </sec:authorize>
-		                                </c:if>                           
-		                               	</sec:authorize>
-		                            	</c:if>   
+										<sec:authorize ifAnyGranted="ROLE_STUDENT,ROLE_TEACHER">
+											<sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EQUIPMENTADMIN">
+												<a class="btn btn-new" href="javascript:void(0)" onclick="viewDeviceTrainingRest(${labRoomDevice.id})";>培训申请</a>
+											</sec:authorize>
+										</sec:authorize>
+									</c:if>
+									<c:if test="${(labRoomDevice.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && labRoomDevice.CDictionaryByAllowSecurityAccess.CNumber == '1' && labRoomDevice.CDictionaryByTrainType.CNumber == '3')}">
+										<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN">
+											<a class="btn btn-new" href="javascript:void(0)" onclick="findTestListForAdmin(${labRoomDevice.id})";>考试设置</a>
+											<a class="btn btn-new" href="javascript:void(0)" onclick="findTestList(${labRoomDevice.id})";>考试</a>
+										</sec:authorize>
+										<sec:authorize ifAnyGranted="ROLE_STUDENT">
+											<sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_TEACHER,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN">
+												<a class="btn btn-new" href="javascript:void(0)" onclick="findTestList(${labRoomDevice.id})";>考试</a>
+											</sec:authorize>
+										</sec:authorize>
+									</c:if>
+								</sec:authorize>
+							</c:if>
 		                              
-		                              <c:if test="${is_reservation eq 0}">  
+							<c:if test="${is_reservation eq 0}">
 		                              <%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_TEACHER">
 		                              <a class="btn btn-new" href="${pageContext.request.contextPath}/device/listInnerSameDevice?deviceId=${labRoomDevice.id}">关联设备</a>
 		                              </sec:authorize>--%>
-		                                <sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR">
-		                        		<a class="btn btn-new" href="javascript:void(0)" onclick="openSetupLink(${labRoomDevice.id})" title="设置">设置</a>
-		                        		</sec:authorize>
-		                        		<sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_TEACHER">
+								<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR">
+									<a class="btn btn-new" href="javascript:void(0)" onclick="openSetupLink(${labRoomDevice.id})" title="设置">设置</a>
+								</sec:authorize>
+								<sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_TEACHER">
 		                        			<%--<c:if test="${labRoomDevice.user.username eq user.username}">
 		                        			<a class="btn btn-new" href="${pageContext.request.contextPath}/device/listInnerSameDevice?deviceId=${labRoomDevice.id}">关联设备</a>
 			                        		</c:if>--%>
 			                        		<%--<spring:message code="all.trainingRoom.labroom" />室管理员--%>
-			                        		<c:if test="${labRoomDevice.user.username ne user.username}">
-				                        		<c:forEach items="${labRoomDevice.labRoom.labRoomAdmins}" var="admin" varStatus="i">
+									<c:if test="${labRoomDevice.user.username ne user.username}">
+										<c:forEach items="${labRoomDevice.labRoom.labRoomAdmins}" var="admin" varStatus="i">
 					                        		<%--<c:if test="${admin.user.username eq user.username && admin.typeId eq 1}">
 				                        			<a class="btn btn-new" href="${pageContext.request.contextPath}/device/listInnerSameDevice?deviceId=${labRoomDevice.id}">关联设备</a>
 			                        				</c:if>--%>
-				                        		</c:forEach>
-			                        		</c:if>
-		                        		</sec:authorize>
-		                        		<sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR">
-		                        			<c:if test="${labRoomDevice.user.username eq user.username}">
-			                        		<a class="btn btn-new" href='javascript:openSetupLink(${labRoomDevice.id})' title="设置">设置</a>
-			                        		</c:if>
+										</c:forEach>
+									</c:if>
+								</sec:authorize>
+								<sec:authorize ifNotGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR">
+									<c:if test="${labRoomDevice.user.username eq user.username}">
+										<a class="btn btn-new" href='javascript:openSetupLink(${labRoomDevice.id})' title="设置">设置</a>
+									</c:if>
 			                        		<%--<spring:message code="all.trainingRoom.labroom" />室管理员--%>
-			                        		<c:if test="${labRoomDevice.user.username ne user.username}">
-				                        		<c:forEach items="${labRoomDevice.labRoom.labRoomAdmins}" var="admin" varStatus="i">
-					                        		<c:if test="${admin.user.username eq user.username && admin.typeId eq 1}">
-					                        		<a class="btn btn-new" href='javascript:openSetupLink(${labRoomDevice.id})' title="设置">设置</a>
-			                        				</c:if>
-				                        		</c:forEach>
-			                        		</c:if>
-		                        		</sec:authorize>
-		                               </c:if> 
+									<c:if test="${labRoomDevice.user.username ne user.username}">
+										<c:forEach items="${labRoomDevice.labRoom.labRoomAdmins}" var="admin" varStatus="i">
+											<c:if test="${admin.user.username eq user.username && admin.typeId eq 1}">
+												<a class="btn btn-new" href='javascript:openSetupLink(${labRoomDevice.id})' title="设置">设置</a>
+											</c:if>
+										</c:forEach>
+									</c:if>
+								</sec:authorize>
+							</c:if>
 		                               <%--<a class="btn btn-new" href='javascript:edit(${labRoomDevice.id})'>编辑</a>--%>
-		                            </div>
+						</div>
 		         	</td>
 		    	</tr>
 		  	</c:forEach>
