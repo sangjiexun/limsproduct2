@@ -1035,6 +1035,10 @@ function cancel(){
 						    				alert("预约失败，您选的时间段工位数不够！");
 						    			}else if(data=="overMax"){
                                             alert("预约失败，超过系统设置的最大可预约数！");
+                                        }else if(data=="lent"){
+                                            alert("预约失败，实验室已被借用");
+                                        }else if(data=="reserved"){
+                                            alert("预约失败，实验室已被预约");
                                         }else if(data=="success1"){
 						    				alert("预约成功，等待相关人员审核");
 						    				flag = 0;
