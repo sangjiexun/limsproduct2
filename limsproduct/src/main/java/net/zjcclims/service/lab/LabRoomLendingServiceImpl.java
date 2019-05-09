@@ -1227,7 +1227,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                                     "\n预约原因： " + labReservation.getLendingReason()
                 ;
             refuseItemBackup.setOperationItemName(operationItems);
-            refuseItemBackup.setMemo("作废");
+            refuseItemBackup.setMemo("预约作废");
             refuseItemBackupDAO.store(refuseItemBackup);
         }
         if(flag){
@@ -1453,7 +1453,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                     "\n预约原因： " + labReservation.getLendingReason()
             ;
             refuseItemBackup.setOperationItemName(operationItems);
-            refuseItemBackup.setMemo("取消");
+            refuseItemBackup.setMemo("预约取消");
             refuseItemBackupDAO.store(refuseItemBackup);
         }
         timetableAppointmentDAO.remove(labReservation.getTimetableAppointment());
