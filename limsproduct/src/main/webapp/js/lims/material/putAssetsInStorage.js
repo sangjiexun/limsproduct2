@@ -208,7 +208,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
     var paclistView = $('#paclist'),
         uploadListIns = upload.render({
             elem: '#assetsImage',
-            url: contextPath + '/lims/api/material/uploadAssetsPic?id='+assetsApplyId, //上传接口
+            url: contextPath + '/lims/api/material/uploadAssetsPicForApply?id='+assetsApplyId, //上传接口
             accept: 'file', //普通文件
             multiple: true, //多个上传
             auto: false, //是否直接选择文件后上传
@@ -258,7 +258,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
         });
     // 获取图片
     $.ajax({
-        url: contextPath + '/lims/api/material/getAssetsRelatedImage?id='+assetsApplyId+'&&type='+"assetInStorage",
+        url: contextPath + '/lims/api/material/getAssetsRelatedImage?id='+assetsApplyId+'&&type='+"putAssetInStorage",
         async: false,
         type: "GET",
         contentType: "application/json;charset=UTF-8",

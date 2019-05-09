@@ -370,7 +370,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    String allocateCabinetFromAssets(Integer assetsId,Integer quantity);
+    String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId);
 
     /**
      * 根据物资及数量自动获取库存数最大的物品柜

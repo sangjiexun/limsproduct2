@@ -139,6 +139,14 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
                 sort: true,
                 // totalRowText: '项目预算合计：'
             }, {
+                fixed: 'left',
+                field: 'kind',
+                title: '物资类别',
+                minWidth: 130,
+                align: 'center',
+                sort: true,
+                // totalRowText: '项目预算合计：'
+            }, {
                 field: 'name',
                 title: '物资名称',
                 minWidth: 100,

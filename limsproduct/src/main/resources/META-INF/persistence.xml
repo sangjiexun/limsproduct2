@@ -123,6 +123,7 @@
       			<class>net.zjcclims.domain.DevicePurchaseDetailCSupplier</class>
       			
       			<class>net.zjcclims.domain.AssetAppRecord</class>
+				<class>net.zjcclims.domain.AssetCabinetAccessRecord</class>
 				<class>net.zjcclims.domain.AssetRelatedImage</class>
 				<class>net.zjcclims.domain.AssetCabinetRecord</class>
 				<class>net.zjcclims.domain.AssetStorage</class>
