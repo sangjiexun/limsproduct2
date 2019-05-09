@@ -76,7 +76,7 @@ function productsearch(search, start, limitsize) {
                     templet: function (d) {
                         return d.startTime+"-"+d.endTime;
                     }
-                }, {
+                }, /*{
                     field: 'eventName',
                     title: '预约用途',
                     minWidth: 75
@@ -84,7 +84,7 @@ function productsearch(search, start, limitsize) {
                     field: 'userObjectName',
                     title: '预约对象',
                     minWidth: 75
-                }, {
+                },*/ {
                     field: 'number',
                     title: '使用人数',
                     minWidth: 50
