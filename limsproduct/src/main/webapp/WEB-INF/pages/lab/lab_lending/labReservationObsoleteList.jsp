@@ -128,6 +128,7 @@
                                 <th>使用节次</th>
                                 <th>审核信息</th>
                                 <th>预约信息</th>
+                                <th>备注</th>
                             </tr>
                             </thead>
 
@@ -143,6 +144,7 @@
                                     <td>${current[5]}</td>
                                     <td>${current[6]}</td>
                                     <td>${current[7]}</td>
+                                    <td>${current[8]}</td>
                                 </tr>
                             </c:forEach>
 

@@ -1209,6 +1209,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                                     "\n预约原因： " + labReservation.getLendingReason()
                 ;
             refuseItemBackup.setOperationItemName(operationItems);
+            refuseItemBackup.setMemo("作废");
             refuseItemBackupDAO.store(refuseItemBackup);
         }
         if(flag){
@@ -1274,7 +1275,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
      */
     @Override
     public List<AuditRefuseBackup> getAuditRefuseBackupForLabReservation(Integer firstResult, Integer maxResult, String labName){
-        StringBuilder sql = new StringBuilder("select distinct arb from AuditRefuseBackup arb join arb.refuseItemBackup rib where 1=1 and rib.type = 'LabRoomReservation'");
+        StringBuilder sql = new StringBuilder("select distinct arb from AuditRefuseBackup arb join arb.refuseItemBackup rib where 1=1 and (rib.type = 'LabRoomReservation' or rib.type = 'CancelLabRoomReservation')");
         if(labName != null) {
             sql.append(" and rib.labRoomName like '%").append(labName).append("%' ");
         }
@@ -1380,7 +1381,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         Map<String, String> allParams = new HashMap<>();
         allParams.put("businessType", pConfig.PROJECT_NAME + businessType);
         allParams.put("businessAppUid", labReservationId.toString());
-        allParams.put("businessUid", labReservation.getLabRoom().getId().toString());
+        allParams.put("businessUid", "-1");
         String allStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
         JSONArray allJsonArray = JSONObject.parseObject(allStr).getJSONArray("data");
         String auditInfo = "";
@@ -1434,12 +1435,19 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                     "\n预约原因： " + labReservation.getLendingReason()
             ;
             refuseItemBackup.setOperationItemName(operationItems);
+            refuseItemBackup.setMemo("取消");
             refuseItemBackupDAO.store(refuseItemBackup);
         }
-        labReservationDAO.remove(labReservation);
+        timetableAppointmentDAO.remove(labReservation.getTimetableAppointment());
         return "success";
     }
 
+    /**
+     * 获取下一级审核人
+     * @param nextAuth
+     * @param businessAppUid
+     * @return
+     */
     @Override
     public List<User> getNextUsers(String nextAuth, String businessAppUid){
         Integer id = Integer.parseInt(businessAppUid);

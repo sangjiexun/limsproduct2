@@ -1675,7 +1675,7 @@ public class LabRoomLendingController<JsonResult> {
     }
 
     /**
-     * 实验室预约取消
+     * 实验室预约作废
      * @param labReservationId 实验室预约id
      * @return 成功的字符串
      * @author 黄保钱 2019-5-8
@@ -1703,7 +1703,7 @@ public class LabRoomLendingController<JsonResult> {
                 labReservation.getLabRoom() == null ? null : labReservation.getLabRoom().getLabRoomName());
         List<Object[]> items = new ArrayList<>();
         for (AuditRefuseBackup auditRefuseBackup: auditRefuseBackups){
-            Object[] objects = new Object[8];
+            Object[] objects = new Object[9];
             Integer id = Integer.parseInt(auditRefuseBackup.getRefuseItemBackup().iterator().next().getBusinessId());
             LabRoom labRoom = labRoomDAO.findLabRoomById(id);
             objects[0] = labRoom.getLabRoomName() + "(" + labRoom.getId() + ")";
@@ -1723,6 +1723,7 @@ public class LabRoomLendingController<JsonResult> {
             objects[5] = section;
             objects[6] = "审核信息：" + auditRefuseBackup.getAuditInfo() + "<br>审核备注：" + auditRefuseBackup.getAuditContent();
             objects[7] = auditRefuseBackup.getRefuseItemBackup().iterator().next().getOperationItemName();
+            objects[8] = auditRefuseBackup.getRefuseItemBackup().iterator().next().getMemo();
             items.add(objects);
         }
         mav.addObject("items", items);
