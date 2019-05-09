@@ -231,9 +231,10 @@ public class DeviceControllerRest<JsonResult> {
 			labRoom.setId(-1);
 		}
 		LabRoomDevice labRoomDevice = new LabRoomDevice();
-		SchoolDevice schoolDevice = new SchoolDevice();
+		/*SchoolDevice schoolDevice = new SchoolDevice();
 		schoolDevice.setDeviceName(deviceName);
-		schoolDevice.setDeviceNumber(deviceNumber);
+		schoolDevice.setDeviceNumber(deviceNumber);*/
+		SchoolDevice schoolDevice = schoolDeviceDAO.findSchoolDeviceByPrimaryKey(deviceNumber);
 		labRoomDevice.setLabRoom(labRoom);
 		labRoomDevice.setSchoolDevice(schoolDevice);
 		mav.addObject("labRoomDevice", labRoomDevice);
@@ -1367,14 +1368,15 @@ public class DeviceControllerRest<JsonResult> {
 	 ****************************************************************************/
 	@RequestMapping(value = "/device/saveDeviceInfoRest/{labRoomId}/{deviceNumber}/{deviceName}/{username}/{page}/" +
 			"{usernameManager}/{status}/{type}/{charge}/{price}/{functionOfDevice}/{indicators}/{managerTelephone}/{managerMail}" +
-			"/{managerOffice}/{auditTimeLimit}/{id}/{schoolDevice_allowAppointment}",
+			"/{managerOffice}/{auditTimeLimit}/{id}/{schoolDevice_allowAppointment}/{deviceBrand}/{memo}",
 			method = RequestMethod.GET)
 	public ModelAndView saveDeviceInfoRest(@PathVariable int labRoomId,
 			@PathVariable String deviceNumber, @PathVariable String deviceName, 
 			@PathVariable String username,@PathVariable int page,
 			@PathVariable String usernameManager, @PathVariable int status,@PathVariable int type, @PathVariable int charge, 
 			@PathVariable Double price, @PathVariable String functionOfDevice, @PathVariable String indicators,
-			@PathVariable String managerTelephone,@PathVariable String managerMail, @PathVariable String managerOffice, @PathVariable int auditTimeLimit,@PathVariable int id,@PathVariable String schoolDevice_allowAppointment,
+			@PathVariable String managerTelephone,@PathVariable String managerMail, @PathVariable String managerOffice, @PathVariable int auditTimeLimit,
+			@PathVariable int id,@PathVariable String schoolDevice_allowAppointment,@PathVariable String deviceBrand,@PathVariable String memo,
 			Model model,@ModelAttribute("selected_academy") String acno) throws UnsupportedEncodingException {
 		//将传来的特殊字符还原
 		//1. +  URL 中+号表示空格 %2B
@@ -1454,7 +1456,19 @@ public class DeviceControllerRest<JsonResult> {
 			d.setFunction(null);
 		}
 		labRoomDeviceService.save(d);
-		
+		//保存设备的品牌和备注
+		SchoolDevice schoolDevice1 = schoolDeviceDAO.findSchoolDeviceByPrimaryKey(d.getSchoolDevice().getDeviceNumber());
+		if(!deviceBrand.equals("-1")){
+			schoolDevice1.setDeviceBrand(deviceBrand);
+		}else{
+			schoolDevice1.setDeviceBrand(null);
+		}
+		if(!memo.equals("-1")){
+			schoolDevice1.setMemo(memo);
+		}else{
+			schoolDevice1.setMemo(null);
+		}
+		schoolDeviceDAO.store(schoolDevice1);
 		// 将设备管理员相关信息、设备状态和预约审核时间同步到该设备的关联设备
 		List<SchoolDevice> innerSameDevices = schoolDeviceService.findInnerSameDevice(d.getSchoolDevice().getDeviceNumber());
 		if (innerSameDevices!=null&&innerSameDevices.size()>0) {

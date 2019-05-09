@@ -455,7 +455,7 @@
         </sec:authorize>
         <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN'}">
             <li class="TabbedPanelsTab" id="s4"><a
-                    href="${pageContext.request.contextPath}/labRoomLending/labReservationObsoleteList?page=1">作废列表</a>
+                    href="${pageContext.request.contextPath}/labRoomLending/labReservationObsoleteList?page=1">失效记录</a>
             </li>
         </c:if>
     </ul>

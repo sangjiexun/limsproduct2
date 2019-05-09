@@ -183,7 +183,7 @@ public class OAuth2Controller<JsonResult> {
         String logintime = sdf.format(time.getTime());
         request.getSession().setAttribute("logintime",logintime);
         //使登录
-        mav.setViewName("redirect:/j_spring_security_check");
+        mav.setViewName("redirect:/xxx");
         return mav;
     }
 
@@ -197,7 +197,7 @@ public class OAuth2Controller<JsonResult> {
      ************************************************************/
     @RequestMapping("/lims/oauth2_logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String logouturl = logoutUrl + "?redirect_uri=" + request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "cms";
+        String logouturl = logoutUrl + "?redirect_uri=" + request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         request.getSession().invalidate();
         response.sendRedirect(logouturl);
     }

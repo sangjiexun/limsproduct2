@@ -84,7 +84,7 @@
             </div>
             <div class="layui-row">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">物资类别</label>
+                    <label class="layui-form-label">物资类别(审核)</label>
                     <div class="layui-input-block">
                         <select name="goodsCategory" id="goodsCategory" lay-verify="required" >
                             <option value=""></option>

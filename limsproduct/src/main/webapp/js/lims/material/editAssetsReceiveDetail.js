@@ -53,10 +53,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
                 $("#item").hide();
                 $("#price").hide();
             }
-            if(isNeedReturn===0){
-                $("#return").hide();
-            }
-
         },
         error:function () {
             if(id!=""){
@@ -173,6 +169,12 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
             }, {
                 field: 'amount',
                 title: '数量',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            }, {
+                field: 'stockNumber',
+                title: '当前库存柜余量',
                 minWidth: 100,
                 align: 'center',
                 sort: true,

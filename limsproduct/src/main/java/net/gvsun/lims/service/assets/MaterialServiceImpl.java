@@ -50,6 +50,8 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired
     AssetClassificationDAO assetClassificationDAO;
     @Autowired
+    AssetCabinetAccessRecordDAO assetCabinetAccessRecordDAO;
+    @Autowired
     private PConfig pConfig;
     @Autowired
     private AuditService auditService;
@@ -421,11 +423,13 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tasr.price,\n" +
                 "\tasr.supplier,\n" +
                 "\tasr.id,\n" +
-                "\tasr.total_price\n" +
+                "\tasr.total_price,\n" +
+                "  acl.cname\n" +
                 "FROM\n" +
                 "\tasset_storage_record asr\n" +
                 "LEFT JOIN asset a ON asr.asset_id = a.id\n" +
                 "LEFT JOIN asset_cabinet ac on asr.cabinet_id=ac.id\n" +
+                "LEFT JOIN asset_classification acl on acl.id=a.category\n" +
                 "where 1=1 and asr.store_id= "+id;
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
         Query query=entityManager.createNativeQuery(sql);
@@ -444,6 +448,7 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setFactory(o[6]!=null?o[6].toString():null);
             materialListDTO.setId(o[7]!=null?o[7].toString():null);
             materialListDTO.setTotalPrice(o[8]!=null?Double.parseDouble(o[8].toString()):null);
+            materialListDTO.setKind(o[9]!=null?o[9].toString():null);
             materialListDTOList.add(materialListDTO);
         }
         JSONObject jsonObject=this.getJSON(materialListDTOList,totalRecords);
@@ -511,11 +516,13 @@ public class MaterialServiceImpl implements MaterialService {
                 "\ta.unit,\n" +
                 "\tarr.quantity,\n" +
                 "\tac.cabinet_name,\n" +
-                "\tarr.id\n" +
+                "\tarr.id,\n" +
+                "  acr.stock_number\n" +
                 "FROM\n" +
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset a ON arr.asset_id = a.id\n" +
                 "LEFT JOIN asset_cabinet ac on arr.cabinet_id=ac.id\n" +
+                "LEFT JOIN asset_cabinet_record acr on acr.asset_id=arr.asset_id\n" +
                 "WHERE 1 = 1 AND arr.receive_id = "+id;
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
         Query query=entityManager.createNativeQuery(sql);
@@ -534,6 +541,7 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setAmount(Integer.parseInt(amount1));
             materialListDTO.setCabinet(o[4]!=null?o[4].toString():null);
             materialListDTO.setId(o[5]!=null?o[5].toString():null);
+            materialListDTO.setStockNumber(o[6]!=null?o[6].toString():null);
             materialListDTOList.add(materialListDTO);
         }
         JSONObject jsonObject=this.getJSON(materialListDTOList,totalRecords);
@@ -677,10 +685,17 @@ public class MaterialServiceImpl implements MaterialService {
         BigDecimal bd=new BigDecimal(assetsApplyItemDTO.getPrice().toString());
         Double price=bd.doubleValue()*assetsApplyItemDTO.getQuantity();
         Double old_price=0.00;
+        Double new_price=0.00;
         if(assetApp.getPrice()!=null) {
             old_price = assetApp.getPrice();
         }
-        Double new_price=price+old_price;
+        //修改数量后进行价格计算
+        if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")){
+            assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(Integer.parseInt(assetsApplyItemDTO.getId()));
+            new_price=old_price-assetAppRecord.getTotalPrice()+price;
+        }else {
+            new_price = price + old_price;
+        }
         if(assetsApplyItemDTO.getAssetsId()!=null&&!assetsApplyItemDTO.getAssetsId().equals("")){
            this.saveAssetsAppRecordDetail(assetsApplyItemDTO);
            assetApp.setPrice(new_price);
@@ -872,7 +887,9 @@ public class MaterialServiceImpl implements MaterialService {
                     "\tasset_id,\n" +
                     "\tapp_quantity,\n" +
                     "\tapp_price,\n" +
-                    "\tapp_supplier\n" +
+                    "\tapp_supplier,\n" +
+                    "\ttotal_price,\n" +
+                    "\tcabinet_id\n" +
                     "FROM\n" +
                     "\tasset_app_record aar\n" +
                     "where 1=1 and aar.app_id= "+assetsInStorageDTO.getApplyId()+"";
@@ -885,6 +902,8 @@ public class MaterialServiceImpl implements MaterialService {
                 assetStorageRecord.setQuantity(o[1].toString());
                 assetStorageRecord.setPrice(Double.parseDouble(o[2].toString()));
                 assetStorageRecord.setSupplier(o[3].toString());
+                assetStorageRecord.setTotalPrice(Double.parseDouble(o[4].toString()));
+                assetStorageRecord.setCabinetId(Integer.parseInt(o[5].toString()));
                 assetStorageRecordDAO.store(assetStorageRecord);
             }
         }
@@ -1317,21 +1336,31 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tasset_storage_record asr\n" +
                 "LEFT JOIN asset_storage ass ON asr.store_id = ass.id\n" +
                 "WHERE 1=1 and ass.id="+id;
-        Query query=entityManager.createNativeQuery(sql);
+        Query query=entityManager.createNativeQuery(sql);//获取入库具体条目
         List<Object[]> objects=query.getResultList();
         for(Object[] o:objects){
+            //获取库存情况
             AssetCabinetRecord assetCabinetRecord=this.findAssetsCabinetRecordByCabinetAndAssets(Integer.parseInt(o[0].toString()),Integer.parseInt(o[1].toString()));
-            if(assetCabinetRecord==null){
+            if(assetCabinetRecord==null){//无库存时新增库存
                 AssetCabinetRecord assetCabinetRecord2=new AssetCabinetRecord();
                 assetCabinetRecord2.setCabinetId(Integer.parseInt(o[0].toString()));
                 assetCabinetRecord2.setAssetId(Integer.parseInt(o[1].toString()));
                 assetCabinetRecord2.setStockNumber(Integer.parseInt(o[2].toString()));
                 assetCabinetRecordDAO.store(assetCabinetRecord2);
-            }else{
+            }else{//有库存时修改库存
                 int quantity=assetCabinetRecord.getStockNumber();
                 assetCabinetRecord.setStockNumber(quantity+Integer.parseInt(o[2].toString()));
                 assetCabinetRecordDAO.store(assetCabinetRecord);
             }
+            //生成入库记录
+            AssetCabinetAccessRecord assetCabinetAccessRecord=new AssetCabinetAccessRecord();
+            assetCabinetAccessRecord.setAppId(id);
+            assetCabinetAccessRecord.setAssetId(Integer.parseInt(o[1].toString()));
+            assetCabinetAccessRecord.setCreateDate(new Date());
+            assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[2].toString()));
+            assetCabinetAccessRecord.setType("物资入库");
+            assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
+            assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);
         }
     }
     /**
@@ -1503,32 +1532,42 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    public String allocateCabinetFromAssets(Integer assetsId,Integer quantity){
+    public String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId){
         String sql="select cabinet_id,stock_number from asset_cabinet_record acr where acr.asset_id="+assetsId;//查询物品柜记录
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> objects=query.getResultList();
         Integer amount=0;//计算物资总量
         Integer cabinetId=0;//分配物品柜
         Integer max=0;//获取最大值
-        for(int i=0;i<objects.size();i++){
-            amount=+Integer.parseInt(objects.get(i)[1].toString());
-        }
-        for(int i=0;i<objects.size()-1;i++){//选取物品柜
-            if(Integer.parseInt(objects.get(i)[1].toString())>Integer.parseInt(objects.get(i+1)[1].toString())){
-                max=i;
-            }else{
-                max=i+1;
+        if(objects.size()>1) {//物品柜不止一个时
+            for (int i = 0; i < objects.size(); i++) {
+                amount = +Integer.parseInt(objects.get(i)[1].toString());
             }
-            cabinetId=Integer.parseInt(objects.get(max)[0].toString());
+            for (int i = 0; i < objects.size() - 1; i++) {//选取物品柜
+                if (Integer.parseInt(objects.get(i)[1].toString()) > Integer.parseInt(objects.get(i + 1)[1].toString())) {
+                    max = i;
+                } else {
+                    max = i + 1;
+                }
+                cabinetId = Integer.parseInt(objects.get(max)[0].toString());
+            }
+        }else{//只有一个物品柜时
+            amount = +Integer.parseInt(objects.get(0)[1].toString());
+            cabinetId=Integer.parseInt(objects.get(0)[0].toString());
         }
         if(amount<=quantity){//总数小于申请数时，无法申请
             return "insufficient";
         }else{
             if(Integer.parseInt(objects.get(max)[1].toString())>=quantity){
                 AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(cabinetId,assetsId);
-                assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()-quantity);
+                if(itemId!=null&&!itemId.equals("")) {
+                    AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(itemId);
+                    assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+assetReceiveRecord.getQuantity().intValue()-quantity);
+                }else{
+                    assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
+                }
                 assetCabinetRecordDAO.store(assetCabinetRecord);
-                return "success";
+                return cabinetId.toString();
             }else{
                 return "notEnough";
             }
@@ -1878,7 +1917,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "asset_cabinet_record AS r\n" +
                 "INNER JOIN\n" +
                 "asset AS a ON a.id = r.asset_id\n" +
-                "INNER JOIN\n" +
+                "LEFT JOIN\n" +
                 "asset_classification AS c ON c.id = a.category\n" +
                 "INNER JOIN\n" +
                 "(SELECT asset_id,SUM(stock_number) AS sum\n" +

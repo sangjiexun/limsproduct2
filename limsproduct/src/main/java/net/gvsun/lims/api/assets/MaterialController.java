@@ -214,9 +214,9 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
-        String s=materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity());
-        assetsApplyItemDTO.setCabinet(materialService.getMaxAmountCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity()).toString());
-        if(s.equals("success")){
+        String s=materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity(),Integer.parseInt(assetsApplyItemDTO.getId()));
+        if(!s.equals("insufficient")&&!s.equals("notEnough")){
+            assetsApplyItemDTO.setCabinet(s);
             materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
         }
        return s;
@@ -433,6 +433,7 @@ public class MaterialController {
             assetStorage.setStatus(3);//审核被拒绝
         }
         assetStorage.setCurAuditLevel(tag);
+        assetStorage.setAuditDate(new Date());
         assetStorageDAO.store(assetStorage);
         return "success";
     }
@@ -480,7 +481,7 @@ public class MaterialController {
         AssetStorage assetStorage=materialService.findAssetStorageById(id);
         assetStorage.setStatus(4);//确认入库
         assetStorageDAO.store(assetStorage);
-        //更新库存记录
+        //更新库存并生成库存记录
         materialService.saveAssetsCabinetRecordFromInStorage(id);
         return "success";
     }
@@ -900,6 +901,61 @@ public class MaterialController {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                imageUrls.add(fileNewName);
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", imageUrls);
+        jsonObject.put("code", 0);
+        return jsonObject;
+    }
+
+    /**
+     * 针对申购入库的上传图片接口
+     * * @return
+     * @author 吴奇臻 2019-5-9
+     */
+    @RequestMapping("/uploadAssetsPicForApply")
+    @ResponseBody
+    public JSONObject uploadAssetsPicForApply(HttpServletRequest request, Integer id) throws Exception {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        String sep = System.getProperty("file.separator");
+        Map files = multipartRequest.getFileMap();
+        Iterator fileNames = multipartRequest.getFileNames();
+        boolean flag =false;
+        //文件存放文件夹
+        String fileDir = request.getSession().getServletContext().getRealPath( "/") +  "upload"+ sep+"assetsPic";
+        //所用图片链接
+        List<String> imageUrls=new ArrayList<>();
+        //存放文件文件夹名称
+        for(; fileNames.hasNext();){
+            String filename = (String) fileNames.next();
+            CommonsMultipartFile file = (CommonsMultipartFile) files.get(filename);
+            byte[] bytes = file.getBytes();
+            if(bytes.length != 0) {
+                // 说明申请有附件
+                if(!flag) {
+                    File dirPath = new File(fileDir);
+                    if(!dirPath.exists()) {
+                        flag = dirPath.mkdirs();
+                    }
+                }
+                //文件名
+                String fileTrueName = file.getOriginalFilename();
+                //文件重命名
+                int endAddress = fileTrueName.lastIndexOf(".");
+                String ss = fileTrueName.substring(endAddress, fileTrueName.length());//后缀名
+                //文件名称
+                String fileNewName = "assetsPic"+id+fileTrueName;
+                File uploadedFile = new File(fileDir + sep + fileNewName);
+                try {
+                    FileCopyUtils.copy(bytes,uploadedFile);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                //将图片跟assetApply记录相关联
+                materialService.saveAssetsRelatedImage("/limsproduct/upload/assetsPic/"+fileNewName,fileTrueName,"100kb",id,"putAssetInStorage");
                 imageUrls.add(fileNewName);
             }
         }

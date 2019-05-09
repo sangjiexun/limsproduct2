@@ -474,7 +474,9 @@ public class LabRoomLendingController<JsonResult> {
         content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
         message.setContent(content);
         message.setTage(1);
-        shareService.sendMsg(user, message);
+        message.setUsername(user.getUsername());
+        messageDAO.store(message);
+        messageDAO.flush();
         successOrNotResult = "success";
 //        }
         return successOrNotResult;

@@ -30,6 +30,8 @@ public class MaterialListDTO<T> {
     private String file;
     //物品柜名称
     private String cabinet;
+    //物品柜剩余量
+    private String stockNumber;
     //单项总价
     private Double totalPrice;
     //备注
@@ -162,5 +164,13 @@ public class MaterialListDTO<T> {
 
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
+    }
+
+    public String getStockNumber() {
+        return stockNumber;
+    }
+
+    public void setStockNumber(String stockNumber) {
+        this.stockNumber = stockNumber;
     }
 }

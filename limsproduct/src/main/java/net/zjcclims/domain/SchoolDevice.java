@@ -356,6 +356,16 @@ public class SchoolDevice implements Serializable {
 	@XmlElement
 	String projectCode;
 
+	@Column(name = "device_brand", length = 255)
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String deviceBrand;
+
+	@Column(name = "memo", length = 255)
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String memo;
+
 	/**
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -772,8 +782,22 @@ public class SchoolDevice implements Serializable {
 		this.innerSame = innerSame;
 	}
 
-	
-	
+	public String getDeviceBrand() {
+		return deviceBrand;
+	}
+
+	public void setDeviceBrand(String deviceBrand) {
+		this.deviceBrand = deviceBrand;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
+
 	public String getInnerDeviceName() {
 		return innerDeviceName;
 	}
