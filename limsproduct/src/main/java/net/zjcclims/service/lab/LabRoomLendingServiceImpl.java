@@ -657,7 +657,6 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                 messageDAO.store(message);
                 messageDAO.flush();
         }
-        String cName = authorityDAO.findAuthorityByAuthorityName(currAuthName).iterator().next().getCname();
         message.setTitle("实验室预约"+cName+user.getCname()+(auditResult == 1 ? "审核通过" : "审核拒绝"));
         content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
         message.setContent(content);
