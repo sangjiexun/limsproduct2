@@ -11,6 +11,18 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
     <!-- 下拉的样式结束 -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            changeRegular();
+        });
+        function changeRegular() {
+            if($("#number").val() == 1){
+                $("#noRegular").hide();
+            }else if($("#number").val() == 0){
+                $("#noRegular").show();
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="navigation">
@@ -40,7 +52,7 @@
                                 <form:hidden path="id"/>
                                 <label style="width:auto">学期：</label>
                                 <form:input style="width:80%;margin-bottom:5px" path="semeter"/>
-                            </fieldest>
+                            </fieldset>
                             <fieldset>
                                 <label>定期与否：</label>
                                 <form:select path="isRegular" id="number" name="number" >
@@ -64,12 +76,17 @@
                                 </td>
                             </fieldset>
                             </td>
-                            <%--<fieldset>--%>
-                                <%--<label>评价开始时间：</label>--%>
-                                <%--<input name="startTime" type="date" value="<fmt:formatDate value='${inspectSetting.startTime.time}' pattern='yyyy-MM-dd'/>"/>--%>
-                                <%--<label>评价结束时间：</label>--%>
-                                <%--<input name="endTime" type="date" value="<fmt:formatDate value='${inspectSetting.endTime.time}' pattern='yyyy-MM-dd'/>"/>--%>
-                            <%--</fieldset>--%>
+                            <fieldset style="display: none;" id="noRegular">
+                                <label style="width:100%">不定期请选择：</label>
+                                <fieldset>
+                                    <label style="width:auto">评价开始时间：</label>
+                                    <input name="startTimeStr" class="easyui-datebox" style="width:250px" value="<fmt:formatDate value='${inspectSetting.startTime.time}' pattern='yyyy-MM-dd'/>"/>
+                                </fieldset>
+                                <fieldset>
+                                    <label style="width:auto">评价结束时间：</label>
+                                    <input name="endTimeStr" class="easyui-datebox" style="width:250px" value="<fmt:formatDate value='${inspectSetting.endTime.time}' pattern='yyyy-MM-dd'/>"/>
+                                </fieldset>
+                            </fieldset>
                             <fieldset>
                                 <td class="label" valign="top">项目名称<span style="color: red">*</span> :</td>
                                 <td>
@@ -83,12 +100,12 @@
                                     </select>
                                 </td>
                             </fieldset>
-                            <fieldest>
+                            <fieldset>
                                 <label>批次：</label>
                                 <form:input path="title"/>
                                 <label>名称：</label>
                                 <form:input path="comment"/>
-                            </fieldest>
+                            </fieldset>
                             <div class="submit_link">
                                 <input class="btn" id="save" type="submit" value="保存">
                                 <input class="btn btn-return" type="button" value="返回" onclick="window.history.go(-1)">

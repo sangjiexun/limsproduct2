@@ -397,7 +397,7 @@ function getSeflMangerView() {
                             if(timetableDTOs[i1].status==1 || timetableDTOs[i1].status==11 ) {
                                 if (timetableDTOs[i1].adjustStatus == 1) {
                                     isAdjust = 1;
-                                } else if (timetableDTOs[i1].adjustStatus == 0) {
+                                } else if (timetableDTOs[i1].adjustStatus == 16) {
                                     isAdjust = 2;
                                 }
                             }
@@ -414,7 +414,7 @@ function getSeflMangerView() {
                             if(timetableDTOs[i].status==1 || timetableDTOs[i].status==11 ){
                                 if(timetableDTOs[i].adjustStatus==1){
                                     operation ="<font>调课后数据</font><br>";
-                                }else if(timetableDTOs[i].adjustStatus==0){
+                                }else if(timetableDTOs[i].adjustStatus==16){
                                     operation ="<font>停课中</font><br>";
                                 }else if(authName == 'ROLE_TEACHER') {// 教师
                                     if(isAdjust == 1 || isAdjust == 0){
