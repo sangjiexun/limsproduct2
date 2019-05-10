@@ -40,7 +40,7 @@
 <!--新框架样式开始-->
 <div class="qrcode_box">
     <div class="qrcode_content">
-		<img class="phone" src="./测试_files/phone.png">
+		<img class="phone" src="../images/phone.png"/>
 		<div class="content_box">
 		    <div class="qrcode_text">绑定个人账号与微信</div>
 			<div class="qrcode_bottom">
@@ -53,7 +53,7 @@
 					<div><span>④&nbsp;扫一扫，绑定个人账号与微信&nbsp;;</span></div>
 				</div>
                 <div style="display: none">
-                    <img src="./测试_files/ValidateCodeServle" id="updateCode" align="middle">
+                    <img src="${pageContext.request.contextPath}/ValidateCodeServle" id="updateCode" align="middle">
                 </div>
 	        </div>
 		</div>	
@@ -62,11 +62,10 @@
 			<div class="qrcode_bottom">
 		        <img src="../images/system_pic/${PROJECT_NAME}_wechat.jpg"/>
                 <div class="hint">
-				    <label>1.&nbsp;请长按保存图中二维码&nbsp;;</label>
-					<div><span>①&nbsp;</span><font>2.&nbsp;</font>打开微信<font>，点击微信主页面右上角的【扫一扫】，进入二维码扫描界面</font>&nbsp;;</div>
+				    <label class="tc">请长按识别图中二维码<br/>关注实验室管理小程序</label>
+					<div><span>①&nbsp;打开微信&nbsp;;</span></div>
 					<div><span>②&nbsp;点击微信主页面右上角的【扫一扫】，进入二维码扫描界面;</span></div>
-					<label>3.&nbsp;点击二维码扫描界面右上角的【相册】，选中刚才保存的二维码，确定后进行识别，完成关注实验室管理小程序&nbsp;;</label>
-					<div><span>③&nbsp;扫描该二维码，关注实验室管理小程序&nbsp;;</span></div>
+					<div><span>③&nbsp;扫描图中二维码，关注实验室管理小程序&nbsp;;</span></div>
 				</div>               
 	        </div>
 		</div>	
@@ -89,11 +88,11 @@
     }
     .headline-bg{
         width: 100%;
-        height:100%;
-        background:-webkit-linear-gradient(top,#0076d1,#5db8ff);
-        background:-moz-linear-gradient(top,#0076d1,#5db8ff);
-        background:-o-linear-gradient(top,#0076d1,#5db8ff);
-        background:-ms-linear-gradient(top,#0076d1,#5db8ff);
+        height:100%;        
+		background: -webkit-linear-gradient(top,#f6f6f9,#afc0d4);
+        background: -moz-linear-gradient(top,#f6f6f9,#afc0d4);
+        background: -o-linear-gradient(top,#f6f6f9,#afc0d4);
+        background: -ms-linear-gradient(top,#f6f6f9,#afc0d4);
         overflow: hidden;
     }
     #waves{
@@ -135,7 +134,7 @@
 	.qrcode_text {
         font-size: 17px;
         font-weight: bold;
-	    color: #fff;
+	    color: #20303e;
         text-align: center;
         line-height: 27px;
 		height:60px;
@@ -155,17 +154,17 @@
         margin: 10px auto 0;
         text-align: left;
     }
-	.hint label,
-	.hint div font{
-		display:none;
-	}	
 	.hint div,
 	.hint label,
 	.hint div span,
 	.hint div font{
 		font-size:14px;
-		color:#fff;
+		color:#20303e;
 	}
+	.hint label,
+	.hint div font{
+		display:none;
+	}	
 	.hint div span {
         display: inline-block;
         margin: 3px 0 0;
@@ -184,7 +183,16 @@
         opacity: 0.8;
         cursor: pointer;
     }
+	.tc{
+	    text-align:center;
+	}
 	@media only screen and (max-width: 961px){
+	    .headline-bg{
+	        background:-webkit-linear-gradient(top,#0076d1,#5db8ff);
+            background:-moz-linear-gradient(top,#0076d1,#5db8ff);
+            background:-o-linear-gradient(top,#0076d1,#5db8ff);
+            background:-ms-linear-gradient(top,#0076d1,#5db8ff);
+	    }
 		.qrcode_box{
 			display:block;
 			overflow:auto;
@@ -210,11 +218,12 @@
 		.qrcode_text{
 		    font-size:18px;
             font-weight: normal;
+			color:#fff;
 			height:auto;
             line-height: 26px;
 			margin:0 0 13px;
 		}
-       .qrcode_bottom img {
+        .qrcode_bottom img {
 		   width:260px;
 		   height:260px;
 	    }
@@ -222,6 +231,12 @@
 		   width:260px;
 		   margin:13px auto 0;
 		}
+	    .hint div,
+	    .hint label,
+	    .hint div span,
+	    .hint div font{
+	       color:#fff;
+	    }
 		.hint label,
 		.hint div{
 		    margin:0 0 9px;
@@ -235,7 +250,7 @@
 		.hint div span{
 		   display:none;
 		}
-		.hint br{
+		.hint div br{
 		   display:none;
 		}
 		.updatebtn{
