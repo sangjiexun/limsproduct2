@@ -407,8 +407,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 						t.getTimetableAppointment().getTimetableAppointmentSameNumbers();
 				for (TimetableAppointmentSameNumber tas : timetableAppointmentSameNumbers) {
 					if (tas.getStartWeek() <= schoolWeek.getWeek() && tas.getEndWeek() >= schoolWeek.getWeek() && schoolWeek.getWeekday().equals(t.getTimetableAppointment().getWeekday())) {
-						SystemTime start = systemTimeDAO.findSystemTimeById(tas.getStartClass());
-						SystemTime end = systemTimeDAO.findSystemTimeById(tas.getEndClass());
+						SystemTime start = systemTimeDAO.findSystemTimeBySection(tas.getStartClass()).iterator().next();
+						SystemTime end = systemTimeDAO.findSystemTimeBySection(tas.getEndClass()).iterator().next();
 						if (start.getStartDate().after(endTime) ||
 								end.getEndDate().before(startTime) ||
 								start.getStartDate().equals(endTime) ||

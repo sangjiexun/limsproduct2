@@ -66,18 +66,30 @@
                             <fieldset>
                                 <label>使用对象:</label>
                                 <select id="lendingUserType" onchange="showClass()" class="chzn-select" cssStyle="width:200px;" >
-                                    <option value="${labReservation.CDictionaryByLendingUserType.id }">${labReservation.CDictionaryByLendingUserType.CName}</option>
                                     <c:forEach items="${userTypes}" var="userType">
-                                        <option value="${userType.id }">${userType.CName}</option>
+                                        <c:if test="${userType.id eq labReservation.CDictionaryByLendingUserType.id}">
+                                            <option value="${userType.id }" selected>${userType.CName}</option>
+                                        </c:if>
+                                        <c:if test="${userType.id ne labReservation.CDictionaryByLendingUserType.id}">
+                                            <option value="${userType.id }">${userType.CName}</option>
+                                        </c:if>
                                     </c:forEach>
                                 </select>
                             </fieldset>
-                            <fieldset class="class">
+                                <fieldset class="class"
+                                          <c:if test="${labReservation.CDictionaryByLendingUserType.CNumber ne '1' or
+                                          labReservation.CDictionaryByLendingUserType.CCategory ne 'lab_room_lending_user_type'}">
+                                              style="display: none;"</c:if>
+                                >
                                 <label>班级:</label>
                                 <select id="class" name="class" class="chzn-select" cssStyle="width:200px;" >
-                                    <option value="${labReservation.schoolClasses.classNumber}">${labReservation.schoolClasses.className}</option>
                                     <c:forEach items="${schoolClassess}" var="schoolClass">
-                                        <option value="${schoolClass.classNumber}">${schoolClass.className}</option>
+                                        <c:if test="${schoolClass.classNumber eq labReservation.schoolClasses.classNumber}">
+                                            <option value="${schoolClass.classNumber}" selected>${schoolClass.className}</option>
+                                        </c:if>
+                                        <c:if test="${schoolClass.classNumber ne labReservation.schoolClasses.classNumber}">
+                                            <option value="${schoolClass.classNumber}">${schoolClass.className}</option>
+                                        </c:if>
                                     </c:forEach>
                                 </select>
                             </fieldset>

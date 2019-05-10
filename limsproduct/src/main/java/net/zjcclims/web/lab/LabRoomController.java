@@ -2475,38 +2475,47 @@ public class LabRoomController<JsonResult> {
     public @ResponseBody
     String securityAccess(@RequestParam Integer id, HttpServletRequest request) throws ParseException {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(id);
-        if(labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0){
+        if (labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0) {
             return "noReservation";
         }
-        if(!labRoomService.isSettingForLabRoom(id)){
+        if (!labRoomService.isSettingForLabRoom(id)) {
             return "noSetting";
         }
         User user = shareService.getUser();
         String data = labRoomService.securityAccess(user.getUsername(), id, request);
         if ("success".equals(data)) {
+            //demo
+            boolean flag = true;
+            String[] RSWITCH = {"on", "off"};
+            String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
+            Map<String, String> params = new HashMap<>();
+            params.put("businessUid", labRoom.getId().toString());
+            params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
-                data = "noNeedTutor";
-            } else {
-                //demo
-                boolean flag = true;
-                String[] RSWITCH = {"on", "off"};
-                String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
-                Map<String, String> params = new HashMap<>();
-                params.put("businessUid", labRoom.getId().toString());
-                params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
-                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
-                String status = jsonObject.getString("status");
-                Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
-                if (auditConfigs != null && auditConfigs.size() != 0) {
-                    for (int i = 0; i < auditConfigs.size(); i++) {
-                        String[] text = ((String) auditConfigs.get(i + 1)).split(":");
-                        if (text[0].equals(auditLevelName[0])) {
-                            flag = text[1].equals(RSWITCH[0]);
-                            break;
-                        }
+                params.put("businessType", (shareService.getAuditOrNot("LabRoomStationGradedOrNot") ?
+                        labRoom.getLabRoomLevel().toString() : "")
+                        + "StationReservation");
+            }
+            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+            com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
+            String status = jsonObject.getString("status");
+            Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
+            if (auditConfigs != null && auditConfigs.size() != 0) {
+                for (int i = 0; i < auditConfigs.size(); i++) {
+                    String[] text = ((String) auditConfigs.get(i + 1)).split(":");
+                    if (text[0].equals(auditLevelName[0])) {
+                        flag = text[1].equals(RSWITCH[0]);
+                        break;
                     }
                 }
+            }
+            if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
+                if (flag) {
+                    data = "needTutor";
+                } else {
+                    data = "noNeedTutor";
+                }
+            } else {
                 if (flag && "ROLE_STUDENT".equals(request.getSession().getAttribute("selected_role"))) {
                     data = "needTutor";
                 } else {

@@ -141,7 +141,7 @@
                             <c:if test="${schoolCourse.schoolCourseDetails.iterator().next().weekday==5}">
                                 <option value ="${schoolCourse.schoolCourseDetails.iterator().next().weekday}" selected="selected">星期五</option>
                             </c:if>
-                            <c:if test="${schoolCourse.schoolCourseDetails.iterator().next().weekday==7}">
+                            <c:if test="${schoolCourse.schoolCourseDetails.iterator().next().weekday==6}">
                                 <option value ="${schoolCourse.schoolCourseDetails.iterator().next().weekday}" selected="selected">星期六</option>
                             </c:if>
                             <c:if test="${schoolCourse.schoolCourseDetails.iterator().next().weekday==7}">
