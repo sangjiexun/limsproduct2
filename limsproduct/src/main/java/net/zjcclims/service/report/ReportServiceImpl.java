@@ -2750,4 +2750,83 @@ public class ReportServiceImpl implements ReportService
 		return list;
 	}
 
+	/**
+	 * Description 实验教学计划表-根据查询条件获取
+	 * @return
+	 * @author 刘博越 2019年5月10日
+	 */
+	public List getViewCourseDetail(SchoolCourseDetail schoolCourseDetail, int page, int pageSize){
+		String sql = "select * from view_timetable_course_detail v where 1=1";
+		if(schoolCourseDetail != null && schoolCourseDetail.getSchoolTerm() != null) {
+			sql += " and v.termId = " + schoolCourseDetail.getSchoolTerm().getId();
+		}else {
+			// 当前学期
+			SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
+			sql += " and v.termId = " + schoolTerm.getId();
+		}
+		if(schoolCourseDetail != null && schoolCourseDetail.getSchoolCourse() != null &&
+				!schoolCourseDetail.getSchoolCourse().getCourseNo().equals("")) {
+			//school_course_detail--course_no--school_course
+			sql += " and v.courseNo = '"+ schoolCourseDetail.getSchoolCourse().getCourseNo() +"'";
+		}
+		sql += " order by v.courseNumber";
+		Query query= entityManager.createNativeQuery(sql);
+		// 以下两行是分页设置
+		if(pageSize > 0) {
+			query.setMaxResults(pageSize);
+			query.setFirstResult((page-1)*pageSize);
+		}
+		// 获取list对象
+		List<Object[]> list= query.getResultList();
+		return list;
+	}
+
+	/****************************************************************************
+	 * Description 实验教学计划表-根据课程编号查询对应信息
+	 *
+	 * @author 刘博越
+	 * @date 2019-5-10
+	 ****************************************************************************/
+	public List getViewTimetableCourseDetail(String courseDetailNo) {
+		String sql = "select * from view_timetable_course_detail v where 1=1";
+		sql=sql+" and v.detail_id = '"+courseDetailNo+"'";
+		Query query= entityManager.createNativeQuery(sql);
+		// 获取list对象
+		List<Object[]> list= query.getResultList();
+		return list;
+	}
+
+	/****************************************************************************
+	 * Description：实验教学计划表
+	 *
+	 * @author 刘博越 2019年5月10日
+	 ****************************************************************************/
+	public List getListTimetableFull(String course_number){
+		String sql = "select * from view_timetable_full v where 1=1";
+		//根据选课组编号
+		sql += " and v.detail_id = '"+ course_number +"'";
+//		sql += " and v.course_number = '"+ course_number +"'";
+		Query query= entityManager.createNativeQuery(sql);
+		// 获取list对象
+		List<Object[]> list= query.getResultList();
+		return list;
+	}
+
+	/****************************************************************************
+	 * Description 报表上报-查询获取学年
+	 *
+	 * @author 刘博越
+	 * @date 2019-5-10
+	 ****************************************************************************/
+	@Override
+	public Map<String,String> findAllYearCodeMap() {
+		Map<String,String> map = new HashMap<String, String>();
+		// 查询存在符合条件的学年
+		String sql=" select l from SchoolTerm l where 1=1 order by l.id";
+		List<SchoolTerm> listSchoolTerms = schoolTermDAO.executeQuery(sql, -1,0);
+		for (SchoolTerm schoolTerm : listSchoolTerms) {
+			map.put(schoolTerm.getYearCode(),schoolTerm.getYearCode());
+		}
+		return map;
+	}
 }

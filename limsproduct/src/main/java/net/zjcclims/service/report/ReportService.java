@@ -7,13 +7,7 @@ import java.util.Map;
 import net.zjcclims.constant.OperationItemByCategory;
 import net.zjcclims.constant.OperationItemByChange;
 import net.zjcclims.constant.OperationItemByRequire;
-import net.zjcclims.domain.LabRoom;
-import net.zjcclims.domain.OperationItem;
-import net.zjcclims.domain.ReportRate;
-import net.zjcclims.domain.SchoolAcademy;
-import net.zjcclims.domain.SchoolDevice;
-import net.zjcclims.domain.SchoolTerm;
-import net.zjcclims.domain.User;
+import net.zjcclims.domain.*;
 import net.zjcclims.vo.QueryParamsVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -476,4 +470,32 @@ public interface ReportService {
 	 * @author 陈乐为 2019年4月16日
 	 */
 	public List<Object[]> getMonthReport(QueryParamsVO queryParamsVO);
+
+	/**
+	 * Description 实验教学计划表-根据查询条件获取
+	 * @return
+	 * @author 刘博越 2019年5月10日
+	 */
+	public List getViewCourseDetail(SchoolCourseDetail schoolCourseDetail, int page, int pageSize);
+
+	/**
+	 * Description 实验教学计划表-根据课程编号查询对应信息
+	 * @return
+	 * @author 刘博越 2019年5月10日
+	 */
+	public List getViewTimetableCourseDetail(String courseNo);
+
+	/**
+	 * Description 实验教学计划表
+	 * @return
+	 * @author 刘博越 2019年5月10日
+	 */
+	public List getListTimetableFull(String courseNumber);
+
+	/**
+	 * Description 报表上报-查询获取学年
+	 * @return
+	 * @author 刘博越 2019年5月10日
+	 */
+	public Map<String, String> findAllYearCodeMap();
 }
