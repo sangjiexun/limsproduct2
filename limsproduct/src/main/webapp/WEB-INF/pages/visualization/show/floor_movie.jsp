@@ -83,8 +83,6 @@
         }
 
         $(function () {
-            //一进来判断显示视频
-            changeRoomMovie($("#labRoomListForSelect").val());
             //加载后调整视频尺寸的方法
             changSize();
             //浏览器窗口改变时触发
@@ -271,11 +269,9 @@
                 data: {'id': id},
                 dataType: 'json',
                 success: function (data) {
-
                     $.each(data, function (key, values) {
                         document.getElementById(key).innerHTML = values;
                         $("#" + key).val("" + values);
-
                     });
                 },
                 error: function () {
@@ -341,7 +337,6 @@
                 data: {'id': id},
                 dataType: 'text',//json or text
                 success: function (data) {
-                    console.log("【" + data + "】视频data");
                     //有视频就设置只有视频显示，其他图片隐藏。
                     if (data == "") {
                         //没有视频
@@ -366,6 +361,22 @@
             var labroomId = "${labRoom.id }";
             chageroomAjaxlalala (labroomId);
         })
+
+        function changeMovie() {
+            var lastFour = ${lastFour};
+            if(lastFour != null && lastFour != '') {
+                var srcs = "rtmp://${serverIp}:${hardwarePort}/live/${lastFour}";
+                //videojs里的改src的方法
+                videojs("my-video", {}).ready(function () {
+                    var myPlayer = this;
+                    myPlayer.src(srcs);
+                    myPlayer.play();
+                });
+                $("#my-video").show();
+                $(".demo_photo").hide();
+                $("#btnchangeimg").val("切换全景图片");
+            }
+        }
 
         function changeRoomMovie2(id, agentId) {
 
@@ -1106,7 +1117,12 @@
                 <lable id="selectAgent">
                     <select onchange="changeRoomMovie2(this.options[this.options.selectedIndex].value.split('/')[0] , this.options[this.options.selectedIndex].value.split('/')[1])">
                         <c:forEach items="${agentList }" var="agent" varStatus="i">
-                            <option value="${labRoom.id}/${agent.id }">监控${i.index+1 }</option>
+                            <c:if test="${agent_id == agent.id}">
+                                <option value="${labRoom.id}/${agent.id }" selected>监控${i.index+1 }</option>
+                            </c:if>
+                            <c:if test="${agent_id != agent.id}">
+                                <option value="${labRoom.id}/${agent.id }">监控${i.index+1 }</option>
+                            </c:if>
                         </c:forEach>
                     </select>
                 </lable>
@@ -1223,7 +1239,7 @@
                 <div class="fp_limit">
                     <img src="${pageContext.request.contextPath}/${floorPic.documentUrl}" usemap="#floor_map" id="floor_img" class="floor_img">
                     <div class="floor_nav">
-                        <select onchange="changeBuilding(this.options[this.selectedIndex].value);">
+                        <select onchange="changeBuilding(this.options[this.selectedIndex].value);" name="build_number" id="build_number">
                             <c:forEach items="${systemBuilds}" var="build" varStatus="i">
                                 <option value="${build.buildNumber}"
                                         <c:if test='${buildNumber == build.buildNumber}'> selected='selected'
@@ -1252,10 +1268,15 @@
                     <hr>
                 </div>
                 <lable>
-                    <select id="labRoomListForSelect" onchange="changeRoom(this.options[this.selectedIndex].value);">
-                        <c:forEach items="${labRooms}" var="labRoom" varStatus="i">
-                            <option value="${labRoom.id}">${labRoom.labRoomName}</option>
-                            <p style="display:none;">${labRoom.id}</p>
+                    <select id="labRoomListForSelect" name="lab_id" onchange="changeRoom(this.options[this.selectedIndex].value);">
+                        <c:forEach items="${labRooms}" var="lab" varStatus="i">
+                            <c:if test="${labRoom.id == lab.id}">
+                                <option value="${lab.id}" selected>${lab.labRoomName}</option>
+                            </c:if>
+                            <c:if test="${labRoom.id != lab.id}">
+                                <option value="${lab.id}">${lab.labRoomName}</option>
+                            </c:if>
+                            <p style="display:none;">${lab.id}</p>
                         </c:forEach>
                     </select>
                 </lable>
@@ -1566,6 +1587,10 @@
         document.form.action=url;
         document.form.submit();
     }
+
+    $(document).ready(function(){
+        changeMovie();
+    });
 </script>
 </body>
 

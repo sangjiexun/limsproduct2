@@ -539,7 +539,6 @@
                                     <input type="button" value="提交" class="btn btn-new" onclick="openChooseTeacher()">
                                 </td>
                             </tr>
-
                         </table>
                     </form>
 
@@ -569,7 +568,9 @@
                                     <th><spring:message code="all.trainingRoom.labroom"/>等级</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>容量</th>
                                     <th>可预约工位数</th>
+                                    <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
                                     <th>操作</th>
+                                    </c:if>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -593,22 +594,11 @@
                                         </c:if>
                                         <td>${s.labRoomCapacity}</td>
                                         <td>${s.labRoomWorker}</td>
+                                        <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
                                         <td>
-                                            <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN'
-									|| sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR'
-									|| sessionScope.selected_role eq 'ROLE_TEACHER'
-									|| sessionScope.selected_role eq 'ROLE_LABMANAGER'
-									|| sessionScope.selected_role eq 'ROLE_EQUIPMENTADMIN'
-									|| sessionScope.selected_role eq 'ROLE_ASSISTANT'
-									|| (sessionScope.selected_role eq 'ROLE_STUDENT' && !fn:contains('zjcclims',PROJECT_NAME))
-									}">
-                                                <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
-                                                    <a href="javascript:void(0)"
-                                                       onclick="viewLabRoomTrainingRest(${s.id})">预约培训</a>
-                                                </c:if>
-                                                <%--<a onclick="judgeAccess(${s.id})">预约</a>--%>
-                                            </c:if>
+                                            <a href="javascript:void(0)" onclick="viewLabRoomTrainingRest(${s.id})">预约培训</a>
                                         </td>
+                                        </c:if>
                                     </tr>
                                 </c:forEach>
                                 </tbody>

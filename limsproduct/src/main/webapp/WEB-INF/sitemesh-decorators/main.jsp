@@ -57,7 +57,7 @@
     	%>
     	<meta http-equiv="refresh" content="0; url=${pageContext.request.contextPath}/">
     	<%}else{%>
-    <title><spring:message code="all.trainingRoom.labroom" />智能管理系统</title>
+    <title><spring:message code="title" /></title>
     <meta http-equiv="P3P" content='CP="IDC DSP COR CURa ADMa  OUR IND PHY ONL COM STA"'>
     <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/iStyle_Feelings_Base.css" />
     <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css" />

@@ -739,7 +739,6 @@ public class visualizationController<JsonResult> {
 	 * @data 2018-10-29
 	 */
 	@RequestMapping("/visualization/getSystemFloorPic")
-	@ResponseBody
 	public ModelAndView getSystemFloorPic(HttpServletRequest request, @RequestParam String buildNumber) {
 		ModelAndView mav = new ModelAndView();
 		// 获取楼层
