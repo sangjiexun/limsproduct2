@@ -26,6 +26,8 @@ public class MaterialListDTO<T> {
     private String function;
     //数量
     private Integer amount;
+    //余料返还数量
+    private Integer returnAmount;
     //file
     private String file;
     //物品柜名称
@@ -172,5 +174,13 @@ public class MaterialListDTO<T> {
 
     public void setStockNumber(String stockNumber) {
         this.stockNumber = stockNumber;
+    }
+
+    public Integer getReturnAmount() {
+        return returnAmount;
+    }
+
+    public void setReturnAmount(Integer returnAmount) {
+        this.returnAmount = returnAmount;
     }
 }

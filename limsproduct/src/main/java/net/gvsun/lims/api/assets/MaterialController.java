@@ -518,6 +518,22 @@ public class MaterialController {
         return "success";
     }
     /**
+     * Description 确认物资余料归还
+     * @param id 参数封装DTO
+     * @return 成功-"success"，失败-"fail"
+     * @author 吴奇臻 2019-4-2
+     */
+    @RequestMapping("/confirmReturnAssetsReceiveRemain")
+    @ResponseBody
+    public String confirmReturnAssetsReceiveRemain(@RequestParam Integer id){
+        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
+        assetReceive.setStatus(5);//确认归还
+        Calendar calendar=Calendar.getInstance();
+        assetReceive.setEndDate(calendar);//更新领用时间为开始时间
+        assetReceiveDAO.store(assetReceive);
+        return "success";
+    }
+    /**
      * Description 删除物资名录
      * @param id 物资分类id
      * @return 成功-"success"，失败-"fail"
@@ -856,6 +872,17 @@ public class MaterialController {
     public Integer getAssetsAmountFromCabinet(Integer id,Integer assetId,Integer quantity,Integer itemId){
         Integer amount =materialService.getAssetsAmountFromCabinet(id,assetId,quantity,itemId);
         return amount;
+    }
+    /**
+     * 判断该类物资是否需要归还
+     * * @return
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/returnAssetsRemainForReceive")
+    @ResponseBody
+    public String returnAssetsRemainForReceive(Integer amount,Integer id){
+        String s=materialService.saveReturnAssetsRemain(amount,id);
+        return s;
     }
     /**
      * 上传图片接口
@@ -1203,6 +1230,30 @@ public class MaterialController {
         ModelAndView mav = new ModelAndView();
         mav.addObject("id",id);
         mav.setViewName("lims/material/chooseAssetsCabinet.jsp");
+        return mav;
+    }
+    /**
+     * 选择物品柜
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-4-9
+     */
+    @RequestMapping("/returnRemainAssetsAPI")
+    public ModelAndView returnRemainAssetsAPI(String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/returnRemainAssets.jsp");
+        return mav;
+    }
+    /**
+     * 余料归还
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-4-9
+     */
+    @RequestMapping("/assetsReceiveDetailReturnAPI")
+    public ModelAndView assetsReceiveDetailReturnAPI(String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/assetsReceiveDetailReturn.jsp");
         return mav;
     }
     /**

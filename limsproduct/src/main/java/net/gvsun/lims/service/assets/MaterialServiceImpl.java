@@ -517,7 +517,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tarr.quantity,\n" +
                 "\tac.cabinet_name,\n" +
                 "\tarr.id,\n" +
-                "  acr.stock_number\n" +
+                "  acr.stock_number,\n" +
+                "  arr.return_quantity\n" +
                 "FROM\n" +
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset a ON arr.asset_id = a.id\n" +
@@ -542,6 +543,11 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setCabinet(o[4]!=null?o[4].toString():null);
             materialListDTO.setId(o[5]!=null?o[5].toString():null);
             materialListDTO.setStockNumber(o[6]!=null?o[6].toString():null);
+            if(o[7]==null) {
+                materialListDTO.setReturnAmount(0);
+            }else{
+                materialListDTO.setReturnAmount(Integer.parseInt(o[7].toString()));
+            }
             materialListDTOList.add(materialListDTO);
         }
         JSONObject jsonObject=this.getJSON(materialListDTOList,totalRecords);
@@ -1441,6 +1447,27 @@ public class MaterialServiceImpl implements MaterialService {
             amount=amount+assetReceiveRecord.getQuantity().intValue();
         }
         return amount;
+    }
+
+    /**
+     * 保存物资余料归还数
+     *
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-5-10
+     */
+    public String saveReturnAssetsRemain(Integer amount, Integer id){
+        //获取物资申领记录
+        AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(id);
+        //保存数量
+        assetReceiveRecord.setReturnQuantity(amount);
+        assetReceiveRecordDAO.store(assetReceiveRecord);
+        //更新库存数
+        Integer cabinetId=assetReceiveRecord.getCabinetId();
+        Integer assetsId=assetReceiveRecord.getAsset().getId();
+        AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(cabinetId,assetsId);
+        assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+amount);
+        assetCabinetRecordDAO.store(assetCabinetRecord);
+        return "success";
     }
     /**
      * 保存图片记录

@@ -53,9 +53,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             if(data.status!=='2'){
                 $("#confirm").hide();
             }
-            if(!(data.status==='4'&&isNeedReturn===1)){
-                $("#confirmReturn").hide();
-            }
         },
         error:function () {
             if(id!=""){
@@ -106,29 +103,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             layui.form.render("select");
         }
     });
-    //上传
-    var paclistView = $('#paclist');
-    // 获取图片
-    $.ajax({
-        url: contextPath + '/lims/api/material/getAssetsRelatedImage?id='+id+'&&type='+"assetReceive",
-        async: false,
-        type: "GET",
-        contentType: "application/json;charset=UTF-8",
-        success:function (data) {
-            $.each(data, function (index, item) {
-                var image="";
-                image +='<img class="img" ';
-                image +=' src="'+item.imageUrl+'" ';
-                image +=' width="50" ';
-                image +=' height="50" ';
-                image +=' onclick="previewImg(this)">';
-                var tr = $(['<tr id="upload-' + index + '">', '<td class="wordbreak">' + item.imageName + '</td>', '<td>' + item.imageSize + '</td>', '<td>上传成功</td>',  '<td></td>', '</tr>'].join('')),
-                    tds = tr.children();
-                tds.eq(3).html(image);
-                paclistView.append(tr);
-            });
-        }
-    });
     var tableIns=table.render({
         elem: '#assetsList',
         url: '../material/assetsReceiveItemList', //数据接口
@@ -159,7 +133,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 minWidth: 130,
                 align: 'center',
                 sort: true,
-                // totalRowText: '项目预算合计：'
             }, {
                 field: 'name',
                 title: '物资名称',
@@ -196,6 +169,12 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 minWidth: 100,
                 align: 'center',
                 sort: true,
+            },{
+                fixed: 'right',
+                title: '操作',
+                width: 250,
+                align: 'center',
+                toolbar: '#parentbar'
             }
             ]
         ],
@@ -207,74 +186,32 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
         limit: 5 //每页默认显示的数量
         ,id: 'assetsList'
     });
-    //审核通过
+    table.on('tool(assetsReceiveList)', function(obj) { //注：tool 是工具条事件名，parenthead 是 table 原始容器的属性 lay-filter="对应的值"
+        var data = obj.data //获得当前行数据
+            ,
+            layEvent = obj.event; //获得 lay-event 对应的值
+        console.log(data);
+        //余料归还
+        if(obj.event === 'return') {
+            var realURL=contextPath + '/lims/api/material/returnRemainAssetsAPI?id='+data.id;
+            var index = layer.open({
+                type: 2 //此处以iframe举例
+                ,
+                title: '余料归还',
+                area: ['390px', '260px'],
+                shade: 0,
+                maxmin: true,
+                content: realURL,
+                zIndex: layer.zIndex //重点1
+                ,
+            });
+        };
+    });
+    //确认余料归还
     var active = {
-        admitAssetsReceive: function() {
-            $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=yes',
-                async: false,
-                type: "POST",
-                contentType: "application/json;charset=UTF-8",
-                success:function (res) {
-                    console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
-                },
-                error:function(){
-                    alert("后台出了点问题，请重试！");
-                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                }
-            });
-        }
-    };
-    //审核拒绝
-    var active2 = {
-        rejectAssetsReceive: function() {
-            $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=no',
-                async: false,
-                type: "POST",
-                contentType: "application/json;charset=UTF-8",
-                success:function (res) {
-                    console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
-                },
-                error:function(){
-                    alert("后台出了点问题，请重试！");
-                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                }
-            });
-        }
-    };
-    //确认领用
-    var active3 = {
-        confirmAssetsReceive: function() {
-            $.ajax({
-                url: contextPath + '/lims/api/material/confirmAssetsReceive?id='+id,
-                async: false,
-                type: "POST",
-                contentType: "application/json;charset=UTF-8",
-                success:function (res) {
-                    console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
-                },
-                error:function(){
-                    alert("后台出了点问题，请重试！");
-                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                }
-            });
-        }
-    };
-    //确认领用
-    var active4 = {
         confirmReturnAssetsReceive: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/confirmReturnAssetsReceive?id='+id,
+                url: contextPath + '/lims/api/material/confirmReturnAssetsReceiveRemain?id='+id,
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -291,57 +228,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             });
         }
     };
-    //确认入库
-    var active5 = {
-        exportAssetReceiveItem: function() {
-            window.location.href=contextPath + '/lims/api/material/assetsReceiveCheckList?id='+id;
-        }
-    };
-    $('.admit_btn').on('click', function() {
+    $('.return_btn').on('click', function() {
         var othis = $(this),
             method = othis.data('method');
         active[method] ? active[method].call(this, othis) : '';
     });
-    $('.reject_btn').on('click', function() {
-        var othis = $(this),
-            method = othis.data('method');
-        active2[method] ? active2[method].call(this, othis) : '';
-    });
-    $('.confirm_btn').on('click', function() {
-        var othis = $(this),
-            method = othis.data('method');
-        active3[method] ? active3[method].call(this, othis) : '';
-    });
-    $('.return_btn').on('click', function() {
-        var othis = $(this),
-            method = othis.data('method');
-        active4[method] ? active4[method].call(this, othis) : '';
-    });
-    $('.export_btn').on('click', function() {
-        var othis = $(this),
-            method = othis.data('method');
-        active5[method] ? active5[method].call(this, othis) : '';
-    });
 });
-//点击图片预览
-function previewImg(obj) {
-    var img = new Image();
-    img.src = obj.src;
-    var height = img.height + 50; //获取图片高度
-    var width = img.width; //获取图片宽度
-    var imgHtml = "<img src='" + obj.src + "' />";
-    //弹出层
-    layer.open({
-        type: 1,
-        shade: 0.8,
-        offset: 'auto',
-        area: [width + 'px',height+'px'],
-        shadeClose:true,//点击外围关闭弹窗
-        scrollbar: false,//不现实滚动条
-        title: "图片预览", //不显示标题
-        content: imgHtml, //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
-        cancel: function () {
-            //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构', { time: 5000, icon: 6 });
-        }
-    });
-}
