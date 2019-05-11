@@ -1840,17 +1840,26 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			//}
 		}else{
 			Message message = new Message();
-			Calendar date1 = Calendar.getInstance();
 			message.setSendUser(shareService.getUserDetail().getCname());
 			message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
 			message.setCond(0);
 			// 给预约人发消息
 			message.setTitle("实验室工位预约不需要审核");
-			message.setContent("");
+			String businessType = grade + "StationReservation";
+			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
+			message.setContent(content);
 			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
-			message.setCreateTime(date1);
+			message.setCreateTime(Calendar.getInstance());
 			message.setTage(1);
 			shareService.sendMsg(labRoomStationReservation.getUser(), message);
+			// 给预约的实验室管理员发送消息
+			for (LabRoomAdmin labRoomAdmin : labRoom.getLabRoomAdmins()) {
+				message.setTitle("无需审核的工位预约申请");
+				message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+				message.setCreateTime(Calendar.getInstance());
+				message.setTage(1);
+				shareService.sendMsg(labRoomAdmin.getUser(), message);
+			}
 		}
 
 	}
