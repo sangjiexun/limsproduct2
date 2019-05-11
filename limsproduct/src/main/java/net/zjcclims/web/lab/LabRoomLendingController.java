@@ -467,16 +467,21 @@ public class LabRoomLendingController<JsonResult> {
                 }
         }
         if("pass".equals(firstAuthName) || "fail".equals(firstAuthName)){
-            message.setTitle("您的实验室预约不需要审核，欢迎使用！");
+            message.setTitle("实验室预约不需要审核");
+            content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
+            message.setContent(content);
+            message.setTage(1);
+            shareService.sendMsg(user, message);
         }else{
             message.setTitle("实验室预约成功，请等待审核！");
+            content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
+            message.setContent(content);
+            message.setTage(1);
+            message.setUsername(user.getUsername());
+            messageDAO.store(message);
+            messageDAO.flush();
         }
-        content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
-        message.setContent(content);
-        message.setTage(1);
-        message.setUsername(user.getUsername());
-        messageDAO.store(message);
-        messageDAO.flush();
+
         successOrNotResult = "success";
 //        }
         return successOrNotResult;

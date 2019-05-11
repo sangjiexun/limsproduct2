@@ -701,12 +701,12 @@ public class LabRoomReservationController<JsonResult> {
         }
         array = (String[]) ArrayUtils.add(array, shareService.getUserDetail().getUsername());
         //判断实验室是否已预约
-//        int reservationStatus=labRoomReservationService.findReservationEnableOrNot(labRoomId,reservation,start,end);
-//        if (reservationStatus==2){
-//            return "reserved";
-//        }else if (reservationStatus==3){
-//            return "lent";
-//        }
+        int reservationStatus=labRoomReservationService.findReservationEnableOrNot(labRoomId,reservation,start,end);
+        if (reservationStatus==2){
+            return "reserved";
+        }else if (reservationStatus==3){
+            return "lent";
+        }
         //判断是否超过可预约工位数统一设置
         CDictionary cDictionary = shareService.getCDictionaryByCategory("max_reservation_count", "1");
         if(cDictionary !=null){
@@ -2647,7 +2647,7 @@ public class LabRoomReservationController<JsonResult> {
 
     /**
      * 更新状态
-     * @param id
+     * @param
      * @return
      */
     @RequestMapping("/LabRoomReservation/updateStationStatus")
