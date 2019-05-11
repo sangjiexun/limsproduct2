@@ -2530,6 +2530,15 @@ public class LabRoomController<JsonResult> {
         }
         User user = shareService.getUser();
         String data = labRoomService.securityAccess(user.getUsername(), id, request);
+        boolean LabRoomStationGradedOrNot = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+        String grade = "";
+        if(LabRoomStationGradedOrNot){
+            grade = labRoom.getLabRoomLevel().toString();
+            boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
+            if (!audit) {
+                data = "noAudit" + grade;
+            }
+        }
         if ("success".equals(data)) {
             //demo
             boolean flag = true;
@@ -2539,9 +2548,7 @@ public class LabRoomController<JsonResult> {
             params.put("businessUid", labRoom.getId().toString());
             params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
-                params.put("businessType", (shareService.getAuditOrNot("LabRoomStationGradedOrNot") ?
-                        labRoom.getLabRoomLevel().toString() : "")
-                        + "StationReservation");
+                params.put("businessType",grade + "StationReservation");
             }
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);

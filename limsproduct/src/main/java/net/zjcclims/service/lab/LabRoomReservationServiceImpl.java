@@ -1737,8 +1737,23 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			labRoomStationReservation.setUserByTeacher(userDAO.findUserByPrimaryKey(teacher));
 		}
 
-		labRoomStationReservation.setState(3);
-		labRoomStationReservation.setResult(3);
+
+		boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+		String grade = "";
+		if(flag){
+			grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
+			boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
+			if(audit){
+				labRoomStationReservation.setState(3);
+				labRoomStationReservation.setResult(3);
+			}else{
+				labRoomStationReservation.setResult(1);
+				labRoomStationReservation.setState(6);
+			}
+		}else{
+			labRoomStationReservation.setState(3);
+			labRoomStationReservation.setResult(3);
+		}
 
 		labRoomStationReservation = labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
@@ -1762,12 +1777,6 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
 		//消息
 		if(labRoomStationReservation.getResult() != 1) {//需要审核就发信息
-
-			boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
-			String grade = "";
-			if(flag){
-				grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
-			}
 
 			// 审核微服务
 			Map<String, String> params = new HashMap<>();
@@ -1829,6 +1838,19 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			message.setTage(1);
 			shareService.sendMsg(labRoomStationReservation.getUser(), message);
 			//}
+		}else{
+			Message message = new Message();
+			Calendar date1 = Calendar.getInstance();
+			message.setSendUser(shareService.getUserDetail().getCname());
+			message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
+			message.setCond(0);
+			// 给预约人发消息
+			message.setTitle("实验室工位预约不需要审核");
+			message.setContent("");
+			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+			message.setCreateTime(date1);
+			message.setTage(1);
+			shareService.sendMsg(labRoomStationReservation.getUser(), message);
 		}
 
 	}

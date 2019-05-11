@@ -971,6 +971,7 @@ function cancel(){
 						    			}
 						    	});
 						    }
+						    var audit = "";
 						  //保存实训室预约
 						    function saveLabRoomReservation(){
 						    	//console.log($("input[name='reservationtime']") .val());
@@ -1051,7 +1052,19 @@ function cancel(){
 						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
 						                    parent.layer.close(index);//关闭弹窗
                                             window.location.reload();
-						    			}else{
+						    			}else if(data=="noAudit1"){
+											alert("预约成功，一级实训室无需审核");
+											flag = 0;
+											var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+											parent.layer.close(index);//关闭弹窗
+											window.location.reload();
+										}else if(data=="noAudit2"){
+											alert("预约成功，二级实训室无需审核");
+											flag = 0;
+											var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+											parent.layer.close(index);//关闭弹窗
+											window.location.reload();
+										}else{
 						    				layer.msg('预约失败！'+data+'不是合法学号', {icon: 5});
 						    			}
 						    			flag = 0;
@@ -1097,6 +1110,12 @@ function cancel(){
                                         }else if (data === "noTrainingError") {
 											alert("您未通过此实验室的培训，请先预约培训!");
 											window.location.reload();
+										}else if(data=="noAudit1"){
+											audit = data;
+											needtutor = 0;
+										}else if(data=="noAudit2"){
+											audit = data;
+											needtutor = 0;
 										}
                                     },
                                     error: function(XMLHttpRequest, textStatus, errorThrown) {

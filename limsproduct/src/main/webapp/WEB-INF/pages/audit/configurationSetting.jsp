@@ -68,14 +68,29 @@
                                     <tr id="${object[3]}">
                                         <td>${object[2]}:</td>
                                         <td>
-                                            <input type="radio" name="${object[3]}" id="${object[3]}1" value="1"
+                                            <input type="radio" name="${object[3]}" id="${object[3]}1" value="1" onclick="changeExtendStatus('${object[3]}')"
                                                    <c:if test="${object[1] eq 1}">checked</c:if>/>
                                             <label for="${object[3]}1">是</label>
-                                            <input type="radio" name="${object[3]}" id="${object[3]}2" value="2"
+                                            <input type="radio" name="${object[3]}" id="${object[3]}2" value="2" onclick="changeExtendStatus('${object[3]}')"
                                                    <c:if test="${object[1] ne 1}">checked</c:if>/>
                                             <label for="${object[3]}2">否</label>
                                         </td>
                                     </tr>
+                                        <c:forEach items="${extendItems[object[3]]}" var="extendItem" varStatus="j">
+                                            <tr id="extend${extendItem[3]}" class="${object[3]}" <c:if test="${object[1] ne 1}">style="display: none;"</c:if>>
+                                                <td>${extendItem[2]}:</td>
+                                                <td>
+                                                    <input type="radio" name="extend${extendItem[3]}" id="extend${extendItem[3]}1"
+                                                           value="1"
+                                                           <c:if test="${extendItem[1] eq 1}">checked</c:if>/>
+                                                    <label for="extend${extendItem[3]}1">是</label>
+                                                    <input type="radio" name="extend${extendItem[3]}" id="extend${extendItem[3]}2"
+                                                           value="2"
+                                                           <c:if test="${extendItem[1] ne 1}">checked</c:if>/>
+                                                    <label for="extend${extendItem[3]}2">否</label>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
                                 </c:forEach>
                                 <tr>
                                     <td colspan="2">
@@ -106,6 +121,16 @@
     }
     for (var selector in config) {
         $(selector).chosen(config[selector]);
+    }
+</script>
+<script type="text/javascript">
+    function changeExtendStatus(obj) {
+        if($('input:radio[name="' + obj + '"]:checked').val() == 1){
+            $("." + obj).show();
+        }
+        if($('input:radio[name="' + obj + '"]:checked').val() == 2){
+            $("." + obj).hide();
+        }
     }
 </script>
 <!-- 下拉框的js -->

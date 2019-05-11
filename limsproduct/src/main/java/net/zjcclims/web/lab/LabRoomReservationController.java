@@ -215,7 +215,8 @@ public class LabRoomReservationController<JsonResult> {
         }
         mav.addObject("isHaveDeans", isHaveDeans);
         //下拉框实验室
-        mav.addObject("labRooms", labRoomDAO.findAllLabRooms());
+        List<LabRoom> labRooms = labRoomDAO.executeQuery("select l from LabRoom l where l.labRoomLevel != 0 and l.labRoomReservation = 1");
+        mav.addObject("labRooms", labRooms);
         //选择年级
         mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
         mav.addObject("listLabRoom", listLabRoom);
@@ -733,12 +734,17 @@ public class LabRoomReservationController<JsonResult> {
 //                    labRoomReservationService.saveReservationStations(labRoomId, reservation, start, end, array, reason, teacher, deanUser.getUsername(), userRole);
 //                }
                 labRoomReservationService.saveReservationStations(labRoomId, reservation, start, end, array, reason, teacher, userRole);
-                //判断实训室等级
-                if (pConfig.PROJECT_NAME.equals("zjcclims") && labRoomDAO.findLabRoomById(labRoomId).getLabRoomLevel() == 1) {
-                    return "success1";
-                } else if(pConfig.PROJECT_NAME.equals("zjcclims")){
-                    return "success2";
-                }else {
+                boolean LabRoomStationGradedOrNot = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+                String grade = "";
+                if(LabRoomStationGradedOrNot){
+                    grade = labRoomDAO.findLabRoomById(labRoomId).getLabRoomLevel().toString();
+                    boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
+                    if (!audit) {
+                        return "noAudit" + grade;
+                    }else{
+                        return "success1";
+                    }
+                }else{
                     return "success1";
                 }
             } else {
