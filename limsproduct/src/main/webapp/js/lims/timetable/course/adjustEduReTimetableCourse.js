@@ -2,7 +2,7 @@ var contextPath = $("meta[name='contextPath']").attr("content");
 var zuulUrl ="";
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
-    var url = zuulUrl + "api/timetable/common/apiViewTimetableInfo";
+    var url = zuulUrl + "api/timetable/common/apiViewAdjustTimetableInfo";
     $("#table_timetable_info").bootstrapTable({
         //使用get请求到服务器获取数据
         method: "POST",
@@ -76,7 +76,7 @@ $(document).ready(function () {
             sortable: true
         }, {
             title: "所属实验室",
-            field: "labs",
+            field: "labInfo",
             width: "25%",
             sortable: true
         }, {
@@ -419,8 +419,12 @@ $(document).ready(function () {
                 success: function (json) {
                 }
             });
-            var index = parent.layer.getFrameIndex(window.name);
-            parent.layer.close(index);
+            // var index = parent.layer.getFrameIndex(window.name);
+            // parent.layer.close(index);
+            refreshBootstrapTable();
+            $("#weeks").val("").change();
+            $("#noSubmit").hide();
+            $("#hasSubmit").show();
         } else {
             alert("请验证输入！");
         }
@@ -506,4 +510,60 @@ function getJWTAuthority() {
         }
     });
     return authorization;
+}
+
+function refreshBootstrapTable() {
+    var url = zuulUrl + "api/timetable/common/apiViewAdjustTimetableInfo";
+    var opt = {
+        url: url,
+        silent: true,
+        query: {
+            type: 1,
+            level: 2
+        }
+    };
+    $("#table_timetable_info").bootstrapTable('refresh', opt);
+}
+
+function apiTimetableAdjustEnd() {
+    var arr = new Object();
+    arr.courseNo = $("#courseNo").val();
+    arr.courseDetailNo = $("#courseDetailNo").val();
+    arr.groupId = 0;
+    if($("#groupId").val()!=""){
+        arr.groupId = $("#groupId").val();
+    }
+    arr.weeks = $("#weeks").val();
+    arr.weekday = $("#weekday").val();
+    arr.sameNumberId = $("#sameNumberId").val();
+    arr.adjustWeek = $("#adjustWeek").val();
+    arr.status = 11;
+    arr.timetableStyle = $("#timetableStyle").val();
+    arr.classes = $("#classes").val();
+    arr.labRoomIds = $("#labRoom_id").val();
+    arr.tearchs = $("#teacherRelated").val();
+    arr.items = $("#items").val();
+    arr.tutors = $("#tutorRelated").val();
+    arr.adjustStatus = $("#adjustStatus").val();
+
+    var arrs = JSON.stringify(arr);
+    $.ajax({
+        url: zuulUrl + "api/timetable/adjust/apiTimetableAdjustEnd",
+        contentType: "application/json;charset=utf-8",
+        headers:{Authorization: getJWTAuthority()},
+        async: false,
+        dataType: "json",
+        type: "post",
+        //async: false,
+        data: arrs,
+        success: function (json) {
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+        }
+    });
+}
+
+function closeWindow() {
+    var index = parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
 }

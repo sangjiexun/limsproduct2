@@ -58,8 +58,8 @@
         <div id="TabbedPanels1" class="TabbedPanels">
             <div class="site-box">
                 <div class="site-content">
-                    <%--<table id="table_timetable_info" class="table table-bordered table-hover"
-                           style="table-layout: fixed;"></table>--%>
+                    <table id="table_timetable_info" class="table table-bordered table-hover"
+                           style="table-layout: fixed;"></table>
                 </div>
             </div>
         </div>
@@ -87,7 +87,11 @@
             </b></h3>
             软件筛选<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >
             <input type="button" id="submitButton" name="submitButton" value=" 确定 " class="btn btn-primary btn-lg"
-                   style="float:right">
+                   style="margin: 0px 10px;float:right">
+            <input type="button" id="noSubmit" value="关闭窗口" class="btn btn-primary btn-lg" onclick="closeWindow();"
+                   style="margin: 0px 10px;float:right">
+            <input type="button" id="hasSubmit" value="提交并关闭" class="btn btn-primary btn-lg" onclick="apiTimetableAdjustEnd();"
+                   style="margin: 0px 10px; float:right;display: none;">
         </div>
 
         <!-- schoolCourseDetail的no -->
@@ -164,7 +168,7 @@
                             <c:if test="${timetableAppointmentSameNumber.timetableAppointment.weekday==5}">
                                 <option value ="${timetableAppointmentSameNumber.timetableAppointment.weekday}" selected="selected">星期五</option>
                             </c:if>
-                            <c:if test="${timetableAppointmentSameNumber.timetableAppointment.weekday==7}">
+                            <c:if test="${timetableAppointmentSameNumber.timetableAppointment.weekday==6}">
                                 <option value ="${timetableAppointmentSameNumber.timetableAppointment.weekday}" selected="selected">星期六</option>
                             </c:if>
                             <c:if test="${timetableAppointmentSameNumber.timetableAppointment.weekday==7}">

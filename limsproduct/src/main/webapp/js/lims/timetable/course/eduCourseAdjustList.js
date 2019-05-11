@@ -1083,7 +1083,8 @@ function doEduReCourse(sameNumberId,week,courseNo, timeStyle) {
         type: 2,
         title: '调课',
         maxmin: true,
-        shadeClose: true,
+        // shadeClose: true,
+        closeBtn:0,
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/adjustEduReTimetableCourse?currpage=1&flag=0&timetableStyle=' + timeStyle + '&courseNo=' + courseNo + "&term=" + term
         + '&tableAppId=' + 0+ '&sameNumberId=' + sameNumberId+ '&adjustStatus='+adjustStatus+ '&week='+week,
