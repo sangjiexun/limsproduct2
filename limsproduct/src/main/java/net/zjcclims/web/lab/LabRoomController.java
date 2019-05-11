@@ -372,25 +372,63 @@ public class LabRoomController<JsonResult> {
         if (labRoom1 == null) {
             labRoom1 = new LabRoom();
         }
-
-        // 学院
-        if(labRoom.getLabCenter()!=null && labRoom.getLabCenter().getSchoolAcademy()!=null
-                && labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber()!=null) {
-            labRoom1.setSchoolAcademy(labRoom.getLabCenter().getSchoolAcademy());
-        }else if(acno!=null && !acno.equals("-1")) {
-            labRoom1.setSchoolAcademy(shareService.findSchoolAcademyByPrimaryKey(acno));
+        /////////////////////////////////编辑字段开始///////////////////////////////////
+        // 实验室编号
+        labRoom1.setLabRoomNumber(labRoom.getLabRoomNumber());
+        // 实验室名称
+        labRoom1.setLabRoomName(labRoom.getLabRoomName());
+        // 所属中心
+        labRoom1.setLabCenter(labRoom.getLabCenter());
+        // 所属实验室
+        if(!EmptyUtil.isObjectEmpty(labRoom) && !EmptyUtil.isObjectEmpty(labRoom.getLabAnnex())
+                && !EmptyUtil.isIntegerEmpty(labRoom.getLabAnnex().getId())) {
+            labRoom1.setLabAnnex(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabAnnex().getId()));
+        }else {
+            labRoom1.setLabAnnex(null);
         }
+        // 所属楼宇
+        labRoom1.setSystemBuild(labRoom.getSystemBuild());
+        // 所在楼层
+        labRoom1.setFloorNo(labRoom.getFloorNo());
+        // 浙江建设--所有实验室允许跨学院排课
+        if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+            labRoom1.setIsOpen(1);
+        }
+        // 可预约工位数
+        labRoom1.setLabRoomWorker(labRoom.getLabRoomWorker());
+        //////////////////////////////////页面附加信息/////////////////////////////////
+        // 基地
         if(!EmptyUtil.isObjectEmpty(labRoom) && !EmptyUtil.isObjectEmpty(labRoom.getLabBase())
                 && !EmptyUtil.isIntegerEmpty(labRoom.getLabBase().getId())) {
             labRoom1.setLabBase(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabBase().getId()));
         }else {
             labRoom1.setLabBase(null);
         }
-        if(!EmptyUtil.isObjectEmpty(labRoom) && !EmptyUtil.isObjectEmpty(labRoom.getLabAnnex())
-                && !EmptyUtil.isIntegerEmpty(labRoom.getLabAnnex().getId())) {
-            labRoom1.setLabAnnex(labBaseService.findLabAnnexByPrimaryKey(labRoom.getLabAnnex().getId()));
+        // 地点
+        if(labRoom.getSystemRoom()==null || EmptyUtil.isStringEmpty(labRoom.getSystemRoom().getRoomNumber())) {
+            labRoom1.setSystemRoom(null);
         }else {
-            labRoom1.setLabAnnex(null);
+            labRoom1.setSystemRoom(labRoom.getSystemRoom());
+        }
+        // 实验室等级
+        labRoom1.setLabRoomLevel(labRoom.getLabRoomLevel());
+        // 实验室类别
+        if(labRoom.getCDictionaryByLabRoomClassification()==null || labRoom.getCDictionaryByLabRoomClassification().getId()==null) {
+            labRoom1.setCDictionaryByLabRoomClassification(null);
+        }else {
+            labRoom1.setCDictionaryByLabRoomClassification(labRoom.getCDictionaryByLabRoomClassification());
+        }
+        // 建立时间
+        labRoom1.setLabRoomTimeCreate(labRoom.getLabRoomTimeCreate());
+        // 实验室容量
+        labRoom1.setLabRoomCapacity(labRoom.getLabRoomCapacity());
+        // 使用面积
+        labRoom1.setLabRoomArea(labRoom.getLabRoomArea());
+        // 实验室分类
+        if(labRoom.getCDictionaryByLabRoomSort()==null || labRoom.getCDictionaryByLabRoomSort().getId()==null) {
+            labRoom1.setCDictionaryByLabRoomSort(null);
+        }else {
+            labRoom1.setCDictionaryByLabRoomSort(labRoom.getCDictionaryByLabRoomSort());
         }
         // 实验室类型
         if(labRoom.getCDictionaryByLabRoom()==null || labRoom.getCDictionaryByLabRoom().getId()==null) {
@@ -398,11 +436,11 @@ public class LabRoomController<JsonResult> {
         }else {
             labRoom1.setCDictionaryByLabRoom(labRoom.getCDictionaryByLabRoom());
         }
-        // 实验室类别
-        if(labRoom.getCDictionaryByLabRoomClassification()==null || labRoom.getCDictionaryByLabRoomClassification().getId()==null) {
-            labRoom1.setCDictionaryByLabRoomClassification(null);
+        // 有无多媒体
+        if(labRoom.getCDictionaryByIsMultimedia()==null || labRoom.getCDictionaryByIsMultimedia().getId()==null) {
+            labRoom1.setCDictionaryByIsMultimedia(null);
         }else {
-            labRoom1.setCDictionaryByLabRoomClassification(labRoom.getCDictionaryByLabRoomClassification());
+            labRoom1.setCDictionaryByIsMultimedia(labRoom.getCDictionaryByIsMultimedia());
         }
         // 所属学科
         if(labRoom.getSystemSubject12()==null || labRoom.getSystemSubject12().getSNumber()==null
@@ -411,52 +449,61 @@ public class LabRoomController<JsonResult> {
         }else {
             labRoom1.setSystemSubject12(labRoom.getSystemSubject12());
         }
-        // 实验室分类
-        if(labRoom.getCDictionaryByLabRoomSort()==null || labRoom.getCDictionaryByLabRoomSort().getId()==null) {
-            labRoom1.setCDictionaryByLabRoomSort(null);
-        }else {
-            labRoom1.setCDictionaryByLabRoomSort(labRoom.getCDictionaryByLabRoomSort());
+        // 是否可用
+        labRoom1.setLabRoomActive(labRoom.getLabRoomActive());
+        // 是否校企共建
+        labRoom1.setIsSchoolEnterpriseCooperation(labRoom.getIsSchoolEnterpriseCooperation());
+        // 是否生产性实验室
+        labRoom1.setIsRoductivity(labRoom.getIsRoductivity());
+        // 是否仿真实验室
+        labRoom1.setIsSimulation(labRoom.getIsSimulation());
+        // 实验室描述
+        labRoom1.setLabRoomIntroduction(labRoom.getLabRoomIntroduction());
+        // 规章制度
+        labRoom1.setLabRoomRegulations(labRoom.getLabRoomRegulations());
+        // 实验室注意事项
+        labRoom1.setLabRoomAttentions(labRoom.getLabRoomAttentions());
+        // 获奖信息
+        labRoom1.setLabRoomPrizeInformation(labRoom.getLabRoomPrizeInformation());
+        ///////////////////////////页面编辑字段结束///////////////////////////////////
+        ///////////////////////////关联更新数据开始///////////////////////////////////
+        // 学院
+        if(labRoom.getLabCenter()!=null && labRoom.getLabCenter().getSchoolAcademy()!=null
+                && labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber()!=null) {
+            labRoom1.setSchoolAcademy(labRoom.getLabCenter().getSchoolAcademy());
+        }else if(acno!=null && !acno.equals("-1")) {
+            labRoom1.setSchoolAcademy(shareService.findSchoolAcademyByPrimaryKey(acno));
         }
-        // 多媒体
-        if(labRoom.getCDictionaryByIsMultimedia()==null || labRoom.getCDictionaryByIsMultimedia().getId()==null) {
-            labRoom1.setCDictionaryByIsMultimedia(null);
-        }else {
-            labRoom1.setCDictionaryByIsMultimedia(labRoom.getCDictionaryByIsMultimedia());
-        }
-        // 地点
-        if(labRoom.getSystemRoom()==null || EmptyUtil.isStringEmpty(labRoom.getSystemRoom().getRoomNumber())) {
-            labRoom1.setSystemRoom(null);
-        }else {
-            labRoom1.setSystemRoom(labRoom.getSystemRoom());
-//            labRoom1.setLabRoomAddress(labRoom.getSystemRoom().getRoomName());
-        }
-        // 审核
-        if(labRoom.getCDictionaryByIsAudit()==null || labRoom.getCDictionaryByIsAudit().getId()==null) {
-            labRoom1.setCDictionaryByIsAudit(null);
-        }else {
-            labRoom1.setCDictionaryByIsAudit(labRoom.getCDictionaryByIsAudit());
-        }
-        // 借用
-        if(labRoom.getCDictionaryByAllowLending()==null || labRoom.getCDictionaryByAllowLending().getId()==null) {
-            labRoom1.setCDictionaryByAllowLending(null);
-        }else {
-            labRoom1.setCDictionaryByAllowLending(labRoom.getCDictionaryByAllowLending());
-        }
-        // 安全准入
-        if(labRoom.getCDictionaryByAllowSecurityAccess()==null || labRoom.getCDictionaryByAllowSecurityAccess().getId()==null) {
-            labRoom1.setCDictionaryByAllowSecurityAccess(null);
-        }else {
-            labRoom1.setCDictionaryByAllowSecurityAccess(labRoom.getCDictionaryByAllowSecurityAccess());
-        }
-        // 培训形式
-        if(labRoom.getCDictionaryByTrainType()==null || labRoom.getCDictionaryByTrainType().getId()==null) {
-            labRoom1.setCDictionaryByTrainType(null);
-        }else {
-            labRoom1.setCDictionaryByTrainType(labRoom.getCDictionaryByTrainType());
-        }
+        ///////////////////////////关联更新数据结束///////////////////////////////////
 
-        labRoom1.setIsUsed(1);
-        labRoom1.setReservationNumber(1);
+//        // 审核
+//        if(labRoom.getCDictionaryByIsAudit()==null || labRoom.getCDictionaryByIsAudit().getId()==null) {
+//            labRoom1.setCDictionaryByIsAudit(null);
+//        }else {
+//            labRoom1.setCDictionaryByIsAudit(labRoom.getCDictionaryByIsAudit());
+//        }
+//        // 借用
+//        if(labRoom.getCDictionaryByAllowLending()==null || labRoom.getCDictionaryByAllowLending().getId()==null) {
+//            labRoom1.setCDictionaryByAllowLending(null);
+//        }else {
+//            labRoom1.setCDictionaryByAllowLending(labRoom.getCDictionaryByAllowLending());
+//        }
+//        // 安全准入
+//        if(labRoom.getCDictionaryByAllowSecurityAccess()==null || labRoom.getCDictionaryByAllowSecurityAccess().getId()==null) {
+//            labRoom1.setCDictionaryByAllowSecurityAccess(null);
+//        }else {
+//            labRoom1.setCDictionaryByAllowSecurityAccess(labRoom.getCDictionaryByAllowSecurityAccess());
+//        }
+//        // 培训形式
+//        if(labRoom.getCDictionaryByTrainType()==null || labRoom.getCDictionaryByTrainType().getId()==null) {
+//            labRoom1.setCDictionaryByTrainType(null);
+//        }else {
+//            labRoom1.setCDictionaryByTrainType(labRoom.getCDictionaryByTrainType());
+//        }
+        if (labRoom.getId() == null) {
+            labRoom1.setIsUsed(1);
+            labRoom1.setReservationNumber(1);
+        }
         if(type==ConstantInterface.LAB_FOR_ROOM){
             labRoom1.setLabCategory(1);
             mav.setViewName("redirect:/labRoom/listLabRoom?currpage="+page+"&orderBy=9&type=1");

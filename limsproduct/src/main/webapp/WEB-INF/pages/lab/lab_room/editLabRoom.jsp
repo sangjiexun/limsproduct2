@@ -184,16 +184,16 @@
 									</c:forEach>
 								</form:select>
 							</fieldset>
-							<c:if test="${project eq 'zjcclims'}">
+							<%--<c:if test="${project eq 'zjcclims'}">
 								<fieldset>
-									<label><spring:message code="all.trainingRoom.labroom"/>是否可用：</label>
+									<label>是否跨学院排课：</label>
 									<form:select path="isOpen" required="true">
 										<form:option value="">请选择</form:option>
 										<form:option value="1">是</form:option>
 										<form:option value="0">否</form:option>
 									</form:select>
 								</fieldset>
-							</c:if>
+							</c:if>--%>
 							<c:if test="${stationNum eq 'true'}"><!-- 有工位相关需求时显示 -->
 							<fieldset>
 								<label>可预约工位数：</label>
@@ -294,14 +294,6 @@
 									<form:option value="0">不可用</form:option>
 								</form:select>
 							</fieldset>
-							<%--<fieldset>
-								<label>是否可预约：</label>
-								<form:select path="labRoomReservation">
-									<form:option value="">请选择</form:option>
-									<form:option value="1">可预约</form:option>
-									<form:option value="0">不可预约</form:option>
-								</form:select>
-							</fieldset>--%>
 							<fieldset>
 								<label>是否校企共建：</label>
 								<form:select path="isSchoolEnterpriseCooperation">
