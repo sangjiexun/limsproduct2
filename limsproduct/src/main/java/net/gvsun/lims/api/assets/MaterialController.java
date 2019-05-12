@@ -90,7 +90,7 @@ public class MaterialController {
     @RequestMapping("/assetsApplyList")
     @ResponseBody
     public String assetsApplyList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status,String kind){
-        JSONObject jsonObject = materialService.findAllAssetApplyList(page,limit,status,kind);
+        JSONObject jsonObject = materialService.findAllAssetApplyList(page,limit,status,kind,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -103,7 +103,7 @@ public class MaterialController {
     @RequestMapping("/assetsInStorageList")
     @ResponseBody
     public String assetsInStorageList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status){
-        JSONObject jsonObject = materialService.findAllAssetInStorageList(page,limit,status);
+        JSONObject jsonObject = materialService.findAllAssetInStorageList(page,limit,status,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -224,7 +224,7 @@ public class MaterialController {
     /**
      * Description 保存物资申请记录
      * @param assetsApplyDTO 参数封装DTO
-     * @return 成功-"success"，失败-"fail"
+     *
      * @author 吴奇臻 2019-3-26
      */
     @RequestMapping("/saveAssetsApplyDetail")
@@ -312,9 +312,30 @@ public class MaterialController {
      */
     @RequestMapping("/getAssetsApplyAuditFlag")
     @ResponseBody
-    public Boolean getAssetsApplyAuditFlag(@RequestParam Integer id){
+    public Boolean getAssetsApplyAuditFlag(HttpServletRequest request,@RequestParam Integer id){
+        boolean flag=false;
         AssetApp assetApp=assetAppDAO.findAssetAppById(id);
-        boolean flag=materialService.getAssetsApplyAuditFlag(assetApp.getCurAuditLevel(),assetApp.getAssetStatu());
+        String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
+        if(assetApp.getCurAuditLevel().equals(authorityName)){
+            flag=true;
+        }
+        return flag;
+    }
+    /**
+     * Description 获取物资申购审核标志位
+     * @param id 参数封装DTO
+     * @return 是-"success"，否-"fail"
+     * @author 吴奇臻 2019-4-17
+     */
+    @RequestMapping("/getAssetsInStorageAuditFlag")
+    @ResponseBody
+    public Boolean getAssetsInStorageAuditFlag(HttpServletRequest request,@RequestParam Integer id){
+        boolean flag=false;
+        AssetStorage assetStorage=materialService.findAssetStorageById(id);
+        String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
+        if(assetStorage.getCurAuditLevel().equals(authorityName)){
+            flag=true;
+        }
         return flag;
     }
     /**
@@ -1406,6 +1427,18 @@ public class MaterialController {
         mav.addObject("assetId",assetId);
         mav.addObject("type",type);
         mav.setViewName("lims/material/assetCabinetRecordDetail.jsp");
+        return mav;
+    }
+    /**
+     * Description 查看物资出入库详情API
+     * @return 跳转页面
+     * @author 吴奇臻 2019-05-10
+     **/
+    @RequestMapping("/assetCabinetAccessRecordDetailAPI")
+    public ModelAndView assetCabinetAccessRecordDetailAPI(@RequestParam String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/assetCabinetAccessRecordDetail.jsp");
         return mav;
     }
     /**

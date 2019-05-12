@@ -15,6 +15,7 @@ import net.zjcclims.web.common.PConfig;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -216,7 +217,7 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-3-26
      */
-    public JSONObject findAllAssetApplyList(Integer page, Integer limit,String status,String kind){
+    public JSONObject findAllAssetApplyList(Integer page, Integer limit,String status,String kind,HttpServletRequest request){
         List<AssetsApplyDTO> assetsApplyDTOList=new ArrayList<>();
         String sql="SELECT\n" +
                 "\taa.id,\n" +
@@ -225,7 +226,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tCONCAT(u.cname, \"(\", u.username, \")\") AS username,\n" +
                 "\taa.price,\n" +
                 "\tac.cname,\n" +
-                "\taa.asset_statu\n" +
+                "\taa.asset_statu,\n" +
+                "\taa.cur_audit_level\n" +
                 "FROM\n" +
                 "\tasset_app aa\n" +
                 "LEFT JOIN asset_classification ac ON aa.category_id = ac.id\n" +
@@ -235,6 +237,26 @@ public class MaterialServiceImpl implements MaterialService {
         }
         if(kind!=null&&!kind.equals("")){
             sql+=" and aa.category_id = "+kind+"";
+        }
+        //添加权限相关筛选条件
+        String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
+        User user=shareService.getUser();//获得用户
+        String username=user.getUsername();//用户编号
+//        Set<LabCenter> labCenters=user.getSchoolAcademy().getLabCenters();
+//        List<Integer> centerIds=new ArrayList<>();
+//        for(LabCenter labCenter:labCenters){
+//            centerIds.add(labCenter.getId());
+//        }
+        if(authorityName.equals("ROLE_TEACHER")){
+            sql+=" and aa.app_user = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
+            List<Integer> centerIds=this.getCenterIDListFormUsername(username);
+            sql+=" and ( ";
+            for(int i=0;i<centerIds.size()-1;i++){
+                sql+=" aa.center_id ="+centerIds.get(i)+" or";
+            }
+            sql+=" aa.center_id ="+centerIds.get(centerIds.size()-1)+" )";
         }
         sql+=" order by aa.app_date desc ";
         Query query=entityManager.createNativeQuery(sql);
@@ -250,6 +272,14 @@ public class MaterialServiceImpl implements MaterialService {
             assetsApplyDTO.setPrice(o[4]!=null?Double.parseDouble(o[4].toString()):null);
             assetsApplyDTO.setGoodsCategory(o[5]!=null?o[5].toString():null);
             assetsApplyDTO.setStatus(o[6]!=null?o[6].toString():null);
+            if(o[7]!=null){
+                assetsApplyDTO.setCurAuditLevel(o[7].toString());
+                if(authorityName.split("_")[1].equals(o[7].toString())){
+                    assetsApplyDTO.setAuditFlag(1);
+                }else{
+                    assetsApplyDTO.setAuditFlag(0);
+                }
+            }
             assetsApplyDTOList.add(assetsApplyDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -264,7 +294,7 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-1
      */
-    public JSONObject findAllAssetInStorageList(Integer page, Integer limit,String status){
+    public JSONObject findAllAssetInStorageList(Integer page, Integer limit,String status,HttpServletRequest request){
         List<AssetsInStorageDTO> assetsInStorageDTOList=new ArrayList<>();
         //查询语句
         String sql="SELECT\n" +
@@ -275,7 +305,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tass.batch_number,\n" +
                 "  ac.cname,\n" +
                 "  ass.total_price,\n" +
-                "  ass.status\n" +
+                "  ass.status,\n" +
+                "  ass.cur_audit_level\n" +
                 "FROM\n" +
                 "\tasset_storage ass\n" +
                 "LEFT JOIN school_academy sa ON ass.academy_number = sa.academy_number\n" +
@@ -285,6 +316,21 @@ public class MaterialServiceImpl implements MaterialService {
                 "LEFT JOIN asset_cabinet aca on ass.cabinet_id=aca.id ";
         if(status!=null&&!status.equals("")){
             sql+="and ass.status = "+status+"";
+        }
+        //添加权限相关筛选条件
+        String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
+        User user=shareService.getUser();//获得用户
+        String username=user.getUsername();//用户编号
+        if(authorityName.equals("ROLE_TEACHER")){
+            sql+=" and ass.username = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
+            List<Integer> centerIds=this.getCenterIDListFormUsername(username);
+            sql+=" and ( ";
+            for(int i=0;i<centerIds.size()-1;i++){
+                sql+=" ass.center_id ="+centerIds.get(i)+" or";
+            }
+            sql+=" ass.center_id ="+centerIds.get(centerIds.size()-1)+" )";
         }
         sql+=" order by ass.date desc ";
         Query query=entityManager.createNativeQuery(sql);
@@ -302,6 +348,14 @@ public class MaterialServiceImpl implements MaterialService {
             assetsInStorageDTO.setGoodsCategory(o[5]!=null?o[5].toString():null);
             assetsInStorageDTO.setTotalPrice(o[6]!=null?o[6].toString():null);
             assetsInStorageDTO.setStatus(o[7]!=null?o[7].toString():null);
+            if(o[8]!=null) {
+                assetsInStorageDTO.setCurAuditLevel(o[8].toString());
+                if(authorityName.split("_")[1].equals(o[8].toString())){
+                    assetsInStorageDTO.setAuditFlag(1);
+                }else{
+                    assetsInStorageDTO.setAuditFlag(0);
+                }
+            }
             assetsInStorageDTOList.add(assetsInStorageDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -2127,5 +2181,16 @@ public class MaterialServiceImpl implements MaterialService {
             flag=false;
         }
         return flag;
+    }
+    /**
+     * 根据username获取实验中心主任所管中心的集合
+     *
+     * @author 吴奇臻 2019-5-10
+     */
+    public List<Integer> getCenterIDListFormUsername(String username){
+        String sql="select id from lab_center lc where lc.center_manager='"+username+"'";
+        Query query=entityManager.createNativeQuery(sql);
+        List<Integer> objects=query.getResultList();
+        return objects;
     }
 }

@@ -117,6 +117,24 @@ layui.use(['table','jquery','layer'], function(){
                     layer.full(index); //最大化
                 }
             });
+        }else if(obj.event === 'show'){
+            var url = contextPath + '/lims/api/material/assetCabinetAccessRecordDetailAPI?id='+data.assetId;
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '查看物资出入库记录'
+                ,area: ['700px', '760px']
+                ,shade: 0 //不显示遮罩
+                ,maxmin: true //最大最小化  默认不显示最大小化按钮
+                ,offset: 'auto'//坐标  默认：垂直水平居中
+                ,content: url
+                ,closeBtn: 1 //关闭按钮  默认1
+                ,zIndex: layer.zIndex //层叠顺序
+                ,success: function(layero,index){
+                    layer.setTop(layero); //置顶当前窗口
+                    layer.full(index); //最大化
+                }
+            });
         }
     });
 });
