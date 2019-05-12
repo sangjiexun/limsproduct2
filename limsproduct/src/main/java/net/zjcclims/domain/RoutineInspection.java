@@ -96,10 +96,10 @@ public class RoutineInspection implements Serializable {
 	 * 
 	 */
 
-	@Column(name = "week", length = 40)
+	@Column(name = "week", length = 11)
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
-    String week;
+    Integer week;
 	/**
 	 * ����ʱ��
 	 * 
@@ -242,7 +242,7 @@ public class RoutineInspection implements Serializable {
 	 * �ܴ�
 	 * 
 	 */
-	public void setWeek(String week) {
+	public void setWeek(Integer week) {
 		this.week = week;
 	}
 
@@ -250,7 +250,7 @@ public class RoutineInspection implements Serializable {
 	 * �ܴ�
 	 * 
 	 */
-	public String getWeek() {
+	public Integer getWeek() {
 		return this.week;
 	}
 

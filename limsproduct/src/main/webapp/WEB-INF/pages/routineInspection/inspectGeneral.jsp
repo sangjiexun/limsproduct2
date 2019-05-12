@@ -153,7 +153,7 @@
                                     实验室:
                                     <form:select class="chzn-select" path="labRoom.id" id="labRoomId"
                                                  name="labRoom.id" style="width:100px">
-                                        <form:option value="">实验室</form:option>
+                                        <form:option value="">请选择</form:option>
                                         <c:forEach items="${labRooms}" var="current">
                                             <form:option
                                                     value="${current.id}">${current.labRoomName} </form:option>
@@ -167,7 +167,7 @@
                                     周次:
                                     <form:select class="chzn-select" path="week" id="week" name="week"
                                                  style="width:90px">
-                                        <form:option value="">周次</form:option>
+                                        <form:option value="">请选择</form:option>
                                         <c:forEach items="${schoolWeeks}" var="current">
                                             <form:option value="${current.week}">第${current.week}周</form:option>
                                         </c:forEach>

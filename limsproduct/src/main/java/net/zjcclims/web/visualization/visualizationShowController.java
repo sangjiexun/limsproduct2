@@ -193,7 +193,7 @@ public class visualizationShowController<JsonResult> {
 		}
 		mav.addObject("floorPic", floorPic);
 		// 楼宇列表
-		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY();
+		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY(systemBuild.getSystemCampus().getCampusNumber());
 		mav.addObject("systemBuilds", systemBuilds);
 		// 楼层列表
 		List<SystemFloorPic> floorPics = visualizationService.findSystemFloorPic(buildNumber, null);
@@ -1192,7 +1192,7 @@ public class visualizationShowController<JsonResult> {
 		}
 		mav.addObject("floorPic", floorPic);
 		// 楼宇列表
-		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY();
+		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY(systemBuild.getSystemCampus().getCampusNumber());
 		mav.addObject("systemBuilds", systemBuilds);
 		// 楼层列表
 		List<SystemFloorPic> floorPics = visualizationService.findSystemFloorPic(buildNumber, null);
