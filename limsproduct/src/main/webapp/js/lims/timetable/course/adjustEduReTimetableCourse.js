@@ -517,6 +517,9 @@ function refreshBootstrapTable() {
     var opt = {
         url: url,
         silent: true,
+        ajaxOptions:{
+            headers: {Authorization: getJWTAuthority()}
+        },
         query: {
             type: 1,
             level: 2
