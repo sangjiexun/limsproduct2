@@ -982,7 +982,11 @@ public class MaterialServiceImpl implements MaterialService {
         }try{
             Calendar calendar = Calendar.getInstance();
             assetApp.setAppDate(calendar);//保存当前日期
-            assetApp.setUser(shareService.getUser());//保存申请人
+            if(shareService.getUser() != null) {
+                assetApp.setUser(shareService.getUser());//保存申请人
+            }else{
+                assetApp.setUser(shareService.findUserByUsername(assetsApplyDTO.getApplicantUserName()));
+            }
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             assetApp.setBeginDate(sdf.parse(assetsApplyDTO.getStartDate()));//保存开始日期与结束日期
             assetApp.setEndDate(sdf.parse(assetsApplyDTO.getEndDate()));
@@ -995,6 +999,7 @@ public class MaterialServiceImpl implements MaterialService {
             String appNo=dateStr+Integer.parseInt(assetsApplyDTO.getGoodsCategory());//按日期加物资类别生成编号
             assetApp.setAppNo(appNo);//保存编号
             assetApp.setAssetStatu(0);//保存初始状态
+            assetApp.setCourseNo(assetsApplyDTO.getCourseNo());
             assetApp=assetAppDAO.store(assetApp);
         }catch (Exception e){
             e.printStackTrace();

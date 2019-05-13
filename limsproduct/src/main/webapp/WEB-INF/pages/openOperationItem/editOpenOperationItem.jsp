@@ -102,6 +102,8 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                 success:function(data){
                     $("#itemAssetsId").val(itemAssetId);
                     $("#assetId").val(data.assetId);
+                    $("#assetId").trigger("liszt:updated");
+                    $('#assetId').chosen();
                     $("#amount").val(data.amount);
                     getSpec(document.getElementById("assetId"));
 

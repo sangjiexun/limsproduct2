@@ -228,6 +228,19 @@ public class AssetApp implements Serializable {
 	@XmlTransient
 	OperationItem operationItem;
 
+	@Column(name = "course_no")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String courseNo;
+
+	public String getCourseNo() {
+		return courseNo;
+	}
+
+	public void setCourseNo(String courseNo) {
+		this.courseNo = courseNo;
+	}
+
 	/**
 	 * ����_����ǰ�Ṻ������
 	 * 
@@ -554,6 +567,7 @@ public class AssetApp implements Serializable {
 		setOperationItem(that.getOperationItem());
 		setAssetAppAudits(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppAudit>(that.getAssetAppAudits()));
 		setAssetAppRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppRecord>(that.getAssetAppRecords()));
+		setCourseNo(that.getCourseNo());
 	}
 
 	/**

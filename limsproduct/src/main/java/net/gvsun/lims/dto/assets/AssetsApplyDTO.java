@@ -37,6 +37,9 @@ public class AssetsApplyDTO implements Serializable{
     private String curAuditLevel;
     //审核标志位（0待审核，1审核）
     private Integer auditFlag;
+    // 课程编号
+    private String courseNo;
+
     public String getId() {
         return id;
     }
@@ -147,5 +150,13 @@ public class AssetsApplyDTO implements Serializable{
 
     public void setAuditFlag(Integer auditFlag) {
         this.auditFlag = auditFlag;
+    }
+
+    public String getCourseNo() {
+        return courseNo;
+    }
+
+    public void setCourseNo(String courseNo) {
+        this.courseNo = courseNo;
     }
 }
