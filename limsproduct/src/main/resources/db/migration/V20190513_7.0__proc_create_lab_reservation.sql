@@ -51,7 +51,8 @@ Begin
 		audit_results	,
 		item_releasese	,
 		reservation_type,
-		user_type
+		user_type,
+		apply_date
 	 )
 	 VALUES(
 		in_labroom  	,
@@ -65,7 +66,8 @@ Begin
 		-1,
 		-1,
 		in_eventType,
-		in_objectType
+		in_objectType,
+		in_createdDate
 	);
   	SET var_myId = last_insert_id();
 	SET out_labRId = last_insert_id();
@@ -90,7 +92,6 @@ Begin
 		SET i=i+1;
 	END WHILE;
 
-	COMMIT;  
-	
-End;;
-DELIMITER ;
+	COMMIT;
+
+End
