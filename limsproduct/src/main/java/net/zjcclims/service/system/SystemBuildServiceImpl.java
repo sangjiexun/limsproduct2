@@ -101,7 +101,7 @@ public class SystemBuildServiceImpl implements SystemBuildService {
 	@Override
 	public List<SystemBuild> findBuildingByXY(String campus_number){
 		String sql = "select b from SystemBuild b where  b.xCoordinate != null and b.yCoordinate != null and b.systemCampus.campusNumber='"+campus_number+"'";
-		List<SystemBuild> buildings = systemBuildDAO.executeQuery(sql.toString(), 0, -1);
+		List<SystemBuild> buildings = systemBuildDAO.executeQuery(sql, 0, -1);
 		return buildings;
 	}
 

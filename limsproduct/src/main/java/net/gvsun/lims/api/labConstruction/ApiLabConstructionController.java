@@ -35,8 +35,8 @@ public class ApiLabConstructionController {
      */
     @RequestMapping("/getParentProjects")
     @ResponseBody
-    public String getParentProjects(Integer page, Integer limit){
-        JSONObject jsonObject = labConstructionProjectService.getParentProjects(page, limit);
+    public String getParentProjects(HttpServletRequest request, Integer page, Integer limit){
+        JSONObject jsonObject = labConstructionProjectService.getParentProjects(request, page, limit);
 
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
@@ -96,11 +96,7 @@ public class ApiLabConstructionController {
     @RequestMapping("/saveSonProject")
     @ResponseBody
     public String saveSonProject(@RequestBody SonProjectDTO sonProjectDTO){
-        if(labConstructionProjectService.saveSonProject(sonProjectDTO)){
-            return "success";
-        }else{
-            return "fail";
-        }
+        return labConstructionProjectService.saveSonProject(sonProjectDTO);
     }
 
     /**
@@ -112,11 +108,7 @@ public class ApiLabConstructionController {
     @RequestMapping("/saveGrandSonProject")
     @ResponseBody
     public String saveGrandSonProject(@RequestBody GrandSonProjectDTO grandSonProjectDTO){
-        if(labConstructionProjectService.saveGrandSonProject(grandSonProjectDTO)){
-            return "success";
-        }else{
-            return "fail";
-        }
+        return labConstructionProjectService.saveGrandSonProject(grandSonProjectDTO);
     }
 
     /**
@@ -144,11 +136,7 @@ public class ApiLabConstructionController {
     @RequestMapping("/submitSonProject")
     @ResponseBody
     public String submitSonProject(@RequestBody SonProjectDTO sonProjectDTO){
-        if(labConstructionProjectService.submitSonProject(sonProjectDTO)){
-            return "success";
-        }else{
-            return "fail";
-        }
+        return labConstructionProjectService.submitSonProject(sonProjectDTO);
     }
 
     /**
@@ -160,11 +148,7 @@ public class ApiLabConstructionController {
     @RequestMapping("/submitGrandSonProject")
     @ResponseBody
     public String submitGrandSonProject(@RequestBody GrandSonProjectDTO grandSonProjectDTO){
-        if(labConstructionProjectService.submitGrandSonProject(grandSonProjectDTO)){
-            return "success";
-        }else{
-            return "fail";
-        }
+        return labConstructionProjectService.submitGrandSonProject(grandSonProjectDTO);
     }
 
     /**

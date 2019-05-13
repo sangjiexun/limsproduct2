@@ -78,9 +78,13 @@ layui.use(['form', 'laydate', 'upload'], function() {
             contentType: "application/json;charset=UTF-8",
             success:function (res) {
                 console.log(res);
-                var index=parent.layer.getFrameIndex(window.name);
-                parent.layer.close(index);
-                parent.location.reload();
+				if (res == "over") {
+					$.messager.alert('提示','项目总预算超额，请重新填写！');
+				}else {
+					var index=parent.layer.getFrameIndex(window.name);
+					parent.layer.close(index);
+					parent.location.reload();
+				}
             },
             error:function(){
                 alert("后台出了点问题，请重试！");
@@ -105,10 +109,15 @@ layui.use(['form', 'laydate', 'upload'], function() {
             type: "POST",
             contentType: "application/json;charset=UTF-8",
             success:function (res) {
+            	alert(res);
                 console.log(res);
-                var index=parent.layer.getFrameIndex(window.name);
-                parent.layer.close(index);
-                parent.location.reload();
+				if (res == "over") {
+					$.messager.alert('提示','项目总预算超额，请重新填写！');
+				}else {
+					var index=parent.layer.getFrameIndex(window.name);
+					parent.layer.close(index);
+					parent.location.reload();
+				}
             },
             error:function(){
                 alert("后台出了点问题，请重试！");

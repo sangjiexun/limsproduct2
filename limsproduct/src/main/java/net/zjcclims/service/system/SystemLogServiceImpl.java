@@ -380,7 +380,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 			queryHQL.append(" and c.center_id="+ paramsVO.getCenter_id());
 			queryHQL.append(" group by c.center_id");
 		}else if (paramsVO.getBase_id() > 0) {// 按照基地统计
-			queryHQL.append(" and c.base_id="+ paramsVO.getCenter_id());
+			queryHQL.append(" and c.base_id="+ paramsVO.getBase_id());
 			queryHQL.append(" group by c.base_id");
 		}else {
 			queryHQL.append(" GROUP BY c.lab_id");
@@ -406,7 +406,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 			for(Object[] obj : queryHQLs) {
 				LabAnnex labAnnex = labAnnexDAO.findLabAnnexByPrimaryKey(paramsVO.getBase_id());
 				obj[0] = labAnnex.getLabName();
-				obj[1] = labAnnex.getLabCenter().getUserByCenterManager().getCname();
+				obj[1] = "";//labAnnex.getLabCenter().getUserByCenterManager().getCname()
 				list.add(obj);
 			}
 		}else {
