@@ -798,6 +798,13 @@
       <artifactId>activemq-all</artifactId>
       <version>5.11.4</version>
     </dependency>
+    <dependency>
+      <groupId>net.gvsun.mvc</groupId>
+      <artifactId>kingstar-sso-client-authenticate</artifactId>
+      <version>1.6</version>
+      <classifier>jdk1.6</classifier>
+    </dependency>
+
   </dependencies>
   <repositories>
     <repository>
