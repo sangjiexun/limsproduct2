@@ -498,4 +498,13 @@ public interface ReportService {
 	 * @author 刘博越 2019年5月10日
 	 */
 	public Map<String, String> findAllYearCodeMap();
+
+	/**
+	 * Description 实验教学计划表导出excel
+	 * @return
+	 * @author 刘博越 2019年5月13日
+	 */
+	void exportTeachPlanExcel(OperationItem operationItem,
+							  HttpServletRequest request, HttpServletResponse response,
+							  String courseDetailNo, String course_number,int termId) throws Exception;
 }

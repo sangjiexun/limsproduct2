@@ -11,6 +11,7 @@ import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.device.LabRoomDeviceService;
+import net.zjcclims.service.system.TermDetailService;
 import net.zjcclims.vo.QueryParamsVO;
 import org.apache.cxf.common.util.SortedArraySet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class ReportServiceImpl implements ReportService
 	private UserDAO userDAO;
 	@Autowired
 	private ShareService shareService;
+	@Autowired
+	private TermDetailService termDetailService;
 	@Autowired
 	private TimetableCourseStudentDAO timetableCourseStudentDAO;
 	@Autowired
@@ -2828,5 +2831,119 @@ public class ReportServiceImpl implements ReportService
 			map.put(schoolTerm.getYearCode(),schoolTerm.getYearCode());
 		}
 		return map;
+	}
+	/*******************************************************************
+	 * Description 实验教学计划表导出Excel
+	 *
+	 * @author 刘博越
+	 * @date 2019-5-13
+	 *******************************************************************/
+	@Override
+	public void exportTeachPlanExcel(OperationItem operationItem, HttpServletRequest request, HttpServletResponse response,
+									 String courseDetailNo, String course_number,int termId) throws Exception
+	{
+		List<Map> list1 = new ArrayList<Map>();
+		List<Object[]> courseDetail = getViewTimetableCourseDetail(courseDetailNo);
+		Object[] a;
+		a =courseDetail.get(0);
+		for(Object[] reportCourseDetail : courseDetail){
+			Map map = new HashMap();
+			map.put("course name", reportCourseDetail[1]);
+			map.put("course code", reportCourseDetail[0]);
+			map.put("tatol hours of experiment", reportCourseDetail[4]);
+			map.put("number of experiment", reportCourseDetail[5]);
+			map.put("experimental course", reportCourseDetail[6]);
+			map.put("open class", reportCourseDetail[3]);
+			map.put("tatol number", reportCourseDetail[7]);
+			map.put("experimenter category", reportCourseDetail[8]);
+			map.put("class attributes", reportCourseDetail[9]);
+			map.put("experimental instructor", reportCourseDetail[10]);
+			map.put("title", reportCourseDetail[11]);
+			map.put("syllabus", reportCourseDetail[12]);
+			map.put("experiment instruction or teaching material", reportCourseDetail[13]);
+			list1.add(map);
+		}
+
+		List<Map> list2 = new ArrayList<Map>();
+		List<Object[]> courseDetails = getListTimetableFull(courseDetailNo);
+		for(Object[] reportCourseDetails : courseDetails){
+			Map map = new HashMap();
+			if(reportCourseDetails[0]!=null){
+				map.put("laboratory center name", reportCourseDetails[0]);
+			}
+			if(reportCourseDetails[1]!=null){
+				map.put("laboratory  name", reportCourseDetails[1]);
+			}
+			if(reportCourseDetails[2]!=null){
+				map.put("weekly", reportCourseDetails[2]);
+			}
+			if(reportCourseDetails[14]!=null){
+				map.put("weekday", reportCourseDetails[14]);
+			}
+			if(reportCourseDetails[15]!=null){
+				map.put("classes", reportCourseDetails[15]);
+			}
+			if(reportCourseDetails[3]!=null){
+				map.put("name of experiment item", reportCourseDetails[3]);
+			}
+			if(reportCourseDetails[17]!=null){
+				map.put("teaching hours of experiment item", reportCourseDetails[17]);
+			}
+			if(reportCourseDetails[5]!=null){
+				map.put("type of experiment item", reportCourseDetails[5]);
+			}
+			if(reportCourseDetails[6]!=null){
+				map.put("experimental requirement", reportCourseDetails[6]);
+			}
+			if(reportCourseDetails[7]!=null){
+				map.put("experimental porperties", reportCourseDetails[7]);
+			}
+			if(reportCourseDetails[8]!=null){
+				map.put("group number", reportCourseDetails[8]);
+			}
+			if(reportCourseDetails[9]!=null){
+				map.put("each group number", reportCourseDetails[9]);
+			}
+			if(reportCourseDetails[10]!=null){
+				map.put("fluctuation", reportCourseDetails[10]);
+			}
+			list2.add(map);
+		}
+
+		String title = "金陵科技学院实验教学计划表(教师填报)";
+		String[] hearder1 = new String[]{"课程名称","课程代码","实验总学时","应开实验项目个数","综合性/设计性实验课","开设班级","总人数",
+				"实验者类别","班级属性","实验指导教师","职称","实验教学大纲名称（版本）","实验指导书或教材"};
+		String[] field1 = new String[]{"course name","course code","tatol hours of experiment","number of experiment",
+				"experimental course","open class","tatol number","experimenter category","class attributes",
+				"experimental instructor","title","syllabus","experiment instruction or teaching material"};
+
+		String[] hearder2 = new String[]{"实验中心名称","实验室名称","周次","星期","节次","实验项目名称","实验项目学时","实验项目类型","实验要求",
+				"实验性质","组数","每组人数","变动情况"};
+		String[] field2 = new String[]{"laboratory center name","laboratory  name","weekly","weekday","classes","name of experiment item",
+				"teaching hours of experiment item","type of experiment item","experimental requirement","experimental porperties",
+				"group number","each group number","fluctuation"};
+		//学期
+		SchoolTerm schoolTerm = termDetailService.findTermById(termId);
+		String str1="注：";
+		String str2 = "1．实验教学计划必须严格按照开课计划和实验教学大纲制定，由院部负责审核。";
+		String str3 = "2. 实验课程名称：指单独开设的实验课或开出实验的课程名称。" ;
+		String str4 = "3. 综合性/设计性实验课程，填写“是”或“否”，判断原则，只要该门课程中有一个实验项目为设计性或综合性，该门课程则为填'是' 。" ;
+		String str5 = "4. 实验性质：指基础、专业基础、专业、科研、生产、其他。" ;
+		String str6 = "5. 实验类型：演示、验证、综合、设计。" ;
+		String str7 = "6. 实验要求：指必修、选修、其他。" ;
+		String str8 = "7. 实验者类别：指本科生、专科生、其他。" ;
+		String str9 = "8. 变动状况：指未变、改变、新开、撤消、未开。";
+		String str10 = "9. 组数：指同一时间内参加实验的学生组数。" ;
+		String str11 = "10. 班级属性:本科公办、本科民办、专科公办、专科民办。";
+		TableData td1 = ExcelUtils.createTableData(list1,ExcelUtils.createTableHeader(hearder1),field1);
+		TableData td2 = ExcelUtils.createTableData(list2,ExcelUtils.createTableHeader(hearder2),field2);
+		JsGridReportBase report = new JsGridReportBase(request, response);
+		String judgeDate = null;
+		if(!net.luxunsh.util.EmptyUtil.isObjectEmpty(a[16])) {
+			judgeDate = (a[16].toString()).substring(0, a[16].toString().length()-2);
+		}
+		report.exportExcelForTeachPlan(title,schoolTerm.getTermName(),a[10].toString(),"教研室主任(签字):","院(部)盖章:","实验课程信息","实验项目信息",str1,
+				str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,td1,td2,a[1].toString(),a[3].toString(),judgeDate);
+		//shareService.getUserDetail().getCname()
 	}
 }

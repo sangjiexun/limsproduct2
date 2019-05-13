@@ -1057,7 +1057,6 @@ public class ReportController<JsonResult> {
 	}
 	/*****************************************************************
 	 * Description 实验教学计划表-二级页面
-	 *
 	 * @author 刘博越
 	 * @date 2019-5-10
 	 *****************************************************************/
@@ -1092,5 +1091,17 @@ public class ReportController<JsonResult> {
 
 		mav.setViewName("reports/ExperimentTeachingPlan.jsp");
 		return mav;
+	}
+
+	/************************************************************
+	 * Description 实验教学计划表导出excel
+	 * @author 刘博越
+	 * @date 2019-5-13
+	 ************************************************************/
+	@RequestMapping("/dataReport/reportTeachPlanExcel")
+	public void reportTeachPlanExcel(@ModelAttribute OperationItem operationItem, HttpServletRequest request,
+									 HttpServletResponse response,@RequestParam String courseDetailNo,@RequestParam String course_number,@RequestParam int termId)throws Exception{
+
+		reportService.exportTeachPlanExcel(operationItem, request, response,courseDetailNo,course_number,termId);
 	}
 }
