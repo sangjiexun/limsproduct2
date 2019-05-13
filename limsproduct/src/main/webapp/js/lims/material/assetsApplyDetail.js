@@ -17,7 +17,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var academyNumber;
     var department;
     var goodsCategory;
-    var auditFlag;//审核标志位
     $.ajax({
         url: contextPath + '/lims/api/material/editAssetsApply?id='+assetsApplyId,
         async: false,
@@ -100,7 +99,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             }
         }
     });
-
     var tableIns=table.render({
         elem: '#assetsList',
         url: '../material/assetsApplyItemList', //数据接口
@@ -161,7 +159,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 minWidth: 100,
                 align: 'center',
                 sort: true,
-            },, {
+            }, {
                 field: 'factory',
                 title: '供应商',
                 minWidth: 100,

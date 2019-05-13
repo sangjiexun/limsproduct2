@@ -43,6 +43,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
             if(data.status!=='2'){
                 $("#confirm").hide();
             }
+            if(data.status!=='4'){
+                $("#generate").hide();
+            }
         },
         error:function () {
             if(id!=""){
@@ -91,6 +94,19 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
                 $('#goodsCategory').val(goodsCategory);
             });
             layui.form.render("select");
+        }
+    });
+
+
+    //获取审核标志位
+    $.ajax({
+        url: contextPath+'/lims/api/material/getAssetsInStorageAuditFlag?id='+id,
+        dataType: 'json',
+        type: 'get',
+        success: function (data) {
+            if(data!==true){
+                $("#check").hide();
+            }
         }
     });
     //上传

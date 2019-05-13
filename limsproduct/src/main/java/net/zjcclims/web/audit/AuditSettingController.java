@@ -302,6 +302,7 @@ public class AuditSettingController<JsonResult> {
         String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getBusinessConfigurationList", params);
         JSONObject listReturnObject = JSONObject.parseObject(str);
         List<Object[]> objects = new ArrayList<>();
+        Map<Object, List<Object[]>> extendItems = new HashMap<>();
         if("success".equals(listReturnObject.getString("status"))){
             JSONArray listArray = listReturnObject.getJSONArray("data");
             if(listArray != null && listArray.size() > 0){
@@ -317,10 +318,37 @@ public class AuditSettingController<JsonResult> {
                     // 配置id
                     objectArray[3] = listObject.getString("id");
                     objects.add(objectArray);
+                    // 获取配置项
+                    params = new HashMap<>();
+                    // 项目名
+                    params.put("id", objectArray[3].toString());
+                    str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getConfigurationExtensions", params);
+                    JSONObject extendJSONObject = JSONObject.parseObject(str);
+                    List<Object[]> extendObjectList = new ArrayList<>();
+                    if ("success".equals(extendJSONObject.getString("status"))) {
+                        JSONArray jsonArray = extendJSONObject.getJSONArray("data");
+                        if (jsonArray != null && jsonArray.size() > 0) {
+                            for (int j = 0; j < jsonArray.size(); j++) {
+                                listObject = jsonArray.getJSONObject(j);
+                                Object[] extendObjects = new Object[4];
+                                // 配置名称
+                                extendObjects[0] = listObject.getString("businessConfigItemExtend");
+                                // 状态
+                                extendObjects[1] = listObject.getString("businessConfigExtendStatus");
+                                // 配置信息
+                                extendObjects[2] = listObject.getString("info");
+                                // 配置id
+                                extendObjects[3] = listObject.getString("id");
+                                extendObjectList.add(extendObjects);
+                            }
+                        }
+                    }
+                    extendItems.put(objectArray[3], extendObjectList);
                 }
             }
         }
         mav.addObject("objects", objects);
+        mav.addObject("extendItems", extendItems);
 
         mav.setViewName("audit/configurationSetting.jsp");
         return mav;
@@ -339,11 +367,19 @@ public class AuditSettingController<JsonResult> {
         for(Map.Entry<String, String[]> entry: map.entrySet()){
             if(entry.getValue().length > 0) {
                 Map<String, String> params = new HashMap<>();
-                // 配置项id
-                params.put("id", entry.getKey());
-                // 配置项状态
-                params.put("status", entry.getValue()[0]);
-                String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/setBusinessConfigurationStat", params);
+                if(entry.getKey().contains("extend")) {
+                    // 配置项id
+                    params.put("id", entry.getKey().substring(6));
+                    // 配置项状态
+                    params.put("status", entry.getValue()[0]);
+                    String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/setBusinessConfigurationExtendStat", params);
+                }else{
+                    // 配置项id
+                    params.put("id", entry.getKey());
+                    // 配置项状态
+                    params.put("status", entry.getValue()[0]);
+                    String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/setBusinessConfigurationStat", params);
+                }
             }
         }
         return "redirect:/audit/configurationSetting";

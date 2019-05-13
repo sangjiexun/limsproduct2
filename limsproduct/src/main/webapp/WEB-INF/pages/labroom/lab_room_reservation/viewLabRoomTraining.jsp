@@ -233,18 +233,18 @@ function checkTele(){
 	--%>
 	<div id="TabbedPanels1" class="TabbedPanels">
 
-<c:if test="${sessionScope.selected_role ne 'ROLE_STUDENT'}">
+<%--<c:if test="${sessionScope.selected_role ne 'ROLE_STUDENT'}">
 	 <ul class="TabbedPanelsTabGroup">
 		<li class="TabbedPanelsTab" tabindex="0">
-		<a href="javascript:void(0);" onclick="viewDeviceInfoRest(${device.id})";>设备详情</a></li>
-		<%-- <c:if test="${device.CActiveByAllowSecurityAccess.id == 1}"> --%>
+		<a href="javascript:void(0);" onclick="viewDeviceInfoRest(${device.id})";>设备详情${schoolDevice_allowAppointment}</a></li>
+		&lt;%&ndash; <c:if test="${device.CActiveByAllowSecurityAccess.id == 1}"> &ndash;%&gt;
 		<li class="TabbedPanelsTab selected" tabindex="0">
 		<a href="javascript:void(0);" onclick="viewDeviceTrainingRest(${device.id})";>培训计划</a>
 		</li>
-		<%--<li class="TabbedPanelsTab" tabindex="0">
-		<a href="javascript:void(0);" onclick="viewDeviceSettingRest(${device.id})";>参数详情</a></li>--%>
-		<%--<li class="TabbedPanelsTab" tabindex="0">
-        <a href="javascript:void(0);" onclick="Access(${device.id})";>设备预约</a></li>--%>
+		&lt;%&ndash;<li class="TabbedPanelsTab" tabindex="0">
+		<a href="javascript:void(0);" onclick="viewDeviceSettingRest(${device.id})";>参数详情</a></li>&ndash;%&gt;
+		&lt;%&ndash;<li class="TabbedPanelsTab" tabindex="0">
+        <a href="javascript:void(0);" onclick="Access(${device.id})";>设备预约</a></li>&ndash;%&gt;
 		<li class="TabbedPanelsTab" tabindex="0"><a href="javascript:void(0);" onclick="viewDeviceReservationRest(${device.id},1)";>使用情况</a></li>
 		<li class="TabbedPanelsTab" tabindex="0">
 		<a href="javascript:void(0);" onclick="viewDeviceImageRest(${device.id})";>相关图片</a></li>
@@ -254,10 +254,10 @@ function checkTele(){
 		<a href="javascript:void(0);" onclick="viewDeviceDocumentRest(${device.id})";>相关文档</a></li>
 		<li class="TabbedPanelsTab" tabindex="0">
 		<a href="javascript:void(0);" onclick="viewDimensionalCodeRest(${device.id})";>二维码</a></li>
-		<%--<li class="TabbedPanelsTab" tabindex="0">
-        <a href="javascript:void(0);" onclick="viewDeviceReservationRestAll(${device.id},1)";>汇总统计</a></li>--%>
+		&lt;%&ndash;<li class="TabbedPanelsTab" tabindex="0">
+        <a href="javascript:void(0);" onclick="viewDeviceReservationRestAll(${device.id},1)";>汇总统计</a></li>&ndash;%&gt;
 	</ul>
-</c:if>
+</c:if>--%>
 	  <div class="TabbedPanelsContentGroup">
 		<div class="TabbedPanelsContent">
 			<div class="tool-box">

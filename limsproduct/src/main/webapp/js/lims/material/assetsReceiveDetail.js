@@ -56,9 +56,6 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             if(!(data.status==='4'&&isNeedReturn===1)){
                 $("#confirmReturn").hide();
             }
-            if(isNeedReturn===0){
-                $("#return").hide();
-            }
         },
         error:function () {
             if(id!=""){
@@ -183,7 +180,19 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 sort: true,
             }, {
                 field: 'amount',
-                title: '数量',
+                title: '申领数量',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            }, {
+                field: 'returnAmount',
+                title: '归还数量',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            }, {
+                field: 'stockNumber',
+                title: '当前库存柜余量',
                 minWidth: 100,
                 align: 'center',
                 sort: true,

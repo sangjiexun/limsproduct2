@@ -95,10 +95,7 @@ table{table-layout:fixed;}
 <div class="navigation">
 <div id="navigation">
 <ul>
-	<li><a href="javascript:void(0)">考勤管理</a></li>
-	<li><a href="javascript:void(0)"><spring:message code="all.trainingRoom.labroom"/>考勤与成绩管理</a></li>
 	<li class="end"><a href="javascript:void(0)">学生考勤名单</a></li>
-	
 </ul>
 </div>
 </div>
@@ -111,11 +108,8 @@ table{table-layout:fixed;}
 
 <form:form name="queryForm" action="${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=1" method="post" modelAttribute="commonHdwlog">
 	<ul >
-		<li>学号:
+		<li>姓名/学号:
 		<form:input id="username" path="username"/>
-		</li>
-		<li>姓名:
-		<form:input id="cardname" path="cardname"/>
 		</li>
 
 		<li>考勤刷卡时间:<input id="starttime" class="Wdate" type="text" name="starttime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;" readonly />
@@ -132,8 +126,7 @@ table{table-layout:fixed;}
 </form:form>
 </div>
 <div class="content-box" >
-<div class="title"><spring:message code="all.trainingRoom.labroom"/>考勤学生名单列表</div>
-<table> 
+<table>
 <thead>
  <tr>
    <th><p>序号</p></th>
@@ -143,7 +136,6 @@ table{table-layout:fixed;}
    <th><p>班级</p></th>
    <th><p>专业</p></th>
    <th><p>时间</p></th>
-   
 </tr>
 </thead>
 
@@ -159,8 +151,6 @@ table{table-layout:fixed;}
 	<td><p>${access.attendanceTime}</p></td>
 	</tr>
 	</c:forEach>
-	
-
 </tbody>
 </table>
 </div>
@@ -170,7 +160,7 @@ table{table-layout:fixed;}
 <!-- 分页导航 -->
 <div class="page" >
 ${totalRecords}条记录,共${pageModel.totalPage}页
-    <a href="javascript:void(0)"    onclick="first('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=1')" target="_self">首页</a>			    
+    <a href="javascript:void(0)" onclick="first('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=1')" target="_self">首页</a>
 	<a href="javascript:void(0)" onclick="previous('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=')" target="_self">上一页</a>
 	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
 	<option value="${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=${page}">${page}</option>
@@ -179,8 +169,8 @@ ${totalRecords}条记录,共${pageModel.totalPage}页
     <option value="${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=${j.index}">${j.index}</option>
     </c:if>
     </c:forEach></select>页
-	<a href="javascript:void(0)"     onclick="next('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=')" target="_self">下一页</a>
- 	<a href="javascript:void(0)"    onclick="last('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=${pageModel.totalPage}')" target="_self">末页</a>
+	<a href="javascript:void(0)" onclick="next('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=')" target="_self">下一页</a>
+ 	<a href="javascript:void(0)" onclick="last('${pageContext.request.contextPath}/timetable/Attendance?id=${id}&page=${pageModel.totalPage}')" target="_self">末页</a>
 </div>
 </div>
 <!-- 下拉框的js -->

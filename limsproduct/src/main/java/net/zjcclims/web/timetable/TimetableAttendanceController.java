@@ -290,7 +290,7 @@ public class TimetableAttendanceController {
 			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,page,pageSize,request);
 		}else {
 			// 新版从iot获取数据
-			totalRecords = cmsShowService.findIotAttendanceByIpCount(commonHdwlog,ip,request,page,pageSize);
+			totalRecords = cmsShowService.findIotAttendanceByIpCount(commonHdwlog,ip,request,0,pageSize);
 			pageModel = shareService.getPage(page, pageSize, totalRecords);
 			//页面显示的实验室
 			accessList=cmsShowService.findIotAttendanceByIp(commonHdwlog,ip,request,page,pageSize);

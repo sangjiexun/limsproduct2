@@ -366,33 +366,38 @@
             var labroomId = "${labRoom.id }";
             chageroomAjaxlalala (labroomId);
         })
+
         function changeRoomMovie2(id, agentId) {
-            $.ajax({
-                type: "POST",
-                url: "${pageContext.request.contextPath}/visualization/show/changeRoomMovie2",
-                data: {'id': id, 'agentId': agentId},
-                dataType: 'text',//json or text
-                success: function (data) {
-                    console.log("【" + data + "】视频data");
-                    //有视频就设置只有视频显示，其他图片隐藏。
-                    if (data == "") {
-                        //没有视频
-                        $("#my-video").hide();
-                    } else {
-                        //videojs里的改src的方法
-                        videojs("my-video", {}).ready(function () {
-                            var myPlayer = this;
-                            myPlayer.src(data);
-                            myPlayer.play();
-                        });
-                        $("#my-video").show();
-                        $(".demo_photo").hide();
-                    }
-                    $("#btnchangeimg").val("切换全景图片");
-                }, error: function (data) {
-                    console.log(data);
-                }
-            });
+
+            window.location = '${pageContext.request.contextPath}/visualization/show/changeMovie?lab_id='+id+'&agent_id='+ agentId;
+            <%--setTimeout(function(){--%>
+            <%--    $.ajax({--%>
+            <%--        type: "POST",--%>
+            <%--        url: "${pageContext.request.contextPath}/visualization/show/changeRoomMovie2",--%>
+            <%--        data: {'id': id, 'agentId': agentId},--%>
+            <%--        dataType: 'text',//json or text--%>
+            <%--        success: function (data) {--%>
+            <%--            console.log("【" + data + "】视频data");--%>
+            <%--            //有视频就设置只有视频显示，其他图片隐藏。--%>
+            <%--            if (data == "") {--%>
+            <%--                //没有视频--%>
+            <%--                $("#my-video").hide();--%>
+            <%--            } else {--%>
+            <%--                //videojs里的改src的方法--%>
+            <%--                videojs("my-video", {}).ready(function () {--%>
+            <%--                    var myPlayer = this;--%>
+            <%--                    myPlayer.src(data);--%>
+            <%--                    myPlayer.play();--%>
+            <%--                });--%>
+            <%--                $("#my-video").show();--%>
+            <%--                $(".demo_photo").hide();--%>
+            <%--            }--%>
+            <%--            $("#btnchangeimg").val("切换全景图片");--%>
+            <%--        }, error: function (data) {--%>
+            <%--            console.log(data);--%>
+            <%--        }--%>
+            <%--    });--%>
+            <%--},2000);--%>
         }
 
         function roomDetails() {

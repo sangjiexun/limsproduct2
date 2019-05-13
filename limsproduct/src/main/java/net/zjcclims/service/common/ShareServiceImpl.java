@@ -2996,4 +2996,33 @@ System.out.println("二维码路径："+url);
 		sql += " and u.schoolAcademy="+acno;
 		return userDAO.executeQuery(sql,0,-1);
 	}
+
+	/**
+	 * Description 获取额外配置项
+	 * @param businessType
+	 * @return
+	 * @author 黄保钱 2019-5-11
+	 */
+	@Override
+	public boolean getExtendItem(String businessType) {
+//		StringBuffer hql = new StringBuffer("select * from audit_setting c where c.type='"+ businessType +"'");
+//		Query query = entityManager.createNativeQuery(hql.toString());
+//		List<Object[]> queryHQLs = new ArrayList<Object[]>(query.getResultList());
+//		Object[] obj = queryHQLs.get(0);
+//		if(obj[3].equals(true)) {
+		String status = "";
+		Map<String, String> params = new HashMap<>();
+		params.put("projectName", pConfig.PROJECT_NAME);
+		params.put("businessConfigItemExtend", businessType);
+		String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getBusinessConfigurationExtend", params);
+		JSONObject jsonObject = JSONObject.parseObject(str);
+		if("success".equals(jsonObject.getString("status"))) {
+			status = jsonObject.getString("data");
+			if (status.equals("\"1\"")) {
+				return true;
+			} else return false;
+		}else{
+			return false;
+		}
+	}
 }

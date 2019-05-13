@@ -705,6 +705,31 @@ public class JsGridReportBase {
 		wb.write(response.getOutputStream());
 	}
 	/**
+	 * @Description 改写，实验教学计划表导出excel
+	 * @data 2019-05-13
+	 * @author 刘博越
+	 */
+	public void exportExcelForTeachPlan(String title,String schoolTermName, String creator, String info1,String info2,String info3,String info4,String str1,
+							String str2,String str3,String str4,String str5,String str6,String str7,String str8,String str9,String str10,String str11,TableData tableData1,TableData tableData2,
+							String courseName,String className, String judgeDate)
+			throws Exception {
+
+		HSSFWorkbook wb = new HSSFWorkbook();// 创建新的Excel 工作簿
+
+		HashMap<String, HSSFCellStyle> styles = initStyles(wb);// 根据模板文件，初始化表头样式
+
+		wb = writeSheetsForTeachPlan(wb,title,info1,info2,info3,info4,str1,str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,styles,schoolTermName,creator,tableData1,tableData2,courseName,className,judgeDate);//写入工作表
+
+		creator = creator.replaceAll(" ","");
+		String sFileName = courseName+"_"+creator+"_"+className+".xls";
+		response.setHeader("Content-Disposition", "attachment;filename="
+				.concat(String.valueOf(URLEncoder.encode(sFileName, "UTF-8"))));
+		response.setHeader("Connection", "close");
+		response.setHeader("Content-Type", "application/vnd.ms-excel");
+
+		wb.write(response.getOutputStream());
+	}
+	/**
 	 * 写入工作表
 	 * @param wb Excel工作簿
 	 * @param title Sheet工作表名称
@@ -846,6 +871,278 @@ public class JsGridReportBase {
 		}
 		sheet.setGridsPrinted(true);
 
+		return wb;
+	}
+	/**
+	 * 写入工作表
+	 * @param wb Excel工作簿
+	 * @param title Sheet工作表名称
+	 * @param styles 表头样式
+	 * @param creator 创建人
+	 * @param tableData1/tableData2 表格数据
+	 * @throws Exception
+	 */
+	public HSSFWorkbook writeSheetsForTeachPlan(HSSFWorkbook wb, String title,String info1,String info2,String info3,String info4,String str1,
+									String str2,String str3,String str4,String str5,String str6,String str7,String str8,String str9,String str10,String str11,
+									HashMap<String, HSSFCellStyle> styles,String schoolTermName, String creator, TableData tableData1,TableData tableData2,String courseName,String className, String judgeDate) throws Exception {
+
+		TableHeaderMetaData headerMetaData1 = tableData1.getTableHeader();// 获得HTML的第一个表头元素
+		TableHeaderMetaData headerMetaData2 = tableData2.getTableHeader();// 获得HTML的第二个表头元素
+
+		String create_time = "";
+		if(judgeDate != null) {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date date=sdf.parse(judgeDate);
+
+			SimpleDateFormat formater = new SimpleDateFormat("yyyy年MM月dd日");
+			create_time = formater.format(date);
+		}
+
+		HSSFSheet sheet = wb.createSheet(title);// 在Excel工作簿中建一工作表
+
+		sheet.setDisplayGridlines(false);// 设置表标题是否有表格边框
+
+		//创建标题
+		HSSFRow row = sheet.createRow(0);// 创建新行
+		HSSFCell cell = row.createCell(0);// 创建新列
+		int rownum = 0;
+		cell.setCellValue(new HSSFRichTextString(title));
+		HSSFCellStyle style = styles.get("TITLE");//设置标题样式
+		if (style != null)
+			cell.setCellStyle(style);
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, headerMetaData1
+				.getColumnCount() - 1));//合并标题行：起始行号，终止行号， 起始列号，终止列号
+
+		//创建副标题
+		row = sheet.createRow(1);
+		cell = row.createCell(5);
+		cell.setCellValue(new HSSFRichTextString("("+schoolTermName)+")");
+
+		row = sheet.createRow(2);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(info1));
+
+		cell = row.createCell(11);
+		cell.setCellValue(new HSSFRichTextString(info2));
+
+		row = sheet.createRow(3);
+		cell = row.createCell(5);
+		style = styles.get("TITLE");
+		cell.setCellValue(new HSSFRichTextString(info3));
+		if (style != null)
+			cell.setCellStyle(style);
+
+		row = sheet.createRow(6);
+		cell = row.createCell(5);
+		style = styles.get("TITLE");
+		cell.setCellValue(new HSSFRichTextString(info4));
+		if (style != null)
+			cell.setCellStyle(style);
+
+		rownum = 4;// 如果rownum = 1，则去掉创建人、创建时间等副标题；如果rownum = 0， 则把标题也去掉
+
+		HSSFCellStyle headerstyle = styles.get("STRING");
+
+		int colnum = 0;
+		for (int i = 0; i < headerMetaData1.getOriginColumns().size(); i++) {
+			TableColumn tc = headerMetaData1.getOriginColumns().get(i);
+			if (i != 0) {
+				colnum += headerMetaData1.getOriginColumns().get(i - 1)
+						.getLength();
+			}
+			generateColumn1(sheet, tc, headerMetaData1.maxlevel, rownum, colnum,
+					headerstyle);
+		}
+		rownum += headerMetaData1.maxlevel;
+
+		List<TableDataRow> dataRows1 = tableData1.getRows();
+
+		HashMap<Integer, Integer> counter1 = new HashMap<Integer, Integer>();
+		HashMap<Integer, String> word1 = new HashMap<Integer, String>();
+		int index = 0;
+		for (TableDataRow dataRow : dataRows1) {
+			row = sheet.createRow(rownum);
+			List<TableDataCell> dataCells = dataRow.getCells();
+			int size = headerMetaData1.getColumns().size();
+			index = -1;
+			int lengthMax = 0;
+			for (int i = 0; i < size; i++) {
+				String value = dataCells.get(i).getValue();
+				if(value.length()>lengthMax){
+					lengthMax = value.length();
+				}
+			}
+
+			for (int i = 0; i < size; i++) {
+				TableColumn tc = headerMetaData1.getColumns().get(i);
+				if (!tc.isVisible())
+					continue;
+				index++;
+
+				String value = dataCells.get(i).getValue();
+				if (tc.isGrouped()) {
+					String w = word1.get(index);
+					if (w == null) {
+						word1.put(index, value);
+						counter1.put(index, 1);
+						createCell(row, tc, dataCells, i, index, styles);
+					} else {
+						if (w.equals(value)) {
+							counter1.put(index, counter1.get(index) + 1);
+						} else {
+							stopGrouping(sheet, word1, counter1, index, size,
+									rownum, styles.get("STRING"));
+
+							word1.put(index, value);
+							counter1.put(index, 1);
+							createCell(row, tc, dataCells, i, index, styles);
+						}
+					}
+				} else {
+					createCell(row, tc, dataCells, i, index, styles);
+				}
+			}
+			row.setHeight((short)((lengthMax/12+1)*280));
+			rownum++;
+		}
+
+		// 设置前两列根据数据自动列宽
+//		for (int c = 0; c < headerMetaData1.getColumns().size(); c++) {
+//			String t = headerMetaData1.getColumns().get(c).getDisplay();
+//			if(sheet.getColumnWidth(c)<t.length()*256*3)
+//				sheet.setColumnWidth(c, 3766);
+//		}
+		sheet.setGridsPrinted(true);
+
+		HSSFCellStyle headerstyle1 = styles.get("STRING");
+		rownum = 7;
+		int colnum1 = 0;
+		for (int i = 0; i < headerMetaData2.getOriginColumns().size(); i++) {
+			TableColumn tc = headerMetaData2.getOriginColumns().get(i);
+			if (i != 0) {
+				colnum1 += headerMetaData2.getOriginColumns().get(i - 1)
+						.getLength();
+			}
+			generateColumn1(sheet, tc, headerMetaData2.maxlevel, rownum, colnum1,
+					headerstyle1);
+		}
+		rownum += headerMetaData2.maxlevel;
+
+		List<TableDataRow> dataRows2 = tableData2.getRows();
+		//合并单元格参数
+		HashMap<Integer, Integer> counter = new HashMap<Integer, Integer>();
+		HashMap<Integer, String> word = new HashMap<Integer, String>();
+		int index1 = 0;
+		for (TableDataRow dataRow : dataRows2) {
+			row = sheet.createRow(rownum);
+			List<TableDataCell> dataCells = dataRow.getCells();
+			int size = headerMetaData2.getColumns().size();
+			index1 = -1;
+			// 行高设置，取字符最长计算
+			int lengthMax = 0;
+			for (int i = 0; i < size; i++) {
+				String value = dataCells.get(i).getValue();
+				if(value.length()>lengthMax){
+					lengthMax = value.length();
+				}
+			}
+			for (int i = 0; i < size; i++) {
+				TableColumn tc = headerMetaData2.getColumns().get(i);
+				if (!tc.isVisible())
+					continue;
+				index1++;//列数
+
+				String value = dataCells.get(i).getValue();
+				if (tc.isGrouped()) {
+					String w = word.get(index1);
+					if (w == null) {
+						word.put(index1, value);
+						counter.put(index1, 1);
+						createCell(row, tc, dataCells, i, index1, styles);
+					} else {
+						stopGrouping(sheet, word, counter, index1, size,
+								rownum, styles.get("STRING"));
+
+						word.put(index1, value);
+						counter.put(index1, 1);
+						createCell(row, tc, dataCells, i, index1, styles);
+					}
+				} else {
+					createCell(row, tc, dataCells, i, index1, styles);
+				}
+			}
+			row.setHeight((short)((lengthMax/12+1)*280));
+			rownum++;
+		}
+
+		stopGrouping(sheet, word, counter, 0, index1, rownum, styles.get("STRING"));
+
+		row = sheet.createRow(rownum+2);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString("填报人:"));
+
+		cell = row.createCell(1);
+		cell.setCellValue(new HSSFRichTextString(creator));
+
+		cell = row.createCell(10);
+		cell.setCellValue(new HSSFRichTextString("填报时间:"));
+
+		cell = row.createCell(11);
+		cell.setCellValue(new HSSFRichTextString(create_time));
+
+		row = sheet.createRow(rownum+3);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str1));
+
+		row = sheet.createRow(rownum+4);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str2));
+
+		row = sheet.createRow(rownum+5);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str3));
+
+		row = sheet.createRow(rownum+6);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str4));
+
+		row = sheet.createRow(rownum+7);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str5));
+
+		row = sheet.createRow(rownum+8);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str6));
+
+		row = sheet.createRow(rownum+9);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str7));
+
+		row = sheet.createRow(rownum+10);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str8));
+
+		row = sheet.createRow(rownum+11);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str9));
+
+		row = sheet.createRow(rownum+12);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str10));
+
+		row = sheet.createRow(rownum+13);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString(str11));
+		//设置横向打印
+		sheet.getPrintSetup().setLandscape(true);
+		//设置打印缩放
+		//sheet.getPrintSetup().setScale((short) 65);
+		//将工作表调整为一页
+		sheet.setAutobreaks(true);
+		HSSFPrintSetup printSetup = sheet.getPrintSetup();
+		//A4纸
+		printSetup.setPaperSize(HSSFPrintSetup.A4_PAPERSIZE);
+		wb.setPrintArea(0, 0, 12, 0, rownum+14);
 		return wb;
 	}
 	/**
@@ -2418,5 +2715,59 @@ public class JsGridReportBase {
 		sheet.setGridsPrinted(true);
 
 		return wb;
+	}
+	/**
+	 *
+	 * @param
+	 * @return void
+	 */
+	public void generateColumn1(HSSFSheet sheet, TableColumn tc, int maxlevel,
+								int rownum, int colnum, HSSFCellStyle headerstyle) {
+		sheet.setColumnWidth(0, 5000);
+		sheet.setColumnWidth(1, 7000);
+		sheet.setColumnWidth(2, 3200);
+		sheet.setColumnWidth(3, 3000);
+		sheet.setColumnWidth(4, 4000);
+		sheet.setColumnWidth(5, 8000);
+		sheet.setColumnWidth(6, 2000);
+		sheet.setColumnWidth(7, 2000);
+		sheet.setColumnWidth(8, 2800);
+		sheet.setColumnWidth(9, 3000);
+		sheet.setColumnWidth(10, 2000);
+		sheet.setColumnWidth(11, 3800);
+		sheet.setColumnWidth(12, 3000);
+		HSSFRow row = sheet.getRow(rownum);
+		headerstyle.setWrapText(true);
+		if (row == null){
+			row = sheet.createRow(rownum);
+			row.setHeight((short)(256*3));
+		}
+
+		HSSFCell cell = row.createCell(colnum);
+		cell.setCellValue(tc.getDisplay());
+
+		if (headerstyle != null)
+			cell.setCellStyle(headerstyle);
+		if (tc.isComplex()) {
+			CellRangeAddress address = new CellRangeAddress(rownum, rownum,
+					colnum, colnum + tc.getLength() - 1);
+			sheet.addMergedRegion(address);
+			fillMergedRegion(sheet, address, headerstyle);
+
+			int cn = colnum;
+			for (int i = 0; i < tc.getChildren().size(); i++) {
+				if (i != 0) {
+					cn = cn + tc.getChildren().get(i - 1).getLength();
+				}
+				generateColumn(sheet, tc.getChildren().get(i), maxlevel,
+						rownum + 1, cn, headerstyle);
+			}
+		} else {
+			CellRangeAddress address = new CellRangeAddress(rownum, rownum
+					+ maxlevel - tc.level, colnum, colnum);
+			sheet.addMergedRegion(address);
+			fillMergedRegion(sheet, address, headerstyle);
+		}
+//		sheet.autoSizeColumn(colnum, true);
 	}
 }

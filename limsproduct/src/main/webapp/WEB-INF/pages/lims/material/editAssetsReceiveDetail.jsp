@@ -85,7 +85,7 @@
                         <input type="text" id= "beginTime" name="beginTime"   placeholder="请选择开始时间" autocomplete="on" class="layui-input" />
                     </div>
                 </div>
-                <div class="layui-col-lg6" id="return">
+                <div class="layui-col-lg6" >
                     <label class="layui-form-label">预计归还时间</label>
                     <div class="layui-input-block">
                         <input type="text" id= "endTime" name="endTime"  placeholder="请选择结束时间" autocomplete="on" class="layui-input" />

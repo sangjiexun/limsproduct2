@@ -1485,9 +1485,19 @@ public class TimetableAdminController<JsonResult> {
 	@RequestMapping("/timetable/allTimetableAppointment")
 	public ModelAndView allTimetableAppointment(HttpServletRequest request, @ModelAttribute("selected_academy") String acno){
     	ModelAndView mav = new ModelAndView();
-		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
+		// 获取学期列表
+		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		mav.addObject("schoolTerms", schoolTerms);
+		// 当前时间的学期
+		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+		if (request.getParameter("term")!=null&&!request.getParameter("term").equals("null")) {
+			term = Integer.parseInt(request.getParameter("term"));
+		}
+		mav.addObject("term", term);
+
+
     	String labRoom = request.getParameter("labRoom");
-		List<LabRoom> labRooms = labRoomDAO.executeQuery("select distinct l from LabRoom l join l.timetableLabRelateds tlr where tlr.timetableAppointment.schoolTerm.id=" + schoolTerm.getId());
+		List<LabRoom> labRooms = labRoomDAO.executeQuery("select distinct l from LabRoom l join l.timetableLabRelateds tlr where tlr.timetableAppointment.schoolTerm.id=" + term);
 		mav.addObject("labRooms", labRooms);
 		List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
 		mav.addObject("schoolAcademies", schoolAcademies);
@@ -1503,7 +1513,7 @@ public class TimetableAdminController<JsonResult> {
 			sql += " and (ta.schoolCourse.schoolAcademy.academyNumber = " + request.getParameter("academyNumber")
 			     + " or ta.timetableSelfCourse.schoolAcademy.academyNumber = " + request.getParameter("academyNumber") + ")";
 		}
-		sql += " and ta.schoolTerm.id=" + schoolTerm.getId();
+		sql += " and ta.schoolTerm.id=" + term;
     	List<TimetableAppointment> timetableAppointment = timetableAppointmentDAO.executeQuery(sql);
     	mav.addObject("timetableAppointment", timetableAppointment);
     	mav.setViewName("timetable/allTimetableAppointment/allTimetableAppointment.jsp");

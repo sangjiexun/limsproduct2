@@ -1,12 +1,15 @@
-<%@ page language="java" isELIgnored="false" contentType="text/html; charset=utf-8" pageEncoding="UTF-8" %>
-<jsp:directive.include file="/WEB-INF/sitemesh-decorators/include.jsp"/>
-<fmt:setBundle basename="bundles.equipmentlend-resources"/>
+<%@ taglib prefix="sec"	uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" isELIgnored="false" contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
+<jsp:directive.include file="/WEB-INF/sitemesh-decorators/include.jsp" />
+<fmt:setBundle basename="bundles.pageModel-resources" />
 
-<!doctype html>
 <html>
-
 <head>
     <meta name="decorator" content="iframe"/>
+    <!-- 下拉的样式 -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
+    <!-- 下拉的样式结束 -->
     <style>
         .content_box td {
             border-left: 1px dotted #ccc
@@ -70,34 +73,48 @@
         <div class="TabbedPanelsContentGroup">
             <div class="TabbedPanelsContent">
                 <div class="content-box">
-                    <div>
+                    <div class="tool-box">
                         <form action="${pageContext.request.contextPath}/timetable/allTimetableAppointment" method="post">
-                            <select name="academyNumber">
-                                <option value="-1">全部学院</option>
-                                <c:forEach items="${schoolAcademies}" var="academy" varStatus="i">
-                                    <c:if test="${academy.academyNumber eq academyNumber}">
-                                        <option value="${academy.academyNumber}" selected>${academy.academyName}</option>
-                                    </c:if>
-                                    <c:if test="${academy.academyNumber ne academyNumber}">
-                                        <option value="${academy.academyNumber}">${academy.academyName}</option>
-                                    </c:if>
-                                </c:forEach>
-                            </select>
-                            <select name="labRoom">
-                                <option value="-1">全部实验室</option>
-                                <c:forEach items="${labRooms}" var="l" varStatus="i">
-                                    <c:if test="${l.id eq labRoom}">
-                                        <option value="${l.id}" selected>${l.labRoomName}</option>
-                                    </c:if>
-                                    <c:if test="${l.id ne labRoom}">
-                                        <option value="${l.id}">${l.labRoomName}</option>
-                                    </c:if>
-                                </c:forEach>
-                            </select>
-                            <input type="submit" value="查询">
+                            <ul>
+                                <li><select  name="term" class="chzn-select" id="term" >
+                                        <c:forEach items="${schoolTerms}" var="t">
+                                            <c:if test="${t.id eq term}">
+                                                <option value="${t.id}" selected="selected" >${t.termName }</option>
+                                            </c:if>
+                                            <c:if test="${t.id ne term}">
+                                                <option value="${t.id}" >${t.termName }</option>
+                                            </c:if>
+                                        </c:forEach>
+                                    </select>
+                                </li>
+                                <li><select name="academyNumber" class="chzn-select">
+                                    <option value="-1">全部学院</option>
+                                    <c:forEach items="${schoolAcademies}" var="academy" varStatus="i">
+                                        <c:if test="${academy.academyNumber eq academyNumber}">
+                                            <option value="${academy.academyNumber}" selected>${academy.academyName}</option>
+                                        </c:if>
+                                        <c:if test="${academy.academyNumber ne academyNumber}">
+                                            <option value="${academy.academyNumber}">${academy.academyName}</option>
+                                        </c:if>
+                                    </c:forEach>
+                                </select></li>
+                                <li><select name="labRoom" class="chzn-select">
+                                    <option value="-1">全部实验室</option>
+                                    <c:forEach items="${labRooms}" var="l" varStatus="i">
+                                        <c:if test="${l.id eq labRoom}">
+                                            <option value="${l.id}" selected>${l.labRoomName}</option>
+                                        </c:if>
+                                        <c:if test="${l.id ne labRoom}">
+                                            <option value="${l.id}">${l.labRoomName}</option>
+                                        </c:if>
+                                    </c:forEach>
+                                </select></li>
+                                <li><input type="submit" value="查询" /></li>
+                            </ul>
                         </form>
                     </div>
-                    <div class="content_box classTable">
+                </div>
+                <div class="content_box classTable">
                         <table class="tab_lab tab_th_average" style="margin:10px 0;">
                             <thead>
                             <tr>
@@ -254,10 +271,26 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
+<!-- 下拉框的js -->
+<script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript"
+        charset="utf-8"></script>
+<script type="text/javascript">
+    var config = {
+        '.chzn-select': {search_contains: true},
+        '.chzn-select-deselect': {allow_single_deselect: true},
+        '.chzn-select-no-single': {disable_search_threshold: 10},
+        '.chzn-select-no-results': {no_results_text: '选项, 没有发现!'},
+        '.chzn-select-width': {width: "95%"}
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<!-- 下拉框的js -->
 </body>
 </html>

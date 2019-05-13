@@ -765,4 +765,12 @@ public interface ShareService {
 	 * @时间: 2019-3-20
 	 ***********************************************************************************************/
 	public List<User> findUsersByAuthorityNameAndAcno(String authorityName,String acno);
+
+	/**
+	 * Description 获取额外配置项
+	 * @param businessType
+	 * @return
+	 * @author 黄保钱 2019-5-11
+	 */
+	boolean getExtendItem(String businessType);
 }

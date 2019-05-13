@@ -40,13 +40,13 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">入库日期</label>
                     <div class="layui-input-block">
-                        <input type="text" name="date"  lay-verify="required"  autocomplete="on" class="layui-input" disabled="disabled"/>
+                        <input type="text" name="date"  autocomplete="on" class="layui-input" disabled="disabled"/>
                     </div>
                 </div>
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">申购人</label>
                     <div class="layui-input-block">
-                        <input type="text" name="applicantUserName"  lay-verify="required"  autocomplete="on" class="layui-input" disabled="disabled"/>
+                        <input type="text" name="applicantUserName"   autocomplete="on" class="layui-input" disabled="disabled"/>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">学院</label>
                     <div class="layui-input-block">
-                        <select name="academyNumber" id="academyNumber" lay-verify="required" disabled="disabled" readonly="readonly">
+                        <select name="academyNumber" id="academyNumber"  disabled="disabled" readonly="readonly">
                             <option value=""></option>
                         </select>
                     </div>
@@ -62,7 +62,7 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">部门</label>
                     <div class="layui-input-block">
-                        <select name="department" id="department" lay-verify="required" disabled="disabled" readonly="readonly">
+                        <select name="department" id="department"   readonly="readonly">
                             <option value=""></option>
                         </select>
                     </div>
@@ -72,7 +72,7 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">物资类别</label>
                     <div class="layui-input-block">
-                        <select name="goodsCategory" id="goodsCategory" lay-verify="required" disabled="disabled" readonly="readonly">
+                        <select name="goodsCategory" id="goodsCategory"  disabled="disabled" readonly="readonly">
                             <option value=""></option>
                         </select>
                     </div>
@@ -84,22 +84,22 @@
                     </div>
                 </div>
             </div>
-            <div class="layui-row">
-                <div class="layui-col-lg6">
-                    <label class="layui-form-label">发票号</label>
-                    <div class="layui-input-block">
-                        <input type="text" id= "invoiceNumber" name="invoiceNumber" lay-verify="required" />
-                    </div>
-                </div>
-                <%--<div class="layui-col-lg6">--%>
-                    <%--<label class="layui-form-label">物品柜</label>--%>
-                    <%--<div class="layui-input-block">--%>
-                        <%--<select name="cabinet" id="cabinet" lay-verify="required" >--%>
-                            <%--<option value=""></option>--%>
-                        <%--</select>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            </div>
+            <%--<div class="layui-row">--%>
+                <%--&lt;%&ndash;<div class="layui-col-lg6">&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;<label class="layui-form-label">发票号</label>&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;<div class="layui-input-block">&ndash;%&gt;--%>
+                        <%--&lt;%&ndash;<input type="text" id= "invoiceNumber" name="invoiceNumber" />&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;</div>&ndash;%&gt;--%>
+                <%--&lt;%&ndash;</div>&ndash;%&gt;--%>
+                <%--&lt;%&ndash;<div class="layui-col-lg6">&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;<label class="layui-form-label">物品柜</label>&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;<div class="layui-input-block">&ndash;%&gt;--%>
+                        <%--&lt;%&ndash;<select name="cabinet" id="cabinet" lay-verify="required" >&ndash;%&gt;--%>
+                            <%--&lt;%&ndash;<option value=""></option>&ndash;%&gt;--%>
+                        <%--&lt;%&ndash;</select>&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;</div>&ndash;%&gt;--%>
+                <%--&lt;%&ndash;</div>&ndash;%&gt;--%>
+            <%--</div>--%>
             <div class="layui-col-lg12">
                 <label class="layui-form-label">入库单</label>
                 <div class="layui-input-block mix_uploadbox">

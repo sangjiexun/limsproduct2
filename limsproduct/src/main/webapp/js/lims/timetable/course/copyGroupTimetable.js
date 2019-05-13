@@ -101,7 +101,7 @@ $(document).ready(function () {
             placeholderOption: "first",
             ajax: {
                 url: zuulUrl + "api/timetable/common/apiGetUsableList",
-                contentType: "application/json",
+                contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 beforeSend: function(request) {
                     request.setRequestHeader("Authorization", getJWTAuthority());

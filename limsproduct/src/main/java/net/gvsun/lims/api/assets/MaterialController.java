@@ -90,7 +90,7 @@ public class MaterialController {
     @RequestMapping("/assetsApplyList")
     @ResponseBody
     public String assetsApplyList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status,String kind){
-        JSONObject jsonObject = materialService.findAllAssetApplyList(page,limit,status,kind);
+        JSONObject jsonObject = materialService.findAllAssetApplyList(page,limit,status,kind,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -103,7 +103,7 @@ public class MaterialController {
     @RequestMapping("/assetsInStorageList")
     @ResponseBody
     public String assetsInStorageList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status){
-        JSONObject jsonObject = materialService.findAllAssetInStorageList(page,limit,status);
+        JSONObject jsonObject = materialService.findAllAssetInStorageList(page,limit,status,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -214,9 +214,9 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
-        String s=materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity());
-        assetsApplyItemDTO.setCabinet(materialService.getMaxAmountCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity()).toString());
-        if(s.equals("success")){
+        String s=materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity(),Integer.parseInt(assetsApplyItemDTO.getId()));
+        if(!s.equals("insufficient")&&!s.equals("notEnough")){
+            assetsApplyItemDTO.setCabinet(s);
             materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
         }
        return s;
@@ -224,7 +224,7 @@ public class MaterialController {
     /**
      * Description 保存物资申请记录
      * @param assetsApplyDTO 参数封装DTO
-     * @return 成功-"success"，失败-"fail"
+     *
      * @author 吴奇臻 2019-3-26
      */
     @RequestMapping("/saveAssetsApplyDetail")
@@ -312,9 +312,30 @@ public class MaterialController {
      */
     @RequestMapping("/getAssetsApplyAuditFlag")
     @ResponseBody
-    public Boolean getAssetsApplyAuditFlag(@RequestParam Integer id){
+    public Boolean getAssetsApplyAuditFlag(HttpServletRequest request,@RequestParam Integer id){
+        boolean flag=false;
         AssetApp assetApp=assetAppDAO.findAssetAppById(id);
-        boolean flag=materialService.getAssetsApplyAuditFlag(assetApp.getCurAuditLevel(),assetApp.getAssetStatu());
+        String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
+        if(assetApp.getCurAuditLevel().equals(authorityName)){
+            flag=true;
+        }
+        return flag;
+    }
+    /**
+     * Description 获取物资申购审核标志位
+     * @param id 参数封装DTO
+     * @return 是-"success"，否-"fail"
+     * @author 吴奇臻 2019-4-17
+     */
+    @RequestMapping("/getAssetsInStorageAuditFlag")
+    @ResponseBody
+    public Boolean getAssetsInStorageAuditFlag(HttpServletRequest request,@RequestParam Integer id){
+        boolean flag=false;
+        AssetStorage assetStorage=materialService.findAssetStorageById(id);
+        String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
+        if(assetStorage.getCurAuditLevel().equals(authorityName)){
+            flag=true;
+        }
         return flag;
     }
     /**
@@ -433,6 +454,7 @@ public class MaterialController {
             assetStorage.setStatus(3);//审核被拒绝
         }
         assetStorage.setCurAuditLevel(tag);
+        assetStorage.setAuditDate(new Date());
         assetStorageDAO.store(assetStorage);
         return "success";
     }
@@ -480,7 +502,7 @@ public class MaterialController {
         AssetStorage assetStorage=materialService.findAssetStorageById(id);
         assetStorage.setStatus(4);//确认入库
         assetStorageDAO.store(assetStorage);
-        //更新库存记录
+        //更新库存并生成库存记录
         materialService.saveAssetsCabinetRecordFromInStorage(id);
         return "success";
     }
@@ -509,6 +531,22 @@ public class MaterialController {
     @RequestMapping("/confirmReturnAssetsReceive")
     @ResponseBody
     public String confirmReturnAssetsReceive(@RequestParam Integer id){
+        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
+        assetReceive.setStatus(5);//确认归还
+        Calendar calendar=Calendar.getInstance();
+        assetReceive.setEndDate(calendar);//更新领用时间为开始时间
+        assetReceiveDAO.store(assetReceive);
+        return "success";
+    }
+    /**
+     * Description 确认物资余料归还
+     * @param id 参数封装DTO
+     * @return 成功-"success"，失败-"fail"
+     * @author 吴奇臻 2019-4-2
+     */
+    @RequestMapping("/confirmReturnAssetsReceiveRemain")
+    @ResponseBody
+    public String confirmReturnAssetsReceiveRemain(@RequestParam Integer id){
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(5);//确认归还
         Calendar calendar=Calendar.getInstance();
@@ -857,6 +895,17 @@ public class MaterialController {
         return amount;
     }
     /**
+     * 判断该类物资是否需要归还
+     * * @return
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/returnAssetsRemainForReceive")
+    @ResponseBody
+    public String returnAssetsRemainForReceive(Integer amount,Integer id){
+        String s=materialService.saveReturnAssetsRemain(amount,id);
+        return s;
+    }
+    /**
      * 上传图片接口
      * * @return
      * @author 吴奇臻 2019-4-8
@@ -900,6 +949,61 @@ public class MaterialController {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                imageUrls.add(fileNewName);
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", imageUrls);
+        jsonObject.put("code", 0);
+        return jsonObject;
+    }
+
+    /**
+     * 针对申购入库的上传图片接口
+     * * @return
+     * @author 吴奇臻 2019-5-9
+     */
+    @RequestMapping("/uploadAssetsPicForApply")
+    @ResponseBody
+    public JSONObject uploadAssetsPicForApply(HttpServletRequest request, Integer id) throws Exception {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        String sep = System.getProperty("file.separator");
+        Map files = multipartRequest.getFileMap();
+        Iterator fileNames = multipartRequest.getFileNames();
+        boolean flag =false;
+        //文件存放文件夹
+        String fileDir = request.getSession().getServletContext().getRealPath( "/") +  "upload"+ sep+"assetsPic";
+        //所用图片链接
+        List<String> imageUrls=new ArrayList<>();
+        //存放文件文件夹名称
+        for(; fileNames.hasNext();){
+            String filename = (String) fileNames.next();
+            CommonsMultipartFile file = (CommonsMultipartFile) files.get(filename);
+            byte[] bytes = file.getBytes();
+            if(bytes.length != 0) {
+                // 说明申请有附件
+                if(!flag) {
+                    File dirPath = new File(fileDir);
+                    if(!dirPath.exists()) {
+                        flag = dirPath.mkdirs();
+                    }
+                }
+                //文件名
+                String fileTrueName = file.getOriginalFilename();
+                //文件重命名
+                int endAddress = fileTrueName.lastIndexOf(".");
+                String ss = fileTrueName.substring(endAddress, fileTrueName.length());//后缀名
+                //文件名称
+                String fileNewName = "assetsPic"+id+fileTrueName;
+                File uploadedFile = new File(fileDir + sep + fileNewName);
+                try {
+                    FileCopyUtils.copy(bytes,uploadedFile);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                //将图片跟assetApply记录相关联
+                materialService.saveAssetsRelatedImage("/limsproduct/upload/assetsPic/"+fileNewName,fileTrueName,"100kb",id,"putAssetInStorage");
                 imageUrls.add(fileNewName);
             }
         }
@@ -1150,6 +1254,30 @@ public class MaterialController {
         return mav;
     }
     /**
+     * 选择物品柜
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-4-9
+     */
+    @RequestMapping("/returnRemainAssetsAPI")
+    public ModelAndView returnRemainAssetsAPI(String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/returnRemainAssets.jsp");
+        return mav;
+    }
+    /**
+     * 余料归还
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-4-9
+     */
+    @RequestMapping("/assetsReceiveDetailReturnAPI")
+    public ModelAndView assetsReceiveDetailReturnAPI(String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/assetsReceiveDetailReturn.jsp");
+        return mav;
+    }
+    /**
      * 生成入库单
      * * @return 跳转页面
      * @author 吴奇臻 2019-4-29
@@ -1299,6 +1427,18 @@ public class MaterialController {
         mav.addObject("assetId",assetId);
         mav.addObject("type",type);
         mav.setViewName("lims/material/assetCabinetRecordDetail.jsp");
+        return mav;
+    }
+    /**
+     * Description 查看物资出入库详情API
+     * @return 跳转页面
+     * @author 吴奇臻 2019-05-10
+     **/
+    @RequestMapping("/assetCabinetAccessRecordDetailAPI")
+    public ModelAndView assetCabinetAccessRecordDetailAPI(@RequestParam String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/assetCabinetAccessRecordDetail.jsp");
         return mav;
     }
     /**

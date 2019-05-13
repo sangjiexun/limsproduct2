@@ -80,12 +80,9 @@
                     <div class="layui-input-block">
                         <select name="applyName1" lay-filter="aihao" id="applyName1">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -94,12 +91,9 @@
                     <div class="layui-input-block">
                         <select name="applyName2" lay-filter="aihao" id="applyName2">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -108,12 +102,9 @@
                     <div class="layui-input-block">
                         <select name="applyName3" lay-filter="aihao" id="applyName3">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -122,12 +113,9 @@
                     <div class="layui-input-block">
                         <select name="applyName4" lay-filter="aihao" id="applyName4">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -136,12 +124,9 @@
                     <div class="layui-input-block">
                         <select name="applyName5" lay-filter="aihao" id="applyName5">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -173,12 +158,9 @@
                     <div class="layui-input-block">
                         <select name="storageName1" lay-filter="aihao" id="storageName1">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -187,12 +169,9 @@
                     <div class="layui-input-block">
                         <select name="storageName2" lay-filter="aihao" id="storageName2">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -201,12 +180,9 @@
                     <div class="layui-input-block">
                         <select name="storageName3" lay-filter="aihao" id="storageName3">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -215,12 +191,9 @@
                     <div class="layui-input-block">
                         <select name="storageName4" lay-filter="aihao" id="storageName4">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -229,12 +202,9 @@
                     <div class="layui-input-block">
                         <select name="storageName5" lay-filter="aihao" id="storageName5">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -266,12 +236,9 @@
                     <div class="layui-input-block">
                         <select name="receiveName1" lay-filter="aihao" id="receiveName1">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -281,11 +248,9 @@
                         <select name="receiveName2" lay-filter="aihao" id="receiveName2">
                             <option value="-2">请选择</option>
                             <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -294,12 +259,9 @@
                     <div class="layui-input-block">
                         <select name="receiveName3" lay-filter="aihao" id="receiveName3">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -308,12 +270,9 @@
                     <div class="layui-input-block">
                         <select name="receiveName4" lay-filter="aihao" id="receiveName4">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>
@@ -322,12 +281,9 @@
                     <div class="layui-input-block">
                         <select name="receiveName5" lay-filter="aihao" id="receiveName5">
                             <option value="-2">请选择</option>
-                            <option value="TEACHER">导师</option>
-                            <option value="TEAMHEADER">课题组负责人</option>
+                            <option value="ASSETMANAGER">设备科</option>
+                            <option value="OPEARTIONSECURITYMANAGEMENT">运行与安全管理科</option>
                             <option value="EXCENTERDIRECTOR">实验中心主任</option>
-                            <option value="EQUIPMENTADMIN">设备管理员</option>
-                            <option value="CHARGEADMIN">费用管理员</option>
-                            <option value="FIXEDASSERTMANAGER">固定资产管理员</option>
                         </select>
                     </div>
                 </div>

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 /****************************************************************************
@@ -235,16 +236,20 @@ public class OAuth2Controller<JsonResult> {
      ************************************************************/
     @RequestMapping("/loginByUsername")
     public void loginByUsername(HttpServletRequest request,HttpServletResponse response) throws Exception {
-        String username = request.getParameter("username");
+        String name = request.getParameter("username");
         String p = request.getParameter("password");
+        String username = "";
         String password = "";
-        if(p != null && !"".equals(p)){
-            //加密
-            password= shareService.createMD5(p);
-        }else {
-            User user = userDAO.findUserByUsername(username);
-            if (user != null) {
-                password = user.getPassword();
+        if (p != null && !"".equals(p)) {
+			//加密
+            password = this.shareService.createMD5(p);
+        } else {
+			//通过身份证号码获取用户
+            String sql = "select u from User u where teachingDepartment = '" + name + "'";
+            List<User> user = userDAO.executeQuery(sql);
+            if (user.size() > 0) {
+                username = user.get(0).getUsername();
+                password = user.get(0).getPassword();
             }
         }
         request.getSession().setAttribute("username", username);
@@ -257,7 +262,7 @@ public class OAuth2Controller<JsonResult> {
      * @作者： 张德冰
      * @日期： 2019-04-03
      ************************************************************/
-    @RequestMapping("/loginZjcc")
+    /*@RequestMapping("/loginZjcc")
     public ModelAndView loginZjcc(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
         String username = request.getParameter("username");
@@ -270,7 +275,5 @@ public class OAuth2Controller<JsonResult> {
             mav.setViewName("cms/login.jsp");
         }
         return mav;
-    }
-
-
+    }*/
 }

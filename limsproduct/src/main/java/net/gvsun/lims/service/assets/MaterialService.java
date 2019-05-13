@@ -5,6 +5,7 @@ import net.gvsun.lims.dto.assets.*;
 import net.zjcclims.domain.*;
 import org.python.antlr.op.In;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface MaterialService {
@@ -63,7 +64,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-3-26
      */
-    JSONObject findAllAssetApplyList(Integer page, Integer limit,String status,String kind);
+    JSONObject findAllAssetApplyList(Integer page, Integer limit,String status,String kind,HttpServletRequest request);
 
     /**
      * 物资入库列表
@@ -72,7 +73,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-1
      */
-    JSONObject findAllAssetInStorageList(Integer page, Integer limit,String status);
+    JSONObject findAllAssetInStorageList(Integer page, Integer limit,String status,HttpServletRequest request);
 
     /**
      * 物资申领列表
@@ -333,12 +334,22 @@ public interface MaterialService {
     Integer getAssetsAmountFromCabinet(Integer id,Integer assetId,Integer quantity,Integer itemId);
 
     /**
+     * 保存物资余料归还数
+     *
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-5-10
+     */
+    String saveReturnAssetsRemain(Integer amount, Integer id);
+
+    /**
      * 保存图片记录
      *
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
     String saveAssetsRelatedImage(String url,String name,String size,Integer appId,String type);
+
+
 
     /**
      * 删除图片记录
@@ -370,7 +381,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    String allocateCabinetFromAssets(Integer assetsId,Integer quantity);
+    String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId);
 
     /**
      * 根据物资及数量自动获取库存数最大的物品柜

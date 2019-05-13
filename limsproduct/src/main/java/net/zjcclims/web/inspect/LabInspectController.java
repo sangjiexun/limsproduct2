@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -353,6 +354,19 @@ public class LabInspectController<JsonResult> {
         if(inspectSetting.getIsRegular()!=null){
             inspectSetting.setEndTime(null);
             inspectSetting.setStartTime(null);
+            if(!inspectSetting.getIsRegular()) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar startTime = Calendar.getInstance();
+                Calendar endTime = Calendar.getInstance();
+                try {
+                    startTime.setTime(simpleDateFormat.parse(request.getParameter("startTimeStr")));
+                    endTime.setTime(simpleDateFormat.parse(request.getParameter("endTimeStr")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                inspectSetting.setEndTime(endTime);
+                inspectSetting.setStartTime(startTime);
+            }
             LabInspectSetting labEva = labInspectSettingDAO.store(inspectSetting);
             // 保存项目
             String[] standardId = request.getParameterValues("standard");

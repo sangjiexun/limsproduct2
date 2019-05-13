@@ -24,6 +24,7 @@ import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.service.lab.LabCenterService;
 import net.zjcclims.service.report.ReportService;
+import net.zjcclims.service.system.TermDetailService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 import java.util.*;
 
 
@@ -58,6 +60,8 @@ public class ReportController<JsonResult> {
 	private SchoolAcademyDAO schoolAcademyDAO;
 	@Autowired
 	private ShareService shareService;
+	@Autowired
+	private TermDetailService termDetailService;
 	@Autowired
 	private SchoolTermDAO schoolTermDAO;
 	@Autowired
@@ -1018,5 +1022,86 @@ public class ReportController<JsonResult> {
 		labRoomDeviceService.exportLabRoomDeviceUsage(request, response, reservation, acno);
 
 	}
+	/*************************************************************************************
+	 * Description 实验教学计划表——一级页面
+	 * @author 刘博越
+	 * @date 2019-5-10
+	 *************************************************************************************/
+	@RequestMapping("/listSchoolCourseDetail")
+	public ModelAndView listSchoolCourseDetail(@RequestParam int currpage, @ModelAttribute SchoolCourseDetail schoolCourseDetail){
+		ModelAndView mav = new ModelAndView();
+		int pageSize = 10;
+		List<Object[]> obj = reportService.getViewCourseDetail(schoolCourseDetail,currpage, pageSize);
+		mav.addObject("listObj", obj);
+		//分页总数
+		int totalRecords = reportService.getViewCourseDetail(schoolCourseDetail, 0, -1).size();
+		//下拉列表-课程名称
+		mav.addObject("listCourseName", reportService.getViewCourseDetail(schoolCourseDetail, 0, -1));
+		//查询条件-课程名称
+		if(schoolCourseDetail != null && schoolCourseDetail.getSchoolCourse() != null) {
+			mav.addObject("courseNo", schoolCourseDetail.getSchoolCourse().getCourseNo());
+		}
+		mav.addObject("pageModel", shareService.getPage(currpage, pageSize, totalRecords));
+		// 当前学期
+		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
+		//学期列表
+		List<SchoolTerm> termList = shareService.findAllSchoolTerm();
+		mav.addObject("termList", termList);
+		if(schoolCourseDetail != null && schoolCourseDetail.getSchoolTerm() != null) {
+			mav.addObject("termId", schoolCourseDetail.getSchoolTerm().getId());
+		}else {
+			mav.addObject("termId", schoolTerm.getId());
+		}
+		mav.setViewName("reports/listSchoolCourseDetail.jsp");
+		return mav;
+	}
+	/*****************************************************************
+	 * Description 实验教学计划表-二级页面
+	 * @author 刘博越
+	 * @date 2019-5-10
+	 *****************************************************************/
+	@RequestMapping("/listExperimentTeachingPlan")
+	public ModelAndView listExperimentTeachingPlan(@RequestParam String courseDetailNo,@RequestParam String course_number, int termId)throws ParseException {
+		ModelAndView mav=new ModelAndView();
+		//学期
+		SchoolTerm schoolTerm = termDetailService.findTermById(termId);
+		mav.addObject("schoolTerm", schoolTerm);
+		//课程详细信息
+		List<Object[]> courseDetail = reportService.getViewTimetableCourseDetail(courseDetailNo);
+		if(courseDetail != null && courseDetail.size() > 0) {
+			mav.addObject("courseDetail", courseDetail.get(0));
+		}
+		//课程项目信息
+		List<Object[]> courseDetails = reportService.getListTimetableFull(courseDetailNo);
+		//if(courseDetails != null && courseDetails.size() > 0) {
+		mav.addObject("courseDetails", courseDetails);
+		//}
+		//当前登录人
+		mav.addObject("cname", shareService.getUser().getCname());
+		//当前日期
+		Calendar currTime = Calendar.getInstance();
+		mav.addObject("currTime", currTime);
 
+		Map<String,String> yearCodes = reportService.findAllYearCodeMap();
+		mav.addObject("yearCodes", yearCodes);
+
+		mav.addObject("courseDetailNo", courseDetailNo);
+		mav.addObject("course_number", course_number);
+		mav.addObject("termId",termId);
+
+		mav.setViewName("reports/ExperimentTeachingPlan.jsp");
+		return mav;
+	}
+
+	/************************************************************
+	 * Description 实验教学计划表导出excel
+	 * @author 刘博越
+	 * @date 2019-5-13
+	 ************************************************************/
+	@RequestMapping("/dataReport/reportTeachPlanExcel")
+	public void reportTeachPlanExcel(@ModelAttribute OperationItem operationItem, HttpServletRequest request,
+									 HttpServletResponse response,@RequestParam String courseDetailNo,@RequestParam String course_number,@RequestParam int termId)throws Exception{
+
+		reportService.exportTeachPlanExcel(operationItem, request, response,courseDetailNo,course_number,termId);
+	}
 }
