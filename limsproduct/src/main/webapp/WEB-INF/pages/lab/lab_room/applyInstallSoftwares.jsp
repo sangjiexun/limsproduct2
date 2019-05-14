@@ -281,9 +281,9 @@
   <div class="content-box">
     <div class="title">
 	  <div id="title">教学软件列表</div>
-	  <sec:authorize ifAnyGranted="ROLE_SUPERADMIN" >
-	  <a class="btn btn-new" href="${pageContext.request.contextPath}/newSoftware">新建</a>
-	  </sec:authorize>
+	  <%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN" >--%>
+	  <%--<a class="btn btn-new" href="${pageContext.request.contextPath}/newSoftware">新建</a>--%>
+	  <%--</sec:authorize>--%>
 	</div>
 	<div class="tool-box">
 		<form:form name="queryForm" action="${pageContext.request.contextPath}/labRoom/ceshi?currPage=1" method="post" modelAttribute="software">
@@ -294,10 +294,10 @@
   				<li>
 					<input type="submit" value="查询"/>
 			      <input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
-			      <sec:authorize ifAnyGranted="ROLE_SUPERADMIN" >
-  				<input type="button" value="导出" onclick="subform('${pageContext.request.contextPath}/exportSoftList?currPage=${currPage}');">
-					<a onclick="importSoft()"><input type="button" value="导入"></a></li>
-				</sec:authorize>
+			      <%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN" >--%>
+  				<%--<input type="button" value="导出" onclick="subform('${pageContext.request.contextPath}/exportSoftList?currPage=${currPage}');">--%>
+					<%--<a onclick="importSoft()"><input type="button" value="导入"></a></li>--%>
+				<%--</sec:authorize>--%>
   				</ul>
 			 
 		</form:form>
@@ -335,10 +335,10 @@
           	<td>${current.supplierTel}</td>
            	<td>
                	<a href="${pageContext.request.contextPath}/softwareInfo?idkey=${current.id}">查看</a>
-               	<sec:authorize ifAnyGranted="ROLE_SUPERADMIN" >
-               	<a href="${pageContext.request.contextPath}/editSoftware?softwareId=${current.id}">编辑</a>
-               	<a href="${pageContext.request.contextPath}/deleteSoftware?softwareId=${current.id}" onclick="return confirm('确定删除？');">删除</a>
-               	</sec:authorize>
+               	<%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN" >--%>
+               	<%--<a href="${pageContext.request.contextPath}/editSoftware?softwareId=${current.id}">编辑</a>--%>
+               	<%--<a href="${pageContext.request.contextPath}/deleteSoftware?softwareId=${current.id}" onclick="return confirm('确定删除？');">删除</a>--%>
+               	<%--</sec:authorize>--%>
          	</td>
     	</tr>
   	</c:forEach>

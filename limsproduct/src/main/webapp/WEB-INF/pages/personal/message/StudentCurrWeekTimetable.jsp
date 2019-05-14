@@ -79,7 +79,7 @@
                 </a>
             </li>
             <li class="end">
-                <a href="javascript:void(0)">学生周课表</a><button onclick="startVirtualImage()">手动启动今天的虚拟镜像</button>
+                <a href="javascript:void(0)">学生周课表</a>
             </li>
         </ul>
     </div>

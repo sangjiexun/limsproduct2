@@ -69,8 +69,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         hql += " and a.typeTable =1";
 
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek();
         }
         //传来的对象labroom有值代表是查询，增加查询条件
         if (routineInspection.getLabRoom() != null && routineInspection.getLabRoom().getId() != null) {
@@ -94,7 +94,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
     public List<RoutineInspection> findAllRoutineInspection(HttpServletRequest request, Integer currpage, Integer pageSize, RoutineInspection routineInspection, String acno) {
         String hql = "";
         //实验室管理员获取所属的实验室
-        if (request.getSession().getAttribute("selected_role").toString().indexOf("ROLE_LABMANAGER") != -1) {
+        if (request.getSession().getAttribute("selected_role").toString().equals("ROLE_LABMANAGER")) {
             hql += " select a from RoutineInspection a,LabRoomAdmin la where la.labRoom.id=a.labRoom.id and la.user.username='" + shareService.getUser().getUsername() + "'";
         } else {
             //不是实验室管理员的
@@ -111,8 +111,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         //类型是常规检查表的
         hql += " and a.typeTable =1";
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek();
         }
         //传来的对象labroom有值代表是查询，增加查询条件
         if (routineInspection.getLabRoom() != null && routineInspection.getLabRoom().getId() != null) {
@@ -121,7 +121,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         if (acno != null && !acno.equals("")) {
             hql += " and a.labRoom.labAnnex.labCenter.schoolAcademy.academyNumber ='" + acno + "'";
         }
-
+        hql += " order by a.schoolTerm.id desc, a.week desc";
         List<RoutineInspection> list = routineInspectionDAO.executeQuery(hql);
         return routineInspectionDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
     }
@@ -267,7 +267,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
 
                 for (RoutineInspection r : routineInspections) {
                     //如果有该周次的常规检查数据，则继续；否则页面显示×
-                    if (r.getWeek() != null && week == Integer.parseInt(r.getWeek())) {
+                    if (r.getWeek() != null && r.getWeek() > 0) {
                         //System.out.println(r.getTypeAuditing());
                         //审核通过、审核不通过、待审核状态，页面显示√
                         if (r.getTypeAuditing().equals("1") || r.getTypeAuditing().equals("2") || r.getTypeAuditing().equals("3")) {
@@ -410,8 +410,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         //除待提交状态的
         hql += " and a.typeAuditing !=4";
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek();
         }
         //传来的对象labroom有值代表是查询，增加查询条件
         if (routineInspection.getLabRoom() != null && routineInspection.getLabRoom().getId() != null) {
@@ -421,6 +421,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
             //当前登录中心的学院
             hql += " and a.labRoom.labAnnex.labCenter.schoolAcademy.academyNumber = '" + acno + "'";
         }
+        hql += " order by a.schoolTerm.id desc, a.week desc";
         return routineInspectionDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
     }
 
@@ -439,8 +440,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         hql += " and a.typeAuditing !=4";
 
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek() ;
         }
         //传来的对象labroom有值代表是查询，增加查询条件
         if (routineInspection.getLabRoom() != null && routineInspection.getLabRoom().getId() != null) {
@@ -470,8 +471,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         hql += " and a.typeTable =2";
 
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek() ;
         }
         //实验中心
         if (routineInspection.getLabCenter() != null && routineInspection.getLabCenter().getId() != null) {
@@ -482,7 +483,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
                 hql += " and a.labCenter.schoolAcademy.academyNumber = '" + acno + "'";
             }
         }
-
+        hql += " order by a.schoolTerm.id desc, a.week desc";
 
         return routineInspectionDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
     }
@@ -499,8 +500,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         hql += " and a.typeTable =2";
 
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek() ;
         }
         //实验中心
         if (routineInspection.getLabCenter() != null && routineInspection.getLabCenter().getId() != null) {
@@ -532,8 +533,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         //除待提交状态的
         hql += " and a.typeAuditing !=4";
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek() ;
         }
         //实验中心
         if (routineInspection.getLabCenter() != null && routineInspection.getLabCenter().getId() != null) {
@@ -565,8 +566,8 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         //除待提交状态的
         hql += " and a.typeAuditing !=4";
         //传来的对象week有值代表是查询，增加查询条件
-        if (routineInspection.getWeek() != null && !"".equals(routineInspection.getWeek())) {
-            hql += " and a.week ='" + routineInspection.getWeek() + "'";
+        if (routineInspection.getWeek() != null && routineInspection.getWeek() > 0) {
+            hql += " and a.week =" + routineInspection.getWeek() ;
         }
         //实验中心
         if (routineInspection.getLabCenter() != null && routineInspection.getLabCenter().getId() != null) {
@@ -577,6 +578,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
                 hql += " and a.labCenter.schoolAcademy.academyNumber = '" + acno + "'";
             }
         }
+        hql += " order by a.schoolTerm.id desc, a.week desc";
         return routineInspectionDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
     }
 

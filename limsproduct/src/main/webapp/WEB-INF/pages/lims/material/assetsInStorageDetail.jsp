@@ -114,7 +114,9 @@
                 </div>
             </div>
         </form>
+        <div id="generate">
         <button data-method="exportAssetInStorageItem" class="layui-btn layui-btn-xs layui-btn-normal export_btn">生成入库单</button>
+        </div>
         <table class="layui-hide add_progress" id="assetsList" lay-filter="assetsInStorageList"></table>
     </div>
 </div>

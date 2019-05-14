@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>截图上报</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+		<link rel="stylesheet" href="../../layuiadmin/static/css/expand.css" media="all">
+		<style>
+			.tool_bar {
+				box-sizing: border-box;
+				text-align: center;
+				background: #fff;
+				padding: 5px 20px;
+				position: relative;
+				z-index: 2;
+			}
+			
+			iframe {
+				border: none;
+				box-sizing: border-box;
+				width: 100%;
+				height: 100%;
+				padding: 0 0 40px;
+				margin: 0 0 -40px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<iframe id="mainpage" src="http://www.lubanlou.com/limsproduct/inspect/newInspectGrading?idKey=0&roomId=0"></iframe>
+		<div class="tool_bar">
+			<a href="javascript:;" layadmin-event="back" class="layui-btn layui-btn-primary layui-btn-sm">返回上级</a>
+		</div>
+		<script src="../../layuiadmin/layui/layui.js?t=1"></script>  
+  <script>
+  layui.config({
+    base: '../../layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'cite']);
+  </script>
+		<!--<script type="text/javascript">function SetCwinHeight() {
+	var iframeid=document.getElementById("mainpage"); //iframe id 
+	if (document.getElementById) {
+		if (iframeid && !window.opera) {
+			if (iframeid.contentDocument && iframeid.contentDocument.body.offsetHeight) {
+				iframeid.height=iframeid.contentDocument.body.offsetHeight;
+			}
+			else if(iframeid.Document && iframeid.Document.body.scrollHeight) {
+				iframeid.height=iframeid.Document.body.scrollHeight;
+			}
+		}
+	}
+}
+
+</script>-->
+	</body>
+
+</html>

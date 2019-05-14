@@ -45,7 +45,7 @@
 			{{# }  else if(d.status==2){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="inbound">确认领用</a>
 			{{# }  else if(d.status==4 && d.isNeedReturn==0){ }}
-			<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+			<a class="layui-btn layui-btn-xs" lay-event="return">余料归还</a>
 			{{# }  else if(d.status==4 && d.isNeedReturn==1){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">确认归还</a>
 			{{# }  else if(d.status==5){ }}

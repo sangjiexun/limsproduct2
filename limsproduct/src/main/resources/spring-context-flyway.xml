@@ -15,7 +15,7 @@
  
  
 	 <!--flyway 配置-->
-	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+	<bean id="flyway" class="net.zjcclims.flyway.IsRepairFlyway" init-method="migrate">
 		<property name="dataSource" ref="zjcclimsConnDS"/>
 		<property name="baselineOnMigrate" value="true"/>
 	</bean>

@@ -77,6 +77,12 @@ public interface LabRoomReservationService {
 	 *************************************************************************************/
 	public List<LabRoom> findLabRoompage(LabRoom labRoom, int currpage, int pageSize, String acno,HttpServletRequest request);
 	/*************************************************************************************
+	 * 判断工位预约时间与实验室预约时间是否冲突
+	 * 顾延钊
+	 * 2019-5-5
+	 *************************************************************************************/
+	public int findReservationEnableOrNot(Integer labRoomId,Calendar reservationTime,Calendar startTime,Calendar endTime);
+	/*************************************************************************************
 	 * Description 分页查询实训室列表（实训室预约）,不包括软件
 	 *
 	 * @author 廖文辉

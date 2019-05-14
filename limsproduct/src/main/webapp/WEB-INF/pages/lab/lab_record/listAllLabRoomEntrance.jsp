@@ -49,8 +49,6 @@ table{table-layout:fixed;}
     //导入
 	//首页
 	function first(url){
-		alert("111");
-		//window.location.href=url;
 		document.queryForm.action=url;
 		document.queryForm.submit();
 	}

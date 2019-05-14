@@ -33,8 +33,12 @@ public class AssetsApplyDTO implements Serializable{
     private String status;
     //采购用途
     private String purpose;
-    //物资条目
-    private List<MaterialListDTO> materialListDTOList;
+    //当前审核层级
+    private String curAuditLevel;
+    //审核标志位（0待审核，1审核）
+    private Integer auditFlag;
+    // 课程编号
+    private String courseNo;
 
     public String getId() {
         return id;
@@ -132,11 +136,27 @@ public class AssetsApplyDTO implements Serializable{
         this.purpose = purpose;
     }
 
-    public List<MaterialListDTO> getMaterialListDTOList() {
-        return materialListDTOList;
+    public String getCurAuditLevel() {
+        return curAuditLevel;
     }
 
-    public void setMaterialListDTOList(List<MaterialListDTO> materialListDTOList) {
-        this.materialListDTOList = materialListDTOList;
+    public void setCurAuditLevel(String curAuditLevel) {
+        this.curAuditLevel = curAuditLevel;
+    }
+
+    public Integer getAuditFlag() {
+        return auditFlag;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
+    }
+
+    public String getCourseNo() {
+        return courseNo;
+    }
+
+    public void setCourseNo(String courseNo) {
+        this.courseNo = courseNo;
     }
 }

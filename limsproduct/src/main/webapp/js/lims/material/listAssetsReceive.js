@@ -235,6 +235,28 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
             });
             layer.full(index);
         };
+        if(obj.event === 'return') {
+            var realURL=contextPath + '/lims/api/material/assetsReceiveDetailReturnAPI?id='+data.id;
+            var index = layer.open({
+                type: 2 //此处以iframe举例
+                ,
+                title: '余料归还',
+                area: ['390px', '500px'],
+                shade: 0,
+                maxmin: true,
+                offset: [ //为了演示，随机坐标
+                    0.4*($(window).height()-300)
+                    ,0.4*($(window).width()-390)
+                ],
+                content: realURL,
+                zIndex: layer.zIndex //重点1
+                ,
+                success: function(layero) {
+                    layer.setTop(layero); //重点2
+                }
+            });
+            layer.full(index);
+        };
     });
     //新建物资申领页面
     var active = {

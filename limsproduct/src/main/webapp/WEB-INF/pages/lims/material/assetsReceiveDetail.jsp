@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="layui-col-lg6" id="return">
-                    <label class="layui-form-label">预计归还时间</label>
+                    <label class="layui-form-label">归还时间</label>
                     <div class="layui-input-block">
                         <input type="text" id= "endTime" name="endTime"  placeholder="请选择结束时间" autocomplete="on" class="layui-input" disabled="disabled"/>
                     </div>

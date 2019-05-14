@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSONObject;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.assets.MaterialKindDTO;
+import net.gvsun.lims.service.assets.MaterialService;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -102,6 +104,10 @@ public class OperationController<JsonResult> {
 	private AuthorityDAO authorityDAO;
 	@Autowired
 	private LabRoomDeviceDAO labRoomDeviceDAO;
+	@Autowired
+	private MaterialService materialService;
+	@Autowired
+	private AssetDAO assetDAO;
 	/**
 	 * 实验项目列表
 	 * @author hly
@@ -2546,6 +2552,14 @@ public class OperationController<JsonResult> {
 
 		mav.addObject("listItemDevice", operationService.getItemDeviceByItem(itemId, null, 1, -1));
 
+		mav.addObject("assets", assetDAO.findAllAssets()); // 耗材选项
+		List<MaterialKindDTO> materialKindDTOList=materialService.findAllAssetClassificationList();
+		Map<Integer, String> materialKindMap = new HashMap<>();
+		for(MaterialKindDTO m: materialKindDTOList){
+			materialKindMap.put(m.getId(), m.getCname());
+		}
+		mav.addObject("materialKindMap", materialKindMap);
+		mav.addObject("itemAssets", new ItemAssets());
 		mav.addObject("listItemMaterialRecord", operationService.getItemMaterialRecordByItem(itemId));//实验材料 贺子龙新增
 		mav.addObject("categoryMaterialRecordMain", shareService.getCDictionaryData("category_operation_item_material_record_main"));
 		mav.addObject("operationItemMaterialRecord", new OperationItemMaterialRecord());

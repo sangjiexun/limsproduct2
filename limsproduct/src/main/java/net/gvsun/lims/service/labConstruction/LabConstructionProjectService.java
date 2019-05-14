@@ -25,7 +25,7 @@ public interface LabConstructionProjectService {
      * @param page 当前页数
      * @param limit 每页个数
      */
-    JSONObject getParentProjects(Integer page, Integer limit);
+    JSONObject getParentProjects(HttpServletRequest request, Integer page, Integer limit);
 
     /**
      * 通过id获取父项目
@@ -88,14 +88,14 @@ public interface LabConstructionProjectService {
      * @param sonProjectDTO 保存的数据封装DTO
      * @return 保存成功-true，失败-false
      */
-    boolean saveSonProject(SonProjectDTO sonProjectDTO);
+    String saveSonProject(SonProjectDTO sonProjectDTO);
 
     /**
      * Description 保存孙项目
      * @param grandSonProjectDTO 保存的数据封装DTO
      * @return 保存成功-true，失败-false
      */
-    boolean saveGrandSonProject(GrandSonProjectDTO grandSonProjectDTO);
+    String saveGrandSonProject(GrandSonProjectDTO grandSonProjectDTO);
 
     /**
      * Description 提交父项目
@@ -109,14 +109,14 @@ public interface LabConstructionProjectService {
      * @param sonProjectDTO 保存的数据封装DTO
      * @return 成功-true，失败-false
      */
-    boolean submitSonProject(SonProjectDTO sonProjectDTO);
+    String submitSonProject(SonProjectDTO sonProjectDTO);
 
     /**
      * Description 提交孙项目
      * @param grandSonProjectDTO 保存的数据封装DTO
      * @return 成功-true，失败-false
      */
-    boolean submitGrandSonProject(GrandSonProjectDTO grandSonProjectDTO);
+    String submitGrandSonProject(GrandSonProjectDTO grandSonProjectDTO);
 
     /**
      * Description 删除父项目

@@ -6,11 +6,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+    <title>新建评价时间设置表</title>
     <meta name="decorator" content="iframe"/>
     <!-- 下拉框的样式 -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
     <!-- 下拉的样式结束 -->
+    <script type="text/javascript">
+        function changeRegular() {
+            if($("#isRegular").val() == 1){
+                $("#noRegular").hide();
+            }else if($("#isRegular").val() == 0){
+                $("#noRegular").show();
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="navigation">
@@ -41,7 +51,7 @@
 
                                 <fieldset>
                                     <label style="width:auto">定期与否：</label>
-                                    <form:select style="width:200px"  path="isRegular" >
+                                    <form:select style="width:200px" id="isRegular"  path="isRegular" onchange="changeRegular();">
                                         <form:option value="">请选择</form:option>
                                         <form:option value="1">定期</form:option>
                                         <form:option value="0">不定期</form:option>
@@ -76,18 +86,17 @@
                                 <label>名称：</label>
                                 <form:input path="comment"/>
                             </fieldset>
-                            <%--<fieldset>
+                            <fieldset style="display: none;" id="noRegular">
                                 <label style="width:100%">不定期请选择：</label>
                                 <fieldset>
                                     <label style="width:auto">评价开始时间：</label>
-                                    <input name="startTime" class="easyui-datebox" style="width:250px" value="<fmt:formatDate value='${labInspectSetting.startTime.time}' pattern='yyyy-MM-dd'/>"/>
+                                    <input name="startTimeStr" class="easyui-datebox" style="width:250px" value="<fmt:formatDate value='${labInspectSetting.startTime.time}' pattern='yyyy-MM-dd'/>"/>
                                 </fieldset>
                                 <fieldset>
                                     <label style="width:auto">评价结束时间：</label>
-                                    <input name="endTime" class="easyui-datebox" style="width:250px" value="<fmt:formatDate value='${labInspectSetting.endTime.time}' pattern='yyyy-MM-dd'/>"/>
-                                    <input name="labRoomTimeCreate" class="easyui-datebox" value="<fmt:formatDate value='${labRoom.labRoomTimeCreate.time}' pattern='yyyy-MM-dd'/>" />
+                                    <input name="endTimeStr" class="easyui-datebox" style="width:250px" value="<fmt:formatDate value='${labInspectSetting.endTime.time}' pattern='yyyy-MM-dd'/>"/>
                                 </fieldset>
-                            </fieldset>--%>
+                            </fieldset>
                             <div class="submit_link">
                                 <input class="btn" id="save" type="submit" value="保存">
                                 <input class="btn btn-return" type="button" value="返回" onclick="window.history.go(-1)">

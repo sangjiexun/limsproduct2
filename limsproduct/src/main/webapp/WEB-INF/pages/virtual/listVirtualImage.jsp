@@ -128,7 +128,7 @@
 			<div class="TabbedPanelsContent">
 				<div class="content-box">
 					<div class="title">
-						<div id="title">虚拟镜像列表</div>
+						<div id="title">虚拟镜像列表</div><button onclick="startVirtualImage()">手动启动今天的虚拟镜像</button>
 						<%--<c:if test="${sessionScope.auth_level eq '1' || sessionScope.auth_level eq '3' || sessionScope.auth_level eq '5'}">
 							<a class="btn btn-new" href="${pageContext.request.contextPath}/labRoom/editLabRoom?labRoomId=0&type=1&page=${page}">新建</a>
 						</c:if>--%>
@@ -242,6 +242,26 @@
                         }
                         for (var selector in config) {
                             $(selector).chosen(config[selector]);
+                        }
+
+                        //手动启动今天的虚拟镜像
+                        var started = false;
+                        function startVirtualImage() {
+                            if(started == false) {
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/virtual/StartVirtualImageByCourseSchedules",
+                                    type:"GET",
+                                    success:function (result) {
+                                        if(result == 'success')
+                                            alert("启动成功，请勿重复点击");
+                                        else
+                                            alert('启动失败');
+                                    }
+                                });
+                                started = true;
+                            }
+                            else
+                                alert("警告：不要重复启动");
                         }
                     </script>
                     <!-- 下拉框的js -->

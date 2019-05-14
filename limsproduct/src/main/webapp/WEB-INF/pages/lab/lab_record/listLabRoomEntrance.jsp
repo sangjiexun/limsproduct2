@@ -42,8 +42,6 @@ table{table-layout:fixed;}
 <script type="text/javascript">
 	//首页
 	function first(url){
-		alert("111");
-		//window.location.href=url;
 		document.queryForm.action=url;
 		document.queryForm.submit();
 	}

@@ -88,11 +88,21 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @param limit 当前的最大数据大小
      */
     @Override
-    public JSONObject getParentProjects(Integer page, Integer limit) {
+    public JSONObject getParentProjects(HttpServletRequest request, Integer page, Integer limit) {
+        StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c where 1=1");
+        User user = shareService.getUserDetail();
+        // 权限等级
+        String authName = request.getSession().getAttribute("selected_role").toString();
+        int type = shareService.getLevelByAuthName(authName);
+        if (type == 5) {// 院级可操作权限
+            hql = new StringBuffer("select c.labConstructionParentProject from LabConstructionSonProject c inner join c.schoolAcademies cs where 1=1");
+            hql.append(" and cs.academyNumber='"+user.getSchoolAcademy().getAcademyNumber()+"'");
+        }
+        List<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.executeQuery(hql.toString(),(page-1)*limit, limit);
         Set<LabConstructionParentProject> projectSet = labConstructionParentProjectDAO.findAllLabConstructionParentProjects((page-1)*limit, limit);
         List<ParentProjectDTO> parents = new ArrayList<>();
-        int totalRecords = labConstructionParentProjectDAO.findAllLabConstructionParentProjects(0, -1).size();
-        for (LabConstructionParentProject p: projectSet) {
+        int totalRecords = labConstructionParentProjectDAO.executeQuery(hql.toString(),0, -1).size();
+        for (LabConstructionParentProject p: parentProjects) {
             ParentProjectDTO parentProjectDTO = new ParentProjectDTO();
             // 项目id
             parentProjectDTO.setId(p.getId());
@@ -539,7 +549,18 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @return 保存成功-true，失败-false
      */
     @Override
-    public boolean saveSonProject(SonProjectDTO sonProjectDTO) {
+    public String saveSonProject(SonProjectDTO sonProjectDTO) {
+        // 判断预算是否超额
+        LabConstructionParentProject parentProject = labConstructionParentProjectDAO.findLabConstructionParentProjectById(sonProjectDTO.getParentProjectId());
+        BigDecimal budget = new BigDecimal(0);
+        for (LabConstructionSonProject sProject : parentProject.getLabConstructionSonProjects()) {// 遍历所有子项目，计算预算总额
+            budget = budget.add(sProject.getBudget());
+        }
+        budget = budget.add(sonProjectDTO.getBudget());
+        if (budget.compareTo(parentProject.getBudget()) == 1) {// 超预算
+            return "over";
+        }
+
         LabConstructionSonProject sonProject;
         if(sonProjectDTO.getId() == null) {
             sonProject = new LabConstructionSonProject();
@@ -581,7 +602,11 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
 
         sonProject = labConstructionSonProjectDAO.store(sonProject);
 
-        return sonProject.getId() != null && sonProject.getId() > 0;
+        if (sonProject.getId() != null && sonProject.getId() > 0) {
+            return "success";
+        }else {
+            return "fail";
+        }
     }
 
     /**
@@ -590,7 +615,18 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @return 保存成功-true，失败-false
      */
     @Override
-    public boolean saveGrandSonProject(GrandSonProjectDTO grandSonProjectDTO) {
+    public String saveGrandSonProject(GrandSonProjectDTO grandSonProjectDTO) {
+        // 判断预算是否超额
+        LabConstructionSonProject sonProject = labConstructionSonProjectDAO.findLabConstructionSonProjectById(grandSonProjectDTO.getSonProjectId());
+        BigDecimal budget = new BigDecimal(0);
+        for (LabConstructionGrandsonProject gProject : sonProject.getLabConstructionGrandsonProjects()) {// 遍历所有孙项目，计算预算总额
+            budget = budget.add(gProject.getBudget());
+        }
+        budget = budget.add(grandSonProjectDTO.getBudget());
+        if (budget.compareTo(sonProject.getBudget()) == 1) {// 超预算
+            return "over";
+        }
+
         LabConstructionGrandsonProject grandsonProject;
         if(grandSonProjectDTO.getId() == null) {
             grandsonProject = new LabConstructionGrandsonProject();
@@ -602,7 +638,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         grandsonProject.setBudget(grandSonProjectDTO.getBudget());
         grandsonProject.setCreateTime(Calendar.getInstance());
         grandsonProject.setCreateUser(shareService.getUserDetail().getUsername());
-        grandsonProject.setLabConstructionSonProject(labConstructionSonProjectDAO.findLabConstructionSonProjectById(grandSonProjectDTO.getSonProjectId()));
+        grandsonProject.setLabConstructionSonProject(sonProject);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -622,7 +658,11 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
 
         saveCurState(grandsonProject.getId().toString(), 0, null, 0);
 
-        return grandsonProject.getId() != null && grandsonProject.getId() > 0;
+        if (grandsonProject.getId() != null && grandsonProject.getId() > 0) {
+            return "success";
+        }else {
+            return "fail";
+        }
     }
 
     /**
@@ -661,7 +701,18 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @return 成功-true，失败-false
      */
     @Override
-    public boolean submitSonProject(SonProjectDTO sonProjectDTO) {
+    public String submitSonProject(SonProjectDTO sonProjectDTO) {
+        // 判断预算是否超额
+        LabConstructionParentProject parentProject = labConstructionParentProjectDAO.findLabConstructionParentProjectById(sonProjectDTO.getParentProjectId());
+        BigDecimal budget = new BigDecimal(0);
+        for (LabConstructionSonProject sProject : parentProject.getLabConstructionSonProjects()) {// 遍历所有子项目，计算预算总额
+            budget = budget.add(sProject.getBudget());
+        }
+        budget = budget.add(sonProjectDTO.getBudget());
+        if (budget.compareTo(parentProject.getBudget()) == 1) {// 超预算
+            return "over";
+        }
+
         LabConstructionSonProject sonProject;
         if(sonProjectDTO.getId() == null) {
             sonProject = new LabConstructionSonProject();
@@ -703,7 +754,11 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
 
         sonProject = labConstructionSonProjectDAO.store(sonProject);
 
-        return sonProject.getId() != null && sonProject.getId() > 0;
+        if (sonProject.getId() != null && sonProject.getId() > 0) {
+            return "success";
+        }else {
+            return "fail";
+        }
     }
 
     /**
@@ -712,7 +767,18 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @return 成功-true，失败-false
      */
     @Override
-    public boolean submitGrandSonProject(GrandSonProjectDTO grandSonProjectDTO) {
+    public String submitGrandSonProject(GrandSonProjectDTO grandSonProjectDTO) {
+        // 判断预算是否超额
+        LabConstructionSonProject sonProject = labConstructionSonProjectDAO.findLabConstructionSonProjectById(grandSonProjectDTO.getSonProjectId());
+        BigDecimal budget = new BigDecimal(0);
+        for (LabConstructionGrandsonProject gProject : sonProject.getLabConstructionGrandsonProjects()) {// 遍历所有孙项目，计算预算总额
+            budget = budget.add(gProject.getBudget());
+        }
+        budget = budget.add(grandSonProjectDTO.getBudget());
+        if (budget.compareTo(sonProject.getBudget()) == 1) {// 超预算
+            return "over";
+        }
+
         LabConstructionGrandsonProject grandsonProject;
         if(grandSonProjectDTO.getId() == null) {
             grandsonProject = new LabConstructionGrandsonProject();
@@ -755,7 +821,11 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
             labConstructionProjectAuditNewDAO.store(auditNext);
         }
 
-        return grandsonProject.getId() != null && grandsonProject.getId() > 0;
+        if (grandsonProject.getId() != null && grandsonProject.getId() > 0) {
+            return "success";
+        }else {
+            return "fail";
+        }
     }
 
     /**

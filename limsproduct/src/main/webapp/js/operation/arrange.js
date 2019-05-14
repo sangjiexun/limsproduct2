@@ -83,6 +83,7 @@ $(document).ready(function () {
     });
 
     $("#submitButton").on('click', function () {
+        alert('安排已提交，正在处理，请稍后!');
         if (validform().form()) {
             var arr = new Object();
             arr.courseNumber = $("#courseNumber").val();
@@ -123,7 +124,7 @@ $(document).ready(function () {
                         },
                         success:function (result) {
                             if(result == "success"){
-                                if($("#type").val() == 0) {
+                                if($("#type").val() == 0 || $("#type").val() == 1) {
                                     var startDate = $("#startTime").val();
                                     var endDate = $("#endTime").val();
                                     startDate = startDate.replace(" ", "T");
@@ -150,6 +151,10 @@ $(document).ready(function () {
                                                 alert("所选择的实训室资源冲突，请重新选择或者用调整排课操作，谢谢。");
                                                 isConflict = 0;
                                             }
+                                            alert("提交成功！");
+                                        },
+                                        error:function () {
+                                            alert("提交失败！");
                                         }
                                     });
                                 }
@@ -417,7 +422,7 @@ function newSelfReNoGroupCourse(term, selfId) {
         title: title,
         maxmin: true,
         shadeClose: true,
-        area: ['1100px', '500px'],
+        area: ['1100px', '100%'],
         content: contextPath + '/openOperationItem/timetableNoBatchNoChoose?currpage=1&flag=0&timetableStyle=5&selfId=' + selfId + "&term=" + term
             + '&tableAppId=' + 0+"&opId="+ $("#operId").val(),
         end: function () {

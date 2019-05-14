@@ -268,6 +268,101 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		return labRoomDAO.executeQuery(hql, (currpage - 1) * pageSize, pageSize);
 	}
 	/*************************************************************************************
+	 * 判断工位预约时间与实验室预约时间是否冲突
+	 * 顾延钊
+	 * 2019-5-5
+	 *************************************************************************************/
+	@Override
+	public int findReservationEnableOrNot(Integer labRoomId,Calendar reservationTime,Calendar startTime,Calendar endTime) {
+		int reservationStatus = 1;
+		LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(labRoomId);
+		//实训室对应预约列表
+		Set<LabRoomStationReservation> labRoomStationReservations = labRoom.getLabRoomStationReservations();
+		//和本身的预约逻辑做判断
+		/*if (labRoomStationReservations != null) {
+			for (LabRoomStationReservation labRoomStationReservation : labRoomStationReservations) {//遍历该实验室已有的预约信息
+				if (labRoomStationReservation.getResult() != 4) {//筛去审核拒绝的
+					if (labRoomStationReservation.getReservation().equals(reservationTime)) {//预约日期相同
+						if (labRoomStationReservation.getStartTime().after(endTime) ||
+								labRoomStationReservation.getEndTime().before(startTime) ||
+								labRoomStationReservation.getStartTime().equals(endTime) ||
+								labRoomStationReservation.getEndTime().equals(startTime)) {//未和所选时间冲突
+							//do nothing
+						} else {//和所选时间冲突
+							reservationStatus = 2;
+							return reservationStatus;
+						}
+
+					}
+				}
+			}
+		}*/
+		//实训室对应借用列表
+		Set<LabReservation> labReservations = labRoom.getLabReservations();
+		//demo
+		Map<String, String> params = new HashMap<>();
+		Iterator<LabReservation> it = labReservations.iterator();
+		while (it.hasNext()) {
+			LabReservation l = it.next();
+			String businessType = "LabRoomReservation" + l.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+			params.put("businessAppUid", l.getId().toString());
+			params.put("businessType", pConfig.PROJECT_NAME + businessType);
+			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+			JSONObject jsonObject = JSON.parseObject(s);
+			String status = jsonObject.getString("status");
+			if ("success".equals(status)) {
+				JSONArray jsonArray = jsonObject.getJSONArray("data");
+				if (it.next().getId().toString().equals(jsonArray.getJSONObject(0).getString("businessAppId"))
+						&& "0".equals(jsonArray.getJSONObject(0).getString("level"))) {
+					it.remove();
+				}
+			}
+		}
+		Set<SchoolWeek> schoolWeeks = schoolWeekDAO.findSchoolWeekByDate(reservationTime);
+		SchoolWeek lendingDate = schoolWeeks.size() == 0 ? null : schoolWeeks.iterator().next();
+		if (labReservations != null && labReservations.size() > 0 && lendingDate != null) {
+			for (LabReservation labReservation : labReservations) {
+				for (LabReservationTimeTable lrtt : labReservation.getLabReservationTimeTables()) {
+					if (labReservation.getLendingTime().equals(reservationTime)) {//和借用日期在同一天的
+						if (lrtt.getStartTime().after(endTime) ||
+								lrtt.getEndTime().before(startTime) ||
+								lrtt.getStartTime().equals(endTime) ||
+								lrtt.getEndTime().equals(startTime)) {//未和所选时间冲突
+							//do nothing
+						} else {
+							reservationStatus = 3;
+							return reservationStatus;
+						}
+					}
+				}
+			}
+		}
+		Set<TimetableLabRelated> timetableLabRelateds = labRoom.getTimetableLabRelateds();
+		if (schoolWeeks.size() != 0) {
+			SchoolWeek schoolWeek = schoolWeeks.iterator().next();
+			for (TimetableLabRelated t : timetableLabRelateds) {
+				Set<TimetableAppointmentSameNumber> timetableAppointmentSameNumbers =
+						t.getTimetableAppointment().getTimetableAppointmentSameNumbers();
+				for (TimetableAppointmentSameNumber tas : timetableAppointmentSameNumbers) {
+					if (tas.getStartWeek() <= schoolWeek.getWeek() && tas.getEndWeek() >= schoolWeek.getWeek() && schoolWeek.getWeekday().equals(t.getTimetableAppointment().getWeekday())) {
+						SystemTime start = systemTimeDAO.findSystemTimeBySection(tas.getStartClass()).iterator().next();
+						SystemTime end = systemTimeDAO.findSystemTimeBySection(tas.getEndClass()).iterator().next();
+						if (start.getStartDate().after(endTime) ||
+								end.getEndDate().before(startTime) ||
+								start.getStartDate().equals(endTime) ||
+								end.getEndDate().equals(startTime)) {//未和所选时间冲突
+							//do nothing
+						} else {
+							reservationStatus = 3;
+							return reservationStatus;
+						}
+					}
+				}
+			}
+		}
+		return reservationStatus;
+	}
+	/*************************************************************************************
 	 * Description 根据所选时间段查询剩余工位数（实验室预约-预约）
 	 * 
 	 * @author 孙虎
@@ -312,8 +407,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 						t.getTimetableAppointment().getTimetableAppointmentSameNumbers();
 				for (TimetableAppointmentSameNumber tas : timetableAppointmentSameNumbers) {
 					if (tas.getStartWeek() <= schoolWeek.getWeek() && tas.getEndWeek() >= schoolWeek.getWeek() && schoolWeek.getWeekday().equals(t.getTimetableAppointment().getWeekday())) {
-						SystemTime start = systemTimeDAO.findSystemTimeById(tas.getStartClass());
-						SystemTime end = systemTimeDAO.findSystemTimeById(tas.getEndClass());
+						SystemTime start = systemTimeDAO.findSystemTimeBySection(tas.getStartClass()).iterator().next();
+						SystemTime end = systemTimeDAO.findSystemTimeBySection(tas.getEndClass()).iterator().next();
 						if (start.getStartDate().after(endTime) ||
 								end.getEndDate().before(startTime) ||
 								start.getStartDate().equals(endTime) ||
@@ -1642,8 +1737,23 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			labRoomStationReservation.setUserByTeacher(userDAO.findUserByPrimaryKey(teacher));
 		}
 
-		labRoomStationReservation.setState(3);
-		labRoomStationReservation.setResult(3);
+
+		boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+		String grade = "";
+		if(flag){
+			grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
+			boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
+			if(audit){
+				labRoomStationReservation.setState(3);
+				labRoomStationReservation.setResult(3);
+			}else{
+				labRoomStationReservation.setResult(1);
+				labRoomStationReservation.setState(6);
+			}
+		}else{
+			labRoomStationReservation.setState(3);
+			labRoomStationReservation.setResult(3);
+		}
 
 		labRoomStationReservation = labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
@@ -1667,12 +1777,6 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
 		//消息
 		if(labRoomStationReservation.getResult() != 1) {//需要审核就发信息
-
-			boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
-			String grade = "";
-			if(flag){
-				grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
-			}
 
 			// 审核微服务
 			Map<String, String> params = new HashMap<>();
@@ -1734,6 +1838,28 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			message.setTage(1);
 			shareService.sendMsg(labRoomStationReservation.getUser(), message);
 			//}
+		}else{
+			Message message = new Message();
+			message.setSendUser(shareService.getUserDetail().getCname());
+			message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
+			message.setCond(0);
+			// 给预约人发消息
+			message.setTitle("实验室工位预约不需要审核");
+			String businessType = grade + "StationReservation";
+			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
+			message.setContent(content);
+			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+			message.setCreateTime(Calendar.getInstance());
+			message.setTage(1);
+			shareService.sendMsg(labRoomStationReservation.getUser(), message);
+			// 给预约的实验室管理员发送消息
+			for (LabRoomAdmin labRoomAdmin : labRoom.getLabRoomAdmins()) {
+				message.setTitle("无需审核的工位预约申请");
+				message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+				message.setCreateTime(Calendar.getInstance());
+				message.setTage(2);
+				shareService.sendMsg(labRoomAdmin.getUser(), message);
+			}
 		}
 
 	}

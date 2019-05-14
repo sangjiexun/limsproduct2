@@ -42,6 +42,10 @@ public class AssetsInStorageDTO implements Serializable{
     private String status;
     //14.file
     private String file;
+    //15.当前审核层级
+    private String curAuditLevel;
+    //15.审核标志位
+    private Integer auditFlag;
     public Integer getId() {
         return id;
     }
@@ -176,5 +180,21 @@ public class AssetsInStorageDTO implements Serializable{
 
     public void setFile(String file) {
         this.file = file;
+    }
+
+    public String getCurAuditLevel() {
+        return curAuditLevel;
+    }
+
+    public void setCurAuditLevel(String curAuditLevel) {
+        this.curAuditLevel = curAuditLevel;
+    }
+
+    public Integer getAuditFlag() {
+        return auditFlag;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
     }
 }

@@ -193,7 +193,7 @@ public class visualizationShowController<JsonResult> {
 		}
 		mav.addObject("floorPic", floorPic);
 		// 楼宇列表
-		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY();
+		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY(systemBuild.getSystemCampus().getCampusNumber());
 		mav.addObject("systemBuilds", systemBuilds);
 		// 楼层列表
 		List<SystemFloorPic> floorPics = visualizationService.findSystemFloorPic(buildNumber, null);
@@ -430,10 +430,10 @@ public class visualizationShowController<JsonResult> {
 	String changeFloor(@RequestParam String buildNumber,String floor) {
 		List<LabRoom> labRooms = visualizationService.getLabRoomsByBuildAndFloor(buildNumber,floor,1,-1);
 
-		String str = "<select id='labRoomListForSelect' onchange='changeRoom(this.options[this.selectedIndex].value);' style='width:500px;'>";
+		String str = "<select id='labRoomListForSelect' onchange='changeRoom(this.options[this.selectedIndex].value,1);' style='width:500px;'>";
 		for(LabRoom l:labRooms){
 			str = str + "<option value='"+l.getId()+"'>"+l.getLabRoomName()+"</option>";
-		}
+	}
 		
 		str=str+ "</select>";
 		if(!labRooms.isEmpty()){
@@ -1146,6 +1146,118 @@ public class visualizationShowController<JsonResult> {
 		mav.setViewName("visualization/show/visual-templet.jsp");
 		return mav;
 
+	}
+
+	/**
+	 * Description 可视化--切换监控{临时方法：切换监控时刷新页面，解决视频流缓存问题导致的实时画面卡死}
+	 * @param lab_id
+	 * @param agent_id
+	 * @param request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @author 陈乐为 2019年5月9日
+	 */
+	@RequestMapping("/visualization/show/changeMovie")
+	public ModelAndView changeMovie(@RequestParam int lab_id, int agent_id,HttpServletRequest request) throws UnsupportedEncodingException{
+		ModelAndView mav = new ModelAndView();
+		LabRoom labRoom = visualizationService.findLabRoomByPrimaryKey(lab_id);
+		mav.addObject("labRoom", labRoom);
+		String buildNumber = labRoom.getSystemBuild().getBuildNumber();
+		mav.addObject("buildNumber", buildNumber);
+		mav.addObject("agent_id", agent_id);
+		// 当前楼宇
+		SystemBuild systemBuild = systemBuildService.findBuildingbyBuildNumber(buildNumber);
+		mav.addObject("systemBuild", systemBuild);
+		// 楼宇可视化的起始楼层
+		Integer floor_no = labRoom.getFloorNo();
+		String floor_name = floor_no + "层";
+		mav.addObject("floor_name", floor_name);
+		// 获取楼层所有实验室
+		List<LabRoom> labRooms = visualizationService.getLabRoomsByBuildAndFloorAndAcno(buildNumber, floor_no,1,-1,request);
+		mav.addObject("labRooms", labRooms);
+		// 实验室设备
+		mav.addObject("labRoomDevice", new LabRoomDevice());
+
+		//获取已经标点实验设备
+		List<LabRoomDevice> labRoomDevices = visualizationService.findLabRoomDevicesByLabRoomIdAndXY(labRoom.getId());
+		mav.addObject("labRoomDevices", labRoomDevices);
+		// 资产总额
+		BigDecimal totalAssets = labRoomDeviceService.getAgentPriceByLab(labRoom.getId());
+		mav.addObject("totalAssets", totalAssets);
+		//获取当前楼宇1层的楼层图
+		SystemFloorPic floorPic = new SystemFloorPic();
+		List<SystemFloorPic> systemFloorPics = visualizationService.findSystemFloorPic(buildNumber, floor_no);
+		if(systemFloorPics != null && systemFloorPics.size() != 0){
+			floorPic = systemFloorPics.get(0);
+		}
+		mav.addObject("floorPic", floorPic);
+		// 楼宇列表
+		List<SystemBuild> systemBuilds = systemBuildService.findBuildingByXY(systemBuild.getSystemCampus().getCampusNumber());
+		mav.addObject("systemBuilds", systemBuilds);
+		// 楼层列表
+		List<SystemFloorPic> floorPics = visualizationService.findSystemFloorPic(buildNumber, null);
+		mav.addObject("floorPics", floorPics);
+		// 校区列表
+		mav.addObject("systemCampus", systemBuild.getSystemCampus());
+		// 视频列表
+		List<LabRoomAgent> agentList = new ArrayList<LabRoomAgent>();
+		if(labRoom!=null && labRoom.getId()!=null){
+			agentList = labRoomService.getAgentByType(labRoom.getId(), "3", "c_agent_type");
+		}
+		mav.addObject("agentList", agentList);
+
+		mav.addObject("deviceLend", pConfig.deviceLend);
+		mav.addObject("jobReservation", pConfig.jobReservation);
+		mav.addObject("noREC", pConfig.noREC);
+		mav.addObject("proj_name", pConfig.PROJECT_NAME);
+		mav.setViewName("visualization/show/floor_movie.jsp");
+
+		// 视频
+		// 实验室全景图
+		String labPic = "";
+		// 如果为空就是没有视频+当前权限不在禁用权限内
+		if (!pConfig.noREC.contains(request.getSession().getAttribute("selected_role").toString())) {
+			LabRoomAgent agent = labRoomAgentDAO.findLabRoomAgentByPrimaryKey(agent_id);
+			// 流媒体服务器地址
+			mav.addObject("serverIp", agent.getCommonServer().getServerIp());
+			// 端口
+			String hardwarePort = "1935";//agent.getHardwarePort();
+			mav.addObject("hardwarePort", hardwarePort);
+			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
+			String lastFour = "";
+			// 192.168.0.sz
+			String hardWareIp = agent.getHardwareIp();
+			// split .有问题，所以替换成了 , 逗号
+			hardWareIp = hardWareIp.replace(".", ",");
+			if (!EmptyUtil.isStringEmpty(hardWareIp)
+					&& !EmptyUtil.isObjectEmpty(hardWareIp.split(","))
+					&& hardWareIp.split(",").length > 3) {
+				lastFour = hardWareIp.split(",")[2] + hardWareIp.split(",")[3];
+			}
+			mav.addObject("lastFour", lastFour);
+			// 实验室全景图
+			if(labRoom != null && labRoom.getCommonDocuments()!=null && labRoom.getCommonDocuments().size()>0) {
+				for (CommonDocument document : labRoom.getCommonDocuments()) {
+					if (document.getType() == 3) {
+						labPic = document.getDocumentUrl();
+						break;
+					}
+				}
+			}
+		}else {
+			// 实验室全景图
+			if(labRoom != null && labRoom.getCommonDocuments()!=null && labRoom.getCommonDocuments().size()>0) {
+				for (CommonDocument document : labRoom.getCommonDocuments()) {
+					if (document.getType() == 3) {
+						labPic = document.getDocumentUrl();
+						break;
+					}
+				}
+			}
+		}
+		mav.addObject("documentUrl", labPic);
+
+		return mav;
 	}
 }
 

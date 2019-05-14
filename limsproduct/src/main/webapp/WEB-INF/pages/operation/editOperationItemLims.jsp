@@ -32,36 +32,42 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
 
             $("#editMaterialRecord").window('open');
         }
+
+        function editMaterialRecord(itemAssetId) {
+            $.ajax({
+                type:"GET",
+                url:"${pageContext.request.contextPath}/openOperationItem/getItemAsset",
+                data:{itemAssetId:itemAssetId},
+                dataType:"json",
+                success:function(data){
+                    $("#itemAssetsId").val(itemAssetId);
+                    $("#assetId").val(data.assetId);
+                    $("#assetId").val(data.assetId);
+                    $("#assetId").trigger("liszt:updated");
+                    $("#amount").val(data.amount);
+                    getSpec(document.getElementById("assetId"));
+
+                    $("#editMaterialRecord").show();
+                    //获取当前屏幕的绝对位置
+                    var topPos = window.pageYOffset;
+                    //使得弹出框在屏幕顶端可见
+                    $('#editMaterialRecord').window({left:"100px", top:topPos+"px"});
+                    $("#editMaterialRecord").window('open');
+                }
+            });
+        }
         // 保存材料添加
         function saveMaterialRecord() {
-            document.form_material.action="${pageContext.request.contextPath}/operation/saveItemMaterialRecordLims?status=1&page=${page}";
-            if(isNaN($("#lpmr_quantity").val())){
+            document.form_material.action="${pageContext.request.contextPath}/openOperationItem/saveItemAssets?itemId=${itemId}&page=${page}";
+            if($("#asset.id").val() == ""){
+                alert("【耗材】选择耗材");
+                return false;
+            }
+            if(isNaN($("#amount").val())){
                 alert("【数量】填写数字");
                 return false;
             }
             document.form_material.submit();
-        }
-
-        function editMaterialRecord(mrId) {
-            $.ajax({
-                type:"GET",
-                url:"${pageContext.request.contextPath}/operation/ajaxGetMaterialRecord",
-                data:{mrId:mrId},
-                dataType:"json",
-                success:function(data){
-                    $("#lpmrId").val(mrId);
-                    $("#lpmr_name").val(data.lpmrName);
-                    $("#lpmr_category").val(data.lpmrCategory);
-                    $("#lpmr_model").val(data.lpmrModel);
-                    $("#lpmr_unit").val(data.lpmrUnit);
-                    $("#lpmr_quantity").val(data.lpmrQuantity);
-                    $("#lpmr_amount").val(data.lpmrAmount);
-                    $("#lpmr_remark").val(data.lpmrRemark);
-
-                    $("#editMaterialRecord").show();
-                    $("#editMaterialRecord").window('open');
-                }
-            });
         }
 
         function addDevices() {
@@ -407,28 +413,24 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                                     <thead>
                                                     <tr>
                                                         <th>序号</th>
-                                                        <th>材料名称</th>
-                                                        <th>材料类型</th>
+                                                        <th>物资名称</th>
+                                                        <th>物资类型</th>
                                                         <th>型号/规格</th>
-                                                        <th>单位</th>
                                                         <th>数量</th>
-                                                        <th>金额（元）</th>
                                                         <th>操作</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <c:forEach items="${listItemMaterialRecord}" var="curr" varStatus="i">
+                                                    <c:forEach items="${operationItem.itemAssets}" var="curr" varStatus="i">
                                                         <tr>
                                                             <td>${i.count}</td>
-                                                            <td>${curr.lpmrName}</td>
-                                                            <td>${curr.CDictionary.CName}</td>
-                                                            <td>${curr.lpmrModel}</td>
-                                                            <td>${curr.lpmrUnit}</td>
-                                                            <td>${curr.lpmrQuantity}</td>
-                                                            <td>${curr.lpmrAmount}</td>
+                                                            <td>${curr.asset.chName}</td>
+                                                            <td>${materialKindMap[curr.asset.category]}</td>
+                                                            <td>${curr.asset.specifications}</td>
+                                                            <td>${curr.amount}<div id="unit${i.count}" style="display: inline">${curr.asset.specifications}</div></td>
                                                             <td>
-                                                                <a href="javascript:void(0)" onclick="editMaterialRecord(${curr.lpmrId});">编辑</a>
-                                                                <a href="${pageContext.request.contextPath}/operation/deleteItemMaterialLims?mrId=${curr.lpmrId}&itemId=${operationItem.id}&status=1&page=${page}" onclick="return confirm('确认要删除吗？')">删除</a>
+                                                                <a href="javascript:void(0)" onclick="editMaterialRecord(${curr.id});">编辑</a>
+                                                                <a href="${pageContext.request.contextPath}/openOperationItem/deleteItemAsset?itemAssetId=${curr.id}&itemId=${itemId}&page=${page}" onclick="return confirm('确认要删除吗？')">删除</a>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
@@ -492,36 +494,66 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                             </div>
                         </div>
                     </form:form>
-                    <!-- 添加材料弹框开始 -->
-                    <div id="editMaterialRecord" class="easyui-window" closed="true" modal="true" minimizable="true" title="材料使用记录" style="width: 600px;height: 500px;padding: 20px">
+<%--                    <!-- 添加材料弹框开始 -->--%>
+<%--                    <div id="editMaterialRecord" class="easyui-window" closed="true" modal="true" minimizable="true" title="材料使用记录" style="width: 600px;height: 500px;padding: 20px">--%>
+<%--                        <div class="content-box">--%>
+<%--                            <form:form name="form_material" method="post" modelAttribute="operationItemMaterialRecord" >--%>
+<%--                                <table class="color_tb">--%>
+<%--                                    <tr>--%>
+<%--                                        <td>材料名称</td><td><form:input path="lpmrName" id="lpmr_name" /><form:hidden path="lpmrId" /><form:hidden path="operationItem.id" id="item_id" value="${operationItem.id}"/></td>--%>
+<%--                                    </tr>--%>
+<%--                                    <tr>--%>
+<%--                                        <td>材料类型</td>--%>
+<%--                                        <td>--%>
+<%--                                            <form:select path="CDictionary.id" id="lpmr_category">--%>
+<%--                                                <form:options items="${categoryMaterialRecordMain}" itemLabel="CName" itemValue="id"/>--%>
+<%--                                            </form:select>--%>
+<%--                                        </td>--%>
+<%--                                    </tr>--%>
+<%--                                    <tr>--%>
+<%--                                        <td>型号/规格</td><td><form:input path="lpmrModel" id="lpmr_model" /></td>--%>
+<%--                                    </tr>--%>
+<%--                                    <tr>--%>
+<%--                                        <td>单位</td><td><form:input path="lpmrUnit" id="lpmr_unit" /></td>--%>
+<%--                                    </tr>--%>
+<%--                                    <tr>--%>
+<%--                                        <td>数量</td><td><form:input path="lpmrQuantity" id="lpmr_quantity" /></td>--%>
+<%--                                    </tr>--%>
+<%--                                    <tr>--%>
+<%--                                        <td>金额</td><td><form:input path="lpmrAmount" id="lpmr_amount" /></td>--%>
+<%--                                    </tr>--%>
+<%--                                    <tr>--%>
+<%--                                        <td>备注</td><td><form:textarea path="lpmrRemark" id="lpmr_remark" /></td>--%>
+<%--                                    </tr>--%>
+<%--                                </table>--%>
+<%--                                <div class="moudle_footer">--%>
+<%--                                    <div class="submit_link">--%>
+<%--                                        <input class="btn" id="save" type="button" onclick="saveMaterialRecord();" value="确定">--%>
+<%--                                    </div>--%>
+<%--                                </div>--%>
+<%--                            </form:form>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                    <!-- 添加材料弹框结束 -->--%>
+                    <!-- 添加耗材弹框开始 -->
+                    <div id="editMaterialRecord" class="easyui-window" closed="true" modal="true" minimizable="true" title="添加耗材" style="width: 600px;height: 500px;padding: 20px">
                         <div class="content-box">
-                            <form:form name="form_material" method="post" modelAttribute="operationItemMaterialRecord" >
+                            <form:form name="form_material" method="post" modelAttribute="itemAssets" >
                                 <table class="color_tb">
                                     <tr>
-                                        <td>材料名称</td><td><form:input path="lpmrName" id="lpmr_name" /><form:hidden path="lpmrId" /><form:hidden path="operationItem.id" id="item_id" value="${operationItem.id}"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>材料类型</td>
+                                        <td>耗材</td>
                                         <td>
-                                            <form:select path="CDictionary.id" id="lpmr_category">
-                                                <form:options items="${categoryMaterialRecordMain}" itemLabel="CName" itemValue="id"/>
+                                            <form:hidden path="id" id="itemAssetsId"/>
+                                            <form:select path="asset.id" id="assetId" onChange="getSpec(this)" class="chzn-select">
+                                                <form:option value="" label="请选择"/>
+                                                <c:forEach items="${assets}" var="curr">
+                                                    <form:option value="${curr.id}">${curr.chName}[${curr.specifications}]</form:option>
+                                                </c:forEach>
                                             </form:select>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>型号/规格</td><td><form:input path="lpmrModel" id="lpmr_model" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>单位</td><td><form:input path="lpmrUnit" id="lpmr_unit" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>数量</td><td><form:input path="lpmrQuantity" id="lpmr_quantity" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>金额</td><td><form:input path="lpmrAmount" id="lpmr_amount" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>备注</td><td><form:textarea path="lpmrRemark" id="lpmr_remark" /></td>
+                                        <td>数量</td><td><form:input path="amount" id="amount" /><label id="unit"></label></td>
                                     </tr>
                                 </table>
                                 <div class="moudle_footer">
@@ -555,5 +587,34 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    function getSpec(osel){
+        var content = osel.options[osel.selectedIndex].text;
+
+        var x,y;
+        for(var i = 0; i<content.length; i++){
+            if(content[i] == '['){
+                x=i;
+            }
+            if(content[i] == ']'){
+                y=i;
+                break;
+            }
+        }
+        var unit  = content.substring(x,y+1);
+        unit = unit.replace(/[^a-z^A-Z]/g,'');
+        $("#unit").html(unit);
+    }
+
+    function getSimpleSpec(unit) {
+        unit = unit.replace(/[^a-z^A-Z]/g,'');
+        return unit;
+    }
+
+    for (var i = 1; i <= ${fn:length(operationItem.itemAssets)}; i++) {
+        var old = $("#unit" + i).html();
+        $("#unit" + i).html(getSimpleSpec(old));
+    }
+</script>
 </body>
 </html>

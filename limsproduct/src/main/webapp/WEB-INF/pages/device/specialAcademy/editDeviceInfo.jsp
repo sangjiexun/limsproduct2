@@ -63,6 +63,8 @@ function saveDeviceReservationInfoRest(id){//将labRoomId deviceNumber deviceNam
     var managerTelephone = $("#managerTelephone").val();
     var managerMail = $("#managerMail").val();
     var managerOffice = $("#managerOffice").val();
+    var deviceBrand = $("#deviceBrand").val();
+    var memo = $("#memo").val();
     var auditTimeLimit = -1;
     if($("#usernameManager").val()==""){
     	usernameManager="-1";
@@ -93,6 +95,12 @@ function saveDeviceReservationInfoRest(id){//将labRoomId deviceNumber deviceNam
     }
     if($("#managerOffice").val()==""){
     	managerOffice="-1";
+    }
+    if($("#deviceBrand").val()==""){
+        deviceBrand="-1";
+    }
+    if($("#memo").val()==""){
+        memo="-1";
     }
     if($("#auditTimeLimit").val()==null||$("#auditTimeLimit").val()==""){
     	auditTimeLimit="-1";
@@ -127,7 +135,7 @@ function saveDeviceReservationInfoRest(id){//将labRoomId deviceNumber deviceNam
     indicators=indicators.replace(/\&/g,"[Geng7Shang]");//将特殊字符"&"转化为[Geng7Shang]
     indicators=indicators.replace(/\=/g,"[Geng8Shang]");//将特殊字符"="转化为[Geng8Shang]
 	var url = "${pageContext.request.contextPath}/device/saveDeviceInfoRest/" + "${labRoomId}" + "/"+ "${deviceNumber}" + "/" + "${deviceName}" +"/"+"${username}"+ "/"+"${page}"+ "/"+usernameManager
-	+ "/"+ status+ "/"+ type+ "/"+ charge+ "/"+ price+"/"+ functionOfDevice+"/"+ indicators+"/"+managerTelephone+"/"+managerMail+"/"+managerOffice+"/" +auditTimeLimit+"/" + id+ "/"+"${schoolDevice_allowAppointment}";
+	+ "/"+ status+ "/"+ type+ "/"+ charge+ "/"+ price+"/"+ functionOfDevice+"/"+ indicators+"/"+managerTelephone+"/"+managerMail+"/"+managerOffice+"/" +auditTimeLimit+"/" + id+ "/"+"${schoolDevice_allowAppointment}"+ "/" +deviceBrand+ "/"+memo;
 	
 	//alert(url);
 	window.location.href=url;
@@ -183,161 +191,167 @@ function closeMyWindow(){
 		</table>
 	</div>
 	<div id="TabbedPanels1" class="TabbedPanels">
-	 <ul class="TabbedPanelsTabGroup">
-		<li class="TabbedPanelsTab selected" tabindex="0">
+	 	<ul class="TabbedPanelsTabGroup">
+			<li class="TabbedPanelsTab selected" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/device/editDeviceInfo?id=${device.id}">设备详情</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceInfoRest(${device.id})">设备详情</a>
-		</li>
-		 <li class="TabbedPanelsTab" tabindex="0">
-           <a href="javascript:void(0);" onclick="editAgentInfoRest(${device.id})">物联硬件</a>
-		 </li>
+		--%>	<a href="javascript:void(0);" onclick="editDeviceInfoRest(${device.id})">设备详情</a>
+			</li>
+			<li class="TabbedPanelsTab" tabindex="0">
+				<a href="javascript:void(0);" onclick="editAgentInfoRest(${device.id})">物联硬件</a>
+			</li>
 		<%-- <c:if test="${device.CActiveByAllowSecurityAccess.id == 1}"> --%>
-		<c:if test="${device.CDictionaryByAllowSecurityAccess.CCategory=='c_active' && device.CDictionaryByAllowSecurityAccess.CNumber=='1'}">
-		<li class="TabbedPanelsTab" tabindex="0">
+			<c:if test="${device.CDictionaryByAllowSecurityAccess.CCategory=='c_active' && device.CDictionaryByAllowSecurityAccess.CNumber=='1'}">
+				<li class="TabbedPanelsTab" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/device/deviceTraining?deviceId=${device.id}">培训计划</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceTrainingRest(${device.id})">培训计划</a>
-		</li>
-		</c:if>
-		<li class="TabbedPanelsTab" tabindex="0">
+		--%>		<a href="javascript:void(0);" onclick="editDeviceTrainingRest(${device.id})">培训计划</a>
+				</li>
+			</c:if>
+			<li class="TabbedPanelsTab" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/device/editDeviceSetting?id=${device.id}">参数设置</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceSettingRest(${device.id})">参数设置</a>
-		</li>
-		<li class="TabbedPanelsTab" tabindex="0">
+		--%>	<a href="javascript:void(0);" onclick="editDeviceSettingRest(${device.id})">参数设置</a>
+			</li>
+			<li class="TabbedPanelsTab" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/device/deviceImage?deviceId=${device.id}">相关图片</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceImageRest(${device.id})">相关图片</a>
-		</li>
-		<li class="TabbedPanelsTab" tabindex="0"><%--
+		--%>	<a href="javascript:void(0);" onclick="editDeviceImageRest(${device.id})">相关图片</a>
+			</li>
+			<li class="TabbedPanelsTab" tabindex="0"><%--
 		<a href="${pageContext.request.contextPath}/device/deviceVideo?deviceId=${device.id}">相关视频</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceVideoRest(${device.id})">相关视频</a>
-		</li>
-		<li class="TabbedPanelsTab" tabindex="0">
+		--%>	<a href="javascript:void(0);" onclick="editDeviceVideoRest(${device.id})">相关视频</a>
+			</li>
+			<li class="TabbedPanelsTab" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/device/deviceDocument?deviceId=${device.id}">相关文档</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceDocumentRest(${device.id})">相关文档</a>
-		</li>
-		<li class="TabbedPanelsTab" tabindex="0">
+		--%>	<a href="javascript:void(0);" onclick="editDeviceDocumentRest(${device.id})">相关文档</a>
+			</li>
+			<li class="TabbedPanelsTab" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/device/dimensionalCode?deviceId=${device.id}">二维码</a>
-		--%><a href="javascript:void(0);" onclick="editDeviceDimensionalCodeRest(${device.id})">二维码</a>
-		</li>
-		<c:if test="${(device.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && device.CDictionaryByAllowSecurityAccess.CNumber == '1' && device.CDictionaryByTrainType.CNumber == '3')}">
-		<li class="TabbedPanelsTab" tabindex="0">
+		--%>	<a href="javascript:void(0);" onclick="editDeviceDimensionalCodeRest(${device.id})">二维码</a>
+			</li>
+			<c:if test="${(device.CDictionaryByAllowSecurityAccess.CCategory =='c_active' && device.CDictionaryByAllowSecurityAccess.CNumber == '1' && device.CDictionaryByTrainType.CNumber == '3')}">
+				<li class="TabbedPanelsTab" tabindex="0">
 		<%--<a href="${pageContext.request.contextPath}/tcoursesite/question/findQuestionList?tCourseSiteId=${device.id}"target="_blank">题库</a>
-		--%><a href="#" onclick="findQuestionList(${device.id})">题库</a>
-		</li>
-		<li class="TabbedPanelsTab" tabindex="0">
-		<a href="#" onclick="findTestList(${device.id})">考试</a>
-		</li>
-		</c:if>
-		 <c:if test="${1 eq 1}"> <!-- 化工学院 -->
-			 <li class="TabbedPanelsTab" tabindex="0">
-				 <a href="javascript:void(0);" onclick="editDeviceAttentionRest(${device.id})">设备安全协议</a>
-			 </li>
-		 </c:if>
-	</ul>
-	  <div class="TabbedPanelsContentGroup">
-		<div class="TabbedPanelsContent">
-			
-			<div class="content-box">
-				<div class="title">
-				<div id="title">设备详情</div>
-				<a class="btn btn-new"   onclick="closeMyWindow();">返回</a>
-				</div>
+		--%>		<a href="#" onclick="findQuestionList(${device.id})">题库</a>
+				</li>
+				<li class="TabbedPanelsTab" tabindex="0">
+					<a href="#" onclick="findTestList(${device.id})">考试</a>
+				</li>
+			</c:if>
+			<c:if test="${1 eq 1}"> <!-- 化工学院 -->
+				<li class="TabbedPanelsTab" tabindex="0">
+					<a href="javascript:void(0);" onclick="editDeviceAttentionRest(${device.id})">设备安全协议</a>
+				</li>
+			</c:if>
+		</ul>
+		<div class="TabbedPanelsContentGroup">
+			<div class="TabbedPanelsContent">
+				<div class="content-box">
+					<div class="title">
+						<div id="title">设备详情</div>
+						<a class="btn btn-new"   onclick="closeMyWindow();">返回</a>
+					</div>
 					<form:form action="${pageContext.request.contextPath}/device/saveDeviceReservationInfo?deviceId=${device.id}" method="post" modelAttribute="device">
-					<div class="new-classroom">
-						<fieldset>
-						    <label>设备管理员</label>
-						      <form:select id="usernameManager" path="user.username" class="chzn-select">
-						      <c:if test="${not empty device.user.username }">
-						      	<form:option value="${device.user.username }">
-						      	[${device.user.username }]${device.user.cname }
-						      	</form:option>
-						      </c:if>
-						      <c:if test="${empty device.user.username }">
-						      	<form:option value="">
-						      	- - - 请选择- - - 
-						      	</form:option>
-						      </c:if>	
-						      	<c:forEach items="${users}" var="t">
-					              <form:option value="${t.username}">[${t.username}]${t.cname}</form:option>
-					             </c:forEach>
+						<div class="new-classroom">
+							<fieldset>
+								<label>设备管理员</label>
+								<form:select id="usernameManager" path="user.username" class="chzn-select">
+									<c:if test="${not empty device.user.username }">
+										<form:option value="${device.user.username }">
+											[${device.user.username }]${device.user.cname }
+										</form:option>
+									</c:if>
+									<c:if test="${empty device.user.username }">
+										<form:option value="">
+											- - - 请选择- - -
+										</form:option>
+									</c:if>
+									<c:forEach items="${users}" var="t">
+										<form:option value="${t.username}">[${t.username}]${t.cname}</form:option>
+									</c:forEach>
 								</form:select>
-					</fieldset>	
-					<fieldset>
-						    <label>管理员电话</label>
-						     <form:input id="managerTelephone" path="managerTelephone"/>
-					</fieldset>	
-					<fieldset>
-						    <label>管理员邮箱</label>
-						     <form:input id="managerMail" path="managerMail"/>
-					</fieldset>	
-					<fieldset>
-						    <label>管理员办公室</label>
-						     <form:input id="managerOffice" path="managerOffice"/>
-					</fieldset>	
-					<fieldset>
-						    <label>设备状态</label>
+							</fieldset>
+							<fieldset>
+								<label>管理员电话</label>
+								<form:input id="managerTelephone" path="managerTelephone"/>
+							</fieldset>
+							<fieldset>
+								<label>管理员邮箱</label>
+								<form:input id="managerMail" path="managerMail"/>
+							</fieldset>
+							<fieldset>
+								<label>管理员办公室</label>
+								<form:input id="managerOffice" path="managerOffice"/>
+							</fieldset>
+							<fieldset>
+								<label>设备状态</label>
 						      <%-- <form:select id="status" path="CDeviceStatus.id" class="chzn-select">
 						      	<form:option value="1">正常使用</form:option>
 								<form:options items="${stutus}" itemLabel="name" itemValue="id"/>
 								</form:select> --%>
 								<form:select id="status" path="CDictionaryByDeviceStatus.id" class="chzn-select">
-								<form:option value="">请选择</form:option>
-								<form:options items="${stutus}" itemLabel="CName" itemValue="id"/>
+									<form:option value="">请选择</form:option>
+									<form:options items="${stutus}" itemLabel="CName" itemValue="id"/>
 								</form:select>
-					</fieldset>	
-						<fieldset>
-						    <label>所属类型</label>
+							</fieldset>
+							<fieldset>
+								<label>所属类型</label>
 						      <%-- <form:select id="type" path="CDeviceType.id" class="chzn-select">
 						      	<form:option value="">请选择</form:option>
 								<form:options items="${types}" itemLabel="name" itemValue="id"/>
 								</form:select> --%>
 								<form:select id="type" path="CDictionaryByDeviceType.id" class="chzn-select">
-								<form:option value="">请选择</form:option>
-								<form:options items="${types}" itemLabel="CName" itemValue="id"/>
+									<form:option value="">请选择</form:option>
+									<form:options items="${types}" itemLabel="CName" itemValue="id"/>
 								</form:select>
-					</fieldset>	
-					<fieldset>
-						    <label>收费标准</label>
+							</fieldset>
+							<fieldset>
+								<label>收费标准</label>
 						      <%-- <form:select id="charge" path="CDeviceCharge.id" class="chzn-select">
 						      	<form:option value="">请选择</form:option>
 								<form:options items="${charges}" itemLabel="name" itemValue="id"/>
 								</form:select> --%>
 								<form:select id="charge" path="CDictionaryByDeviceCharge.id" class="chzn-select">
-								<form:option value="">请选择</form:option>
-								<form:options items="${charges}" itemLabel="CName" itemValue="id"/>
+									<form:option value="">请选择</form:option>
+									<form:options items="${charges}" itemLabel="CName" itemValue="id"/>
 								</form:select>
-					</fieldset>
+							</fieldset>
 					<%-- <c:if test="${device.isAuditTimeLimit eq 1 &&(not empty device.CActiveByTeacherAudit&&device.CActiveByTeacherAudit.id eq 1)}"> --%>
-						<c:if test="${device.isAuditTimeLimit eq 1}">
-					<fieldset>
-						    <label>预约审核时间限制</label>
-						      <form:select id="auditTimeLimit" path="auditTimeLimit">
-						      	<form:option value="48">48小时（两天）</form:option>
-						      	<form:option value="12">12小时</form:option>
-						      	<form:option value="24">24小时（一天）</form:option>
-						      	<form:option value="36">36小时</form:option>
-						      	<form:option value="60">60小时</form:option>
-						      	<form:option value="72">72小时（三天）</form:option>
-						      	<form:option value="84">84小时</form:option>
-						      	<form:option value="96">96小时（四天）</form:option>
-							  </form:select>
-					</fieldset>
-					</c:if>
-					<c:if test="${device.isAuditTimeLimit ne 1 }">
-						<input type="hidden" id="auditTimeLimit" value="-1">
-					</c:if>
-						<fieldset>
-						    <label>费用</label>
-						     <form:input id="price" path="price"/>元
-						</fieldset>
-						
-					 <fieldset class="introduce-box">
-						     <label>主要技术指标</label>
-							<form:textarea id="indicators" path="indicators"/>
-					 </fieldset>
-					 <fieldset class="introduce-box">
-						     <label>功能应用范围</label>
-							<form:textarea id="functionOfDevice" path="function"/>
-					 </fieldset><%--
+							<c:if test="${device.isAuditTimeLimit eq 1}">
+								<fieldset>
+									<label>预约审核时间限制</label>
+									<form:select id="auditTimeLimit" path="auditTimeLimit">
+										<form:option value="48">48小时（两天）</form:option>
+										<form:option value="12">12小时</form:option>
+										<form:option value="24">24小时（一天）</form:option>
+										<form:option value="36">36小时</form:option>
+										<form:option value="60">60小时</form:option>
+										<form:option value="72">72小时（三天）</form:option>
+										<form:option value="84">84小时</form:option>
+										<form:option value="96">96小时（四天）</form:option>
+									</form:select>
+								</fieldset>
+							</c:if>
+							<c:if test="${device.isAuditTimeLimit ne 1 }">
+								<input type="hidden" id="auditTimeLimit" value="-1">
+							</c:if>
+							<fieldset>
+								<label>费用</label>
+								<form:input id="price" path="price"/>元
+							</fieldset>
+							<fieldset>
+								<label>设备品牌</label>
+								<input id="deviceBrand" name="deviceBrand" value="${device.schoolDevice.deviceBrand}"/>
+							</fieldset>
+							<fieldset>
+								<label>备注</label>
+								<input id="memo" name="memo" value="${device.schoolDevice.memo}"/>
+							</fieldset>
+							<fieldset class="introduce-box">
+								<label>主要技术指标</label>
+								<form:textarea id="indicators" path="indicators"/>
+							</fieldset>
+							<fieldset class="introduce-box">
+								<label>功能应用范围</label>
+								<form:textarea id="functionOfDevice" path="function"/>
+							</fieldset><%--
 					 <fieldset class="introduce-box">
 						     <label>技术特色</label>
 							<form:textarea path="features"/>
@@ -353,31 +367,29 @@ function closeMyWindow(){
 							<%--<input type="button" value="返回" onclick="closeMyWindow()"/>--%>
 					 <%--</fieldset>--%>
 						<%--</sec:authorize>--%>
-			
-					</div>
-					<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_LABMANAGER">
-						<div class="moudle_footer">
-							<div class="submit_link">
+
+						</div>
+						<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_LABMANAGER">
+							<div class="moudle_footer">
+								<div class="submit_link">
 								<%--<a class="btn btn-return" type="button" href="${pageContext.request.contextPath}/operation/listOperationItemLims?currpage=1&status=1&orderBy=9">返回</a>--%>
 								<%--<input class="btn btn-return" type="submit" value="保存" onclick="saveEditForm();">--%>
-								<input  class="btn btn-big" type="button"  onclick="saveDeviceReservationInfoRest(${device.id})" value="提交"/>
-								<input class="btn btn-return" type="button" value="返回" onclick="closeMyWindow()"/>
+									<input  class="btn btn-big" type="button"  onclick="saveDeviceReservationInfoRest(${device.id})" value="提交"/>
+									<input class="btn btn-return" type="button" value="返回" onclick="closeMyWindow()"/>
+								</div>
 							</div>
-						</div>
-					</sec:authorize>
+						</sec:authorize>
 					</form:form>
-		
-  			<input type="hidden" id="labRoomId" value="${labRoomId }">
-            <input type="hidden" id="deviceName" value="${deviceName }">
-            <input type="hidden" id="deviceNumber" value="${deviceNumber }">
-            <input type="hidden" id="username" value="${username }">
-            <input type="hidden" id="page" value="${page }">
-    		<input type="hidden" id="pageContext" value="${pageContext.request.contextPath }">
-      		<input type="hidden" id="schoolDevice_allowAppointment" value="${schoolDevice_allowAppointment}">
+					<input type="hidden" id="labRoomId" value="${labRoomId }">
+					<input type="hidden" id="deviceName" value="${deviceName }">
+					<input type="hidden" id="deviceNumber" value="${deviceNumber }">
+					<input type="hidden" id="username" value="${username }">
+					<input type="hidden" id="page" value="${page }">
+					<input type="hidden" id="pageContext" value="${pageContext.request.contextPath }">
+					<input type="hidden" id="schoolDevice_allowAppointment" value="${schoolDevice_allowAppointment}">
+				</div>
 			</div>
 		</div>
-		
-	  </div>
 	</div>
 	
 	<script type="text/javascript">

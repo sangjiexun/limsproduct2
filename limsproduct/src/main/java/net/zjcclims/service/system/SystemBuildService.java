@@ -51,7 +51,7 @@ public interface SystemBuildService {
 	 * 裴继超
 	 * 2016年4月1日
 	 */
-	public List<SystemBuild> findBuildingByXY();
+	public List<SystemBuild> findBuildingByXY(String campus_number);
 
 	/**
 	 * 根据id获取楼宇

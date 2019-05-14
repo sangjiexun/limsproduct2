@@ -971,6 +971,7 @@ function cancel(){
 						    			}
 						    	});
 						    }
+						    var audit = "";
 						  //保存实训室预约
 						    function saveLabRoomReservation(){
 						    	//console.log($("input[name='reservationtime']") .val());
@@ -1035,6 +1036,10 @@ function cancel(){
 						    				alert("预约失败，您选的时间段工位数不够！");
 						    			}else if(data=="overMax"){
                                             alert("预约失败，超过系统设置的最大可预约数！");
+                                        }else if(data=="lent"){
+                                            alert("预约失败，实验室已被借用");
+                                        }else if(data=="reserved"){
+                                            alert("预约失败，实验室已被预约");
                                         }else if(data=="success1"){
 						    				alert("预约成功，等待相关人员审核");
 						    				flag = 0;
@@ -1047,7 +1052,19 @@ function cancel(){
 						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
 						                    parent.layer.close(index);//关闭弹窗
                                             window.location.reload();
-						    			}else{
+						    			}else if(data=="noAudit1"){
+											alert("预约成功，一级实训室无需审核");
+											flag = 0;
+											var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+											parent.layer.close(index);//关闭弹窗
+											window.location.reload();
+										}else if(data=="noAudit2"){
+											alert("预约成功，二级实训室无需审核");
+											flag = 0;
+											var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+											parent.layer.close(index);//关闭弹窗
+											window.location.reload();
+										}else{
 						    				layer.msg('预约失败！'+data+'不是合法学号', {icon: 5});
 						    			}
 						    			flag = 0;
@@ -1093,6 +1110,12 @@ function cancel(){
                                         }else if (data === "noTrainingError") {
 											alert("您未通过此实验室的培训，请先预约培训!");
 											window.location.reload();
+										}else if(data=="noAudit1"){
+											audit = data;
+											needtutor = 0;
+										}else if(data=="noAudit2"){
+											audit = data;
+											needtutor = 0;
 										}
                                     },
                                     error: function(XMLHttpRequest, textStatus, errorThrown) {

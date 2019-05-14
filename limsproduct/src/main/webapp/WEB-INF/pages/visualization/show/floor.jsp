@@ -59,6 +59,143 @@
     </script>
 
     <script type="text/javascript">
+        var chnNumChar = {
+            零:0,
+            一:1,
+            二:2,
+            三:3,
+            四:4,
+            五:5,
+            六:6,
+            七:7,
+            八:8,
+            九:9
+        };
+        var chnNameValue = {
+            十:{value:10, secUnit:false},
+            百:{value:100, secUnit:false},
+            千:{value:1000, secUnit:false},
+            万:{value:10000, secUnit:true},
+            亿:{value:100000000, secUnit:true}
+        }
+        function ChineseToNumber(chnStr){
+            var rtn = 0;
+            var section = 0;
+            var number = 0;
+            var secUnit = false;
+            var str = chnStr.split('');
+
+            for(var i = 0; i < str.length; i++){
+                var num = chnNumChar[str[i]];
+                if(typeof num !== 'undefined'){
+                    number = num;
+                    if(i === str.length - 1){
+                        section += number;
+                    }
+                }else{
+                    var unit = chnNameValue[str[i]].value;
+                    secUnit = chnNameValue[str[i]].secUnit;
+                    if(secUnit){
+                        section = (section + number) * unit;
+                        rtn += section;
+                        section = 0;
+                    }else{
+                        section += (number * unit);
+                    }
+                    number = 0;
+                }
+            }
+            return rtn + section;
+        }
+
+
+//        TransformToChinese(12339492835.99302);
+        var roomID;
+        var roomID2;
+        var videoID;
+        var agentID;
+        var buildNUM;
+        var floor2;
+        var floorNAME;
+        $(function () {
+        var cookieString=encodeURI(document.cookie);
+        if(cookieString.length!=0){
+            var cookieArray=cookieString.split(";");
+//                        for(var i=0;i<cookieArray.length;i++){
+            console.log(cookieArray);
+            for ( var i = 0; i < cookieArray.length; i++) {
+                var arr = cookieArray[i].split("=");
+                if (arr[0].indexOf("roomid1") != -1 ){
+//                if (arr[0] == "roomid"){
+                    roomID=arr[1];
+                    console.log(" roomid为:"+roomID)
+//                }else if(arr[0] == "videoid"){
+                }else if(arr[0].indexOf("videoid") != -1){
+                    videoID=arr[1];
+                    console.log(" videoid为:"+videoID)
+//                }else if(arr[0] == "agentid"){
+                }else if(arr[0].indexOf("agentid") != -1){
+                    agentID=arr[1];
+                    console.log(" agentid为:"+agentID)
+//                }else if(arr[0] == " buildNum"){
+                }else if(arr[0].indexOf("buildNum") != -1){
+                    buildNUM=unescape(unescape(arr[1]));
+                    console.log(" buildNUM为:"+buildNUM)
+//                }else if(arr[0] == " floor1"){
+                }else if(arr[0].indexOf("floor1") != -1){
+                    floor2=arr[1];
+                    console.log(" floor1为:"+floor2)
+                }
+//                else if(arr[0] == " floorNAme"){
+                else if(arr[0].indexOf("floorNAme") != -1){
+                    floorNAME=arr[1];
+//                    floorNAME=TransformToChinese(arr[1]);
+                    console.log(" floorNAME为:"+floorNAME)
+                }else if(arr[0].indexOf("roomid2") != -1){
+                    roomID2=arr[1];
+//                    floorNAME=TransformToChinese(arr[1]);
+                    console.log(" roomID2为:"+roomID2)
+                }
+            }
+//            var cookieNum=cookieArray[0].split("=");
+////                            var roomid=cookieNum[0];
+//            roomID=cookieNum[1];
+//            console.log(" roomid为:"+roomID);
+//            var cookieVideo=cookieArray[1].split("=");
+////                            var roomid=cookieNum[0];
+//            videoID=cookieVideo[1];
+//            console.log(" videoID为:"+videoID);
+//                        }
+        }
+            if(buildNUM!=''&&buildNUM!=null&&floor2!=''&&floor2!=null){
+                changeFloor(buildNUM,floor2,floorNAME);
+            }
+            if(roomID!=''&&roomID!=null){
+                changeRoom(roomID)
+                chageroomAjaxlalala (roomID);
+                $('#labRoomListForSelect').val(roomID);
+            }else{
+                if(roomID2!=''&&roomID2!=null){
+                    changeRoom2(roomID2)
+                    chageroomAjaxlalala (roomID2);
+                    $('#labRoomListForSelect').val(roomID2);
+                }else{
+                    var labroomId = "${labRoom.id }";
+                    chageroomAjaxlalala (labroomId);
+                }
+            }
+
+
+
+
+            if(videoID!=''&&videoID!=null&&agentID!=''&&agentID!=null){
+                changeRoomMovie2(videoID,agentID);
+                $("#agentSelect").val(videoID+"/"+agentID);
+                console.log($("#agentSelect").val());
+            }
+
+
+        })
         function changeDeviceByName() {
             var name = $("#DeviceName").val();
             var id = $("#DeviceRoomId").val();
@@ -84,7 +221,10 @@
 
         $(function () {
             //一进来判断显示视频
-            changeRoomMovie($("#labRoomListForSelect").val());
+            if(agentID==''||agentID==null){
+                changeRoomMovie($("#labRoomListForSelect").val());
+            }
+//            changeRoomMovie($("#labRoomListForSelect").val());
             //加载后调整视频尺寸的方法
             changSize();
             //浏览器窗口改变时触发
@@ -134,7 +274,20 @@
     </script>
     <script type="text/javascript">
         //楼层
-        function changeFloor(buildNumber, floor, floorName) {
+        function changeFloor(buildNumber, floor, floorName,state){
+            if(state == 1){
+                document.cookie = "buildNum="+escape(buildNumber);
+                document.cookie = "floor1="+floor
+                document.cookie = "roomid1= "
+                document.cookie = "videoid= "
+                document.cookie = "agentid= "
+                var a = floorName.replace("层","");
+                var b = a.replace("楼","");
+                var floorNameNum = ChineseToNumber(b)
+                document.cookie = "floorNAme="+floorNameNum;
+                window.open(window.location.href, "_blank");
+                window.close();
+            }
             //获取楼层li
             var floorLis = document.getElementById('floorUl').getElementsByTagName('li');
             //切换楼层的房间列表
@@ -142,6 +295,7 @@
                 type: 'POST',
                 url: '${pageContext.request.contextPath}/visualization/show/changeFloor',
                 data: {'buildNumber': buildNumber, 'floor': floor},
+                async:false,
                 success: function (data) {
                     $("#room_list").html(data.substring(0, data.indexOf("%")));
                     //右边点击自动更改左边楼层
@@ -154,11 +308,13 @@
                     $("#floor" + floor).attr("class", "selected_floor");
 
                     $("#showfloor").html("");
-                    $("#showfloor").append(floorName);
+                    $("#showfloor").append(floorName+"层");
                     $("#showfloor1").hide();
                     $("#showfloor").show();
 
                     changeRoom(data.substring(data.indexOf("%") + 1));
+                    document.cookie = "roomid2="+ data.substring(data.indexOf("%") + 1);
+//                    changeRoom(roomID);
                 }
             });
 
@@ -178,7 +334,19 @@
 
         //切换实训室
         //切换实训室展示信息
-        function changeRoom(id) {
+        function changeRoom(id,state) {
+//            var roomID;
+            document.cookie = "videoid= "
+            document.cookie = "agentid= "
+            if(roomID!=''&&roomID!=null){
+//                chageroomAjaxlalala (roomID);
+                $('#labRoomListForSelect').val(roomID);
+            }
+            if(state == 1){
+                document.cookie = "roomid1="+id;
+                window.open(window.location.href, "_blank");
+                window.close();
+            }
             if(document.getElementById("positionAppoint") != null){
                 document.getElementById("positionAppoint").setAttribute("href", "${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList1?currpage=1&selectedRoomId="+ id);
             }
@@ -190,8 +358,11 @@
             $.ajax({
                 type: 'POST',
                 url: '${pageContext.request.contextPath}/visualization/show/changeRoomNew',
-                data: {'id': id},
+                data: {'id': roomID},
                 success: function (data) {
+
+
+                    console.log(roomID);
                     $("#room_banner").html(data[0]);
                     $("#deviceIcon").empty();
                     $.each(data[1],function (index,value) {
@@ -207,14 +378,15 @@
             document.getElementById('iframe').contentWindow.location.reload(true);
 
             //切换实训室的视频
-            changeRoomMovie(id);
+            changeRoomMovie(roomID);
 
             //切换实训室全景图
             $.ajax({
                 type: 'POST',
                 url: '${pageContext.request.contextPath}/visualization/show/changeRoomImage',
-                data: {'id': id, 'type': 3},
+                data: {'id': roomID, 'type': 3},
                 success: function (data) {
+                    console.log(roomID);
                     //var str = "<img src='${pageContext.request.contextPath}/"+data+"' >";
                     //document.getElementById('panorama').innerHTML = str;
                     if (data != null && data != "") {
@@ -232,7 +404,7 @@
             $.ajax({
                 type: "POST",
                 url: "${pageContext.request.contextPath}/visualization/show/changeRoomMap",
-                data: {'id': id},
+                data: {'id': roomID},
                 dataType: 'json',
                 success: function (data) {
                     $.each(data, function (key, values) {
@@ -260,15 +432,15 @@
                 }
             });
 
-            $("#DeviceRoomId").val(id);
+            $("#DeviceRoomId").val(roomID);
 
-            chageroomAjaxlalala(id);
+//            chageroomAjaxlalala(roomID);
 
             //切换实训室 当前课表详细信息map
             $.ajax({
                 type: "POST",
                 url: "${pageContext.request.contextPath}/visualization/show/changeRoomTimeTableMap",
-                data: {'id': id},
+                data: {'id': roomID},
                 dataType: 'json',
                 success: function (data) {
 
@@ -286,11 +458,13 @@
             //切换实训室 当前视频硬件列表
             $.ajax({
                 type: "POST",
+//                async:false,
                 url: "${pageContext.request.contextPath}/visualization/show/changeRoomAgentList",
-                data: {'id': id},
+                data: {'id': roomID},
                 dataType: 'text',
                 success: function (data) {
                     $("#selectAgent").html(data);
+                    $("#agentSelect").val(videoID+"/"+agentID);
                 },
                 error: function () {
                     console.log("暂无该房间视频信息！");
@@ -301,7 +475,7 @@
             $.ajax({
                 type: "POST",
                 url: "${pageContext.request.contextPath}/visualization/show/changeRoomSoftwareMap",
-                data: {'id': id},
+                data: {'id': roomID},
                 dataType: 'text',
                 success: function (data) {
                     /* alert(data+"333"); */
@@ -315,7 +489,141 @@
             });
 
         }
+        function changeRoom2(id,state) {
+//            var roomID;
+            if(state == 1){
+                document.cookie = "roomid1="+id;
+                window.open(window.location.href, "_blank");
+                window.close();
+            }
+            if(document.getElementById("positionAppoint") != null){
+                document.getElementById("positionAppoint").setAttribute("href", "${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList1?currpage=1&selectedRoomId="+ id);
+            }
+            document.getElementById("labAppoint").setAttribute("href", "${pageContext.request.contextPath}/LabRoomReservation/labRoomList1?currpage=1&selectedRoomId=" + id);
+            document.getElementById("deviceAppoint").setAttribute("href", "${pageContext.request.contextPath}/device/listLabRoomDevice?page=1&isReservation=1&isOrder=1&selectedRoomId=" + id);
+            if(document.getElementById("deviceLend") != null){
+                document.getElementById("deviceLend").setAttribute("href", "${pageContext.request.contextPath}/device/allLendableDeviceList?currpage=1&selectedRoomId=" + id);
+            }
+            $.ajax({
+                type: 'POST',
+                url: '${pageContext.request.contextPath}/visualization/show/changeRoomNew',
+                data: {'id': roomID2},
+                success: function (data) {
+
+
+                    console.log(roomID2);
+                    $("#room_banner").html(data[0]);
+                    $("#deviceIcon").empty();
+                    $.each(data[1],function (index,value) {
+                        $("#deviceIcon").append($("<div id="+value.id+" class=\"equipment_icon\"" +
+                            "style=\"left:"+100*value.xCoordinate+"%;top:"+100*value.yCoordinate+"%;\" title=\"查看详情\">" +
+                            "<a href='javascript:void(0)' id=\"lookdevice\" onmouseup=\"lookDevice("+value.id+")\">"+
+                            "<img src=\"${pageContext.request.contextPath}/images/visualization/floor/icon.png\"></a>" +
+                            "</div>"));
+                    });
+                }
+            });
+            // 课表
+            document.getElementById('iframe').contentWindow.location.reload(true);
+
+            //切换实训室的视频
+            changeRoomMovie(roomID2);
+
+            //切换实训室全景图
+            $.ajax({
+                type: 'POST',
+                url: '${pageContext.request.contextPath}/visualization/show/changeRoomImage',
+                data: {'id': roomID2, 'type': 3},
+                success: function (data) {
+                    console.log(roomID2);
+                    //var str = "<img src='${pageContext.request.contextPath}/"+data+"' >";
+                    //document.getElementById('panorama').innerHTML = str;
+                    if (data != null && data != "") {
+                        $(".demo_photo").attr("src", "${pageContext.request.contextPath}/" + data);
+                        $(".demo_photo").show();
+                        $("#btnchangeimg").val("切换实时画面")
+                    } else {
+                        console.log("这个实训室没有全景图");
+                    }
+                }, error: function (data) {
+                    console.log("请求失败2");
+                }
+            });
+            //切换实训室详细信息map
+            $.ajax({
+                type: "POST",
+                url: "${pageContext.request.contextPath}/visualization/show/changeRoomMap",
+                data: {'id': roomID2},
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (key, values) {
+                        if (key == "isUsed" || key == "appointment") {
+                            if (values == 0) {
+                                $("#" + key + "2").attr("checked", "checked");
+                                $("#label" + key + "2").css("background-image", "url('${pageContext.request.contextPath}/images/visualization/floor/radio.png')");
+                                $("#" + key + "1").removeAttr("checked");
+                                $("#label" + key + "1").css("background-image", "url('${pageContext.request.contextPath}/images/visualization/floor/unradio.png')");
+                            } else {
+                                $("#" + key + "1").attr("checked", "checked");
+                                $("#label" + key + "1").css("background-image", "url('${pageContext.request.contextPath}/images/visualization/floor/radio.png')");
+                                $("#" + key + "2").removeAttr("checked");
+                                $("#label" + key + "2").css("background-image", "url('${pageContext.request.contextPath}/images/visualization/floor/unradio.png')");
+                            }
+
+                        } else {
+                            document.getElementById(key).innerHTML = values;
+                            $("#" + key).val("" + values);
+                        }
+                    });
+                },
+                error: function () {
+                    console.log("请求失败-暂无该房间信息！");
+                }
+            });
+
+            $("#DeviceRoomId").val(roomID2);
+
+            chageroomAjaxlalala(roomID2);
+
+            //切换实训室 当前课表详细信息map
+            $.ajax({
+                type: "POST",
+                url: "${pageContext.request.contextPath}/visualization/show/changeRoomTimeTableMap",
+                data: {'id': roomID2},
+                dataType: 'json',
+                success: function (data) {
+
+                    $.each(data, function (key, values) {
+                        document.getElementById(key).innerHTML = values;
+                        $("#" + key).val("" + values);
+
+                    });
+                },
+                error: function () {
+                    console.log("请求失败-暂无该房间当前课表！");
+                }
+            });
+
+            //切换实训室 当前视频硬件列表
+            $.ajax({
+                type: "POST",
+                async:false,
+                url: "${pageContext.request.contextPath}/visualization/show/changeRoomAgentList",
+                data: {'id': roomID2},
+                dataType: 'text',
+                success: function (data) {
+                    $("#selectAgent").html(data);
+                },
+                error: function () {
+                    console.log("暂无该房间视频信息！");
+                }
+            });
+
+
+
+        }
         function chageroomAjaxlalala(id) {
+            console.log(id+'id')
             //切换实训室 设备 详细信息map
             $.ajax({
                 type: "POST",
@@ -330,6 +638,22 @@
                 },
                 error: function () {
                     console.log("暂无该房间设备信息！");
+                }
+            });
+            //切换实训室 软件详细信息map
+            $.ajax({
+                type: "POST",
+                url: "${pageContext.request.contextPath}/visualization/show/changeRoomSoftwareMap",
+                data: {'id': roomID2},
+                dataType: 'text',
+                success: function (data) {
+                    /* alert(data+"333"); */
+                    $("#softwareDetail tr:gt(0)").empty();
+                    $("#softwareDetail tr").not(':eq(0)').empty()
+                    $("#softwareDetail").append(data);
+                },
+                error: function () {
+                    console.log("暂无该房间软件信息！");
                 }
             });
 
@@ -362,11 +686,15 @@
                 }
             });
         }
-        $(function () {
-            var labroomId = "${labRoom.id }";
-            chageroomAjaxlalala (labroomId);
-        })
-        function changeRoomMovie2(id, agentId) {
+
+        function changeRoomMovie2(id, agentId,state) {
+            document.cookie = "videoid="+id;
+            document.cookie = "agentid="+agentId;
+            if(state == 1){
+//                document.cookie = "roomid=";
+                window.open(window.location.href, "_blank");
+                window.close();
+            }
             $.ajax({
                 type: "POST",
                 url: "${pageContext.request.contextPath}/visualization/show/changeRoomMovie2",
@@ -1099,7 +1427,8 @@
                     <hr/>
                 </div>
                 <lable id="selectAgent">
-                    <select onchange="changeRoomMovie2(this.options[this.options.selectedIndex].value.split('/')[0] , this.options[this.options.selectedIndex].value.split('/')[1])">
+                    <select id="agentSelect" onchange="changeRoomMovie2(this.options[this.options.selectedIndex].value.split('/')[0] , this.options[this.options.selectedIndex].value.split('/')[1],1)">
+                    <%--<select id="agentSelect" onchange="changeRoomMovie2(${labRoom.id}, this.options[this.options.selectedIndex].value,1)">--%>
                         <c:forEach items="${agentList }" var="agent" varStatus="i">
                             <option value="${labRoom.id}/${agent.id }">监控${i.index+1 }</option>
                         </c:forEach>
@@ -1150,6 +1479,7 @@
         <div class="equipment_inforamtion">
             <img class="close" src="${pageContext.request.contextPath}/images/visualization/floor/msg_close.png"  onclick="cancel()">
             <form:form id="myForm" action="${pageContext.request.contextPath}/visualization/saveDevice" method="POST" modelAttribute="labRoomDevice">
+                <input type="hidden" id="roomid"/>
                 <div class="">
                     <h2 class="equipment_name" id="deviceName1"></h2>
                 </div>
@@ -1233,7 +1563,7 @@
                             <ul id="floorUl">
                                 <c:forEach items="${floorPics}" varStatus="i" var="curr">
                                     <li><a id="floor${curr.floorNo}" name="floorChange" href='javascript:void(0)'
-                                           onclick="changeFloor('${buildNumber}',${curr.floorNo}, '${curr.floorName}')">${curr.floorName}</a>
+                                           onclick="changeFloor('${buildNumber}',${curr.floorNo}, '${curr.floorName}',1)">${curr.floorName}</a>
                                     </li>
                                 </c:forEach>
                             </ul>
@@ -1247,7 +1577,7 @@
                     <hr>
                 </div>
                 <lable>
-                    <select id="labRoomListForSelect" onchange="changeRoom(this.options[this.selectedIndex].value);">
+                    <select id="labRoomListForSelect" onchange="changeRoom(this.options[this.selectedIndex].value,1);">
                         <c:forEach items="${labRooms}" var="labRoom" varStatus="i">
                             <option value="${labRoom.id}">${labRoom.labRoomName}</option>
                             <p style="display:none;">${labRoom.id}</p>

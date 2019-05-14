@@ -2,10 +2,7 @@ package net.zjcclims.web.operation;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import net.gvsun.lims.dto.assets.AssetsApplyItemDTO;
-import net.gvsun.lims.dto.assets.AssetsInStorageDTO;
-import net.gvsun.lims.dto.assets.AssetsReceiveDTO;
-import net.gvsun.lims.dto.assets.MaterialKindDTO;
+import net.gvsun.lims.dto.assets.*;
 import net.gvsun.lims.service.assets.MaterialService;
 import net.gvsun.lims.service.timetable.TimetableSelfCourseService;
 import net.zjcclims.dao.*;
@@ -1159,6 +1156,68 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("virtualImageList", virtualImageList);
 		mav.setViewName("openOperationItem/timetableChoose.jsp");
 		return mav;
+	}
+
+	/**
+	 * 保存申购单
+	 * @param operationId 项目id
+	 * @return 成功-"success",失败-"fail"
+	 * @author 黄保钱 2019-5-13
+	 */
+	@RequestMapping(value = "/saveAssetApp",method = RequestMethod.POST)
+	@ResponseBody
+	public String saveAssetApp(@RequestParam String type, @RequestParam String courseNo,
+							   @RequestParam String academyNumber, @RequestParam String username){
+		Map<Integer, Integer> operation = new HashMap<>();
+		Set<TimetableAppointment> timetableAppointments = new LinkedHashSet<>();
+		if("schoolCourse".equals(type)){
+			timetableAppointments = schoolCourseDAO.findSchoolCourseByPrimaryKey(courseNo).getTimetableAppointments();
+		}else if("selfCourse".equals(type)){
+			timetableAppointments = timetableSelfCourseDAO.findTimetableSelfCourseById(Integer.valueOf(courseNo)).getTimetableAppointments();
+		}
+		for (TimetableAppointment ta: timetableAppointments){
+			for(TimetableItemRelated tir: ta.getTimetableItemRelateds()){
+				Integer num = 0;
+				if(operation.get(tir.getOperationItem().getId()) != null){
+					num += operation.get(tir.getOperationItem().getId());
+				}
+				for(TimetableAppointmentSameNumber tasn: ta.getTimetableAppointmentSameNumbers()){
+					num = num + tasn.getEndWeek() - tasn.getStartWeek() + 1;
+				}
+				operation.put(tir.getOperationItem().getId(), num);
+			}
+		}
+		for(Map.Entry<Integer, Integer> entry: operation.entrySet()) {
+			AssetsApplyDTO assetsApplyDTO = new AssetsApplyDTO();
+			String today = (new SimpleDateFormat("yyyy-MM-dd")).format(Calendar.getInstance().getTime());
+			assetsApplyDTO.setDate(today);
+			assetsApplyDTO.setGoodsCategory("1");
+			assetsApplyDTO.setStartDate(today);
+			assetsApplyDTO.setEndDate(today);
+			assetsApplyDTO.setAcademyNumber(academyNumber);
+			User user = shareService.findUserByUsername(username);
+			assetsApplyDTO.setApplicantUserName(username);
+			assetsApplyDTO.setCourseNo(courseNo);
+			Integer appId = materialService.saveAssetsApplyDetail(assetsApplyDTO);
+			OperationItem operationItem = operationItemDAO.findOperationItemById(entry.getKey());
+			for (ItemAssets itemAssets : operationItem.getItemAssets()) {
+				AssetsApplyItemDTO assetsApplyItemDTO = new AssetsApplyItemDTO();
+				assetsApplyItemDTO.setAppId(appId.toString());
+				assetsApplyItemDTO.setAssetsId(itemAssets.getAsset().getId().toString());
+				assetsApplyItemDTO.setName(itemAssets.getAsset().getChName());
+				assetsApplyItemDTO.setType(itemAssets.getAsset().getSpecifications());
+				assetsApplyItemDTO.setFactory(itemAssets.getAsset().getFactory());
+				assetsApplyItemDTO.setUnit(itemAssets.getAsset().getUnit());
+				assetsApplyItemDTO.setQuantity(itemAssets.getAmount() * entry.getValue());
+				try {
+					assetsApplyItemDTO.setPrice(new BigDecimal(itemAssets.getAsset().getPrice()));
+				} catch (Exception e) {
+					assetsApplyItemDTO.setPrice(BigDecimal.ZERO);
+				}
+				materialService.saveAssetsAppRecordDetail(assetsApplyItemDTO);
+			}
+		}
+		return "success";
 	}
 
 }

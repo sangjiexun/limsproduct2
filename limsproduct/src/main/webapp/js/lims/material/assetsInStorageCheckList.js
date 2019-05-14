@@ -3,6 +3,8 @@ var contextPath = $("meta[name='contextPath']").attr("content");
 $(function () {
     $.ajax({
         url: contextPath + "/lims/api/material/getInStorageCheckListInfo?appId="+appId,
+        contentType: "application/json;charset=utf-8",
+        dataType: "json",
         type: "post",
         async: false,
         success: function (data) {

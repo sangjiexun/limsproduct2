@@ -598,6 +598,8 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
         message.setCreateTime(Calendar.getInstance());
         message.setTage(2);
+        // 当前审核权限
+        String cName = authorityDAO.findAuthorityByAuthorityName(currAuthName).iterator().next().getCname();
         //第一级审核人
         switch (nextAuthName) {
             case "TEACHER":
@@ -628,17 +630,33 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                 break;
             case "pass":
                 labReservation.setAuditStage(6);
+                message.setTitle("实验室预约审核通过");
+                content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
+                message.setContent(content);
+                message.setTage(1);
+                shareService.sendMsg(labReservation.getUser(), message);
                 break;
             case "fail":
                 labReservation.setAuditStage(0);
+                message.setTitle("实验室预约审核被"+cName+"拒绝");
+                content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
+                message.setContent(content);
+                message.setTage(1);
+                shareService.sendMsg(labReservation.getUser(), message);
                 break;
             default:
                 List<User> auditUsers = shareService.findUsersByAuthorityName(nextAuthName);
                 for (User user2: auditUsers){
                     shareService.sendMsg(user2, message);
                 }
+                message.setTitle("实验室预约"+cName+user.getCname()+(auditResult == 1 ? "审核通过" : "审核拒绝"));
+                content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
+                message.setContent(content);
+                message.setTage(1);
+                message.setUsername(labReservation.getUser().getUsername());
+                messageDAO.store(message);
+                messageDAO.flush();
         }
-        String cName = authorityDAO.findAuthorityByAuthorityName(currAuthName).iterator().next().getCname();
         message.setTitle("实验室预约"+cName+user.getCname()+(auditResult == 1 ? "审核通过" : "审核拒绝"));
         content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>查看</a>";
         message.setContent(content);
@@ -1209,7 +1227,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                                     "\n预约原因： " + labReservation.getLendingReason()
                 ;
             refuseItemBackup.setOperationItemName(operationItems);
-            refuseItemBackup.setMemo("作废");
+            refuseItemBackup.setMemo("预约作废");
             refuseItemBackupDAO.store(refuseItemBackup);
         }
         if(flag){
@@ -1435,7 +1453,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                     "\n预约原因： " + labReservation.getLendingReason()
             ;
             refuseItemBackup.setOperationItemName(operationItems);
-            refuseItemBackup.setMemo("取消");
+            refuseItemBackup.setMemo("预约取消");
             refuseItemBackupDAO.store(refuseItemBackup);
         }
         timetableAppointmentDAO.remove(labReservation.getTimetableAppointment());
