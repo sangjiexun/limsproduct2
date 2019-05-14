@@ -1857,7 +1857,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTitle("无需审核的工位预约申请");
 				message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
 				message.setCreateTime(Calendar.getInstance());
-				message.setTage(1);
+				message.setTage(2);
 				shareService.sendMsg(labRoomAdmin.getUser(), message);
 			}
 		}

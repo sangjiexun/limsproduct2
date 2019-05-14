@@ -385,6 +385,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 		}else {
 			queryHQL.append(" GROUP BY c.lab_id");
 		}
+		queryHQL.append(" order by c.lab_name");
 
 		// 执行查询
 		javax.persistence.Query queryList = entityManager.createNativeQuery(queryHQL.toString());

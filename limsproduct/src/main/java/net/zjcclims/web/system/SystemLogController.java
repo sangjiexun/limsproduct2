@@ -199,7 +199,7 @@ public class SystemLogController {
 		if(term_id != null && !term_id.equals("")) {
 			mav.addObject("term",request.getParameter("termId"));
 		}else {
-			term_id = "-1";
+			term_id = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId().toString();
 		}
 		int base_id = 0;
 		int center_id = 0;
