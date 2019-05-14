@@ -214,8 +214,9 @@
 
 									</td>--%>
 									<td>
-										<c:if test="${isAudit eq 2 && auditState.get(i.count-1)==-1 }">
-											<a href="javascript:void(0)"
+										<jsp:useBean id="now" class="java.util.Date" />
+										<c:if test="${isAudit eq 2 && auditState.get(i.count-1)==-1 and current.startTime.time le now and current.endTime.time ge now}">
+										<a href="javascript:void(0)"
 											   onclick="VirtualLogin('${current.id}')">登录</a>
 										</c:if>
 									</td>
