@@ -430,10 +430,10 @@ public class visualizationShowController<JsonResult> {
 	String changeFloor(@RequestParam String buildNumber,String floor) {
 		List<LabRoom> labRooms = visualizationService.getLabRoomsByBuildAndFloor(buildNumber,floor,1,-1);
 
-		String str = "<select id='labRoomListForSelect' onchange='changeRoom(this.options[this.selectedIndex].value);' style='width:500px;'>";
+		String str = "<select id='labRoomListForSelect' onchange='changeRoom(this.options[this.selectedIndex].value,1);' style='width:500px;'>";
 		for(LabRoom l:labRooms){
 			str = str + "<option value='"+l.getId()+"'>"+l.getLabRoomName()+"</option>";
-		}
+	}
 		
 		str=str+ "</select>";
 		if(!labRooms.isEmpty()){

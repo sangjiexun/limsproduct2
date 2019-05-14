@@ -836,10 +836,12 @@ public class VisualizationServiceImpl implements VisualizationService
 	public String findLabRoomAgent(LabRoom labRoom) {
 		List<LabRoomAgent> labRoomAgents = labRoomService.getAgentByType(labRoom.getId(), "3", "c_agent_type");
 		StringBuffer str=new StringBuffer();
-		str.append( "<select onchange='changeRoomMovie2(this.options[this.options.selectedIndex].value.split(\"/\")[0] , this.options[this.options.selectedIndex].value.split(\"/\")[1])'>");
+		str.append( "<select id='agentSelect' onchange='changeRoomMovie2(this.options[this.options.selectedIndex].value.split(\"/\")[0] , this.options[this.options.selectedIndex].value.split(\"/\")[1],1)'>");
+//		str.append( "<select id='agentSelect' onchange='changeRoomMovie2("+labRoom.getId()+"  , this.options[this.options.selectedIndex].value,1)'>");
 		int j=1;
 		for(LabRoomAgent labRoomAgent : labRoomAgents){
 			str.append("<option value='"+labRoom.getId()+"/"+labRoomAgent.getId()+"'>监控"+
+//			str.append("<option value='"+labRoomAgent.getId()+"'>监控"+
 			j+"</option>");
 			j++;
 		}
@@ -856,12 +858,14 @@ public class VisualizationServiceImpl implements VisualizationService
 	public List<LabRoomAgent> findLabRoomAgentList(LabRoom labRoom) {
 		List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentByRoomId(labRoom.getId());
 		StringBuffer str=new StringBuffer();
-		str.append( "<select onchange='changeRoomMovie2(this.options[this.options.selectedIndex].value.split(\"/\")[0] , this.options[this.options.selectedIndex].value.split(\"/\")[1])'>");
+		str.append( "<select id='agentSelect' onchange='changeRoomMovie2(this.options[this.options.selectedIndex].value.split(\"/\")[0] , this.options[this.options.selectedIndex].value.split(\"/\")[1],1)'>");
+//		str.append( "<select id='agentSelect' onchange='changeRoomMovie2("+labRoom.getId()+" , this.options[this.options.selectedIndex].value,1)'>");
 		int j=1;
 		for(int i=1; i<=agentList.size();i++){
 			if (shareService.checkCDictionary( agentList.get(i-1).getCDictionary().getId(),"3","c_agent_type")
 					&& agentList.get(i-1).getCDictionary().getEnabled()) {
 		str.append("<option value='"+labRoom.getId()+"/"+agentList.get(i-1).getId()+"'>监控"+
+//		str.append("<option value='"+agentList.get(i-1).getId()+"'>监控"+
 		j+"</option>");
 		j++;
 			}
