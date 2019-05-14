@@ -52,7 +52,7 @@ layui.define(function(e) {
 					title: "应急预案",
 					minWidth: 80,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.eight }}" target="_blank" class="layui-table-link">{{ d.eight }}</div>'
+					templet: '<div><a href="../cite/document.html" class="layui-table-link">{{ d.eight }}</div>'
 				}]
 			],
 			skin: "line"
@@ -81,25 +81,25 @@ layui.define(function(e) {
 					title: "视频",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.three }}" target="_blank" class="layui-table-link">{{ d.three }}</div>'
+					templet: '<div><a href="../cite/video.html" class="layui-table-link">{{ d.three }}</div>'
 				}, {
 					field: "four",
 					title: "出入记录",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.four }}" target="_blank" class="layui-table-link">{{ d.four }}</div>'
+					templet: '<div><a href="entryExitRecords.html" class="layui-table-link">{{ d.four }}</div>'
 				}, {
 					field: "five",
 					title: "异常记录",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.five }}" target="_blank" class="layui-table-link">{{ d.five }}</div>'
+					templet: '<div><a href="abnormalRecords.html" class="layui-table-link">{{ d.five }}</div>'
 				}, {
 					field: "six",
 					title: "截图上报",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.six }}" target="_blank" class="layui-table-link">{{ d.six }}</div>'
+					templet: '<div><a href="../cite/newInspectGrading.html" class="layui-table-link">{{ d.six }}</div>'
 				}]
 			],
 			skin: "line"
@@ -148,13 +148,13 @@ layui.define(function(e) {
 					title: "相关事项",
 					minWidth: 100,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="logRecords.html" class="layui-table-link">{{ d.seven }}</div>'
 				}, {
 					field: "eight",
 					title: "出入日志",
 					minWidth: 100,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.eight }}" target="_blank" class="layui-table-link">{{ d.eight }}</div>'
+					templet: '<div><a href="entryExitRecords.html" class="layui-table-link">{{ d.eight }}</div>'
 				}]
 			],
 			skin: "line"
@@ -208,7 +208,7 @@ layui.define(function(e) {
 					title: "相关图片",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.eight }}" target="_blank" class="layui-table-link">{{ d.eight }}</div>'
+					templet: '<div><a href="../cite/image.html" class="layui-table-link">{{ d.eight }}</div>'
 				}]
 			],
 			skin: "line"
@@ -257,7 +257,7 @@ layui.define(function(e) {
 					title: "出入记录",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/training.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"
@@ -306,7 +306,76 @@ layui.define(function(e) {
 					title: "所属预案",
 					minWidth: 180,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/document.html" class="layui-table-link">{{ d.seven }}</div>'
+				}]
+			],
+			skin: "line"
+		}),e.render({
+			elem: "#entryExitRecords",
+			url: layui.setter.base + "json/lab/entryExitRecords.js",
+			title: '出入记录',
+			page: !0,
+			cellMinWidth: 50,
+			cols: [
+				[{
+					type: "numbers",
+					fixed: "left"
+				}, {
+					field: "one",
+					title: "操作人",
+					minWidth: 50,
+					sort: !0
+				}, {
+					field: "two",
+					title: "具体操作",
+					minWidth: 50,
+					sort: !0
+				}]
+			],
+			skin: "line"
+		}),e.render({
+			elem: "#abnormalRecords",
+			url: layui.setter.base + "json/lab/abnormalRecords.js",
+			title: '异常记录',
+			page: !0,
+			cellMinWidth: 50,
+			cols: [
+				[{
+					type: "numbers",
+					fixed: "left"
+				}, {
+					field: "one",
+					title: "操作人",
+					minWidth: 50,
+					sort: !0
+				}, {
+					field: "two",
+					title: "具体操作",
+					minWidth: 50,
+					sort: !0
+				}]
+			],
+			skin: "line"
+		}),e.render({
+			elem: "#logRecords",
+			url: layui.setter.base + "json/lab/logRecords.js",
+			title: '出入日志',
+			page: !0,
+			cellMinWidth: 50,
+			cols: [
+				[{
+					type: "numbers",
+					fixed: "left"
+				}, {
+					field: "one",
+					title: "操作人",
+					minWidth: 50,
+					sort: !0
+				}, {
+					field: "two",
+					title: "具体操作",
+					minWidth: 50,
+					sort: !0
 				}]
 			],
 			skin: "line"

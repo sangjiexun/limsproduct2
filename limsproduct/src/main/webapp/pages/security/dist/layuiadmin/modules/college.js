@@ -52,7 +52,7 @@ layui.define(function(e) {
 					title: "隐患整改",
 					minWidth: 150,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.eight }}" target="_blank" class="layui-table-link">{{ d.eight }}</div>'
+					templet: '<div><a href="../cite/listInspectGrading.html" class="layui-table-link">{{ d.eight }}</div>'
 				}]
 			],
 			skin: "line"
@@ -152,7 +152,7 @@ layui.define(function(e) {
 					title: "相关协议",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/document.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"
@@ -250,7 +250,7 @@ layui.define(function(e) {
 					title: "培训成绩",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/training.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"
@@ -299,7 +299,7 @@ layui.define(function(e) {
 					title: "预案查看",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/document.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"

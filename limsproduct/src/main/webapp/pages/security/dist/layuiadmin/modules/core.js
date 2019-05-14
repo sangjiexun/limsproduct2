@@ -97,19 +97,19 @@ layui.define(function(e) {
 					title: "安全标识",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.five }}" target="_blank" class="layui-table-link">{{ d.five }}</div>'
+					templet: '<div><a href="../cite/image.html" class="layui-table-link">{{ d.five }}</div>'
 				}, {
 					field: "six",
 					title: "应急措施",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.six }}" target="_blank" class="layui-table-link">{{ d.six }}</div>'
+					templet: '<div><a href="../cite/document.html" class="layui-table-link">{{ d.six }}</div>'
 				}, {
 					field: "seven",
 					title: "查看视频",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/video.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"
@@ -163,7 +163,7 @@ layui.define(function(e) {
 					title: "查看附件",
 					minWidth: 100,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.eight }}" target="_blank" class="layui-table-link">{{ d.eight }}</div>'
+					templet: '<div><a href="../cite/document.html" class="layui-table-link">{{ d.eight }}</div>'
 				}]
 			],
 			skin: "line"
@@ -197,7 +197,7 @@ layui.define(function(e) {
 					title: "问题发现",
 					minWidth: 250,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.four }}" target="_blank" class="layui-table-link">{{ d.four }}</div>'
+					templet: '<div><a href="../cite/listInspectGrading.html" class="layui-table-link">{{ d.four }}</div>'
 				}, {
 					field: "five",
 					title: "问题反馈",
@@ -256,7 +256,7 @@ layui.define(function(e) {
 					title: "培训成绩",
 					minWidth: 100,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/training.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"
@@ -305,7 +305,7 @@ layui.define(function(e) {
 					title: "演练明细",
 					minWidth: 120,
 					sort: !0,
-					templet: '<div><a href="https://www.baidu.com/s?wd={{ d.seven }}" target="_blank" class="layui-table-link">{{ d.seven }}</div>'
+					templet: '<div><a href="../cite/training.html" class="layui-table-link">{{ d.seven }}</div>'
 				}]
 			],
 			skin: "line"
