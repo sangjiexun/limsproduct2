@@ -1,5 +1,6 @@
 package net.zjcclims.web.system;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.persistence.EntityManager;
@@ -291,15 +292,15 @@ public class SystemLogController {
 		ModelAndView mav = new ModelAndView();
 
 		//每页20条记录
-		int limit = 20;
+		int pagesize = 20;
 		String currpage = request.getParameter("currpage");
 
         StringBuffer sql = new StringBuffer("select distinct o from OperationItem o order by o.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
-        int total = query.getResultList().size();
-        query.setMaxResults(limit);
-        int firstResult = (Integer.valueOf(currpage)-1) * limit;
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<OperationItem> operationItemList = query.getResultList();
         List<ExperimentalScheduleVO> experimentalScheduleVOs = new ArrayList<ExperimentalScheduleVO>();
@@ -339,8 +340,10 @@ public class SystemLogController {
             experimentalScheduleVOs.add(experimentalScheduleVO);
             i++;
         }
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
-        mav.addObject("total",total);
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
         mav.addObject("experimentalScheduleVOs",experimentalScheduleVOs);
 
 		mav.setViewName("reports/systemLog/listExperimentalSchedule.jsp");
@@ -358,19 +361,35 @@ public class SystemLogController {
         ModelAndView mav = new ModelAndView();
 
         //每页20条记录
-        int limit = 20;
+        int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
         StringBuffer sql = new StringBuffer("select distinct l from LabRoomDeviceLending l order by l.id asc");
         Query query = entityManager.createQuery(sql.toString());
-        int total = query.getResultList().size();
-        query.setMaxResults(limit);
-        int firstResult = (Integer.valueOf(currpage)-1) * limit;
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<LabRoomDeviceLending> labRoomDeviceLendingList = query.getResultList();
+		List<InstrumentLendingegistrationVO> InstrumentLendingegistrationVOs = new ArrayList<InstrumentLendingegistrationVO>();
+		for(LabRoomDeviceLending labRoomDeviceLending :labRoomDeviceLendingList){
+            InstrumentLendingegistrationVO instrumentLendingegistrationVO = new InstrumentLendingegistrationVO();
+            instrumentLendingegistrationVO.setLendingTime(labRoomDeviceLending.getLendingTime().toString());
+            instrumentLendingegistrationVO.setDeviceName(labRoomDeviceLending.getLabRoomDevice().getSchoolDevice().getDeviceName());
+            instrumentLendingegistrationVO.setNumber("1");
+            instrumentLendingegistrationVO.setLendingUser(labRoomDeviceLending.getUserByLendingUser().getCname());
+            if(labRoomDeviceLending.getBackTime()!=null){
+                instrumentLendingegistrationVO.setBackTime(labRoomDeviceLending.getBackTime().toString());
+            }
+            instrumentLendingegistrationVO.setBackStatus(labRoomDeviceLending.getCDictionary().getCName());
+            InstrumentLendingegistrationVOs.add(instrumentLendingegistrationVO);
+        }
 
-        mav.addObject("total",total);
-        mav.addObject("labRoomDeviceLendingList",labRoomDeviceLendingList);
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
+        mav.addObject("InstrumentLendingegistrationVOs",InstrumentLendingegistrationVOs);
 
         mav.setViewName("reports/systemLog/listInstrumentLendingegistration.jsp");
         return mav;
@@ -385,6 +404,24 @@ public class SystemLogController {
     @RequestMapping(value="/log/listReceiptOfLowValueConsumables")
     public ModelAndView listReceiptOfLowValueConsumables(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
+
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+
+        StringBuffer sql = new StringBuffer("select distinct a from Asset a where a.category = 8 order by a.id asc");
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<Asset> assetList = query.getResultList();
+
+
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
 
         mav.setViewName("reports/systemLog/listReceiptOfLowValueConsumables.jsp");
         return mav;
