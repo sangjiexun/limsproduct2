@@ -1,16 +1,17 @@
 package net.zjcclims.web.system;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.LabAnnexDAO;
 import net.zjcclims.dao.LabCenterDAO;
-import net.zjcclims.domain.SchoolTerm;
-import net.zjcclims.domain.SystemLog;
+import net.zjcclims.dao.OperationItemDAO;
+import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.system.SystemLogService;
 
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import net.gvsun.lims.vo.OpenProjectRelatedReports.*;
 
 /**
  * Spring MVC controller that handles CRUD requests for SystemLog entities
@@ -41,6 +43,9 @@ public class SystemLogController {
 	@Autowired private VirtualService virtualService;
 	@Autowired private LabCenterDAO labCenterDAO;
 	@Autowired private LabAnnexDAO labAnnexDAO;
+	@Autowired private OperationItemDAO operationItemDAO;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register static property editors.
@@ -284,6 +289,51 @@ public class SystemLogController {
 	@RequestMapping(value="/log/listExperimentalSchedule")
 	public ModelAndView listExperimentalSchedule(HttpServletRequest request){
 		ModelAndView mav = new ModelAndView();
+
+		//每页20条记录
+		int limit = 20;
+		String currpage = request.getParameter("currpage");
+
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o order by o.id asc");
+
+        Query query = entityManager.createQuery(sql.toString());
+        int total = query.getResultList().size();
+        query.setMaxResults(limit);
+        int firstResult = (Integer.valueOf(currpage)-1) * limit;
+        query.setFirstResult(firstResult);
+        List<OperationItem> operationItemList = query.getResultList();
+        List<ExperimentalScheduleVO> experimentalScheduleVOs = new ArrayList<ExperimentalScheduleVO>();
+
+        int i = 1;
+        for(OperationItem operationItem :operationItemList){
+            ExperimentalScheduleVO experimentalScheduleVO = new ExperimentalScheduleVO();
+            experimentalScheduleVO.setId(i);
+            //实验名称
+            experimentalScheduleVO.setItemName(operationItem.getLpName());
+            //器材-实验物资
+            Set<ItemAssets> itemAssets = operationItem.getItemAssets();
+            String Asset = "";
+            for(ItemAssets itemAsset : itemAssets){
+                Asset = Asset + itemAsset.getAsset().getChName();
+            }
+            experimentalScheduleVO.setItemAssets(Asset);
+            //器材-实验设备
+            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+            String device = "";
+            for(OperationItemDevice operationItemDevice : operationItemDevices){
+                device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+            }
+            experimentalScheduleVO.setItemDecvices(device);
+            //实验类型
+            experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+            //计划时间
+            experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
+            experimentalScheduleVOs.add(experimentalScheduleVO);
+            i++;
+        }
+        //总记录数
+        mav.addObject("total",total);
+        mav.addObject("experimentalScheduleVOs",experimentalScheduleVOs);
 
 		mav.setViewName("reports/systemLog/listExperimentalSchedule.jsp");
 		return mav;
