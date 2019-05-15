@@ -349,6 +349,21 @@ public class SystemLogController {
     public ModelAndView listInstrumentLendingegistration(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        //每页20条记录
+        int limit = 20;
+        String currpage = request.getParameter("currpage");
+
+        StringBuffer sql = new StringBuffer("select distinct l from LabRoomDeviceLending l order by l.id asc");
+        Query query = entityManager.createQuery(sql.toString());
+        int total = query.getResultList().size();
+        query.setMaxResults(limit);
+        int firstResult = (Integer.valueOf(currpage)-1) * limit;
+        query.setFirstResult(firstResult);
+        List<LabRoomDeviceLending> labRoomDeviceLendingList = query.getResultList();
+
+        mav.addObject("total",total);
+        mav.addObject("labRoomDeviceLendingList",labRoomDeviceLendingList);
+
         mav.setViewName("reports/systemLog/listInstrumentLendingegistration.jsp");
         return mav;
     }
