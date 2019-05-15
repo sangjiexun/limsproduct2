@@ -275,4 +275,116 @@ public class SystemLogController {
 		return mav;
 	}
 
+	/*************************************************************************************
+	 * Description:开放项目相关报表--实验计划表
+	 *
+	 * @author: Hezhaoyi
+	 * @date: 2019-5-15
+	 *************************************************************************************/
+	@RequestMapping(value="/log/listExperimentalSchedule")
+	public ModelAndView listExperimentalSchedule(HttpServletRequest request){
+		ModelAndView mav = new ModelAndView();
+
+		mav.setViewName("reports/systemLog/listExperimentalSchedule.jsp");
+		return mav;
+	}
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--仪器借出登记表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listInstrumentLendingegistration")
+    public ModelAndView listInstrumentLendingegistration(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listInstrumentLendingegistration.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--低值易耗品领用登记单
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listReceiptOfLowValueConsumables")
+    public ModelAndView listReceiptOfLowValueConsumables(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listReceiptOfLowValueConsumables.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--药品出库登记表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listDrugDepotRegistrationForm")
+    public ModelAndView listDrugDepotRegistrationForm(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listDrugDepotRegistrationForm.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--耗材领用记录单
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listConsumablesAcquisitionRecordSheet")
+    public ModelAndView listConsumablesAcquisitionRecordSheet(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listConsumablesAcquisitionRecordSheet.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--实验通知单
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listLaboratoryNotice")
+    public ModelAndView listLaboratoryNotice(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listLaboratoryNotice.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--分组实验通知、教学记录单
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listTeachingRecordSheet")
+    public ModelAndView listTeachingRecordSheet(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listTeachingRecordSheet.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--实验开出情况统计表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listStatisticalTableOfExperiments")
+    public ModelAndView listStatisticalTableOfExperiments(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("reports/systemLog/listStatisticalTableOfExperiments.jsp");
+        return mav;
+    }
+
 }
