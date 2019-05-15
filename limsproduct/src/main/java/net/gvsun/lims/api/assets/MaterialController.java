@@ -231,7 +231,6 @@ public class MaterialController {
         String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId());
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             assetsApplyItemDTO.setCabinet(s);
-            materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
         }
        return s;
     }
@@ -550,6 +549,8 @@ public class MaterialController {
         assetReceive.setStatus(4);//确认领用
 //        Calendar calendar=Calendar.getInstance();
 //        assetReceive.setStartData(calendar);//更新领用时间为开始时间
+        //更新库存并生成领用
+        materialService.saveAssetsCabinetRecordFromReceive(id);
         assetReceiveDAO.store(assetReceive);
         return "success";
     }
@@ -565,23 +566,9 @@ public class MaterialController {
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(5);//确认归还
         Calendar calendar=Calendar.getInstance();
-        assetReceive.setEndDate(calendar);//更新领用时间为开始时间
-        assetReceiveDAO.store(assetReceive);
-        return "success";
-    }
-    /**
-     * Description 确认物资余料归还
-     * @param id 参数封装DTO
-     * @return 成功-"success"，失败-"fail"
-     * @author 吴奇臻 2019-4-2
-     */
-    @RequestMapping("/confirmReturnAssetsReceiveRemain")
-    @ResponseBody
-    public String confirmReturnAssetsReceiveRemain(@RequestParam Integer id){
-        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
-        assetReceive.setStatus(5);//确认归还
-        Calendar calendar=Calendar.getInstance();
-        assetReceive.setEndDate(calendar);//更新领用时间为开始时间
+        assetReceive.setEndDate(calendar);//更新结束时间为归还时间
+        //更新库存并生成领用
+        materialService.saveAssetsCabinetRecordFromReceive(id);
         assetReceiveDAO.store(assetReceive);
         return "success";
     }

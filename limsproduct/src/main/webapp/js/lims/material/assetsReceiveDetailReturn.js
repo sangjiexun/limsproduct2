@@ -211,7 +211,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active = {
         confirmReturnAssetsReceive: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/confirmReturnAssetsReceiveRemain?id='+id,
+                url: contextPath + '/lims/api/material/confirmReturnAssetsReceive?id='+id,
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",

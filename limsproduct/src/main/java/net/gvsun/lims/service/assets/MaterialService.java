@@ -296,6 +296,18 @@ public interface MaterialService {
     void saveAssetsCabinetRecordFromInStorage(Integer id);
 
     /**
+     * 根据申领id生成出入库记录
+     * @param id 名录id
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-4-2
+     */
+    void saveAssetsCabinetRecordFromReceive(Integer id);
+
+
+
+
+
+    /**
      * 根据物品柜id和物资id确认物品柜物资记录
      * =
      * * @return 状态字符串

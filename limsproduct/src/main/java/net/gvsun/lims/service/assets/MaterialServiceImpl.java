@@ -386,7 +386,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON u.username = ar.app_user\n" +
-                "LEFT JOIN asset_classification ac on ar.category_id=ac.id";
+                "LEFT JOIN asset_classification ac on ar.category_id=ac.id WHERE 1=1 ";
         if(status!=null&&!status.equals("")){
             sql+=" and ar.status = "+status+"";
         }
@@ -1490,8 +1490,53 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetAccessRecord.setAssetId(Integer.parseInt(o[1].toString()));
             assetCabinetAccessRecord.setCreateDate(new Date());
             assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[2].toString()));
-            assetCabinetAccessRecord.setType("物资入库");
+            assetCabinetAccessRecord.setType("InStorage");
             assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
+            assetCabinetAccessRecord.setCabinetId(Integer.parseInt(o[0].toString()));
+            assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);
+        }
+    }
+
+    /**
+     * 根据申领id生成出入库记录
+     * @param id 名录id
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-5-15
+     */
+    public void saveAssetsCabinetRecordFromReceive(Integer id){
+        String sql="SELECT\n" +
+                "\tarr.asset_id,\n" +
+                "\tarr.quantity,\n" +
+                "\tarr.cabinet_id,\n" +
+                "  arr.return_quantity,\n" +
+                "  ar.status,\n" +
+                "  ac.is_need_return\n" +
+                "FROM\n" +
+                "\tasset_receive_record arr\n" +
+                "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
+                "LEFT JOIN asset_classification ac on ar.category_id=ac.id\n" +
+                "WHERE 1=1 and ar.id="+id;
+        Query query=entityManager.createNativeQuery(sql);//获取入库具体条目
+        List<Object[]> objects=query.getResultList();
+        for(Object[] o:objects){
+            //生成领用记录
+            AssetCabinetAccessRecord assetCabinetAccessRecord=new AssetCabinetAccessRecord();
+            assetCabinetAccessRecord.setAppId(id);
+            assetCabinetAccessRecord.setAssetId(Integer.parseInt(o[0].toString()));
+            assetCabinetAccessRecord.setCreateDate(new Date());
+            if(Integer.parseInt(o[4].toString())==4) {//
+                assetCabinetAccessRecord.setType("ReceiveReturn");
+                if(Integer.parseInt(o[5].toString())==0) {//余料归还
+                    assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[3].toString()));
+                }else{//领用归还
+                    assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+                }
+            }else{//领用
+                assetCabinetAccessRecord.setType("Receive");
+                assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+            }
+            assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
+            assetCabinetAccessRecord.setCabinetId(Integer.parseInt(o[2].toString()));
             assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);
         }
     }
@@ -1718,6 +1763,7 @@ public class MaterialServiceImpl implements MaterialService {
                     assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+assetReceiveRecord.getQuantity().intValue()-quantity);
                 }else{
                     assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
+
                 }
                 assetCabinetRecordDAO.store(assetCabinetRecord);
                 return cabinetId.toString();
