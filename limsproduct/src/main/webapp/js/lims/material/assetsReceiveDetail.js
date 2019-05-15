@@ -106,27 +106,15 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             layui.form.render("select");
         }
     });
-    //上传
-    var paclistView = $('#paclist');
-    // 获取图片
+    //获取审核标志位
     $.ajax({
-        url: contextPath + '/lims/api/material/getAssetsRelatedImage?id='+id+'&&type='+"assetReceive",
-        async: false,
-        type: "GET",
-        contentType: "application/json;charset=UTF-8",
-        success:function (data) {
-            $.each(data, function (index, item) {
-                var image="";
-                image +='<img class="img" ';
-                image +=' src="'+item.imageUrl+'" ';
-                image +=' width="50" ';
-                image +=' height="50" ';
-                image +=' onclick="previewImg(this)">';
-                var tr = $(['<tr id="upload-' + index + '">', '<td class="wordbreak">' + item.imageName + '</td>', '<td>' + item.imageSize + '</td>', '<td>上传成功</td>',  '<td></td>', '</tr>'].join('')),
-                    tds = tr.children();
-                tds.eq(3).html(image);
-                paclistView.append(tr);
-            });
+        url: contextPath+'/lims/api/material/getAssetsReceiveAuditFlag?id='+id,
+        dataType: 'json',
+        type: 'get',
+        success: function (data) {
+            if(data!==true){
+                $("#check").hide();
+            }
         }
     });
     var tableIns=table.render({

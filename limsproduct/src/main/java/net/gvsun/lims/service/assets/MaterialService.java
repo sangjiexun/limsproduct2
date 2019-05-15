@@ -82,7 +82,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-1
      */
-    JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status);
+    JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status,HttpServletRequest request);
 
     /**
      * 物资申购条目列表
@@ -112,10 +112,17 @@ public interface MaterialService {
      * 物资申领条目列表
      * @param page 页当前数
      * @param limit 当前页限制大小
-     * * @return 状态字符串
      * @author 吴奇臻 2019-3-26
      */
     JSONObject findAllAssetReceiveItemList(Integer page, Integer limit,Integer id);
+
+    /**
+     * 物资出入库记录列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * @author 吴奇臻 2019-5-15
+     */
+    JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id);
     /**
      * 物资申领条目列表
      * * @return 状态字符串

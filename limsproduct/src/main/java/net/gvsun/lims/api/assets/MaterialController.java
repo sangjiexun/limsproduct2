@@ -116,7 +116,7 @@ public class MaterialController {
     @RequestMapping("/assetsReceiveList")
     @ResponseBody
     public String assetsReveiveList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status){
-        JSONObject jsonObject = materialService.findAllAssetReceiveList(page,limit,status);
+        JSONObject jsonObject = materialService.findAllAssetReceiveList(page,limit,status,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -157,6 +157,20 @@ public class MaterialController {
     @ResponseBody
     public String assetsReceiveItemList(HttpServletRequest request, @RequestParam Integer page, Integer limit,Integer id){
         JSONObject jsonObject = materialService.findAllAssetReceiveItemList(page,limit,id);
+        return shareService.htmlEncode(jsonObject.toJSONString());
+    }
+
+    /**
+     * 物资出入库记录表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return json字符串格式的分类列表
+     * @author 吴奇臻 2019-05-15
+     */
+    @RequestMapping("/assetCabinetAccessRecordList")
+    @ResponseBody
+    public String assetCabinetAccessRecordList(HttpServletRequest request, @RequestParam Integer page, Integer limit,Integer id){
+        JSONObject jsonObject = materialService.findAllAssetCabinetAccessRecordList(page,limit,id);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -214,7 +228,7 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
-        String s=materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity(),Integer.parseInt(assetsApplyItemDTO.getId()));
+        String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId());
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             assetsApplyItemDTO.setCabinet(s);
             materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
@@ -334,6 +348,23 @@ public class MaterialController {
         AssetStorage assetStorage=materialService.findAssetStorageById(id);
         String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
         if(assetStorage.getCurAuditLevel().equals(authorityName)){
+            flag=true;
+        }
+        return flag;
+    }
+    /**
+     * Description 获取物资申购审核标志位
+     * @param id 参数封装DTO
+     * @return 是-"success"，否-"fail"
+     * @author 吴奇臻 2019-4-17
+     */
+    @RequestMapping("/getAssetsReceiveAuditFlag")
+    @ResponseBody
+    public Boolean getAssetsReceiveAuditFlag(HttpServletRequest request,@RequestParam Integer id){
+        boolean flag=false;
+        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
+        String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
+        if(assetReceive.getCurAuditLevel().equals(authorityName)){
             flag=true;
         }
         return flag;
@@ -517,8 +548,8 @@ public class MaterialController {
     public String confirmAssetsReceive(@RequestParam Integer id){
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(4);//确认领用
-        Calendar calendar=Calendar.getInstance();
-        assetReceive.setStartData(calendar);//更新领用时间为开始时间
+//        Calendar calendar=Calendar.getInstance();
+//        assetReceive.setStartData(calendar);//更新领用时间为开始时间
         assetReceiveDAO.store(assetReceive);
         return "success";
     }

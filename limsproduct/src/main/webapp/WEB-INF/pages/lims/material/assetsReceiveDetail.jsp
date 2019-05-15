@@ -92,26 +92,6 @@
                     </div>
                 </div>
             </div>
-            <%--<div class="layui-col-lg12">--%>
-                <%--<label class="layui-form-label">物资图片</label>--%>
-                <%--<div class="layui-input-block mix_uploadbox">--%>
-                    <%--<div class="layui-upload">--%>
-                        <%--<div class="layui-upload-list">--%>
-                            <%--<table class="layui-table">--%>
-                                <%--<thead>--%>
-                                <%--<tr>--%>
-                                    <%--<th>文件名</th>--%>
-                                    <%--<th>大小</th>--%>
-                                    <%--<th>状态</th>--%>
-                                    <%--<th>缩略图</th>--%>
-                                <%--</tr>--%>
-                                <%--</thead>--%>
-                                <%--<tbody id="paclist"></tbody>--%>
-                            <%--</table>--%>
-                        <%--</div>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
             <div class="layui-form-item">
                 <div class="layui-input-block" id="check">
                     <button data-method="admitAssetsReceive" class="layui-btn admit_btn">通过</button>

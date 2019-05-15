@@ -34,7 +34,7 @@
 <button id="renderPdf">导出到PDF</button>
 <input type="hidden" id="appId" value="${id}">
 <div class="title">
-    <span>盐城工学院材料领(发)料单</span>
+    <span>材料领(发)料单</span>
 </div>
 <div class="top">
     <div class="intro">

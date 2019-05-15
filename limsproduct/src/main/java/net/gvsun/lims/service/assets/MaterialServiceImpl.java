@@ -370,7 +370,7 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-1
      */
-    public JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status){
+    public JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status,HttpServletRequest request){
         List<AssetsReceiveDTO> assetsReceiveDTOList=new ArrayList<>();
         //查询语句
         String sql="SELECT\n" +
@@ -381,13 +381,29 @@ public class MaterialServiceImpl implements MaterialService {
                 "  ac.cname,\n" +
                 "\tar. STATUS,\n" +
                 "\tar.asset_usage,\n" +
-                "\tac.is_need_return\n" +
+                "\tac.is_need_return,\n" +
+                "  ar.cur_audit_level\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON u.username = ar.app_user\n" +
                 "LEFT JOIN asset_classification ac on ar.category_id=ac.id";
         if(status!=null&&!status.equals("")){
             sql+=" and ar.status = "+status+"";
+        }
+        //添加权限相关筛选条件
+        String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
+        User user=shareService.getUser();//获得用户
+        String username=user.getUsername();//用户编号
+        if(authorityName.equals("ROLE_TEACHER")){
+            sql+=" and ar.app_user = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
+            List<Integer> centerIds=this.getCenterIDListFormUsername(username);
+            sql+=" and ( ";
+            for(int i=0;i<centerIds.size()-1;i++){
+                sql+=" ar.center_id ="+centerIds.get(i)+" or";
+            }
+            sql+=" ar.center_id ="+centerIds.get(centerIds.size()-1)+" )";
         }
         sql+=" order by ar.receive_date desc";
         Query query=entityManager.createNativeQuery(sql);
@@ -405,6 +421,14 @@ public class MaterialServiceImpl implements MaterialService {
             assetsReceiveDTO.setStatus(o[5]!=null?o[5].toString():null);
             assetsReceiveDTO.setPurpose(o[6]!=null?o[6].toString():null);
             assetsReceiveDTO.setIsNeedReturn(o[7]!=null?Integer.parseInt(o[7].toString()):null);
+            if(o[8]!=null) {
+                assetsReceiveDTO.setCurAuditLevel(o[8].toString());
+                if(authorityName.split("_")[1].equals(o[8].toString())){
+                    assetsReceiveDTO.setAuditFlag(1);
+                }else{
+                    assetsReceiveDTO.setAuditFlag(0);
+                }
+            }
             assetsReceiveDTOList.add(assetsReceiveDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -607,6 +631,49 @@ public class MaterialServiceImpl implements MaterialService {
         JSONObject jsonObject=this.getJSON(materialListDTOList,totalRecords);
         return jsonObject;
     }
+
+    /**
+     * 物资出入库记录列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * @author 吴奇臻 2019-5-15
+     */
+    public JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id){
+        List<AssetsCabinetAccessRecordDTO> assetsCabinetAccessRecordDTOList=new ArrayList<>();
+        String sql="SELECT\n" +
+                "\tacar.app_id,\n" +
+                "\tacar.type,\n" +
+                "\tacar.create_date,\n" +
+                "\tCONCAT(u.cname,\"(\",u.username,\")\") as username,\n" +
+                "  ac.cabinet_name,\n" +
+                "\tacar.quantity,\n" +
+                "  acr.stock_number\n" +
+                "FROM\n" +
+                "\tasset_cabinet_access_record acar\n" +
+                "INNER JOIN asset_cabinet_record acr ON (acar.cabinet_id = acr.cabinet_id and acar.asset_id = acr.asset_id)\n" +
+                "LEFT JOIN asset_cabinet ac on acar.cabinet_id=ac.id\n" +
+                "LEFT JOIN user u on acar.username=u.username\n" +
+                "where acar.asset_id="+id;
+        int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
+        Query query=entityManager.createNativeQuery(sql);
+        //分页
+        query.setMaxResults(limit);
+        query.setFirstResult((page-1)*limit);
+        List<Object[]> assetAccessRecordList=query.getResultList();
+        for(Object[] o:assetAccessRecordList){
+            AssetsCabinetAccessRecordDTO assetsCabinetAccessRecordDTO=new AssetsCabinetAccessRecordDTO();
+            assetsCabinetAccessRecordDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+            assetsCabinetAccessRecordDTO.setRecordType(o[1]!=null?(o[1].toString()):null);
+            assetsCabinetAccessRecordDTO.setDate(o[2]!=null?(o[2].toString()):null);
+            assetsCabinetAccessRecordDTO.setUsername(o[3]!=null?(o[3].toString()):null);
+            assetsCabinetAccessRecordDTO.setCabinetName(o[4]!=null?(o[4].toString()):null);
+            assetsCabinetAccessRecordDTO.setQuantity(o[5]!=null?(o[5].toString()):null);
+            assetsCabinetAccessRecordDTO.setAmount(o[6]!=null?(o[6].toString()):null);
+            assetsCabinetAccessRecordDTOList.add(assetsCabinetAccessRecordDTO);
+        }
+        JSONObject jsonObject=this.getJSON(assetsCabinetAccessRecordDTOList,totalRecords);
+        return jsonObject;
+    }
     /**
      * 物资申领条目列表
      * * @return 状态字符串
@@ -751,7 +818,7 @@ public class MaterialServiceImpl implements MaterialService {
         }
         //修改数量后进行价格计算
         if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")){
-            assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(Integer.parseInt(assetsApplyItemDTO.getId()));
+            assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(assetsApplyItemDTO.getId());
             new_price=old_price-assetAppRecord.getTotalPrice()+price;
         }else {
             new_price = price + old_price;
@@ -797,7 +864,7 @@ public class MaterialServiceImpl implements MaterialService {
         AssetReceiveRecord assetReceiveRecord=new AssetReceiveRecord();
         try{
             if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")) {
-                assetReceiveRecord.setId(Integer.parseInt(assetsApplyItemDTO.getId()));
+                assetReceiveRecord.setId(assetsApplyItemDTO.getId());
             }
             assetReceiveRecord.setAssetReceive(assetReceiveDAO.findAssetReceiveById(Integer.parseInt(assetsApplyItemDTO.getAppId())));
             assetReceiveRecord.setAsset(assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId())));
@@ -830,7 +897,7 @@ public class MaterialServiceImpl implements MaterialService {
         AssetAppRecord assetAppRecord=new AssetAppRecord();
         try{
             if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")) {
-                assetAppRecord.setId(Integer.parseInt(assetsApplyItemDTO.getId()));
+                assetAppRecord.setId(assetsApplyItemDTO.getId());
             }
             assetAppRecord.setAssetApp(assetAppDAO.findAssetAppById(Integer.parseInt(assetsApplyItemDTO.getAppId())));
             assetAppRecord.setAsset(assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId())));
@@ -855,7 +922,7 @@ public class MaterialServiceImpl implements MaterialService {
     public boolean saveAssetsInStorageRecordDetail(AssetsApplyItemDTO assetsApplyItemDTO){
         AssetStorageRecord assetStorageRecord=new AssetStorageRecord();
         if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")){
-            assetStorageRecord=this.findAssetStorageRecordById(Integer.parseInt(assetsApplyItemDTO.getId()));//获取原assetStorageRecord
+            assetStorageRecord=this.findAssetStorageRecordById(assetsApplyItemDTO.getId());//获取原assetStorageRecord
             AssetStorage assetStorage=this.findAssetStorageById(Integer.parseInt(assetsApplyItemDTO.getAppId()));
             //价格计算
             BigDecimal bd=new BigDecimal(assetsApplyItemDTO.getPrice().toString());
@@ -1728,16 +1795,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (!"无需审核".equals(applyAudit) && !"".equals(applyAudit) && applyAudit != null) {
                 String[] strings1 = applyAudit.split(",");
                 for (int i = 0; i < strings1.length; i++) {
-                    if ("TEACHER".equals(strings1[i])) {
-                        applyAuditName += "教师" + "->";
+                    if ("OPEARTIONSECURITYMANAGEMENT".equals(strings1[i])) {
+                        applyAuditName += "运行与安全管理科" + "->";
                     } else if ("EXCENTERDIRECTOR".equals(strings1[i])) {
                         applyAuditName += "实验中心主任" + "->";
-                    } else if ("EQUIPMENTADMIN".equals(strings1[i])) {
-                        applyAuditName += "设备管理员" + "->";
-                    } else if ("CHARGEADMIN".equals(strings1[i])) {
-                        applyAuditName += "费用管理员" + "->";
-                    } else if ("TEAMHEADER".equals(strings1[i])) {
-                        applyAuditName += "课题组负责人" + "->";
                     }
                 }
                 applyAuditName = applyAuditName.substring(0, applyAuditName.length() - 2);
@@ -1749,16 +1810,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (!"无需审核".equals(storageAudit) && !"".equals(storageAudit) && storageAudit != null) {
                 String[] strings2 = storageAudit.split(",");
                 for (int j = 0; j < strings2.length; j++) {
-                    if ("TEACHER".equals(strings2[j])) {
-                        storageAuditName += "教师" + "->";
+                    if ("OPEARTIONSECURITYMANAGEMENT".equals(strings2[j])) {
+                        storageAuditName += "运行与安全管理科" + "->";
                     } else if ("EXCENTERDIRECTOR".equals(strings2[j])) {
                         storageAuditName += "实验中心主任" + "->";
-                    } else if ("EQUIPMENTADMIN".equals(strings2[j])) {
-                        storageAuditName += "设备管理员" + "->";
-                    } else if ("CHARGEADMIN".equals(strings2[j])) {
-                        storageAuditName += "费用管理员" + "->";
-                    } else if ("TEAMHEADER".equals(strings2[j])) {
-                        storageAuditName += "课题组负责人" + "->";
                     }
                 }
                 storageAuditName = storageAuditName.substring(0, storageAuditName.length() - 2);
@@ -1770,16 +1825,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (!"无需审核".equals(receiveAudit) && !"".equals(receiveAudit) && receiveAudit != null) {
                 String[] strings3 = receiveAudit.split(",");
                 for (int x = 0; x < strings3.length; x++) {
-                    if ("TEACHER".equals(strings3[x])) {
-                        receiveAuditName += "教师" + "->";
+                    if ("OPEARTIONSECURITYMANAGEMENT".equals(strings3[x])) {
+                        receiveAuditName += "运行与安全管理科" + "->";
                     } else if ("EXCENTERDIRECTOR".equals(strings3[x])) {
                         receiveAuditName += "实验中心主任" + "->";
-                    } else if ("EQUIPMENTADMIN".equals(strings3[x])) {
-                        receiveAuditName += "设备管理员" + "->";
-                    } else if ("CHARGEADMIN".equals(strings3[x])) {
-                        receiveAuditName += "费用管理员" + "->";
-                    } else if ("TEAMHEADER".equals(strings3[x])) {
-                        receiveAuditName += "课题组负责人" + "->";
                     }
                 }
                 receiveAuditName = receiveAuditName.substring(0, receiveAuditName.length() - 2);
@@ -2015,6 +2064,7 @@ public class MaterialServiceImpl implements MaterialService {
         }
         sql += "\nGROUP BY r.asset_id";
         Query query=entityManager.createNativeQuery(sql);
+        int totalRecords=query.getResultList().size();
         //分页
         query.setMaxResults(limit);
         query.setFirstResult((page-1)*limit);
@@ -2030,7 +2080,6 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetRecordDTO.setSum(o[6]!=null?o[6].toString():null);
             assetCabinetRecordDTOList.add(assetCabinetRecordDTO);
         }
-        int totalRecords=assetCabinetRecordList.size();
         JSONObject jsonObject=this.getJSON(assetCabinetRecordDTOList,totalRecords);
         return   jsonObject;
     }
