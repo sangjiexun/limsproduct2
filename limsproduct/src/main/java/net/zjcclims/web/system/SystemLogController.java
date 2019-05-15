@@ -313,21 +313,29 @@ public class SystemLogController {
             //器材-实验物资
             Set<ItemAssets> itemAssets = operationItem.getItemAssets();
             String Asset = "";
-            for(ItemAssets itemAsset : itemAssets){
-                Asset = Asset + itemAsset.getAsset().getChName();
+            if(itemAssets.size()!=0){
+                for(ItemAssets itemAsset : itemAssets){
+                    Asset = Asset + itemAsset.getAsset().getChName();
+                }
             }
             experimentalScheduleVO.setItemAssets(Asset);
             //器材-实验设备
             Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
             String device = "";
-            for(OperationItemDevice operationItemDevice : operationItemDevices){
-                device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+            if(operationItemDevices.size()!=0){
+                for(OperationItemDevice operationItemDevice : operationItemDevices){
+                    device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+                }
             }
             experimentalScheduleVO.setItemDecvices(device);
             //实验类型
-            experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+            if(operationItem.getCDictionaryByLpCategoryApp()!=null){
+                experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+            }
             //计划时间
-            experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
+            if(operationItem.getPlanWeek()!=null){
+                experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
+            }
             experimentalScheduleVOs.add(experimentalScheduleVO);
             i++;
         }
