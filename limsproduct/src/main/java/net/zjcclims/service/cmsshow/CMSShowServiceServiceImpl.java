@@ -1,26 +1,24 @@
 package net.zjcclims.service.cmsshow;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import excelTools.ExcelUtils;
+import excelTools.JsGridReportBase;
+import excelTools.TableData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.zjcclims.common.LabAttendance;
+import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.dao.CommonHdwlogDAO;
-import net.zjcclims.dao.LabCenterDAO;
-import net.zjcclims.dao.LabReservationDAO;
-import net.zjcclims.dao.LabRoomDAO;
-import net.zjcclims.dao.LabRoomDeviceDAO;
-import net.zjcclims.dao.LabRoomDeviceReservationDAO;
-import net.zjcclims.dao.SchoolAcademyDAO;
-import net.zjcclims.dao.UserDAO;
 
 import net.zjcclims.util.HttpClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +51,10 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	@Autowired
 	private SchoolAcademyDAO schoolAcademyDAO;
 	@Autowired
-	private LabCenterDAO labCenterDAO;
+	private LabRoomAgentDAO labRoomAgentDAO;
 	@PersistenceContext
 	EntityManager entityManager;
+
 	
 	
 	/*************************************************************************************
@@ -614,6 +613,13 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	public List<LabAttendance> findIotAttendanceByIp(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize){
 
 		List<Object[]> list = getCommonHwdlogList(commonHdwlog,ip,request,page,pageSize);
+		// 实验室名称
+		String lab_name = "";
+		Set<LabRoomAgent> labRoomAgents = labRoomAgentDAO.findLabRoomAgentByHardwareIp(ip);
+		if (labRoomAgents!=null) {
+			LabRoomAgent labRoomAgent = labRoomAgents.iterator().next();
+			lab_name = labRoomAgent.getLabRoom().getLabRoomName();
+		}
 
 		List<LabAttendance> labAttendances = new ArrayList<>();
 		for(Object[] temp: list){
@@ -626,6 +632,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 			}else {labAttendance.setClassName("");}
 			labAttendance.setMajor(temp[5].toString());//专业
 			labAttendance.setAttendanceTime(temp[6].toString());//考勤时间
+			labAttendance.setLabRoomName(lab_name);//实验室名称
 			labAttendances.add(labAttendance);
 		}
 
@@ -673,6 +680,99 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		Query query = entityManager.createNativeQuery(String.valueOf(sql));
 		List<Object[]> list = query.getResultList();
 		return list;
+	}
+
+	/**
+	 * Description 导出--实验室考勤名单
+	 * @param labAttendanceList
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 * @author 陈乐为 2019年5月15日
+	 */
+	public void exportLabAttendance(List<LabAttendance> labAttendanceList, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		//格式化时间
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String lab_name = "";
+		//新建一个mapList集合
+		List<Map> mapList = new ArrayList<Map>();
+		for(LabAttendance attendance : labAttendanceList){
+			lab_name = attendance.getLabRoomName();
+			// 新建一个HashMap对象
+			Map map = new HashMap();
+			// 姓名
+			if(attendance.getCname()!= null){
+				map.put("c_name", attendance.getCname());
+			}else{
+				map.put("c_name", "*");
+			}
+
+			// 学号
+			if(attendance.getUsername()!= null){
+				map.put("user_name", attendance.getUsername());
+			}else{
+				map.put("user_name", "*");
+			}
+
+			// 学院
+			if(attendance.getAcademyName()!= null){
+				map.put("academy_name", attendance.getAcademyName());
+			}else{
+				map.put("academy_name", "*");
+			}
+
+			// 班级
+			if(attendance.getClassName()!= null){
+				map.put("class_name", attendance.getClassName());
+			}else{
+				map.put("class_name", "*");
+			}
+
+			// 专业
+			if(attendance.getMajor()!= null){
+				map.put("major", attendance.getMajor());
+			}else{
+				map.put("major", "*");
+			}
+
+			// 时间
+			if(attendance.getAttendanceTime()!= null){
+				map.put("attendance_time", attendance.getAttendanceTime());
+			}else{
+				map.put("attendance_time", "*");
+			}
+
+			mapList.add(map);
+
+		}
+
+		//新建一个用来存放分sheet的List对象
+		List<List<Map>> wrapList = new ArrayList();
+		//定义一个sheet的最大条目容量
+		int quantity = 60000;
+		//定义起点坐标
+		int count = 0;
+		while (count < mapList.size()) {//判断equipments的容量能够分割成几个规定容量的List
+			wrapList.add(new ArrayList(mapList.subList(count, (count + quantity) > mapList.size() ? mapList.size() : count + quantity)));
+			count += quantity;
+		}
+
+		//给表设置名称
+		String title = lab_name+"学生考勤名单表";
+		//给表设置表头名
+		String[] hearders = new String[] {"姓名", "学号", "学院", "班级", "专业","时间"};
+		//属性数组，写数据到excel时的顺序定位
+		String[] fields = new String[] {"c_name", "user_name","academy_name","class_name","major","attendance_time"};
+		//新建一个TableData的集合
+		List<TableData> tableDataList = new ArrayList<TableData>();
+		for(List<Map> tempList : wrapList){//将所需导出的数据集合遍历并拼接表头信息
+			TableData td = ExcelUtils.createTableData(tempList, ExcelUtils.createTableHeader(hearders), fields);
+			tableDataList.add(td);
+		}
+		JsGridReportBase report = new JsGridReportBase(request, response);
+
+		report.exportToExcelForSheets(title, shareService.getUserDetail().getCname(), tableDataList);
+
 	}
 
 

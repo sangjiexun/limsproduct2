@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.constant.CommonConstantInterface;
@@ -702,6 +703,35 @@ public class TimetableAttendanceController {
 	public @ResponseBody
 	String updateAttendance(@RequestParam Integer flag, Integer agent_id) {
 		return timetableAttendanceService.updateAttendanceByJWT(flag, agent_id);
+	}
+
+	/**
+	 * Description 导出--实验室考勤学生名单
+	 * @param id
+	 * @param commonHdwlog
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 * @author 陈乐为 2019年5月15日
+	 */
+	@RequestMapping("/exportLabAttendance")
+	public void exportLabAttendance(@RequestParam Integer id,@ModelAttribute CommonHdwlog commonHdwlog,HttpServletRequest request,
+									   HttpServletResponse response) throws Exception {
+		//id对应的物联设备
+		LabRoomAgent agent=labRoomAgentDAO.findLabRoomAgentByPrimaryKey(id);
+		String ip=agent.getHardwareIp();
+		String port=agent.getManufactor();
+		List<LabAttendance> accessList =null;
+		// 根据配置项是否切换获取对应的数据
+		if(pConfig.newServer.equals("false")){
+			// 老版获取考勤数据
+			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,0,-1,request);
+		}else {
+			// 新版从iot获取数据
+			//页面显示的实验室
+			accessList=cmsShowService.findIotAttendanceByIp(commonHdwlog,ip,request,0,1);
+		}
+		cmsShowService.exportLabAttendance(accessList, request, response);
 	}
 
 

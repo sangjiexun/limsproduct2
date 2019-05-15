@@ -69,7 +69,11 @@ table{table-layout:fixed;}
 		}
 		window.location.href=url+page;
 	}
-	
+	// 查询
+	function researchForm() {
+		document.queryForm.action = "${pageContext.request.contextPath}/timetable/Attendance?id="+${id}+"&page=1";
+		document.queryForm.submit();
+	}
 	
 	function cancelQuery(){
 		window.location.href="${pageContext.request.contextPath}/timetable/Attendance?id="+${id}+"&page=1";
@@ -85,6 +89,12 @@ table{table-layout:fixed;}
 				alert("操作失败，请检查网络连接再尝试");
 			}
 		});
+	}
+
+	// 导出考勤名单
+	function exportAttendance(id) {
+		document.queryForm.action = "${pageContext.request.contextPath}/exportLabAttendance?id="+id;
+		document.queryForm.submit();
 	}
 </script>
 </head>
@@ -112,12 +122,13 @@ table{table-layout:fixed;}
 		<form:input id="username" path="username"/>
 		</li>
 
-		<li>考勤刷卡时间:<input id="starttime" class="Wdate" type="text" name="starttime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;" readonly />
-		</li><li>到<input id="endtime" class="Wdate" type="text" name="endtime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;"  readonly />
+		<li>考勤刷卡时间:<input id="starttime" class="Wdate" type="text" name="starttime" value="${starttime}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;" readonly />
+		</li><li>到<input id="endtime" class="Wdate" type="text" name="endtime" value="${endtime}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;"  readonly />
 		</li>
 	<li >
-	<input type="submit" value="提交" />
+	<input type="button" value="查询" onclick="researchForm();" />
 	<input class="cancel-submit" type="button" value="取消" onclick="cancelQuery();" />
+		<input type="button" value="导出" onclick="exportAttendance(${id});" />
 		<input type="button" value="下发考勤名单" onclick="attendance(1);" />
 		<input type="button" value="上传考勤记录" onclick="attendance(2);" />
 	</li>
