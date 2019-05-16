@@ -206,12 +206,11 @@ public class SystemLogController {
 	public ModelAndView listLabRoomUseUnplan(@RequestParam int currpage, int type,HttpServletRequest request){
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("roomName",request.getParameter("roomName"));
-		String term_id = request.getParameter("termId");
-		if(term_id != null && !term_id.equals("")) {
-			mav.addObject("term",request.getParameter("termId"));
-		}else {
-			term_id = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId().toString();
+		int term_id = term_id = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+		if(request.getParameter("termId") != null && !request.getParameter("termId").equals("")) {
+			term_id = Integer.valueOf(request.getParameter("termId"));
 		}
+		mav.addObject("term", term_id);
 		int base_id = 0;
 		int center_id = 0;
 		if (request.getParameter("base_id")!=null) {
@@ -228,7 +227,7 @@ public class SystemLogController {
 		int pageSize = 20;
 		// 参数封装
 		QueryParamsVO paramsVO = new QueryParamsVO();
-		paramsVO.setTerm_id(Integer.valueOf(term_id));
+		paramsVO.setTerm_id(term_id);
 		paramsVO.setQuery_params(request.getParameter("roomName"));
 		paramsVO.setType(type);
 		paramsVO.setCurr_page(currpage);

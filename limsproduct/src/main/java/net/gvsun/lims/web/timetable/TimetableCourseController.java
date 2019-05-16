@@ -198,6 +198,23 @@ public class TimetableCourseController<JsonResult> {
     }
 
     /************************************************************
+     * Descriptions：教务排课管理-学生判冲的主显示页面
+     * @作者：Hezhaoyi
+     * @时间：2019-5-14
+     ************************************************************/
+    @RequestMapping("/judgeTimetableConflictByStudent")
+    public ModelAndView judgeTimetableConflictByStudent(@ModelAttribute("selected_academy") String acno) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.addObject("courseNo",request.getParameter("courseNo"));
+        mav.addObject("term",request.getParameter("term"));
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+
+        mav.setViewName("lims/timetable/course/judgeTimetableConflictByStudent.jsp");
+        return mav;
+    }
+
+    /************************************************************
      * Descriptions：教务排课管理-教务直接排课的主显示页面
      *
      * @作者：魏诚

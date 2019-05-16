@@ -128,10 +128,19 @@
 				// async:false,
                 success:function(data){
                     alert(data);
-                    // window.location.reload();
                 }
             });
         }
+        // 远程开门
+		function openDoorNew(agentId, doorIndex) {
+			$.post('${pageContext.request.contextPath}/labRoom/openDoorNew?agentId='+agentId+'&doorIndex='+doorIndex,function(data){  //serialize()序列化
+				if(data=="success"){
+					alert("门禁已经打开");
+				}else{
+					alert("开门失败，请检查当网络连接或者再试一次。");
+				}
+			});
+		}
 	</script>
 	<style>
 		.btn {
@@ -170,11 +179,8 @@
 			background: #f7f7f7;
 			border-radius: 6px 6px 0 0;
 		}
-		.bootstrap-select .dropdown-menu .selected {
-			background: #409eff;
-		}
 		.bootstrap-select .dropdown-menu .selected a span.text,
-		.bootstrap-select.show-tick .dropdown-menu .selected span.check-mark{
+		.bootstrap-select.show-tick .dropdown-menu .selected span {
 			color:#fff;
 		}
 	</style>
@@ -344,31 +350,19 @@
 					<table class="tb" id="my_show">
 						<thead>
 						<tr>
-							<%--<th><a href="javascript:void(0);" onclick="orderByLabCenter()">所属实验中心</a></th>--%>
 							<th><a href="javascript:void(0);" onclick="orderByNumber()"><spring:message code="all.trainingRoom.labroom" />编号</a></th>
 							<th><a href="javascript:void(0);" onclick="orderByName()"><spring:message code="all.trainingRoom.labroom" />名称</a></th>
-							<%--<th><a href="javascript:void(0);" onclick="orderByRoomAddress()">房间号</a></th>
-                            --%>
 								<th>楼宇(楼层)</th>
 								<th><a href="javascript:void(0);" onclick="">所属中心</a></th>
 							<c:if test="${project eq 'zjcclims'}">
 								<th><a href="javascript:void(0);" onclick="orderByLevel()">等级</a></th>
 							</c:if>
 							<th><a href="javascript:void(0);" onclick="orderByCapacity()">容量</a></th>
-							<%--<th><a href="javascript:void(0);" onclick="orderByArea()">使用面积</a></th>
-                            --%><%--<th>房间号</th>--%>
 							<th><a href="javascript:void(0);" onclick="orderByActive()">使用状态</a></th>
 							<th><a href="javascript:void(0);" onclick="orderByReservation()">预约状态</a></th>
-								<%--
-								 <th><a href="javascript:void(0);" onclick="orderByLabAnnex()">所属实训室</a></th>
-								 --%><%--<th>所属实训中心</th>
-								 <th>所属基地</th>
-								--%>
 							<c:if test="${stationNum eq 'true'}"><!-- 有工位相关需求时显示 -->
 								<th>可预约工位数</th>
 							</c:if>
-
-				        	<%--<th><a href="javascript:void(0);"  onclick="" >门禁状态查询</a> </th>--%>
 							<th><a href="javascript:void(0);" onclick="">操作</a></th>
 						</tr>
 						</thead>
@@ -403,18 +397,6 @@
 								<c:if test="${stationNum eq 'true'}"><!-- 有工位相关需求时显示 -->
 									<td>${curr.labRoomWorker}</td>
 								</c:if>
-									<%--<td>${curr.labCenter.centerName}</td>
-                                    <td>${curr.labBase.baseName}</td>
-                                    --%>
-
-									<%--<td>--%>
-									<%--<c:forEach items="${curr.labRoomAgents}" var="curr1">--%>
-									<%--<c:choose>--%>
-									<%--<c:when test="${curr1.hardwareStatus==1}">门关闭</c:when>--%>
-									<%--<c:when test="${curr1.hardwareStatus==2}">门开启</c:when>--%>
-									<%--</c:choose>--%>
-									<%--</c:forEach>--%>
-									<%--</td>--%>
 								<td>
 										<%--<a href="javascript:void(0)" onclick="opendoor(${curr.id});">远程开门</a>--%>
 									<a href='javascript:getLabRoom(${curr.id},${pageModel.currpage})' >查看</a>
@@ -430,7 +412,25 @@
 											<a href="${pageContext.request.contextPath}/lab/entranceListAll?page=1&labRoomId=${curr.id}">门禁记录</a>
 										</c:if>
 										<%--<a href="javascript:void(0);" onclick="showRegulations(${curr.id})">规章制度</a>--%>
-									</c:if>
+									</c:if><br>
+											<!-- 判断是否是改实验室的管理员或物联管理员 -->
+									<c:forEach items="${curr.labRoomAdmins}" var="admins">
+										<c:if test="${admins.typeId==1 || admins.typeId==2}">
+											<c:if test="${admins.user.username eq username}">
+												<!-- 遍历门禁设备 -->
+												<c:forEach items="${curr.labRoomAgents}" var="agent">
+													<c:if test="${agent.CDictionary.CNumber=='2' && agent.CDictionary.CCategory=='c_agent_type'}">
+														<c:if test="${agent.doorindex ne null}">
+															<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">远程开${agent.doorindex}号门</a>
+														</c:if>
+														<c:if test="${agent.doorindex eq null}">
+															<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">远程开门</a>
+														</c:if>
+													</c:if>
+												</c:forEach>
+											</c:if>
+										</c:if>
+									</c:forEach>
 								</td>
 							</tr>
 						</c:forEach>

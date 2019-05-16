@@ -264,6 +264,8 @@ public class LabRoomController<JsonResult> {
             List<User> userList = labRoomService.findUserByacno(acno);
             mav.addObject("userList", userList);
         }
+        // 当前用户
+        mav.addObject("username", shareService.getUserDetail().getUsername());
 
         return mav;
     }
@@ -2594,29 +2596,56 @@ public class LabRoomController<JsonResult> {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(id);
         if(labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0){
             returnStr = "noReservation";
-        }
-        if(!labRoomService.isSettingForLabRoom(id)){
+        } else if(!labRoomService.isSettingForLabRoom(id)){
             returnStr = "noSetting";
-        }
-        User user = shareService.getUser();
-        String username = user.getUsername();
+        } else {
+            User user = shareService.getUser();
+            String username = user.getUsername();
 
-        // 当前用户是否为实验室中心主任
-        String judge = ",";
-        for (Authority authority : user.getAuthorities()) {
-            judge = judge + "," + authority.getId() + ",";
-        }
+            // 当前用户是否为实验室中心主任
+            String judge = ",";
+            for (Authority authority : user.getAuthorities()) {
+                judge = judge + "," + authority.getId() + ",";
+            }
 
-        CDictionary allowSecurityAccess = labRoom.getCDictionaryByAllowSecurityAccess();
-        if(allowSecurityAccess!=null&&allowSecurityAccess.getId()==621){//需要安全准入
+            CDictionary allowSecurityAccess = labRoom.getCDictionaryByAllowSecurityAccess();
+            if (allowSecurityAccess != null && allowSecurityAccess.getId() == 621) {//需要安全准入
                 // 中心主任或设备管理员不需要进行培训
-            if (judge.indexOf(",4,") > -1 ||
-                    (labRoom.getLabRoomAdmins()!=null&&labRoom.getLabRoomAdmins().contains(username))) {
-                // do nothing
-            }else {
-                if (labRoomService.findPermitUserByUsernameAndLab(username, id)==null) {
-                    returnStr = "needAccess";
+                if (judge.indexOf(",4,") > -1 ||
+                        (labRoom.getLabRoomAdmins() != null && labRoom.getLabRoomAdmins().contains(username))) {
+                    // do nothing
+                } else {
+                    if (labRoomService.findPermitUserByUsernameAndLab(username, id) == null) {
+                        returnStr = "needAccess";
+                    }
                 }
+            }
+        }
+        // 判断是否需要教师审核{以及审核权限为教师&当前权限为学生=bingo}
+        if (returnStr.equals("success")) {
+            //demo
+            boolean flag = true;
+            String[] RSWITCH = {"on", "off"};
+            String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
+            Map<String, String> params = new HashMap<>();
+            params.put("businessUid", labRoom.getId().toString());
+            params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+            com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
+            Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
+            if (auditConfigs != null && auditConfigs.size() != 0) {
+                for (int i = 0; i < auditConfigs.size(); i++) {
+                    String[] text = ((String) auditConfigs.get(i + 1)).split(":");
+                    if (text[0].equals(auditLevelName[0])) {
+                        flag = text[1].equals(RSWITCH[0]);
+                        break;
+                    }
+                }
+            }
+            if (flag && "ROLE_STUDENT".equals(request.getSession().getAttribute("selected_role"))) {
+                returnStr = "needTutor";
+            } else {
+                returnStr = "noNeedTutor";
             }
         }
         return returnStr;

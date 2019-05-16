@@ -961,7 +961,11 @@
                                     }else if (data == "noSetting") {
                                         alert("该实验室未作预约初始化设置，不可预约!");
                                         window.location.reload();
-                                    }else if (data == "needAccess") {
+                                    } else if (data == "needTutor"){
+                                        needtutor = 1;
+                                    } else if (data == "noNeedTutor"){
+                                        needtutor = 0;
+                                    } else if (data == "needAccess") {
                                         var Access = confirm("您还未通过培训,点击确定进行预约培训!");
                                         if(Access == true){
                                             var labRoom_id = -1;
