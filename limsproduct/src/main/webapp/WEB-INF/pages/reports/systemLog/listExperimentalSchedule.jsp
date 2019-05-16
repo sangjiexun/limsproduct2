@@ -10,7 +10,7 @@
   <script type="text/javascript">
   function cancel()
   {
-	  window.location.href="${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=1";
+	  window.location.href="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1";
   }
   //跳转
   function targetUrl(url)
@@ -40,6 +40,8 @@
 		  <li class="TabbedPanelsTab1 selected" id="s1"><a href="javascript:void(0)">实验计划表</a></li>
 		  <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listInstrumentLendingegistration?currpage=1">仪器借出登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/log/listReceiptOfLowValueConsumables?currpage=1">低值易耗品领用登记单</a></li>
+		  <li class="TabbedPanelsTab" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
+		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
@@ -49,19 +51,19 @@
 	  <%--<div id="title">年度使用绩效评价表</div>--%>
 	<%--</div>--%>
 	
-	<%--<div class="tool-box">--%>
-		<%--<form name="queryForm" action="${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=1" method="post">--%>
-			 <%--<ul>--%>
+	<div class="tool-box" style="display: none">
+		<form name="queryForm" action="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1" method="post">
+			 <ul>
   				<%--<li><spring:message code="all.trainingRoom.labroom" />:<input type="text" id="roomName" name="roomName" value="${roomName}"/></li>--%>
   				<%--<li>--%>
 					<%--<input type="submit" value="查询"/>--%>
 					<%--<input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>--%>
   				  	<%--&lt;%&ndash;<input type="button" value="打印" onclick="btnPrintClick();"/>&ndash;%&gt;--%>
 			      <%--</li>--%>
-  				<%--</ul>--%>
-			 <%----%>
-		<%--<form>--%>
-	<%--</div>--%>
+  				</ul>
+
+		<form>
+	</div>
 	
 	<table class="tb" id="my_show">
 	  <thead>
@@ -92,17 +94,17 @@
 	<!-- 分页[s] -->
 	<div class="page" >
         ${pageModel.totalRecords}条记录,共${pageModel.totalPage}页
-    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=1')" target="_self">首页</a>			    
-	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
+    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1')" target="_self">首页</a>
+	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
 	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
-	<option value="${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
+	<option value="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
 	<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	
     <c:if test="${j.index!=pageModel.currpage}">
-    <option value="${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=${j.index}">${j.index}</option>
+    <option value="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=${j.index}">${j.index}</option>
     </c:if>
     </c:forEach></select>页
-	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
- 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listUsePerformanceEvaluation?currpage=${pageModel.lastPage}')" target="_self">末页</a>
+	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
+ 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=${pageModel.lastPage}')" target="_self">末页</a>
     </div>
     <!-- 分页[e] -->
   </div>
