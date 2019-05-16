@@ -33,7 +33,8 @@ import javax.persistence.*;
 		@NamedQuery(name = "findSchoolWeekByPrimaryKey", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.id = ?1"),
 		@NamedQuery(name = "findSchoolWeekByUpdatedAt", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.updatedAt = ?1"),
 		@NamedQuery(name = "findSchoolWeekByWeek", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.week = ?1"),
-		@NamedQuery(name = "findSchoolWeekByWeekday", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.weekday = ?1") })
+		@NamedQuery(name = "findSchoolWeekByWeekday", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.weekday = ?1"),
+        @NamedQuery(name = "findSchoolWeekByWeekAndWeekday", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.week = ?1 and mySchoolWeek.weekday= ?2") })
 @Table(name = "school_week")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(namespace = "zjcclims/net/zjcclims/domain", name = "SchoolWeek")

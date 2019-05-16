@@ -67,7 +67,7 @@
 
 		<form>
 	</div>
-		<span>${NameAndSpecifications}</span>
+		<span>${nameAndSpecifications}</span>
 	<table class="tb" id="my_show">
 	  <thead>
 	  <tr>

@@ -8,7 +8,7 @@ import java.io.Serializable;
  */
 public class OutOfStockRecordsVO implements Serializable {
     //日期
-    private String Time;
+    private String time;
     //用途
     private String usage;
     //低值易耗品名称和规格
@@ -25,11 +25,11 @@ public class OutOfStockRecordsVO implements Serializable {
     private Integer remainQuantity;
 
     public String getTime() {
-        return Time;
+        return time;
     }
 
     public void setTime(String time) {
-        Time = time;
+        this.time = time;
     }
 
     public String getUsage() {

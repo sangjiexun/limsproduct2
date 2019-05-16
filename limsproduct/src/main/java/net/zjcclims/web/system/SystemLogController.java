@@ -9,18 +9,14 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import net.zjcclims.constant.CommonConstantInterface;
-import net.zjcclims.dao.LabAnnexDAO;
-import net.zjcclims.dao.LabCenterDAO;
-import net.zjcclims.dao.OperationItemDAO;
-import net.zjcclims.dao.AssetDAO;
-import net.zjcclims.dao.UserDAO;
-import net.zjcclims.dao.AssetCabinetDAO;
+import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.system.SystemLogService;
 
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.vo.QueryParamsVO;
+import org.python.antlr.op.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -50,6 +46,10 @@ public class SystemLogController {
 	@Autowired private AssetDAO assetDAO;
 	@Autowired private UserDAO userDAO;
 	@Autowired private AssetCabinetDAO assetCabinetDAO;
+	@Autowired private OperationItemDAO operationItemDAO;
+	@Autowired private TimetableAppointmentDAO timetableAppointmentDAO;
+	@Autowired private SchoolWeekDAO schoolWeekDAO;
+	@Autowired private AssetReceiveDAO assetReceiveDAO;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -574,7 +574,8 @@ public class SystemLogController {
         Asset asset = assetDAO.findAssetByPrimaryKey(Integer.valueOf(assetId));
 
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.id ="+ assetId);
+        sql.append("LEFT JOIN AssetReceive ar ON arr.receive_id = ar.id");
+        sql.append(" WHERE ar.status = 4 AND arr.asset.id ="+ assetId);
         sql.append(" order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
@@ -584,8 +585,8 @@ public class SystemLogController {
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
         List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
-        String NameAndSpecifications = "名称："+asset.getChName()+" 规格："+asset.getSpecifications()+" 单位："+asset.getUnit();
-        mav.addObject("NameAndSpecifications",NameAndSpecifications);
+        String nameAndSpecifications = "名称："+asset.getChName()+" 规格："+asset.getSpecifications()+" 单位："+asset.getUnit();
+        mav.addObject("nameAndSpecifications",nameAndSpecifications);
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
@@ -623,9 +624,102 @@ public class SystemLogController {
     public ModelAndView listItem(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
 
+        Set<OperationItem> operationItemList = operationItemDAO.findAllOperationItems();
+        int totalRecords = operationItemList.size();
+        mav.addObject("operationItemList",operationItemList);
+
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
 
         mav.setViewName("reports/systemLog/listItem.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--实验通知单-课次列表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listItemClasses")
+    public ModelAndView listItemClasses(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+        int itemId = Integer.valueOf(request.getParameter("itemId"));
+        OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
+        //根据项目获取项目排课完成的课次列表
+        int startWeek = 0;
+        int endWeek = 0;
+        int startClass = 0;
+        int endClass = 0;
+        int weekday = 0;
+        StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
+        List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
+        if(itemPlanList.size()!=0){
+            ItemPlan itemPlan = itemPlanList.get(0);
+            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+            //根据TimetableAppointment获取起止周次节次星期
+            for(TimetableAppointment timetableAppointment:timetableAppointments){
+                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+                if(timetableAppSameNumbers.size()!=0){
+                    for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+                        startWeek = timetableAppointmentSameNumber.getStartWeek();
+                        endWeek = timetableAppointmentSameNumber.getEndWeek();
+                        startClass = timetableAppointmentSameNumber.getStartClass();
+                        endClass = timetableAppointmentSameNumber.getEndClass();
+                        weekday = timetableAppointment.getWeekday();
+                    }
+                }
+            }
+        }
+        List<Object> sectionList = new ArrayList();
+        if(startWeek!=0){
+            if(startWeek<endWeek){
+                if(startClass<endClass){
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = startClass;
+                    sectionList.add(object);
+                    startClass++;
+                }else {
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = endClass;
+                    sectionList.add(object);
+                    }
+                startWeek++;
+            }else {
+                if(startClass<endClass){
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = startClass;
+                    sectionList.add(object);
+                    startClass++;
+                }else {
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = endClass;
+                    sectionList.add(object);
+                }
+            }
+        }
+        mav.addObject("sectionList",sectionList);
+        mav.addObject("operationItem",operationItem);
+
+        mav.setViewName("reports/systemLog/listItemClasses.jsp");
         return mav;
     }
 
@@ -639,6 +733,67 @@ public class SystemLogController {
     public ModelAndView listLaboratoryNotice(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        int itemId = Integer.valueOf(request.getParameter("itemId"));
+        int week = Integer.valueOf(request.getParameter("week"));
+        int weekday = Integer.valueOf(request.getParameter("weekday"));
+        int section = Integer.valueOf(request.getParameter("section"));
+        OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
+        LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
+        laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        laboratoryNoticeVO.setItemName(operationItem.getLpName());
+        laboratoryNoticeVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+        //实验时间
+        //当前学期
+        int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+        SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekday(week,weekday);
+        laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString());
+        laboratoryNoticeVO.setTeacher(operationItem.getUserByLpTeacherSpeakerId().getCname());
+        //仪器、材料或药品信息
+        List<Object> deviceAndsssetInformationList = new ArrayList<>();
+        //仪器
+
+        if(operationItem.getOperationItemDevices()!=null){
+            String device = "";
+            for(OperationItemDevice operationItemDevice : operationItem.getOperationItemDevices()){
+                Object[] object = new Object[5];
+                device = operationItemDevice.getSchoolDevice().getDeviceName();
+                object[0] = device;
+                object[3] = 1;
+                deviceAndsssetInformationList.add(object);
+            }
+        }
+        //物资
+        if(operationItem.getItemAssets()!=null){
+            String Asset = "";
+            for(ItemAssets itemAssets : operationItem.getItemAssets()){
+                Object[] object = new Object[5];
+                Asset asset =itemAssets.getAsset();
+                //名称
+                object[0] = asset.getChName();
+                //规格
+                object[1] = asset.getSpecifications();
+                //单位
+                object[2] = asset.getUnit();
+
+                StringBuffer sql = new StringBuffer("SELECT a FROM AssetReceive a WHRER a.operationItem.id="+ operationItem.getId());
+                List<AssetReceive> assetReceiveList = entityManager.createQuery(sql.toString()).getResultList();
+                if(assetReceiveList.size()!=0){
+                    AssetReceive assetReceive = assetReceiveList.get(0);
+                    //领出数量
+                    for(AssetReceiveRecord assetReceiveRecord :assetReceive.getAssetReceiveRecords()){
+                        object[3] = assetReceiveRecord.getQuantity();
+                        if(assetReceiveRecord.getReturnQuantity()!=null){
+                            object[4] = assetReceiveRecord.getReturnQuantity();
+                        }
+                    }
+                }
+                deviceAndsssetInformationList.add(object);
+            }
+        }
+        laboratoryNoticeVO.setInformationList(deviceAndsssetInformationList);
+
+
+        mav.addObject("laboratoryNoticeVO",laboratoryNoticeVO);
         mav.setViewName("reports/systemLog/listLaboratoryNotice.jsp");
         return mav;
     }
@@ -652,6 +807,105 @@ public class SystemLogController {
     @RequestMapping(value="/log/listTeachingRecordSheet")
     public ModelAndView listTeachingRecordSheet(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
+        int itemId = Integer.valueOf(request.getParameter("itemId"));
+        OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
+
+        LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
+        laboratoryNoticeVO.setItemName(operationItem.getLpName());
+        //器材-实验物资
+        Set<ItemAssets> itemAssets = operationItem.getItemAssets();
+        String Asset = "";
+        if(itemAssets.size()!=0){
+            for(ItemAssets itemAsset : itemAssets){
+                Asset = Asset + itemAsset.getAsset().getChName();
+            }
+        }
+        //器材-实验设备
+        Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+        String device = "";
+        if(operationItemDevices.size()!=0){
+            for(OperationItemDevice operationItemDevice : operationItemDevices){
+                device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+            }
+        }
+        laboratoryNoticeVO.setDeviceAndAsset(device+Asset);
+        //课次时间信息
+        int startWeek = 0;
+        int endWeek = 0;
+        int startClass = 0;
+        int endClass = 0;
+        int weekday = 0;
+        StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
+        List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
+        if(itemPlanList.size()!=0){
+            ItemPlan itemPlan = itemPlanList.get(0);
+            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+            //根据TimetableAppointment获取起止周次节次星期
+            for(TimetableAppointment timetableAppointment:timetableAppointments){
+                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+                if(timetableAppSameNumbers.size()!=0){
+                    for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+                        startWeek = timetableAppointmentSameNumber.getStartWeek();
+                        endWeek = timetableAppointmentSameNumber.getEndWeek();
+                        startClass = timetableAppointmentSameNumber.getStartClass();
+                        endClass = timetableAppointmentSameNumber.getEndClass();
+                        weekday = timetableAppointment.getWeekday();
+                    }
+                }
+            }
+        }
+        List<Object> sectionList = new ArrayList();
+        if(startWeek!=0){
+            if(startWeek<endWeek){
+                if(startClass<endClass){
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = startClass;
+                    sectionList.add(object);
+                    startClass++;
+                }else {
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = endClass;
+                    sectionList.add(object);
+                }
+                startWeek++;
+            }else {
+                if(startClass<endClass){
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = startClass;
+                    sectionList.add(object);
+                    startClass++;
+                }else {
+                    Object[] object = new Object[3];
+                    object[0]= startWeek;
+                    object[1] = weekday;
+                    object[2] = endClass;
+                    sectionList.add(object);
+                }
+            }
+        }
+        if(sectionList.size()!=0){
+            List<Object> InformationList = new ArrayList<>();
+            for(Object object :sectionList){
+                int week = (Integer)object;
+                int weekday1 = (Integer)object;
+                //实验时间
+                //当前学期
+                int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+                SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekday(week,weekday1);
+                laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString());
+
+            }
+        }
+
+
+
 
         mav.setViewName("reports/systemLog/listTeachingRecordSheet.jsp");
         return mav;
