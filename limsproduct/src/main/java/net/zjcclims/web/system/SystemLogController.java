@@ -377,7 +377,7 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<LabRoomDeviceLending> labRoomDeviceLendingList = query.getResultList();
-		List<InstrumentLendingegistrationVO> InstrumentLendingegistrationVOs = new ArrayList<InstrumentLendingegistrationVO>();
+		List<InstrumentLendingegistrationVO> instrumentLendingegistrationVOs = new ArrayList<InstrumentLendingegistrationVO>();
 		for(LabRoomDeviceLending labRoomDeviceLending :labRoomDeviceLendingList){
             InstrumentLendingegistrationVO instrumentLendingegistrationVO = new InstrumentLendingegistrationVO();
             instrumentLendingegistrationVO.setLendingTime(sdf.format(labRoomDeviceLending.getLendingTime().getTime()));
@@ -390,14 +390,14 @@ public class SystemLogController {
             if(labRoomDeviceLending.getCDictionary()!=null){
 				instrumentLendingegistrationVO.setBackStatus(labRoomDeviceLending.getCDictionary().getCName());
 			}
-            InstrumentLendingegistrationVOs.add(instrumentLendingegistrationVO);
+            instrumentLendingegistrationVOs.add(instrumentLendingegistrationVO);
         }
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
         mav.addObject("totalRecords",totalRecords);
         mav.addObject("pageModel",pageModel);
-        mav.addObject("InstrumentLendingegistrationVOs",InstrumentLendingegistrationVOs);
+        mav.addObject("instrumentLendingegistrationVOs",instrumentLendingegistrationVOs);
 
         mav.setViewName("reports/systemLog/listInstrumentLendingegistration.jsp");
         return mav;
@@ -427,7 +427,7 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
-        List<OutOfStockRecordsVO> OutOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
+        List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
@@ -438,10 +438,10 @@ public class SystemLogController {
                 outOfStockRecordsVO.setReturnNum(assetReceiveRecord.getReturnQuantity().toString());
             }
             outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
-            OutOfStockRecordsVOs.add(outOfStockRecordsVO);
+            outOfStockRecordsVOs.add(outOfStockRecordsVO);
         }
 
-        mav.addObject("OutOfStockRecordsVOs",OutOfStockRecordsVOs);
+        mav.addObject("outOfStockRecordsVOs",outOfStockRecordsVOs);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
@@ -504,7 +504,7 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<AssetCabinetAccessRecord> assetCabinetAccessRecordList = query.getResultList();
-        List<DrugDepotRegistrationFormVO> DrugDepotRegistrationFormVOs = new ArrayList<DrugDepotRegistrationFormVO>();
+        List<DrugDepotRegistrationFormVO> drugDepotRegistrationFormVOs = new ArrayList<DrugDepotRegistrationFormVO>();
         for(AssetCabinetAccessRecord assetCabinetAccessRecord : assetCabinetAccessRecordList){
             DrugDepotRegistrationFormVO drugDepotRegistrationFormVO = new DrugDepotRegistrationFormVO();
             drugDepotRegistrationFormVO.setTime(sdf.format(assetCabinetAccessRecord.getCreateDate()));
@@ -515,10 +515,10 @@ public class SystemLogController {
             drugDepotRegistrationFormVO.setNumber(assetCabinetAccessRecord.getQuantity());
             User user = userDAO.findUserByUsername(assetCabinetAccessRecord.getUsername());
             drugDepotRegistrationFormVO.setUser(user.getCname());
-            DrugDepotRegistrationFormVOs.add(drugDepotRegistrationFormVO);
+            drugDepotRegistrationFormVOs.add(drugDepotRegistrationFormVO);
         }
 
-        mav.addObject("DrugDepotRegistrationFormVOs",DrugDepotRegistrationFormVOs);
+        mav.addObject("drugDepotRegistrationFormVOs",drugDepotRegistrationFormVOs);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
@@ -581,7 +581,7 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
-        List<OutOfStockRecordsVO> OutOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
+        List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
@@ -589,10 +589,10 @@ public class SystemLogController {
             outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
             outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
             outOfStockRecordsVO.setRemainQuantity(1);//须更新
-            OutOfStockRecordsVOs.add(outOfStockRecordsVO);
+            outOfStockRecordsVOs.add(outOfStockRecordsVO);
         }
 
-        mav.addObject("OutOfStockRecordsVOs",OutOfStockRecordsVOs);
+        mav.addObject("outOfStockRecordsVOs",outOfStockRecordsVOs);
 
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);

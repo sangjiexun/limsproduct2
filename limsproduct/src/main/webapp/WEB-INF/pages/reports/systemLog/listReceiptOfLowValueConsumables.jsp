@@ -79,7 +79,7 @@
 	  </tr>
 	  </thead>
 	  <tbody>
-	  <c:forEach items="${OutOfStockRecordsVOs}" var="curr" varStatus="status">
+	  <c:forEach items="${outOfStockRecordsVOs}" var="curr" varStatus="status">
 	  <tr>
 	    <td>${curr.time}</td>
 	    <td>${curr.usage}</td>

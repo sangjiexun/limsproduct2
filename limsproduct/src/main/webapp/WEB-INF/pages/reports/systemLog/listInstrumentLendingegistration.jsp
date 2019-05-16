@@ -85,7 +85,7 @@
 	  </tr>
 	  </thead>
 	  <tbody>
-	  <c:forEach items="${InstrumentLendingegistrationVOs}" var="curr" varStatus="status">
+	  <c:forEach items="${instrumentLendingegistrationVOs}" var="curr" varStatus="status">
 	  <tr>
 	    <td>${curr.lendingTime}</td>
 	    <td>${curr.deviceName}</td>
