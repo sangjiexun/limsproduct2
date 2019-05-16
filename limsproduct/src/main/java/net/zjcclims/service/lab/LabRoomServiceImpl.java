@@ -2522,7 +2522,9 @@ public class LabRoomServiceImpl implements LabRoomService {
 			hql.append(" and l.labCenter.schoolAcademy.academyNumber='"+ acno +"'");
 		}*/
 		hql.append(" and l.labRoomActive=1 and l.labRoomReservation=1");
-		if (request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN")) {
+		// 浙江建设{实验室管理员和物联管理员不可预约自己管理的实验室}
+		if (pConfig.PROJECT_NAME.equals("zjcclims") &&
+				(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN"))) {
 			hql.append(" and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')");
 		}
 		if (acno != null && !acno.equals("-1")) {
