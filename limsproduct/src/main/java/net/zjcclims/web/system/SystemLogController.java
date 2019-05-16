@@ -478,7 +478,7 @@ public class SystemLogController {
 
     }
     /*************************************************************************************
-     * Description:开放项目相关报表--药品出库登记表--AssetCabinetAccessRecord缺药品柜编号cabinetId字段
+     * Description:开放项目相关报表--药品出库登记表
      *
      * @author: Hezhaoyi
      * @date: 2019-5-15
@@ -556,7 +556,7 @@ public class SystemLogController {
     }
 
     /*************************************************************************************
-     * Description:开放项目相关报表--耗材领用记录单--缺余量字段
+     * Description:开放项目相关报表--耗材领用记录单
      *
      * @author: Hezhaoyi
      * @date: 2019-5-15
@@ -570,6 +570,8 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
         String assetId = request.getParameter("assetId");
+        //物资
+        Asset asset = assetDAO.findAssetByPrimaryKey(Integer.valueOf(assetId));
 
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
         sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.id ="+ assetId);
@@ -582,13 +584,21 @@ public class SystemLogController {
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
         List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
+        OutOfStockRecordsVO outOfStockRecordsVO1 = new OutOfStockRecordsVO();
+        outOfStockRecordsVO1.setNameAndSpecifications("名称："+asset.getChName()+" 规格："+asset.getSpecifications()+" 单位："+asset.getUnit());
+        outOfStockRecordsVOs.add(outOfStockRecordsVO1);
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
             outOfStockRecordsVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
             outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
             outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
-            outOfStockRecordsVO.setRemainQuantity(1);//须更新
+            StringBuffer sql1 = new StringBuffer("SELECT acar FROM AssetCabinetAccessRecord acar WHERE acar.appId" + assetReceiveRecord.getAssetReceive().getId());
+            List<AssetCabinetAccessRecord> assetCabinetAccessRecords = entityManager.createQuery(sql1.toString()).getResultList();
+            if(assetCabinetAccessRecords.size()!=0){
+                AssetCabinetAccessRecord assetCabinetAccessRecord = assetCabinetAccessRecords.get(0);
+                outOfStockRecordsVO.setRemainQuantity(assetCabinetAccessRecord.getRemainQuantity());
+            }
             outOfStockRecordsVOs.add(outOfStockRecordsVO);
         }
 
@@ -601,6 +611,21 @@ public class SystemLogController {
         mav.addObject("pageModel",pageModel);
 
         mav.setViewName("reports/systemLog/listConsumablesAcquisitionRecordSheet.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--实验通知单-实验列表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-16
+     *************************************************************************************/
+    @RequestMapping(value="/log/listItem")
+    public ModelAndView listItem(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+
+        mav.setViewName("reports/systemLog/listItem.jsp");
         return mav;
     }
 
