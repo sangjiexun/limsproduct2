@@ -12,6 +12,9 @@ import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.LabAnnexDAO;
 import net.zjcclims.dao.LabCenterDAO;
 import net.zjcclims.dao.OperationItemDAO;
+import net.zjcclims.dao.AssetDAO;
+import net.zjcclims.dao.UserDAO;
+import net.zjcclims.dao.AssetCabinetDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.system.SystemLogService;
@@ -44,7 +47,9 @@ public class SystemLogController {
 	@Autowired private VirtualService virtualService;
 	@Autowired private LabCenterDAO labCenterDAO;
 	@Autowired private LabAnnexDAO labAnnexDAO;
-	@Autowired private OperationItemDAO operationItemDAO;
+	@Autowired private AssetDAO assetDAO;
+	@Autowired private UserDAO userDAO;
+	@Autowired private AssetCabinetDAO assetCabinetDAO;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -423,18 +428,18 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
-        List<ReceiptOfLowValueConsumablesVO> ReceiptOfLowValueConsumablesVOs = new ArrayList<ReceiptOfLowValueConsumablesVO>();
+        List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
-            ReceiptOfLowValueConsumablesVO receiptOfLowValueConsumablesVO = new ReceiptOfLowValueConsumablesVO();
-            receiptOfLowValueConsumablesVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
-            receiptOfLowValueConsumablesVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
-            receiptOfLowValueConsumablesVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
-            receiptOfLowValueConsumablesVO.setReturnNum(assetReceiveRecord.getReturnQuantity().toString());
-            receiptOfLowValueConsumablesVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
-            ReceiptOfLowValueConsumablesVOs.add(receiptOfLowValueConsumablesVO);
+            OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
+            outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
+            outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
+            outOfStockRecordsVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
+            outOfStockRecordsVO.setReturnNum(assetReceiveRecord.getReturnQuantity().toString());
+            outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
+            outOfStockRecordsVOs.add(outOfStockRecordsVO);
         }
 
-        mav.addObject("ReceiptOfLowValueConsumablesVOs",ReceiptOfLowValueConsumablesVOs);
+        mav.addObject("ReceiptOfLowValueConsumablesVOs",outOfStockRecordsVOs);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
@@ -445,8 +450,33 @@ public class SystemLogController {
         return mav;
     }
 
+    /**
+     * Description 开放项目相关报表--药品出库表药品柜列表
+     * @param request
+     * @return
+     * @author Hezhaoyi 2019-5-16
+     */
+    @RequestMapping(value="/log/listDrugCabinet")
+    public ModelAndView listDrugCabinet(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+
+        Set<AssetCabinet> AssetCabinetList = assetCabinetDAO.findAllAssetCabinets();
+        int totalRecords = AssetCabinetList.size();
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        mav.addObject("AssetCabinetList",AssetCabinetList);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
+
+        mav.setViewName("reports/systemLog/listDrugCabinet.jsp");
+        return mav;
+
+    }
     /*************************************************************************************
-     * Description:开放项目相关报表--药品出库登记表
+     * Description:开放项目相关报表--药品出库登记表--AssetCabinetAccessRecord缺药品柜编号cabinetId字段
      *
      * @author: Hezhaoyi
      * @date: 2019-5-15
@@ -455,12 +485,76 @@ public class SystemLogController {
     public ModelAndView listDrugDepotRegistrationForm(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+        //药品柜编号
+        String cabinetId = request.getParameter("cabinetId");
+
+        StringBuffer sql = new StringBuffer("SELECT acar FROM AssetCabinetAccessRecord acar ");
+        sql.append(" WHERE acar.type = 'Receive' AND acar.cabinetId =" + cabinetId );
+        sql.append(" order by acar.id asc");
+
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<AssetCabinetAccessRecord> assetCabinetAccessRecordList = query.getResultList();
+        List<DrugDepotRegistrationFormVO> DrugDepotRegistrationFormVOs = new ArrayList<DrugDepotRegistrationFormVO>();
+        for(AssetCabinetAccessRecord assetCabinetAccessRecord : assetCabinetAccessRecordList){
+            DrugDepotRegistrationFormVO drugDepotRegistrationFormVO = new DrugDepotRegistrationFormVO();
+            drugDepotRegistrationFormVO.setTime(sdf.format(assetCabinetAccessRecord.getCreateDate()));
+            Asset asset = assetDAO.findAssetByPrimaryKey(assetCabinetAccessRecord.getAssetId());
+            drugDepotRegistrationFormVO.setDrugName(asset.getChName());
+            drugDepotRegistrationFormVO.setSpecification(asset.getSpecifications());
+            drugDepotRegistrationFormVO.setUnit(asset.getUnit());
+            drugDepotRegistrationFormVO.setNumber(assetCabinetAccessRecord.getQuantity());
+            User user = userDAO.findUserByUsername(assetCabinetAccessRecord.getUsername());
+            drugDepotRegistrationFormVO.setUser(user.getCname());
+            DrugDepotRegistrationFormVOs.add(drugDepotRegistrationFormVO);
+        }
+
+        mav.addObject("DrugDepotRegistrationFormVOs",DrugDepotRegistrationFormVOs);
+
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
+
         mav.setViewName("reports/systemLog/listDrugDepotRegistrationForm.jsp");
         return mav;
     }
 
+
     /*************************************************************************************
-     * Description:开放项目相关报表--耗材领用记录单
+     * Description:开放项目相关报表--耗材领用记录单-耗材物资列表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listAsset")
+    public ModelAndView listAsset(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+
+        Set<Asset> AssetList = assetDAO.findAllAssets();
+        int totalRecords = AssetList.size();
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        mav.addObject("AssetList",AssetList);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
+
+        mav.setViewName("reports/systemLog/listAsset.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:开放项目相关报表--耗材领用记录单--缺余量字段
      *
      * @author: Hezhaoyi
      * @date: 2019-5-15
@@ -468,6 +562,41 @@ public class SystemLogController {
     @RequestMapping(value="/log/listConsumablesAcquisitionRecordSheet")
     public ModelAndView listConsumablesAcquisitionRecordSheet(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+        String assetId = request.getParameter("assetId");
+
+        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
+        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.id ="+ assetId);
+        sql.append(" order by arr.id asc");
+
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
+        List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
+        for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
+            OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
+            outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
+            outOfStockRecordsVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
+            outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
+            outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
+            outOfStockRecordsVO.setRemainQuantity(1);//须更新
+            outOfStockRecordsVOs.add(outOfStockRecordsVO);
+        }
+
+        mav.addObject("ReceiptOfLowValueConsumablesVOs",outOfStockRecordsVOs);
+
+
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
 
         mav.setViewName("reports/systemLog/listConsumablesAcquisitionRecordSheet.jsp");
         return mav;

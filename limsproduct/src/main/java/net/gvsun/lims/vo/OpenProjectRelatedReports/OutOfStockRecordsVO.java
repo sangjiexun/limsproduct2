@@ -1,8 +1,12 @@
 package net.gvsun.lims.vo.OpenProjectRelatedReports;
-
 import java.io.Serializable;
 
-public class ReceiptOfLowValueConsumablesVO implements Serializable {
+/**
+ * Description 领用出库对象-低值易耗品领用登记单/耗材领用登记单共用VO
+ * @author Hezhaoyi
+ * 2019-5-16
+ */
+public class OutOfStockRecordsVO implements Serializable {
     //日期
     private String Time;
     //用途
@@ -17,6 +21,8 @@ public class ReceiptOfLowValueConsumablesVO implements Serializable {
     private String useSituation;
     //领用人
     private String lendingUser;
+    //剩余库存量
+    private Integer remainQuantity;
 
     public String getTime() {
         return Time;
@@ -72,5 +78,13 @@ public class ReceiptOfLowValueConsumablesVO implements Serializable {
 
     public void setLendingUser(String lendingUser) {
         this.lendingUser = lendingUser;
+    }
+
+    public Integer getRemainQuantity() {
+        return remainQuantity;
+    }
+
+    public void setRemainQuantity(Integer remainQuantity) {
+        this.remainQuantity = remainQuantity;
     }
 }
