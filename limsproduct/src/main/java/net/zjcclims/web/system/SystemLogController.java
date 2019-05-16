@@ -364,7 +364,7 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("select distinct l from LabRoomDeviceLending l order by l.id asc");
+        StringBuffer sql = new StringBuffer("select distinct l from LabRoomDeviceLending l where l.lendType=1 order by l.id asc");
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -381,7 +381,9 @@ public class SystemLogController {
             if(labRoomDeviceLending.getBackTime()!=null){
                 instrumentLendingegistrationVO.setBackTime(labRoomDeviceLending.getBackTime().toString());
             }
-            instrumentLendingegistrationVO.setBackStatus(labRoomDeviceLending.getCDictionary().getCName());
+            if(labRoomDeviceLending.getCDictionary()!=null){
+				instrumentLendingegistrationVO.setBackStatus(labRoomDeviceLending.getCDictionary().getCName());
+			}
             InstrumentLendingegistrationVOs.add(instrumentLendingegistrationVO);
         }
 
