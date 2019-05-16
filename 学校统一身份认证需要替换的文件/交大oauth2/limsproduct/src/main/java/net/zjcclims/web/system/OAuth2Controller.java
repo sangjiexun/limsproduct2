@@ -201,5 +201,15 @@ public class OAuth2Controller<JsonResult> {
         request.getSession().invalidate();
         response.sendRedirect(logouturl);
     }
+	
+	@RequestMapping("/lims/checkUsername")
+    public ModelAndView checkUsername(HttpServletRequest request) {
+
+        ModelAndView mav = new ModelAndView();
+        String username = request.getParameter("username");
+        request.getSession().setAttribute("username",username);
+        mav.setViewName("redirect:/xxx");
+        return mav;
+    }
 
 }
