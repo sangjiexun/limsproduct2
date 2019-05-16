@@ -10,6 +10,8 @@ import java.io.Serializable;
 public class AssetsCabinetDTO implements Serializable{
     //1.ID
     private Integer id;
+    //2.物品柜编号
+    private String cabinetCode;
     //2.物品柜名称
     private String cabinetName;
     //3.主要物品类别
@@ -25,6 +27,14 @@ public class AssetsCabinetDTO implements Serializable{
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getCabinetCode() {
+        return cabinetCode;
+    }
+
+    public void setCabinetCode(String cabinetCode) {
+        this.cabinetCode = cabinetCode;
     }
 
     public String getCabinetName() {

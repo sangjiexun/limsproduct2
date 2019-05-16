@@ -64,6 +64,9 @@ public class MaterialController {
     private AssetStorageRecordDAO assetStorageRecordDAO;
 
     @Autowired
+    private AssetCabinetDAO assetCabinetDAO;
+
+    @Autowired
     private AuditService auditService;
 
     /**
@@ -91,6 +94,20 @@ public class MaterialController {
     @ResponseBody
     public String assetsApplyList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status,String kind){
         JSONObject jsonObject = materialService.findAllAssetApplyList(page,limit,status,kind,request);
+        return shareService.htmlEncode(jsonObject.toJSONString());
+    }
+
+    /**
+     * 物品柜列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return json字符串格式的分类列表
+     * @author 吴奇臻 2019-05-15
+     */
+    @RequestMapping("/assetsAllCabinetList")
+    @ResponseBody
+    public String assetsCabinetList(@RequestParam Integer page, Integer limit){
+        JSONObject jsonObject = materialService.findAllAssetCabinetList(page,limit);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -573,6 +590,19 @@ public class MaterialController {
         return "success";
     }
     /**
+     * Description 删除物品柜
+     *
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    @RequestMapping("/deleteAssetsCabinet")
+    @ResponseBody
+    public String deleteAssetsCabinet(Integer id){
+       AssetCabinet assetCabinet=assetCabinetDAO.findAssetCabinetByPrimaryKey(id);
+       assetCabinetDAO.remove(assetCabinet);
+       return "success";
+    }
+    /**
      * Description 删除物资名录
      * @param id 物资分类id
      * @return 成功-"success"，失败-"fail"
@@ -707,6 +737,19 @@ public class MaterialController {
         //删除条目
         assetReceiveRecordDAO.remove(assetReceiveRecord);
         return "success";
+    }
+
+    /**
+     * Description 编辑,查看物品柜
+     * @param id 物品柜ID
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    @RequestMapping("/editAssetsCabinet")
+    @ResponseBody
+    public AssetsCabinetDTO editAssetsCabinet(Integer id){
+        AssetsCabinetDTO assetsCabinetDTO = materialService.findAssetsCabinetById(id);
+        return assetsCabinetDTO;
     }
     /**
      * Description 编辑,查看物资名录
@@ -1054,6 +1097,17 @@ public class MaterialController {
         return mav;
     }
     /**
+     * 物品柜列表API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-124
+     */
+    @RequestMapping("/listAssetsCabinetAPI")
+    public ModelAndView listAssetsCabinetAPI(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("lims/material/listAssetsCabinet.jsp");
+        return mav;
+    }
+    /**
      * 查看物资名录详情API
      * * @return 跳转页面
      * @author 吴奇臻 2019-3-24
@@ -1086,6 +1140,32 @@ public class MaterialController {
     public ModelAndView listAssetsApplyAPI(){
         ModelAndView mav = new ModelAndView();
         mav.setViewName("lims/material/listAssetsApply.jsp");
+        return mav;
+    }
+
+    /**
+     * 新建/编辑物品柜详情API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/editAssetsCabinetDetailAPI")
+    public ModelAndView editAssetsCabinetDetailAPI( String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/editAssetsCabinetDetail.jsp");
+        return mav;
+    }
+
+    /**
+     * 查看物资申购详情API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/checkAssetsCabinetDetailAPI")
+    public ModelAndView checkAssetsCabinetDetailAPI( String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/assetsCabinetDetail.jsp");
         return mav;
     }
     /**
@@ -1366,6 +1446,22 @@ public class MaterialController {
     @ResponseBody
     public String saveAssetClassification(@RequestBody MaterialKindDTO materialKindDTO){
         if(materialService.saveAssetClassification(materialKindDTO)){
+            return "success";
+        }else{
+            return "fail";
+        }
+    }
+
+    /**
+     * Description 保存物品柜
+     *
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    @RequestMapping("/saveAssetsCabinet")
+    @ResponseBody
+    public String saveAssetsCabinet(@RequestBody AssetsCabinetDTO assetsCabinetDTO){
+        if(materialService.saveAssetsCabinet(assetsCabinetDTO)){
             return "success";
         }else{
             return "fail";

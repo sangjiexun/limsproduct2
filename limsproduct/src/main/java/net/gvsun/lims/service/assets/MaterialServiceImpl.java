@@ -170,6 +170,32 @@ public class MaterialServiceImpl implements MaterialService {
         }
         return  labCenterList;
     }
+
+    /**
+     * 物品柜列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-5-15
+     */
+    public JSONObject findAllAssetCabinetList(Integer page, Integer limit){
+        List<AssetsCabinetDTO> assetsCabinetDTOList=new ArrayList<>();
+        String sql="select id,cabinet_code,cabinet_name from asset_cabinet";
+        Query query=entityManager.createNativeQuery(sql);
+        query.setMaxResults(limit);
+        query.setFirstResult((page-1)*limit);
+        List<Object[]> assetCabinetList=query.getResultList();
+        for(Object[] o:assetCabinetList){
+           AssetsCabinetDTO assetsCabinetDTO=new AssetsCabinetDTO();
+           assetsCabinetDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+           assetsCabinetDTO.setCabinetCode(o[1]!=null?o[1].toString():null);
+           assetsCabinetDTO.setCabinetName(o[2]!=null?o[2].toString():null);
+           assetsCabinetDTOList.add(assetsCabinetDTO);
+        }
+        int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
+        JSONObject jsonObject=this.getJSON(assetsCabinetDTOList,totalRecords);
+        return jsonObject;
+    }
     /**
      * 物资名录列表
      * @param page 页当前数
@@ -1182,6 +1208,22 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     /**
+     * 根据id获取物品柜数据
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    public AssetsCabinetDTO findAssetsCabinetById(Integer id){
+        AssetsCabinetDTO assetsCabinetDTO=new AssetsCabinetDTO();
+        String sql="select id,cabinet_code,cabinet_name from asset_cabinet ac where ac.id="+id;
+        Query query=entityManager.createNativeQuery(sql);
+        List<Object[]> objects=query.getResultList();
+        Object[] o=objects.get(0);
+        assetsCabinetDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+        assetsCabinetDTO.setCabinetCode(o[1]!=null?o[1].toString():null);
+        assetsCabinetDTO.setCabinetName(o[2]!=null?o[2].toString():null);
+        return assetsCabinetDTO;
+    }
+    /**
      * 根据id获物资申购数据
      * @param id 名录id
      * * @return 状态字符串
@@ -1970,6 +2012,25 @@ public class MaterialServiceImpl implements MaterialService {
             flag=false;
         }
         return flag;
+    }
+
+    /**
+     * Description 保存物品柜
+     * @author 吴奇臻 2019-5-15
+     */
+    public boolean saveAssetsCabinet(AssetsCabinetDTO assetsCabinetDTO){
+        boolean flag=true;
+        try {
+            AssetCabinet assetCabinet = new AssetCabinet();
+            assetCabinet.setId(assetsCabinetDTO.getId());
+            assetCabinet.setCabinetCode(assetsCabinetDTO.getCabinetCode());
+            assetCabinet.setCabinetName(assetsCabinetDTO.getCabinetName());
+            assetCabinetDAO.store(assetCabinet);
+        }catch (Exception e){
+            e.printStackTrace();
+            flag=false;
+        }
+        return  flag;
     }
     /**
      * 根据id获取物资类别详细数据
