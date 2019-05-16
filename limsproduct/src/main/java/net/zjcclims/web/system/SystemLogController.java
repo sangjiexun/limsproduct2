@@ -465,10 +465,10 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        Set<AssetCabinet> AssetCabinetList = assetCabinetDAO.findAllAssetCabinets();
-        int totalRecords = AssetCabinetList.size();
+        Set<AssetCabinet> assetCabinetList = assetCabinetDAO.findAllAssetCabinets();
+        int totalRecords = assetCabinetList.size();
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
-        mav.addObject("AssetCabinetList",AssetCabinetList);
+        mav.addObject("assetCabinetList",assetCabinetList);
         //总记录数
         mav.addObject("totalRecords",totalRecords);
         mav.addObject("pageModel",pageModel);
@@ -543,10 +543,10 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        Set<Asset> AssetList = assetDAO.findAllAssets();
-        int totalRecords = AssetList.size();
+        Set<Asset> assetList = assetDAO.findAllAssets();
+        int totalRecords = assetList.size();
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
-        mav.addObject("AssetList",AssetList);
+        mav.addObject("assetList",assetList);
         //总记录数
         mav.addObject("totalRecords",totalRecords);
         mav.addObject("pageModel",pageModel);
