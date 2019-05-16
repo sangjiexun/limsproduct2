@@ -584,9 +584,8 @@ public class SystemLogController {
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
         List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
-        OutOfStockRecordsVO outOfStockRecordsVO1 = new OutOfStockRecordsVO();
-        outOfStockRecordsVO1.setNameAndSpecifications("名称："+asset.getChName()+" 规格："+asset.getSpecifications()+" 单位："+asset.getUnit());
-        outOfStockRecordsVOs.add(outOfStockRecordsVO1);
+        String NameAndSpecifications = "名称："+asset.getChName()+" 规格："+asset.getSpecifications()+" 单位："+asset.getUnit();
+        mav.addObject("NameAndSpecifications",NameAndSpecifications);
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
@@ -623,6 +622,7 @@ public class SystemLogController {
     @RequestMapping(value="/log/listItem")
     public ModelAndView listItem(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
+
 
 
         mav.setViewName("reports/systemLog/listItem.jsp");
