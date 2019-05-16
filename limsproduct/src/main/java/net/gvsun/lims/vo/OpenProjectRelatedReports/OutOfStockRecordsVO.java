@@ -12,7 +12,7 @@ public class OutOfStockRecordsVO implements Serializable {
     //用途
     private String usage;
     //低值易耗品名称和规格
-    private String NameAndSpecifications;
+    private String nameAndSpecifications;
     //领用数量
     private String lendingNum;
     //回收数量
@@ -41,11 +41,11 @@ public class OutOfStockRecordsVO implements Serializable {
     }
 
     public String getNameAndSpecifications() {
-        return NameAndSpecifications;
+        return nameAndSpecifications;
     }
 
     public void setNameAndSpecifications(String nameAndSpecifications) {
-        NameAndSpecifications = nameAndSpecifications;
+        this.nameAndSpecifications = nameAndSpecifications;
     }
 
     public String getLendingNum() {

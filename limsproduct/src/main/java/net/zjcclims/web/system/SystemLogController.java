@@ -427,18 +427,21 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
-        List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
+        List<OutOfStockRecordsVO> OutOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
             outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
+            outOfStockRecordsVO.setNameAndSpecifications("名称："+assetReceiveRecord.getAsset().getChName()+ " 规格："+assetReceiveRecord.getAsset().getSpecifications());
             outOfStockRecordsVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
-            outOfStockRecordsVO.setReturnNum(assetReceiveRecord.getReturnQuantity().toString());
+            if(assetReceiveRecord.getReturnQuantity()!=null){
+                outOfStockRecordsVO.setReturnNum(assetReceiveRecord.getReturnQuantity().toString());
+            }
             outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
-            outOfStockRecordsVOs.add(outOfStockRecordsVO);
+            OutOfStockRecordsVOs.add(outOfStockRecordsVO);
         }
 
-        mav.addObject("ReceiptOfLowValueConsumablesVOs",outOfStockRecordsVOs);
+        mav.addObject("OutOfStockRecordsVOs",OutOfStockRecordsVOs);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
@@ -578,7 +581,7 @@ public class SystemLogController {
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
         List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
-        List<OutOfStockRecordsVO> outOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
+        List<OutOfStockRecordsVO> OutOfStockRecordsVOs = new ArrayList<OutOfStockRecordsVO>();
         for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
             OutOfStockRecordsVO outOfStockRecordsVO = new OutOfStockRecordsVO();
             outOfStockRecordsVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
@@ -586,10 +589,10 @@ public class SystemLogController {
             outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
             outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
             outOfStockRecordsVO.setRemainQuantity(1);//须更新
-            outOfStockRecordsVOs.add(outOfStockRecordsVO);
+            OutOfStockRecordsVOs.add(outOfStockRecordsVO);
         }
 
-        mav.addObject("ReceiptOfLowValueConsumablesVOs",outOfStockRecordsVOs);
+        mav.addObject("OutOfStockRecordsVOs",OutOfStockRecordsVOs);
 
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
