@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 /**
  * Description 实验计划表报表对象
+ *  @author Hezhaoyi
+ *  2019-5-16
  */
 public class ExperimentalScheduleVO implements Serializable {
     //编号

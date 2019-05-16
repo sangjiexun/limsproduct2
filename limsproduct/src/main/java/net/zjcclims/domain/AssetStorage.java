@@ -109,6 +109,11 @@ public class AssetStorage implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	Date auditDate;
+
+	@Column(name = "audit_user")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String auditUser;
 	public Integer getId() {
 		return id;
 	}
@@ -243,6 +248,14 @@ public class AssetStorage implements Serializable {
 
 	public void setAuditDate(Date auditDate) {
 		this.auditDate = auditDate;
+	}
+
+	public String getAuditUser() {
+		return auditUser;
+	}
+
+	public void setAuditUser(String auditUser) {
+		this.auditUser = auditUser;
 	}
 
 	/**

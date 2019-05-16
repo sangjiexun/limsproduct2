@@ -2,6 +2,11 @@ package net.gvsun.lims.vo.OpenProjectRelatedReports;
 
 import java.io.Serializable;
 
+/**
+ * Description 仪器借出登记表对象
+ * @author Hezhaoyi
+ * 2019-5-16
+ */
 public class InstrumentLendingegistrationVO implements Serializable {
     //借出日期
     private String lendingTime;

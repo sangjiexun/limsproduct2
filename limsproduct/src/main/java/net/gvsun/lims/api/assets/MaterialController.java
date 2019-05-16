@@ -249,7 +249,8 @@ public class MaterialController {
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             assetsApplyItemDTO.setCabinet(s);
         }
-       return s;
+        materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
+        return s;
     }
     /**
      * Description 保存物资申请记录
@@ -457,9 +458,11 @@ public class MaterialController {
         assetApp.setAssetStatu(1);//提交审核
         //调用审核服务
         String businessType="AssetsClassification"+ "ApplyAudit"+assetApp.getCategoryId();
+        //审核人
+        String auditUser= shareService.getUser().getUsername();
         //保存审核结果
         try {
-            auditService.saveBusinessLevel(id.toString(), assetApp.getCategoryId().toString(), result, "无", businessType, shareService.getUser().getUsername());
+            auditService.saveBusinessLevel(id.toString(), assetApp.getCategoryId().toString(), result, "无", businessType, auditUser);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -487,15 +490,17 @@ public class MaterialController {
         assetStorage.setStatus(1);//提交审核
         //调用审核服务
         String businessType="AssetsClassification"+ "StorageAudit"+assetStorage.getClassficationId();
+        String auditUser= shareService.getUser().getUsername();
         //保存审核结果
         try {
-            auditService.saveBusinessLevel(id.toString(), assetStorage.getClassficationId().toString(), result, "无", businessType, shareService.getUser().getUsername());
+            auditService.saveBusinessLevel(id.toString(), assetStorage.getClassficationId().toString(), result, "无", businessType, auditUser);
         }catch (Exception e){
             e.printStackTrace();
         }
         //获取审核后的状态结果
         String tag = auditService.getAuditLevelName(id.toString(), businessType);
         if(tag.equals("pass")){
+            assetStorage.setAuditUser(auditUser);//保存最后一级审核人
             assetStorage.setStatus(2);//审核完成并通过
         }else if(tag.equals("fail")){
             assetStorage.setStatus(3);//审核被拒绝
@@ -518,9 +523,11 @@ public class MaterialController {
         assetReceive.setStatus(1);//提交审核
         //调用审核服务
         String businessType="AssetsClassification"+ "ReceiveAudit"+assetReceive.getCategoryId();
+        //审核人
+        String auditUser= shareService.getUser().getUsername();
         //保存审核结果
         try {
-            auditService.saveBusinessLevel(id.toString(), assetReceive.getCategoryId().toString(), result, "无", businessType, shareService.getUser().getUsername());
+            auditService.saveBusinessLevel(id.toString(), assetReceive.getCategoryId().toString(), result, "无", businessType, auditUser);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -528,6 +535,7 @@ public class MaterialController {
         String tag = auditService.getAuditLevelName(id.toString(), businessType);
         if(tag.equals("pass")){
             assetReceive.setStatus(2);//审核完成并通过
+            assetReceive.setAuditUser(auditUser);//保存最后一级审核人
             Calendar calendar=Calendar.getInstance();
             assetReceive.setAuditDate(calendar);
         }else if(tag.equals("fail")){
@@ -1524,7 +1532,7 @@ public class MaterialController {
      * @return 跳转页面
      * @author 伍菁 2019-04-17
      **/
-    @RequestMapping("/listAssetCabinetRecordAPI")
+    @RequestMapping("/listAssetsCabinetRecordAPI")
     public ModelAndView listAssetCabinetRecordAPI(){
         ModelAndView mav = new ModelAndView();
         mav.setViewName("lims/material/listAssetCabinetRecord.jsp");

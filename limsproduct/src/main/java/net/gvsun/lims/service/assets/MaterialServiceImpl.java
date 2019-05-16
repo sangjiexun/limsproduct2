@@ -1055,7 +1055,7 @@ public class MaterialServiceImpl implements MaterialService {
                 assetStorageRecord.setQuantity(o[1].toString());
                 assetStorageRecord.setPrice(Double.parseDouble(o[2].toString()));
                 assetStorageRecord.setSupplier(o[3].toString());
-                assetStorageRecord.setTotalPrice(Double.parseDouble(o[4].toString()));
+                assetStorageRecord.setTotalPrice(o[4]!=null?Double.parseDouble(o[4].toString()):null);
                 assetStorageRecord.setCabinetId(Integer.parseInt(o[5].toString()));
                 assetStorageRecordDAO.store(assetStorageRecord);
             }
@@ -1805,7 +1805,6 @@ public class MaterialServiceImpl implements MaterialService {
                     assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+assetReceiveRecord.getQuantity().intValue()-quantity);
                 }else{
                     assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
-
                 }
                 assetCabinetRecordDAO.store(assetCabinetRecord);
                 return cabinetId.toString();
