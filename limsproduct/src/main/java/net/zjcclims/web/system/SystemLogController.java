@@ -360,6 +360,8 @@ public class SystemLogController {
     public ModelAndView listInstrumentLendingegistration(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
         //每页20条记录
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
@@ -374,12 +376,12 @@ public class SystemLogController {
 		List<InstrumentLendingegistrationVO> InstrumentLendingegistrationVOs = new ArrayList<InstrumentLendingegistrationVO>();
 		for(LabRoomDeviceLending labRoomDeviceLending :labRoomDeviceLendingList){
             InstrumentLendingegistrationVO instrumentLendingegistrationVO = new InstrumentLendingegistrationVO();
-            instrumentLendingegistrationVO.setLendingTime(labRoomDeviceLending.getLendingTime().toString());
+            instrumentLendingegistrationVO.setLendingTime(sdf.format(labRoomDeviceLending.getLendingTime().getTime()));
             instrumentLendingegistrationVO.setDeviceName(labRoomDeviceLending.getLabRoomDevice().getSchoolDevice().getDeviceName());
             instrumentLendingegistrationVO.setNumber("1");
             instrumentLendingegistrationVO.setLendingUser(labRoomDeviceLending.getUserByLendingUser().getCname());
             if(labRoomDeviceLending.getBackTime()!=null){
-                instrumentLendingegistrationVO.setBackTime(labRoomDeviceLending.getBackTime().toString());
+                instrumentLendingegistrationVO.setBackTime(sdf.format(labRoomDeviceLending.getBackTime().getTime()));
             }
             if(labRoomDeviceLending.getCDictionary()!=null){
 				instrumentLendingegistrationVO.setBackStatus(labRoomDeviceLending.getCDictionary().getCName());
@@ -407,18 +409,32 @@ public class SystemLogController {
     public ModelAndView listReceiptOfLowValueConsumables(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         //每页20条记录
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("select distinct a from Asset a where a.category = 8 order by a.id asc");
+        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
+        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 8 order by arr.id asc");
+
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
-        List<Asset> assetList = query.getResultList();
+        List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
+        List<ReceiptOfLowValueConsumablesVO> ReceiptOfLowValueConsumablesVOs = new ArrayList<ReceiptOfLowValueConsumablesVO>();
+        for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
+            ReceiptOfLowValueConsumablesVO receiptOfLowValueConsumablesVO = new ReceiptOfLowValueConsumablesVO();
+            receiptOfLowValueConsumablesVO.setTime(sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));
+            receiptOfLowValueConsumablesVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
+            receiptOfLowValueConsumablesVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
+            receiptOfLowValueConsumablesVO.setReturnNum(assetReceiveRecord.getReturnQuantity().toString());
+            receiptOfLowValueConsumablesVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
+            ReceiptOfLowValueConsumablesVOs.add(receiptOfLowValueConsumablesVO);
+        }
 
+        mav.addObject("ReceiptOfLowValueConsumablesVOs",ReceiptOfLowValueConsumablesVOs);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
