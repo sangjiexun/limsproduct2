@@ -10,7 +10,7 @@
   <script type="text/javascript">
   function cancel()
   {
-	  window.location.href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1";
+	  window.location.href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1type=${type}";
   }
   //跳转
   function targetUrl(url)
@@ -20,9 +20,6 @@
   }
   function btnPrintClick(){  
       window.print();  
-  }
-  function btnExport() {
-      window.location.href="${pageContext.request.contextPath}/log/exportListExperimentalSchedule";
   }
   </script>
 </head>
@@ -40,15 +37,26 @@
   <div class="right-content">
   <div id="TabbedPanels1" class="TabbedPanels">
 	  <ul class="TabbedPanelsTabGroup">
-		  <li class="TabbedPanelsTab1" id="s1"><a href="javascript:void(0)">实验计划表</a></li>
-		  <li class="TabbedPanelsTab selected" id="s2"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1">仪器借出登记表</a></li>
+		  <li class="TabbedPanelsTab1" id="s1"><a href="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1">实验计划表</a></li>
+          <c:if test="${type == 1}">
+              <li class="TabbedPanelsTab selected" id="s2"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=1">仪器借出登记表</a></li>
+          </c:if>
+          <c:if test="${type == 2}">
+              <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=1">仪器借出登记表</a></li>
+          </c:if>
+
 		  <li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/log/listReceiptOfLowValueConsumables?currpage=1">低值易耗品领用登记单</a></li>
 		  <li class="TabbedPanelsTab" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
-		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
-		  <input class="btn btn-new" type="button" value="导出" onclick="btnExport();"/>
+          <c:if test="${type == 1}">
+              <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=2">实验开出情况统计表</a></li>
+          </c:if>
+          <c:if test="${type == 2}">
+              <li class="TabbedPanelsTab selected" id="s8"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=2">实验开出情况统计表</a></li>
+          </c:if>
+
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
@@ -75,23 +83,25 @@
 	  <thead>
 	  <tr>
 	    <th>序号</th>
-	    <th>实验内容</th>
-	    <th>实验物资</th>
-	    <th>仪器设备</th>
-	    <th>实验类型</th>
-	    <th>计划时间</th>
+	    <th>实验室编号</th>
+	    <th>实验室名称</th>
+	    <th>实验室地点</th>
 	    <th>操作</th>
 	  </tr>
 	  </thead>
 	  <tbody>
-	  <c:forEach items="${experimentalScheduleVOs}" var="curr" varStatus="status">
+	  <c:forEach items="${labRoomList}" var="curr" varStatus="status">
 	  <tr>
 	    <td>${status.index + 1}</td>
-	    <td>${curr.itemName}</td>
-	    <td>${curr.itemAssets}</td>
-	    <td>${curr.itemDecvices}</td>
-	    <td>${curr.itemCategory}</td>
-	    <td><a href="${pageContext.request.contextPath}/log/listInstrumentLendingegistration?currpage=1&labRoomId=${curr.id}">查看领用记录单</a></td>
+	    <td>${curr.labRoomNumber}</td>
+	    <td>${curr.labRoomName}</td>
+	    <td>${curr.labRoomAddress}</td>
+          <c:if test="${type == 1}">
+	    <td><a href="${pageContext.request.contextPath}/log/listInstrumentLendingegistration?currpage=1&labRoomId=${curr.id}">查看仪器借出登记表</a></td>
+          </c:if>
+          <c:if test="${type == 2}">
+              <td><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?labRoomId=${curr.id}">查看实验开出情况统计表</a></td>
+          </c:if>
 	    <td></td>
 	  </tr>
 	  </c:forEach>

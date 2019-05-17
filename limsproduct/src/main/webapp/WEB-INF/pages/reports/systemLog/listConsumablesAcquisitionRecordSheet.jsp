@@ -25,7 +25,8 @@
       window.print();  
   }
   function btnExport() {
-      window.location.href="${pageContext.request.contextPath}/log/exportListConsumablesAcquisitionRecordSheet?assetId=${assetId}";
+      var assetId = ${assetId};
+      window.location.href="${pageContext.request.contextPath}/log/exportListConsumablesAcquisitionRecordSheet?assetId=" +assetId;
   }
   </script>
 </head>
@@ -53,6 +54,7 @@
 		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 		  <input class="btn btn-new" type="button" value="导出" onclick="btnExport();"/>
+		  <input type="hidden" id="assetId" value="${assetId}" />
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">

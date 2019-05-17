@@ -41,6 +41,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 	@Autowired private AssetDAO assetDAO;
 	@Autowired private UserDAO userDAO;
 	@Autowired private AssetCabinetDAO assetCabinetDAO;
+	@Autowired private LabRoomDAO labRoomDAO;
 	public SystemLogServiceImpl() {
 	}
 
@@ -541,6 +542,68 @@ public class SystemLogServiceImpl implements SystemLogService {
 	}
 
     /**
+     * Description 开放项目相关报表-仪器借出登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @Override
+    public void exportListInstrumentLendingegistration(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+        if (request.getParameter("term") != null) {
+            term = Integer.parseInt(request.getParameter("term"));
+        }
+        int labRoomId = Integer.valueOf(request.getParameter("labRoomId"));
+
+        StringBuffer sql = new StringBuffer("SELECT lrdl FROM LabRoomDeviceLending lrdl,LabRoomDevice lrd");
+        sql.append(" WHERE lrdl.labRoomDevice.id = lrd.id AND lrd.labRoom.id = "+labRoomId);
+        sql.append(" order by lrdl.id asc");
+        Query query = entityManager.createQuery(sql.toString());
+        // 当前页打印条件
+        if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
+            String currpage = request.getParameter("currpage");
+            int pagesize = Integer.valueOf(request.getParameter("pagesize"));
+            query.setMaxResults(pagesize);
+            int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+            query.setFirstResult(firstResult);
+        }
+
+        List<Map> list = new ArrayList<Map>();
+        List<LabRoomDeviceLending> labRoomDeviceLendingList = query.getResultList();
+        int i = 1;
+        for(LabRoomDeviceLending labRoomDeviceLending :labRoomDeviceLendingList){
+            Map map = new HashMap();
+            map.put("time", sdf.format(labRoomDeviceLending.getLendingTime().getTime()));//日期
+            //仪器名称和规格
+            map.put("nameAndSpecifications", "仪器名称："+labRoomDeviceLending.getLabRoomDevice().getSchoolDevice().getDeviceName());
+            map.put("number", 1);//数量
+            map.put("lendingUser", labRoomDeviceLending.getUserByLendingUser().getCname());   //借用人
+            if(labRoomDeviceLending.getBackTime()!=null){
+                map.put("returnTime", sdf.format(labRoomDeviceLending.getBackTime().getTime()));//归还日期
+            }
+            if(labRoomDeviceLending.getCDictionary()!=null){
+                map.put("returnSituation",labRoomDeviceLending.getCDictionary().getCName());
+            }
+            list.add(map);
+        }
+        SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
+        LabRoom labRoom = labRoomDAO.findLabRoomById(labRoomId);
+        String title = labRoom.getLabRoomName()+"实验室仪器借出登记表";
+        String[] hearders = new String[]{"借出日期", "仪器名称及规格", "数量", "借用人","借用人签名",
+                "归还日期", "归还情况", "备注"};//表头数组
+        String[] fields = new String[]{"time", "nameAndSpecifications", "number", "lendingUser","lendingUserAutograph", "returnTime",
+                "returnSituation", "notes"};
+        TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
+        JsGridReportBase report = new JsGridReportBase(request, response);
+        report.exportExcel(title, shareService.getUserDetail().getCname(), schoolTerm.getTermName(), td);
+    }
+
+
+
+    /**
      * Description 开放项目相关报表-低值易耗品领用登记表{导出excel}
      * @param request
      * @param response
@@ -583,9 +646,9 @@ public class SystemLogServiceImpl implements SystemLogService {
             map.put("lendingUser", assetReceiveRecord.getAssetReceive().getUser().getCname());//借用人
             list.add(map);
         }
-        //实验室遍历
+
         SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
-        String title = "低值易耗品领用登记卡";
+        String title = "低值易耗品领用登记单";
         String[] hearders = new String[]{"日期", "用途", "低值易耗品名称和规格", "领用数量",
                 "回收数量", "使用情况", "备注", "领用人", "领用人签名", "实验员签名"};//表头数组
         String[] fields = new String[]{"time", "usage", "nameAndSpecifications", "lendingNum", "returnNum","usageSituation",
@@ -644,13 +707,73 @@ public class SystemLogServiceImpl implements SystemLogService {
             list.add(map);
         }
 
-        //实验室遍历
         SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
         String title = assetCabinet.getCabinetName() + "出库登记表";
         String[] hearders = new String[]{"日期", "药品名称", "规格", "单位",
                 "数量", "借用人","借用人签名"};//表头数组
         String[] fields = new String[]{"time", "assetName", "specifications", "unit", "number","lendingUser",
                 "lendingUserAutograph"};
+        TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
+        JsGridReportBase report = new JsGridReportBase(request, response);
+        report.exportExcel(title, shareService.getUserDetail().getCname(), schoolTerm.getTermName(), td);
+    }
+
+    /**
+     * Description 开放项目相关报表-耗材领用登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @Override
+    public void exportListConsumablesAcquisitionRecordSheet(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        List<Map> list = new ArrayList<Map>();
+        int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+        int assetId = Integer.parseInt(request.getParameter("assetId"));
+        Asset asset = assetDAO.findAssetByPrimaryKey(assetId);
+        if (request.getParameter("term") != null) {
+            term = Integer.parseInt(request.getParameter("term"));
+        }
+
+        StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr ,AssetReceive ar");
+        sql.append(" where ar.id = arr.assetReceive.id");
+        sql.append(" and ar.status = 4 and arr.asset.id = "+ assetId);
+        sql.append(" order by arr.id asc");
+
+        Query query = entityManager.createQuery(sql.toString());
+        // 当前页打印条件
+        if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
+            String currpage = request.getParameter("currpage");
+            int pagesize = Integer.valueOf(request.getParameter("pagesize"));
+            query.setMaxResults(pagesize);
+            int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+            query.setFirstResult(firstResult);
+        }
+
+        List<AssetReceiveRecord> assetReceiveRecordList = query.getResultList();
+        for(AssetReceiveRecord assetReceiveRecord : assetReceiveRecordList){
+            Map map = new HashMap();
+            map.put("time", sdf.format(assetReceiveRecord.getAssetReceive().getReceiveDate().getTime()));//领取日期
+            map.put("lendingNum", assetReceiveRecord.getQuantity().toString());//领取数量
+            map.put("usage", assetReceiveRecord.getAssetReceive().getAssetUsage());//用途
+            map.put("lendingUser", assetReceiveRecord.getAssetReceive().getUser().getCname());//领用人
+            StringBuffer sql1 = new StringBuffer("SELECT acar FROM AssetCabinetAccessRecord acar WHERE acar.appId=" + assetReceiveRecord.getAssetReceive().getId());
+            List<AssetCabinetAccessRecord> assetCabinetAccessRecords = entityManager.createQuery(sql1.toString()).getResultList();
+            if(assetCabinetAccessRecords.size()!=0){
+                AssetCabinetAccessRecord assetCabinetAccessRecord = assetCabinetAccessRecords.get(0);
+                map.put("remainQuantity", assetCabinetAccessRecord.getQuantity()); //库存量
+            }
+            list.add(map);
+        }
+
+        SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
+        String title = asset.getChName() + "领用记录单";
+        String[] hearders = new String[]{"领取日期", "领取数量", "用途", "领用人",
+                "领用人签名", "实验员签名","教学组长签名","库存量","备注"};//表头数组
+        String[] fields = new String[]{"time", "lendingNum", "usage", "lendingUser","lendingUserAutograph",
+                "laboratoryTechnicianAutograph","TeachingLeaderAutograph","remainQuantity","notes"};
         TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
         JsGridReportBase report = new JsGridReportBase(request, response);
         report.exportExcel(title, shareService.getUserDetail().getCname(), schoolTerm.getTermName(), td);

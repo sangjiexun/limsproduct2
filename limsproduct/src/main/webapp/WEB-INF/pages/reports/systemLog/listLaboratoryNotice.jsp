@@ -18,6 +18,9 @@
     document.queryForm.action=url;
     document.queryForm.submit();
   }
+  function goBack() {
+      window.history.go(-1);
+  }
   function btnPrintClick(){
 //      window.print();
       var bdhtml = window.document.body.innerHTML;
@@ -65,6 +68,10 @@
 		.tab_lab_2_tr th{
 			height: 40px;
 		}
+		.title_p{
+			text-align: center;
+			font-size: 16px;
+		}
 	</style>
 </head>
   
@@ -90,6 +97,7 @@
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
 		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
+          <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
@@ -113,6 +121,13 @@
 	</div>
 
 		<!--startprint-->
+		<p class="title_p">实验通知单</p>
+		<c:if test="${laboratoryNoticeVO.subject!=null}">
+			<p>学科：${laboratoryNoticeVO.subject}</p>
+		</c:if>
+		<c:if test="${laboratoryNoticeVO.subject==null}">
+			<p>学科：_______</p>
+		</c:if>
 		<table class="tab_lab_1"  cellspacing="0" cellpadding="0">
 			<tr class="tab_lab_2_tr">
 				<th>实验课题</th><td colspan="4">${laboratoryNoticeVO.itemName}</td>

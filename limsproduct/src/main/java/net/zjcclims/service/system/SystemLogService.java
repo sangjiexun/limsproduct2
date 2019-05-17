@@ -103,6 +103,15 @@ public interface SystemLogService {
     public void exportListExperimentalSchedule(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     /**
+     * Description 开放项目相关报表-仪器借出登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListInstrumentLendingegistration(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
      * Description 开放项目相关报表-低值易耗品领用登记表{导出excel}
      * @param request
      * @param response
@@ -119,5 +128,14 @@ public interface SystemLogService {
      * @author Hezhaoyi 2019-5-17
      */
     public void exportListDrugDepotRegistrationForm(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
+     * Description 开放项目相关报表-耗材领用登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListConsumablesAcquisitionRecordSheet(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

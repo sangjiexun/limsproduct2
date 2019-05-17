@@ -25,7 +25,8 @@
       window.print();
   }
   function btnExport() {
-      window.location.href="${pageContext.request.contextPath}/log/exportListDrugDepotRegistrationForm?cabinetId=${cabinetId}";
+      var cabinetId =${cabinetId};
+      window.location.href="${pageContext.request.contextPath}/log/exportListDrugDepotRegistrationForm?cabinetId="+cabinetId;
   }
   </script>
 </head>
@@ -53,6 +54,7 @@
 		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 		  <input class="btn btn-new" type="button" value="导出" onclick="btnExport();"/>
+		  <input type="hidden" id="labRoomId" value="${cabinetId}" />
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
@@ -83,6 +85,7 @@
 	    <th>规格</th>
 		<th>单位</th>
 		<th>数量</th>
+		  <th>借用人</th>
 		<th>签名</th>
 	  </tr>
 	  </thead>
@@ -94,6 +97,7 @@
 	    <td>${curr.specification}</td>
 	    <td>${curr.unit}</td>
 	    <td>${curr.number}</td>
+          <td>${curr.user}</td>
 	    <%--<td>${curr.getLabRoom().getLabRoomName()}</td>--%>
 	    <td></td>
 	  </tr>

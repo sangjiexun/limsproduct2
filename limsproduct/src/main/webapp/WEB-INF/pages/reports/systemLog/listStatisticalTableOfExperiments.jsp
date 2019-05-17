@@ -18,17 +18,32 @@
     document.queryForm.action=url;
     document.queryForm.submit();
   }
-  function btnPrintClick(){  
-      window.print();  
+  function goBack() {
+      window.history.go(-1);
   }
-  function btnExport() {
-      window.location.href="${pageContext.request.contextPath}/log/exportListStatisticalTableOfExperiments";
+  function btnPrintClick(){
+//      window.print();
+      var bdhtml = window.document.body.innerHTML;
+      var sprnstr = "<!--startprint-->";
+      var eprnstr = "<!--endprint-->";
+      var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr) + 17);
+      prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));
+      window.document.body.innerHTML = prnhtml;
+      window.print();
+      // 还原界面
+      window.document.body.innerHTML = bdhtml
+      window.location.reload()
+
   }
   </script>
 	<style type="text/css">
 		.content-box thead tr th, .content-box td {
 			border-right: 1px solid #e4e5e7;
 		}
+        .title_p{
+            text-align: center;
+            font-size: 16px;
+        }
 	</style>
 </head>
   
@@ -46,14 +61,15 @@
   <div id="TabbedPanels1" class="TabbedPanels">
 	  <ul class="TabbedPanelsTabGroup">
 		  <li class="TabbedPanelsTab1" id="s1"><a href="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1">实验计划表</a></li>
-		  <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1">仪器借出登记表</a></li>
+		  <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=1">仪器借出登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/log/listReceiptOfLowValueConsumables?currpage=1">低值易耗品领用登记单</a></li>
 		  <li class="TabbedPanelsTab" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
-		  <li class="TabbedPanelsTab selected" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
-		  <input class="btn btn-new" type="button" value="导出" onclick="btnExport();"/>
+		  <li class="TabbedPanelsTab selected" id="s8"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=2">实验开出情况统计表</a></li>
+		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
+          <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
@@ -75,7 +91,9 @@
 
 		<form>
 	</div>
-	
+
+    <!--startprint-->
+    <p class="title_p">${labRoomName}实验室实验开出情况统计表</p>
 	<table class="tb" id="my_show">
 	  <thead>
 	  <tr>
@@ -107,6 +125,7 @@
 	  </c:forEach>
 	  </tbody>
 	</table>
+		<!--endprint-->
 	<!-- 分页[s] -->
 	<%--<div class="page" >--%>
         <%--${pageModel.totalRecords}条记录,共${pageModel.totalPage}页--%>

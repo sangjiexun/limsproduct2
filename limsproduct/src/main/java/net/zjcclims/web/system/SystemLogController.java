@@ -51,6 +51,7 @@ public class SystemLogController {
 	@Autowired private TimetableAppointmentDAO timetableAppointmentDAO;
 	@Autowired private SchoolWeekDAO schoolWeekDAO;
 	@Autowired private AssetReceiveDAO assetReceiveDAO;
+	@Autowired private LabRoomDAO labRoomDAO;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -357,6 +358,42 @@ public class SystemLogController {
 	}
 
     /*************************************************************************************
+     * Description:开放项目相关报表--仪器借出登记表/实验开出情况-实验室列表
+     *
+     * @author: Hezhaoyi
+     * @date: 2019-5-15
+     *************************************************************************************/
+    @RequestMapping(value="/log/listLabRoom")
+    public ModelAndView listLabRoom(HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //每页20条记录
+        int pagesize = 20;
+        String currpage = request.getParameter("currpage");
+        //页面标记-1仪器借出一级页面2实验开出情况一级页面
+        String type = request.getParameter("type");
+
+        StringBuffer sql = new StringBuffer("select distinct l from LabRoom l order by l.id asc");
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<LabRoom> labRoomList = query.getResultList();
+
+        Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //总记录数
+        mav.addObject("totalRecords",totalRecords);
+        mav.addObject("pageModel",pageModel);
+        mav.addObject("labRoomList",labRoomList);
+        mav.addObject("type",type);
+
+        mav.setViewName("reports/systemLog/listLabRoom.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
      * Description:开放项目相关报表--仪器借出登记表
      *
      * @author: Hezhaoyi
@@ -371,8 +408,11 @@ public class SystemLogController {
         //每页20条记录
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
+        int labRoomId = Integer.valueOf(request.getParameter("labRoomId"));
 
-        StringBuffer sql = new StringBuffer("select distinct l from LabRoomDeviceLending l where l.lendType=1 order by l.id asc");
+        StringBuffer sql = new StringBuffer("SELECT lrdl FROM LabRoomDeviceLending lrdl,LabRoomDevice lrd");
+        sql.append(" WHERE lrdl.labRoomDevice.id = lrd.id AND lrd.labRoom.id = "+labRoomId);
+        sql.append(" order by lrdl.id asc");
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -394,7 +434,7 @@ public class SystemLogController {
 			}
             instrumentLendingegistrationVOs.add(instrumentLendingegistrationVO);
         }
-
+        mav.addObject("labRoomId",labRoomId);
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
         mav.addObject("totalRecords",totalRecords);
@@ -528,7 +568,7 @@ public class SystemLogController {
         }
 
         mav.addObject("drugDepotRegistrationFormVOs",drugDepotRegistrationFormVOs);
-
+        mav.addObject("cabinetId",cabinetId);
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
         mav.addObject("totalRecords",totalRecords);
@@ -619,7 +659,7 @@ public class SystemLogController {
         }
 
         mav.addObject("outOfStockRecordsVOs",outOfStockRecordsVOs);
-
+        mav.addObject("assetId",assetId);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
@@ -785,7 +825,7 @@ public class SystemLogController {
         //当前学期
         int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
         SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId);
-        laboratoryNoticeVO.setItemTime(sdf.format(schoolWeek.getDate().toString())+"第"+section+"节");
+        laboratoryNoticeVO.setItemTime(sdf.format(schoolWeek.getDate().getTime())+"第"+section+"节");
         if(operationItem.getUserByLpTeacherSpeakerId()!=null){
             laboratoryNoticeVO.setTeacher(operationItem.getUserByLpTeacherSpeakerId().getCname());
         }
@@ -949,7 +989,7 @@ public class SystemLogController {
                 int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
                 SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday1,termId);
                 //时间
-                objectInfo[0] = sdf.format(schoolWeek.getDate());
+                objectInfo[0] = sdf.format(schoolWeek.getDate().getTime());
                 //节次
                 objectInfo[1] = object[2];
                 InformationList.add(objectInfo);
@@ -971,6 +1011,8 @@ public class SystemLogController {
     @RequestMapping(value="/log/listStatisticalTableOfExperiments")
     public ModelAndView listStatisticalTableOfExperiments(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
+        int labRoomId = Integer.valueOf(request.getParameter("labRoomId"));
+        LabRoom labRoom = labRoomDAO.findLabRoomById(labRoomId);
 
         LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
         //查询对应年级的实验开出情况
@@ -978,40 +1020,41 @@ public class SystemLogController {
         //高一年级
         Object[] objectOne = new Object[5];
         //演示实验
-        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
+        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +464 +" and l.labRoom.id =" +labRoomId).getResultList().size();
         objectOne[0] = "高一年级";
         objectOne[1] = oneCategory1;
         objectOne[2] = oneCategory1;
         //分组实验
-        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
+        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
         objectOne[3] = oneCategory2;
         objectOne[4] = oneCategory2;
         InformationList.add(objectOne);
         //高二年级
         Object[] objectTwo = new Object[5];
         //演示实验
-        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
+        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +464 +" and l.labRoom.id =" +labRoomId).getResultList().size();
         objectTwo[0] = "高二年级";
         objectTwo[1] = TwoCategory1;
         objectTwo[2] = TwoCategory1;
         //分组实验
-        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
+        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
         objectTwo[3] = TwoCategory2;
         objectTwo[4] = TwoCategory2;
         InformationList.add(objectTwo);
         //高三年级
         Object[] objectThree = new Object[5];
         //演示实验
-        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
+        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +464 +" and l.labRoom.id =" +labRoomId).getResultList().size();
         objectThree[0] = "高三年级";
         objectThree[1] = threeCategory1;
         objectThree[2] = threeCategory1;
         //分组实验
-        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
+        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
         objectThree[3] = threeCategory2;
         objectThree[4] = threeCategory2;
         InformationList.add(objectThree);
         laboratoryNoticeVO.setInformationList(InformationList);
+        mav.addObject("labRoomName",labRoom.getLabRoomName());
         mav.addObject("laboratoryNoticeVO",laboratoryNoticeVO);
         mav.setViewName("reports/systemLog/listStatisticalTableOfExperiments.jsp");
         return mav;
@@ -1029,6 +1072,19 @@ public class SystemLogController {
         systemLogService.exportListExperimentalSchedule(request, response);
     }
 
+    /**
+     * Description 开放项目相关报表-仪器借出登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @RequestMapping("/log/exportListInstrumentLendingegistration")
+    public void exportListInstrumentLendingegistration(HttpServletRequest request, HttpServletResponse response)throws Exception{
+        systemLogService.exportListInstrumentLendingegistration(request, response);
+    }
+
+
     /* Description 开放项目相关报表-低值易耗品领用登记表{导出excel}
      * @param request
      * @param response
@@ -1039,6 +1095,7 @@ public class SystemLogController {
     public void exportListReceiptOfLowValueConsumables(HttpServletRequest request, HttpServletResponse response)throws Exception{
         systemLogService.exportListReceiptOfLowValueConsumables(request, response);
     }
+
     /* Description 开放项目相关报表-药品出库登记表{导出excel}
      * @param request
      * @param response
@@ -1050,5 +1107,15 @@ public class SystemLogController {
         systemLogService.exportListDrugDepotRegistrationForm(request, response);
     }
 
+    /* Description 开放项目相关报表-耗材领用登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @RequestMapping("/log/exportListConsumablesAcquisitionRecordSheet")
+    public void exportListConsumablesAcquisitionRecordSheet(HttpServletRequest request, HttpServletResponse response)throws Exception{
+        systemLogService.exportListConsumablesAcquisitionRecordSheet(request, response);
+    }
 
 }

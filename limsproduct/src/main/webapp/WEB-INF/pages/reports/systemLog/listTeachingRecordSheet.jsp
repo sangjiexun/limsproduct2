@@ -68,6 +68,10 @@
 		.tab_lab_2_tr th{
 			height: 40px;
 		}
+		.title_p{
+			text-align: center;
+			font-size: 16px;
+		}
 	</style>
 </head>
   
@@ -117,6 +121,8 @@
 	</div>
 
 		<!--startprint-->
+		<p class="title_p">${laboratoryNoticeVO.term}</p>
+		<p class="title_p">${laboratoryNoticeVO.grade}&nbsp;${laboratoryNoticeVO.title}</p>
 		<table class="tab_lab_1"  cellspacing="0" cellpadding="0">
 			<tr class="tab_lab_2_tr">
 				<th colspan="2">填单日期</th><td colspan="2"></td>

@@ -13,7 +13,11 @@
 	  window.location.href="${pageContext.request.contextPath}/log/listInstrumentLendingegistration?currpage=1";
   }
   function btnExport(){
-	  window.location.href="${pageContext.request.contextPath}/log/exportListInstrumentLendingegistration";
+      var labRoomId = ${labRoomId};
+	  window.location.href="${pageContext.request.contextPath}/log/exportListInstrumentLendingegistration?labRoomId="+labRoomId;
+  }
+  function goBack() {
+      window.history.go(-1);
   }
   //跳转
   function targetUrl(url)
@@ -56,6 +60,8 @@
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
 		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="导出" onclick="btnExport();"/>
+          <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
+		  <input type="hidden" id="labRoomId" value="${labRoomId}" />
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
