@@ -953,6 +953,7 @@ public class SystemLogController {
             }
         }
         laboratoryNoticeVO.setInformationList(InformationList);
+        mav.addObject("laboratoryNoticeVO",laboratoryNoticeVO);
 
         mav.setViewName("reports/systemLog/listTeachingRecordSheet.jsp");
         return mav;
@@ -1023,6 +1024,17 @@ public class SystemLogController {
     @RequestMapping("/log/exportListExperimentalSchedule")
     public void exportListExperimentalSchedule(HttpServletRequest request, HttpServletResponse response)throws Exception{
         systemLogService.exportListExperimentalSchedule(request, response);
+    }
+
+    /* Description 开放项目相关报表-低值易耗品领用登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @RequestMapping("/log/exportListReceiptOfLowValueConsumables")
+    public void exportListReceiptOfLowValueConsumables(HttpServletRequest request, HttpServletResponse response)throws Exception{
+        systemLogService.exportListReceiptOfLowValueConsumables(request, response);
     }
 
 }
