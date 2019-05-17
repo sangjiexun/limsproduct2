@@ -115,9 +115,9 @@ public class SchoolWeekDAOImpl extends AbstractJpaDao<SchoolWeek> implements
 	 *
 	 */
 	@Transactional
-	public SchoolWeek findSchoolWeekByWeekAndWeekday(Integer week, Integer weekday) throws DataAccessException {
+	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId) throws DataAccessException {
 
-		return findSchoolWeekByWeekAndWeekday(week,weekday, -1, -1);
+		return findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId, -1, -1);
 	}
 
 	/**
@@ -127,9 +127,9 @@ public class SchoolWeekDAOImpl extends AbstractJpaDao<SchoolWeek> implements
 
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public SchoolWeek findSchoolWeekByWeekAndWeekday(Integer week, Integer weekday, int startResult, int maxRows) throws DataAccessException {
-		Query query = createNamedQuery("findSchoolWeekByWeekAndWeekday", startResult, maxRows, week,weekday);
-		return (net.zjcclims.domain.SchoolWeek)query.getResultList();
+	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId,int startResult, int maxRows) throws DataAccessException {
+		Query query = createNamedQuery("findSchoolWeekByWeekAndWeekdayAndTerm", startResult, maxRows, week,weekday,termId);
+		return (net.zjcclims.domain.SchoolWeek)query.getSingleResult();
 	}
 
 	/**

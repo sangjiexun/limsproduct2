@@ -773,16 +773,20 @@ public class SystemLogController {
         int section = Integer.valueOf(request.getParameter("section"));
         OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
         LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
-        laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        if(operationItem.getSystemSubject12()!=null){
+            laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        }
         laboratoryNoticeVO.setItemName(operationItem.getLpName());
         laboratoryNoticeVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
         laboratoryNoticeVO.setTitle("实验通知单");
         //实验时间
         //当前学期
-        int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
-        SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekday(week,weekday);
-        laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString());
-        laboratoryNoticeVO.setTeacher(operationItem.getUserByLpTeacherSpeakerId().getCname());
+        int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+        SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId);
+        laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString()+"第"+section+"节");
+        if(operationItem.getUserByLpTeacherSpeakerId()!=null){
+            laboratoryNoticeVO.setTeacher(operationItem.getUserByLpTeacherSpeakerId().getCname());
+        }
         //仪器、材料或药品信息
         List<Object[]> deviceAndsssetInformationList = new ArrayList<>();
         //仪器
@@ -810,7 +814,7 @@ public class SystemLogController {
                 //单位
                 object[2] = asset.getUnit();
 
-                StringBuffer sql = new StringBuffer("SELECT a FROM AssetReceive a WHRER a.operationItem.id="+ operationItem.getId());
+                StringBuffer sql = new StringBuffer("SELECT a FROM AssetReceive a WHERE a.operationItem.id="+ operationItem.getId());
                 List<AssetReceive> assetReceiveList = entityManager.createQuery(sql.toString()).getResultList();
                 if(assetReceiveList.size()!=0){
                     AssetReceive assetReceive = assetReceiveList.get(0);
@@ -848,7 +852,9 @@ public class SystemLogController {
         LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
         laboratoryNoticeVO.setItemName(operationItem.getLpName());
         laboratoryNoticeVO.setTerm(operationItem.getSchoolTerm().getTermName());
-        laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        if(operationItem.getSystemSubject12()!=null){
+            laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        }
         laboratoryNoticeVO.setGrade(operationItem.getCDictionaryByOpenGrade().getCName());
         laboratoryNoticeVO.setTitle("分组实验通知、教学记录单");
         //器材-实验物资
@@ -856,7 +862,7 @@ public class SystemLogController {
         String Asset = "";
         if(itemAssets.size()!=0){
             for(ItemAssets itemAsset : itemAssets){
-                Asset = Asset + itemAsset.getAsset().getChName();
+                Asset = Asset +" "+ itemAsset.getAsset().getChName();
             }
         }
         //器材-实验设备
@@ -864,7 +870,7 @@ public class SystemLogController {
         String device = "";
         if(operationItemDevices.size()!=0){
             for(OperationItemDevice operationItemDevice : operationItemDevices){
-                device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+                device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
             }
         }
         laboratoryNoticeVO.setDeviceAndAsset(device+Asset);
@@ -937,8 +943,8 @@ public class SystemLogController {
                 //实验时间
                 //当前学期
                 Object[] objectInfo = new Object[2];
-                int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
-                SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekday(week,weekday1);
+                int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+                SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday1,termId);
                 //时间
                 objectInfo[0] = schoolWeek.getDate().toString();
                 //节次
@@ -947,9 +953,6 @@ public class SystemLogController {
             }
         }
         laboratoryNoticeVO.setInformationList(InformationList);
-
-
-
 
         mav.setViewName("reports/systemLog/listTeachingRecordSheet.jsp");
         return mav;
@@ -969,38 +972,42 @@ public class SystemLogController {
         //查询对应年级的实验开出情况
         List<Object[]> InformationList = new ArrayList<>();
         //高一年级
-        Object[] objectOne = new Object[4];
+        Object[] objectOne = new Object[5];
         //演示实验
         int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
-        objectOne[0] = oneCategory1;
+        objectOne[0] = "高一年级";
         objectOne[1] = oneCategory1;
+        objectOne[2] = oneCategory1;
         //分组实验
         int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
-        objectOne[2] = oneCategory2;
         objectOne[3] = oneCategory2;
+        objectOne[4] = oneCategory2;
         InformationList.add(objectOne);
         //高二年级
-        Object[] objectTwo = new Object[4];
+        Object[] objectTwo = new Object[5];
         //演示实验
         int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
-        objectTwo[0] = TwoCategory1;
+        objectTwo[0] = "高二年级";
         objectTwo[1] = TwoCategory1;
+        objectTwo[2] = TwoCategory1;
         //分组实验
         int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
-        objectTwo[2] = TwoCategory2;
         objectTwo[3] = TwoCategory2;
+        objectTwo[4] = TwoCategory2;
         InformationList.add(objectTwo);
         //高三年级
-        Object[] objectThree = new Object[4];
+        Object[] objectThree = new Object[5];
         //演示实验
         int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
-        objectThree[0] = threeCategory1;
+        objectThree[0] = "高三年级";
         objectThree[1] = threeCategory1;
+        objectThree[2] = threeCategory1;
         //分组实验
         int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
-        objectThree[2] = threeCategory2;
         objectThree[3] = threeCategory2;
+        objectThree[4] = threeCategory2;
         InformationList.add(objectThree);
+        laboratoryNoticeVO.setInformationList(InformationList);
         mav.addObject("laboratoryNoticeVO",laboratoryNoticeVO);
         mav.setViewName("reports/systemLog/listStatisticalTableOfExperiments.jsp");
         return mav;

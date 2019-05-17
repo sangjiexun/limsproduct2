@@ -504,7 +504,7 @@ public class SystemLogServiceImpl implements SystemLogService {
             String Asset = "";
             if(itemAssets.size()!=0){
                 for(ItemAssets itemAsset : itemAssets){
-                    Asset = Asset + itemAsset.getAsset().getChName();
+                    Asset = Asset +" "+ itemAsset.getAsset().getChName();
                 }
             }
             map.put("itemAssets", Asset);//实验物资
@@ -513,7 +513,7 @@ public class SystemLogServiceImpl implements SystemLogService {
             String device = "";
             if(operationItemDevices.size()!=0){
                 for(OperationItemDevice operationItemDevice : operationItemDevices){
-                    device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+                    device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
                 }
             }
             map.put("itemDecvices", device);//实验设备
