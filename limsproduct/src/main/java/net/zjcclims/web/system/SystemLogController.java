@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -465,8 +466,15 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        Set<AssetCabinet> assetCabinetList = assetCabinetDAO.findAllAssetCabinets();
-        int totalRecords = assetCabinetList.size();
+        StringBuffer sql = new StringBuffer("select distinct o from AssetCabinet o");
+
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<AssetCabinet> assetCabinetList = query.getResultList();
+
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         mav.addObject("assetCabinetList",assetCabinetList);
         //总记录数
@@ -543,8 +551,15 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        Set<Asset> assetList = assetDAO.findAllAssets();
-        int totalRecords = assetList.size();
+        StringBuffer sql = new StringBuffer("select distinct o from Asset o");
+
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<Asset> assetList = query.getResultList();
+
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         mav.addObject("assetList",assetList);
         //总记录数
@@ -629,8 +644,15 @@ public class SystemLogController {
         String currpage = request.getParameter("currpage");
         String type = request.getParameter("type");
 
-        Set<OperationItem> operationItemList = operationItemDAO.findAllOperationItems();
-        int totalRecords = operationItemList.size();
+
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o");
+
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pagesize);
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        query.setFirstResult(firstResult);
+        List<OperationItem> operationItemList = query.getResultList();
         mav.addObject("operationItemList",operationItemList);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
