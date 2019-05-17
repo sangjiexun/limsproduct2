@@ -765,6 +765,8 @@ public class SystemLogController {
      *************************************************************************************/
     @RequestMapping(value="/log/listLaboratoryNotice")
     public ModelAndView listLaboratoryNotice(HttpServletRequest request){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
         ModelAndView mav = new ModelAndView();
 
         int itemId = Integer.valueOf(request.getParameter("itemId"));
@@ -783,7 +785,7 @@ public class SystemLogController {
         //当前学期
         int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
         SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId);
-        laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString()+"第"+section+"节");
+        laboratoryNoticeVO.setItemTime(sdf.format(schoolWeek.getDate().toString())+"第"+section+"节");
         if(operationItem.getUserByLpTeacherSpeakerId()!=null){
             laboratoryNoticeVO.setTeacher(operationItem.getUserByLpTeacherSpeakerId().getCname());
         }
@@ -845,6 +847,7 @@ public class SystemLogController {
      *************************************************************************************/
     @RequestMapping(value="/log/listTeachingRecordSheet")
     public ModelAndView listTeachingRecordSheet(HttpServletRequest request){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         ModelAndView mav = new ModelAndView();
         int itemId = Integer.valueOf(request.getParameter("itemId"));
         OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
@@ -946,7 +949,7 @@ public class SystemLogController {
                 int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
                 SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday1,termId);
                 //时间
-                objectInfo[0] = schoolWeek.getDate().toString();
+                objectInfo[0] = sdf.format(schoolWeek.getDate());
                 //节次
                 objectInfo[1] = object[2];
                 InformationList.add(objectInfo);
@@ -1036,5 +1039,16 @@ public class SystemLogController {
     public void exportListReceiptOfLowValueConsumables(HttpServletRequest request, HttpServletResponse response)throws Exception{
         systemLogService.exportListReceiptOfLowValueConsumables(request, response);
     }
+    /* Description 开放项目相关报表-药品出库登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @RequestMapping("/log/exportListDrugDepotRegistrationForm")
+    public void exportListDrugDepotRegistrationForm(HttpServletRequest request, HttpServletResponse response)throws Exception{
+        systemLogService.exportListDrugDepotRegistrationForm(request, response);
+    }
+
 
 }
