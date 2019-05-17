@@ -43,7 +43,7 @@
     </div>
     <div class="intro">
         <label>采购日期:</label>
-        <span>2019年4月28日</span>
+        <span></span>
     </div>
     <div class="intro">
         <label>入库日期:</label>
@@ -68,7 +68,7 @@
 <div class="bottom">
     <div class="intro">
         <label>科长（审核）:</label>
-        <span></span>
+        <span id="auditUser"></span>
     </div>
     <div class="intro">
         <label>验收:</label>
@@ -76,7 +76,7 @@
     </div>
     <div class="intro">
         <label>采购人:</label>
-        <span>2019年4月28日</span>
+        <span id="appUser"></span>
     </div>
 </div>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/lims/material/assetsInStorageCheckList.js"></script>

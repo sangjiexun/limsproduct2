@@ -221,7 +221,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
     var active = {
         admitAssetsInStorage: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=yes',
+                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=pass',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -242,7 +242,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
     var active2 = {
         rejectAssetsInStorage: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=no',
+                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=fail',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",

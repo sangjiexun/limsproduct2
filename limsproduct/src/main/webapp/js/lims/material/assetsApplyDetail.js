@@ -37,6 +37,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             academyNumber=data.academyNumber;
             department=data.department;
             goodsCategory=data.goodsCategory;
+            if(data.status==='0'){
+                $("#audit").hide();
+            }
         },
         error:function () {
             if(assetsApplyId!=""){
@@ -180,7 +183,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active = {
         admitAssetsApply: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=yes',
+                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=pass',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -201,7 +204,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active2 = {
         rejectAssetsApply: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=no',
+                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=fail',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",

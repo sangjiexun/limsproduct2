@@ -100,7 +100,7 @@
         </form>
         <table class="layui-hide add_progress" id="assetsList" lay-filter="assetsReceiveList"></table>
         <script type="text/html" id="parentbar">
-            <a class="layui-btn layui-btn-xs" lay-event="return">余料归还</a>
+            <a class="layui-btn layui-btn-xs" lay-event="return">点击填写归还数量</a>
         </script>
     </div>
 </div>

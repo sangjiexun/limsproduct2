@@ -306,6 +306,15 @@ public class MaterialServiceImpl implements MaterialService {
                     assetsApplyDTO.setAuditFlag(0);
                 }
             }
+            String appUser="";
+            if(o[3]!=null){
+                appUser=o[3].toString();
+            }
+            if(appUser.contains(shareService.getUser().getUsername())){
+                assetsApplyDTO.setAppFlag(1);
+            }else{
+                assetsApplyDTO.setAppFlag(0);
+            }
             assetsApplyDTOList.add(assetsApplyDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -339,7 +348,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "LEFT JOIN lab_center la on ass.center_id=la.id\n" +
                 "LEFT JOIN `user` u on ass.username=u.username\n" +
                 "LEFT JOIN asset_classification ac on ass.classification_id=ac.id\n" +
-                "LEFT JOIN asset_cabinet aca on ass.cabinet_id=aca.id ";
+                "LEFT JOIN asset_cabinet aca on ass.cabinet_id=aca.id WHERE 1=1 ";
         if(status!=null&&!status.equals("")){
             sql+="and ass.status = "+status+"";
         }
@@ -381,6 +390,15 @@ public class MaterialServiceImpl implements MaterialService {
                 }else{
                     assetsInStorageDTO.setAuditFlag(0);
                 }
+            }
+            String appUser="";
+            if(o[2]!=null){
+                appUser=o[2].toString();
+            }
+            if(appUser.contains(shareService.getUser().getUsername())){
+                assetsInStorageDTO.setAppFlag(1);
+            }else{
+                assetsInStorageDTO.setAppFlag(0);
             }
             assetsInStorageDTOList.add(assetsInStorageDTO);
         }
@@ -454,6 +472,15 @@ public class MaterialServiceImpl implements MaterialService {
                 }else{
                     assetsReceiveDTO.setAuditFlag(0);
                 }
+            }
+            String appUser="";
+            if(o[3]!=null){
+                appUser=o[3].toString();
+            }
+            if(appUser.contains(shareService.getUser().getUsername())){
+                assetsReceiveDTO.setAppFlag(1);
+            }else{
+                assetsReceiveDTO.setAppFlag(0);
             }
             assetsReceiveDTOList.add(assetsReceiveDTO);
         }
@@ -578,11 +605,15 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tasr.info,\n" +
                 "\tasr.supplier,\n" +
                 "\tass.app_id,\n" +
-                "\tass.audit_date\n" +
+                "\tass.audit_date,\n" +
+                "\tCONCAT(audit.cname,\"(\",audit.username,\")\"),\n" +
+                "\tCONCAT(app.cname,\"(\",app.username,\")\")\n" +
                 "FROM\n" +
                 "\tasset_storage_record asr\n" +
                 "LEFT JOIN asset a ON asr.asset_id = a.id\n" +
                 "LEFT JOIN asset_storage ass on asr.store_id=ass.id\n" +
+                "LEFT JOIN user audit on audit.username=ass.audit_user\n" +
+                "LEFT JOIN user app on app.username=ass.username\n" +
                 "WHERE 1 = 1 AND asr.store_id="+appId;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> assetItemList=query.getResultList();
@@ -602,6 +633,8 @@ public class MaterialServiceImpl implements MaterialService {
         jsonObject.put("storageItemList",materialListDTOList);//保存入库单条目
         jsonObject.put("supplier",assetItemList.get(0)[8]);//供应商
         jsonObject.put("auditDate",assetItemList.get(0)[10].toString().substring(0,19));//入库日期
+        jsonObject.put("auditUser",assetItemList.get(0)[11]);
+        jsonObject.put("appUser",assetItemList.get(0)[12]);
         return jsonObject;
     }
     /**
@@ -627,7 +660,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset a ON arr.asset_id = a.id\n" +
                 "LEFT JOIN asset_cabinet ac on arr.cabinet_id=ac.id\n" +
-                "LEFT JOIN asset_cabinet_record acr on acr.asset_id=arr.asset_id\n" +
+                "LEFT JOIN asset_cabinet_record acr on (acr.asset_id=arr.asset_id and arr.cabinet_id=acr.cabinet_id)\n" +
                 "WHERE 1 = 1 AND arr.receive_id = "+id;
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
         Query query=entityManager.createNativeQuery(sql);
@@ -1004,8 +1037,19 @@ public class MaterialServiceImpl implements MaterialService {
      */
     public Integer saveAssetsInStorageDetail(AssetsInStorageDTO assetsInStorageDTO){
         AssetStorage assetStorage=new AssetStorage();
-
         if(assetsInStorageDTO.getApplyId()!=null) {
+            String sql2 = "SELECT\n" +
+                    "\tasset_id,\n" +
+                    "\tcabinet_id\n" +
+                    "FROM\n" +
+                    "\tasset_app_record aar\n" +
+                    "where 1=1 and aar.app_id= "+assetsInStorageDTO.getApplyId()+"";
+            Query query=entityManager.createNativeQuery(sql2);
+            List<Object[]> objects=query.getResultList();
+            for(Object[] o:objects){
+                if(o[1]==null){
+                    return 0;
+                }            }
             assetStorage.setAppId(assetsInStorageDTO.getApplyId());//保存对应申购记录编号
             AssetApp assetApp=assetAppDAO.findAssetAppById(assetsInStorageDTO.getApplyId());
             assetApp.setAssetStatu(4);//已发起入库
@@ -1239,7 +1283,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tsa.academy_number,\n" +
                 "\tlc.id,\n" +
                 "\taa.category_id,\n" +
-                "\taa.price\n" +
+                "\taa.price,\n" +
+                "\taa.asset_statu\n" +
                 "FROM\n" +
                 "\tasset_app aa\n" +
                 "LEFT JOIN `user` u ON aa.app_user = u.username\n" +
@@ -1258,6 +1303,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetsApplyDTO.setDepartment(o[5]!=null?o[5].toString():null);//中心
             assetsApplyDTO.setGoodsCategory(o[6]!=null?o[6].toString():null);//物资类别
             assetsApplyDTO.setPrice(o[7]!=null?Double.parseDouble(o[7].toString()):null);//当前总价
+            assetsApplyDTO.setStatus(o[8]!=null?o[8].toString():null);//状态位
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1781,7 +1827,7 @@ public class MaterialServiceImpl implements MaterialService {
         Integer max=0;//获取最大值
         if(objects.size()>1) {//物品柜不止一个时
             for (int i = 0; i < objects.size(); i++) {
-                amount = +Integer.parseInt(objects.get(i)[1].toString());
+                amount += Integer.parseInt(objects.get(i)[1].toString());
             }
             for (int i = 0; i < objects.size() - 1; i++) {//选取物品柜
                 if (Integer.parseInt(objects.get(i)[1].toString()) > Integer.parseInt(objects.get(i + 1)[1].toString())) {
@@ -1792,7 +1838,7 @@ public class MaterialServiceImpl implements MaterialService {
                 cabinetId = Integer.parseInt(objects.get(max)[0].toString());
             }
         }else{//只有一个物品柜时
-            amount = +Integer.parseInt(objects.get(0)[1].toString());
+            amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
         }
         if(amount<=quantity){//总数小于申请数时，无法申请
