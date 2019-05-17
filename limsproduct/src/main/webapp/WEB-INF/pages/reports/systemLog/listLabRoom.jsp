@@ -110,8 +110,8 @@
 	<!-- 分页[s] -->
 	<div class="page" >
         ${pageModel.totalRecords}条记录,共${pageModel.totalPage}页
-    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=1')" target="_self">首页</a>
-	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
+    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=${type}')" target="_self">首页</a>
+	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.previousPage}&type=${type}')" target="_self">上一页</a>
 	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
 	<option value="${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
 	<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	
@@ -119,8 +119,8 @@
     <option value="${pageContext.request.contextPath}/log/listLabRoom?currpage=${j.index}">${j.index}</option>
     </c:if>
     </c:forEach></select>页
-	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
- 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.lastPage}')" target="_self">末页</a>
+	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.nextPage}&type=${type}')" target="_self">下一页</a>
+ 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listLabRoom?currpage=${pageModel.lastPage}&type=${type}')" target="_self">末页</a>
     </div>
     <!-- 分页[e] -->
   </div>
