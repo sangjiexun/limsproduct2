@@ -14,6 +14,8 @@ $(function () {
             });
             $("#supplier").html(data.supplier);
             $("#auditDate").html(data.auditDate);
+            $("#auditUser").html(data.auditUser);
+            $("#appUser").html(data.appUser);
         }
     });
 });

@@ -48,6 +48,8 @@ public class AssetsReceiveDTO {
     private String curAuditLevel;
     //15.审核标志位
     private Integer auditFlag;
+    //15.流程发起标志位(0代表审核人 1代表发起人)
+    private Integer appFlag;
     public String getId() {
         return id;
     }
@@ -222,5 +224,13 @@ public class AssetsReceiveDTO {
 
     public void setAuditFlag(Integer auditFlag) {
         this.auditFlag = auditFlag;
+    }
+
+    public Integer getAppFlag() {
+        return appFlag;
+    }
+
+    public void setAppFlag(Integer appFlag) {
+        this.appFlag = appFlag;
     }
 }

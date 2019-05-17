@@ -47,6 +47,8 @@
 			<a class="layui-btn layui-btn-xs" lay-event="detail">审核</a>
 			{{# }  else if(d.status==2){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="inbound">确认领用</a>
+			{{# }  else if(d.status==3){ }}
+			<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
 			{{# }  else if(d.status==4 && d.isNeedReturn==0){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="return">余料归还</a>
 			{{# }  else if(d.status==4 && d.isNeedReturn==1){ }}

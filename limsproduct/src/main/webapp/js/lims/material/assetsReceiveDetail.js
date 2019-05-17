@@ -199,7 +199,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active = {
         admitAssetsReceive: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=yes',
+                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=pass',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -220,7 +220,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active2 = {
         rejectAssetsReceive: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=no',
+                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=fail',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
