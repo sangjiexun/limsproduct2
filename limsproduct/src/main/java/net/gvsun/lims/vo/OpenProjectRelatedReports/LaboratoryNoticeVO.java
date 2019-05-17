@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Description 实验通知单对象、教学记录单共用VO
+ * Description 实验通知单对象、教学记录单、实验开出情况统计表共用VO
  * @author Hezhaoyi
  * 2019-5-16
  */
@@ -19,7 +19,7 @@ public class LaboratoryNoticeVO implements Serializable {
     private String itemTime;
     //授课教师
     private String teacher;
-    //仪器材料相关信息
+    //相关信息
     private List<Object[]> InformationList;
     //仪器及药品
     private String deviceAndAsset;

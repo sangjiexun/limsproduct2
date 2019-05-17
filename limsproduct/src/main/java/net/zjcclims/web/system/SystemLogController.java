@@ -685,39 +685,42 @@ public class SystemLogController {
         if(startWeek!=0){
             if(startWeek<endWeek){
                 if(startClass<endClass){
-                    Object[] object = new Object[3];
-                    object[0]= startWeek;
-                    object[1] = weekday;
-                    object[2] = startClass;
+                    Object[] object = new Object[4];
+                    object[0] = operationItem;
+                    object[1] = startWeek;
+                    object[2] = weekday;
+                    object[3] = startClass;
                     sectionList.add(object);
                     startClass++;
                 }else {
-                    Object[] object = new Object[3];
-                    object[0]= startWeek;
-                    object[1] = weekday;
-                    object[2] = endClass;
+                    Object[] object = new Object[4];
+                    object[0] = operationItem;
+                    object[1] = startWeek;
+                    object[2] = weekday;
+                    object[3] = endClass;
                     sectionList.add(object);
                     }
                 startWeek++;
             }else {
                 if(startClass<endClass){
-                    Object[] object = new Object[3];
-                    object[0]= startWeek;
-                    object[1] = weekday;
-                    object[2] = startClass;
+                    Object[] object = new Object[4];
+                    object[0] = operationItem;
+                    object[1] = startWeek;
+                    object[2] = weekday;
+                    object[3] = startClass;
                     sectionList.add(object);
                     startClass++;
                 }else {
-                    Object[] object = new Object[3];
-                    object[0]= startWeek;
-                    object[1] = weekday;
-                    object[2] = endClass;
+                    Object[] object = new Object[4];
+                    object[0] = operationItem;
+                    object[1]= startWeek;
+                    object[2] = weekday;
+                    object[3] = endClass;
                     sectionList.add(object);
                 }
             }
         }
         mav.addObject("sectionList",sectionList);
-        mav.addObject("operationItem",operationItem);
         int totalRecords = sectionList.size();
 		Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
 		//总记录数
@@ -931,6 +934,43 @@ public class SystemLogController {
     public ModelAndView listStatisticalTableOfExperiments(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
 
+        LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
+        //查询对应年级的实验开出情况
+        List<Object[]> InformationList = new ArrayList<>();
+        //高一年级
+        Object[] objectOne = new Object[4];
+        //演示实验
+        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
+        objectOne[0] = oneCategory1;
+        objectOne[1] = oneCategory1;
+        //分组实验
+        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
+        objectOne[2] = oneCategory2;
+        objectOne[3] = oneCategory2;
+        InformationList.add(objectOne);
+        //高二年级
+        Object[] objectTwo = new Object[4];
+        //演示实验
+        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
+        objectTwo[0] = TwoCategory1;
+        objectTwo[1] = TwoCategory1;
+        //分组实验
+        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
+        objectTwo[2] = TwoCategory2;
+        objectTwo[3] = TwoCategory2;
+        InformationList.add(objectTwo);
+        //高三年级
+        Object[] objectThree = new Object[4];
+        //演示实验
+        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +464).getResultList().size();
+        objectThree[0] = threeCategory1;
+        objectThree[1] = threeCategory1;
+        //分组实验
+        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " +777).getResultList().size();
+        objectThree[2] = threeCategory2;
+        objectThree[3] = threeCategory2;
+        InformationList.add(objectThree);
+        mav.addObject("laboratoryNoticeVO",laboratoryNoticeVO);
         mav.setViewName("reports/systemLog/listStatisticalTableOfExperiments.jsp");
         return mav;
     }
