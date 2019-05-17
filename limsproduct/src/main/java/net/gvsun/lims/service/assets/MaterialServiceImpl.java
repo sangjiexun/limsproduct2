@@ -753,11 +753,13 @@ public class MaterialServiceImpl implements MaterialService {
                 "a.price,\n" +
                 "arr.quantity*a.price as total_price,\n" +
                 "arr.info,\n" +
-                "ar.audit_date\n" +
+                "ar.audit_date,\n" +
+                "CONCAT(u.cname,\"(\",u.username,\")\")\n" +
                 "FROM\n" +
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
                 "LEFT JOIN asset a on arr.asset_id = a.id\n" +
+                "LEFT JOIN user u on ar.audit_user=u.username\n" +
                 "where 1=1 AND ar.id="+appId;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> assetList=query.getResultList();
@@ -792,6 +794,7 @@ public class MaterialServiceImpl implements MaterialService {
         jsonObject.put("applicant",applicant);//申请人
         jsonObject.put("auditDate",assetList.get(0)[8].toString().substring(0,19));//入库日期
         jsonObject.put("totalPrice",totalPrice);//总价
+        jsonObject.put("auditUser",assetList.get(0)[9].toString());//审核人
         return jsonObject;
     }
     /**
@@ -1184,6 +1187,7 @@ public class MaterialServiceImpl implements MaterialService {
             String dateStr = sdf.format(calendar.getTime()).replace("-","");
             String appNo=dateStr+Integer.parseInt(assetsReceiveDTO.getGoodsCategory());//按日期加物资类别生成编号
             assetReceive.setReceiveNo("SL"+appNo);//保存编号
+            assetReceive.setAssetUsage(assetsReceiveDTO.getPurpose());//申领用途
             assetReceive.setStatus(0);//保存初始状态
             assetReceive=assetReceiveDAO.store(assetReceive);
         }catch (Exception e){
@@ -1516,7 +1520,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tar.end_date,\n" +
                 "\tar.receive_no,\n" +
                 "\tar. STATUS,\n" +
-                "  ac.is_need_return\n" +
+                "  ac.is_need_return,\n" +
+                "  ar.asset_usage\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON ar.app_user = u.username\n" +
@@ -1536,6 +1541,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetsReceiveDTO.setBatchNumber(o[7]!=null?o[7].toString():null);//编号
             assetsReceiveDTO.setStatus(o[8]!=null?o[8].toString():null);//状态
             assetsReceiveDTO.setIsNeedReturn(o[9]!=null?Integer.parseInt(o[9].toString()):null);//是否需要归还
+            assetsReceiveDTO.setPurpose(o[10]!=null?o[10].toString():null);//申领用途
         }else{
             //获取当前日期
             Date dt = new Date();

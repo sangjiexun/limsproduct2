@@ -134,7 +134,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
         if(layEvent === 'detail') {
             layer.msg('查看该项目');
         } else if(layEvent === 'del') {
-            layer.confirm('are you sure?', function(index) {
+            layer.confirm('确定删除?', function(index) {
                 // obj.del(); //删除对应行（tr）的DOM结构
                 $.ajax({
                     url: contextPath + '/lims/api/material/deleteAssetsApply?id='+data.id,
@@ -155,7 +155,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
                 //向服务端发送删除指令
             });
         } else if(layEvent === 'submit') {
-            layer.confirm('are you sure?', function(index) {
+            layer.confirm('确定提交?', function(index) {
                 $.ajax({
                     url: contextPath + '/lims/api/material/submitAssetsApply?id='+data.id,
                     // data: jsonData,
