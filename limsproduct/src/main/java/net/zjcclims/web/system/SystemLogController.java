@@ -627,12 +627,15 @@ public class SystemLogController {
         //每页20条记录
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
+        String type = request.getParameter("type");
 
         Set<OperationItem> operationItemList = operationItemDAO.findAllOperationItems();
         int totalRecords = operationItemList.size();
         mav.addObject("operationItemList",operationItemList);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //标记区分  6实验通知单 7教学记录单
+        mav.addObject("type",type);
         //总记录数
         mav.addObject("totalRecords",totalRecords);
         mav.addObject("pageModel",pageModel);
