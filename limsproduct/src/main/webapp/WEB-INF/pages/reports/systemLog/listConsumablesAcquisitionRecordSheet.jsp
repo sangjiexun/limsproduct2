@@ -10,7 +10,7 @@
   <script type="text/javascript">
   function cancel()
   {
-	  window.location.href="${pageContext.request.contextPath}/log/listAsset?currpage=1";
+	  window.location.href="${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=1";
   }
   //跳转
   function targetUrl(url)
@@ -45,6 +45,8 @@
 		  <li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/log/listReceiptOfLowValueConsumables?currpage=1">低值易耗品领用登记单</a></li>
 		  <li class="TabbedPanelsTab" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
 		  <li class="TabbedPanelsTab selected" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
+		  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
+		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
 		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
@@ -55,7 +57,7 @@
 	<%--</div>--%>
 	
 	<div class="tool-box" style="display: none">
-		<form name="queryForm" action="${pageContext.request.contextPath}/log/listAsset?currpage=1" method="post">
+		<form name="queryForm" action="${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=1" method="post">
 			 <ul>
   				<%--<li><spring:message code="all.trainingRoom.labroom" />:<input type="text" id="roomName" name="roomName" value="${roomName}"/></li>--%>
   				<%--<li>--%>
@@ -101,17 +103,17 @@
 	<!-- 分页[s] -->
 	<div class="page" >
         ${pageModel.totalRecords}条记录,共${pageModel.totalPage}页
-    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=1')" target="_self">首页</a>
-	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
+    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=1')" target="_self">首页</a>
+	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
 	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
-	<option value="${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
+	<option value="${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
 	<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	
     <c:if test="${j.index!=pageModel.currpage}">
-    <option value="${pageContext.request.contextPath}/log/listAsset?currpage=${j.index}">${j.index}</option>
+    <option value="${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=${j.index}">${j.index}</option>
     </c:if>
     </c:forEach></select>页
-	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
- 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.lastPage}')" target="_self">末页</a>
+	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
+ 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listConsumablesAcquisitionRecordSheet?currpage=${pageModel.lastPage}')" target="_self">末页</a>
     </div>
     <!-- 分页[e] -->
   </div>

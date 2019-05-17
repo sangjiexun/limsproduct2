@@ -10,7 +10,7 @@
   <script type="text/javascript">
   function cancel()
   {
-	  window.location.href="${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=1";
+	  window.location.href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=${type}";
   }
   //跳转
   function targetUrl(url)
@@ -18,12 +18,9 @@
     document.queryForm.action=url;
     document.queryForm.submit();
   }
-  function goBack() {
-      window.history.go(-1);
-  }
-  function btnPrintClick(){
-      window.print();
-  }
+  function btnPrintClick(){  
+      window.print();  
+  } 
   </script>
 </head>
   
@@ -43,11 +40,18 @@
 		  <li class="TabbedPanelsTab1" id="s1"><a href="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1">实验计划表</a></li>
 		  <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listInstrumentLendingegistration?currpage=1">仪器借出登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/log/listReceiptOfLowValueConsumables?currpage=1">低值易耗品领用登记单</a></li>
-		  <li class="TabbedPanelsTab selected" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
+		  <li class="TabbedPanelsTab" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
-		  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
-		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
-		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
+		  <c:if test="${type == 6}">
+			  <li class="TabbedPanelsTab selected" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
+			  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
+		  </c:if>
+		  <c:if test="${type == 7}">
+			  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
+			  <li class="TabbedPanelsTab selected" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
+		  </c:if>
+
+		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
@@ -57,7 +61,7 @@
 	<%--</div>--%>
 	
 	<div class="tool-box" style="display: none">
-		<form name="queryForm" action="${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=1" method="post">
+		<form name="queryForm" action="${pageContext.request.contextPath}/log/listItem?currpage=1&type=${type}" method="post">
 			 <ul>
   				<%--<li><spring:message code="all.trainingRoom.labroom" />:<input type="text" id="roomName" name="roomName" value="${roomName}"/></li>--%>
   				<%--<li>--%>
@@ -73,42 +77,43 @@
 	<table class="tb" id="my_show">
 	  <thead>
 	  <tr>
-	    <th>日期</th>
-	    <th>药品名称</th>
-	    <th>规格</th>
-		<th>单位</th>
-		<th>数量</th>
-		<th>签名</th>
+		<th>实验内容</th>
+	    <th>实验类型</th>
+	    <th>计划时间</th>
+		<th>操作</th>
 	  </tr>
 	  </thead>
 	  <tbody>
-	  <c:forEach items="${drugDepotRegistrationFormVOs}" var="curr" varStatus="status">
-	  <tr>
-	    <td>${curr.time}</td>
-	    <td>${curr.drugName}</td>
-	    <td>${curr.specification}</td>
-	    <td>${curr.unit}</td>
-	    <td>${curr.number}</td>
-	    <%--<td>${curr.getLabRoom().getLabRoomName()}</td>--%>
-	    <td></td>
-	  </tr>
+	  <c:forEach items="${operationItemList}" var="curr" varStatus="status">
+		  <tr>
+			<td>${curr.lpName}</td>
+			<td>${curr.getCDictionaryByLpCategoryApp().getCName()}</td>
+			<td>${curr.getPlanWeek()}</td>
+			<%--<td><a href="${pageContext.request.contextPath}/log/listItemClasses?currpage=1&itemId=${curr.id}">查看实验课次</a></td>--%>
+			<c:if test="${type == 6}">
+				<td><a href="${pageContext.request.contextPath}/log/listItemClasses?currpage=1&itemId=${curr.id}">查看实验课次</a></td>
+			</c:if>
+			<c:if test="${type == 7}">
+				<td><a href="${pageContext.request.contextPath}/log/listTeachingRecordSheet?currpage=1&itemId=${curr.id}">查看教学记录单</a></td>
+			</c:if>
+		  </tr>
 	  </c:forEach>
 	  </tbody>
 	</table>
 	<!-- 分页[s] -->
 	<div class="page" >
         ${pageModel.totalRecords}条记录,共${pageModel.totalPage}页
-    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=1')" target="_self">首页</a>
-	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
+    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listItem?currpage=1&type=${type}')" target="_self">首页</a>
+	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listItem?currpage=${pageModel.previousPage}&type=${type}')" target="_self">上一页</a>
 	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
-	<option value="${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
+	<option value="${pageContext.request.contextPath}/log/listItem?currpage=${pageModel.currpage}&type=${type}">${pageModel.currpage}</option>
 	<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	
     <c:if test="${j.index!=pageModel.currpage}">
-    <option value="${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=${j.index}">${j.index}</option>
+    <option value="${pageContext.request.contextPath}/log/listItem?currpage=${j.index}&type=${type}">${j.index}</option>
     </c:if>
     </c:forEach></select>页
-	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
- 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=${pageModel.lastPage}')" target="_self">末页</a>
+	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listItem?currpage=${pageModel.nextPage}&type=${type}')" target="_self">下一页</a>
+ 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listItem?currpage=${pageModel.lastPage}&type=${type}')" target="_self">末页</a>
     </div>
     <!-- 分页[e] -->
   </div>
