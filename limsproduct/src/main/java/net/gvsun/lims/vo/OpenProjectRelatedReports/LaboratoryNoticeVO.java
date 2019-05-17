@@ -20,7 +20,7 @@ public class LaboratoryNoticeVO implements Serializable {
     //授课教师
     private String teacher;
     //仪器材料相关信息
-    private List<Object> InformationList;
+    private List<Object[]> InformationList;
     //仪器及药品
     private String deviceAndAsset;
 
@@ -64,11 +64,11 @@ public class LaboratoryNoticeVO implements Serializable {
         this.teacher = teacher;
     }
 
-    public List<Object> getInformationList() {
+    public List<Object[]> getInformationList() {
         return InformationList;
     }
 
-    public void setInformationList(List<Object> informationList) {
+    public void setInformationList(List<Object[]> informationList) {
         InformationList = informationList;
     }
 

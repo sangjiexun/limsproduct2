@@ -573,9 +573,9 @@ public class SystemLogController {
         //物资
         Asset asset = assetDAO.findAssetByPrimaryKey(Integer.valueOf(assetId));
 
-        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append("LEFT JOIN AssetReceive ar ON arr.receive_id = ar.id");
-        sql.append(" WHERE ar.status = 4 AND arr.asset.id ="+ assetId);
+        StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr ,AssetReceive ar");
+        sql.append(" where ar.id = arr.assetReceive.id");
+        sql.append(" and ar.status = 4 and arr.asset.id = "+ assetId);
         sql.append(" order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
@@ -593,7 +593,7 @@ public class SystemLogController {
             outOfStockRecordsVO.setLendingNum(assetReceiveRecord.getQuantity().toString());
             outOfStockRecordsVO.setUsage(assetReceiveRecord.getAssetReceive().getAssetUsage());
             outOfStockRecordsVO.setLendingUser(assetReceiveRecord.getAssetReceive().getUser().getCname());
-            StringBuffer sql1 = new StringBuffer("SELECT acar FROM AssetCabinetAccessRecord acar WHERE acar.appId" + assetReceiveRecord.getAssetReceive().getId());
+            StringBuffer sql1 = new StringBuffer("SELECT acar FROM AssetCabinetAccessRecord acar WHERE acar.appId=" + assetReceiveRecord.getAssetReceive().getId());
             List<AssetCabinetAccessRecord> assetCabinetAccessRecords = entityManager.createQuery(sql1.toString()).getResultList();
             if(assetCabinetAccessRecords.size()!=0){
                 AssetCabinetAccessRecord assetCabinetAccessRecord = assetCabinetAccessRecords.get(0);
@@ -718,6 +718,11 @@ public class SystemLogController {
         }
         mav.addObject("sectionList",sectionList);
         mav.addObject("operationItem",operationItem);
+        int totalRecords = sectionList.size();
+		Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+		//总记录数
+		mav.addObject("totalRecords",totalRecords);
+		mav.addObject("pageModel",pageModel);
 
         mav.setViewName("reports/systemLog/listItemClasses.jsp");
         return mav;
@@ -749,7 +754,7 @@ public class SystemLogController {
         laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString());
         laboratoryNoticeVO.setTeacher(operationItem.getUserByLpTeacherSpeakerId().getCname());
         //仪器、材料或药品信息
-        List<Object> deviceAndsssetInformationList = new ArrayList<>();
+        List<Object[]> deviceAndsssetInformationList = new ArrayList<>();
         //仪器
 
         if(operationItem.getOperationItemDevices()!=null){
@@ -855,7 +860,7 @@ public class SystemLogController {
                 }
             }
         }
-        List<Object> sectionList = new ArrayList();
+        List<Object[]> sectionList = new ArrayList();
         if(startWeek!=0){
             if(startWeek<endWeek){
                 if(startClass<endClass){
@@ -890,19 +895,24 @@ public class SystemLogController {
                 }
             }
         }
+        List<Object[]> InformationList = new ArrayList<>();
         if(sectionList.size()!=0){
-            List<Object> InformationList = new ArrayList<>();
-            for(Object object :sectionList){
-                int week = (Integer)object;
-                int weekday1 = (Integer)object;
+            for(Object[] object :sectionList){
+                int week = (Integer) object[0];
+                int weekday1 = (Integer)object[1];
                 //实验时间
                 //当前学期
+                Object[] objectInfo = new Object[2];
                 int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
                 SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekday(week,weekday1);
-                laboratoryNoticeVO.setItemTime(schoolWeek.getDate().toString());
-
+                //时间
+                objectInfo[0] = schoolWeek.getDate().toString();
+                //节次
+                objectInfo[1] = object[2];
+                InformationList.add(objectInfo);
             }
         }
+        laboratoryNoticeVO.setInformationList(InformationList);
 
 
 
