@@ -42,6 +42,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 "beginTime": data.beginTime,
                 "endTime": data.endTime,
                 "isNeedReturn": data.isNeedReturn,
+                "purpose": data.purpose,
             });
             academyNumber=data.academyNumber;
             department=data.department;

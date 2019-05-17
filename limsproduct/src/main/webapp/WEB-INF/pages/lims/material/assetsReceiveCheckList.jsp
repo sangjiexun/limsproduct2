@@ -73,7 +73,7 @@
     </div>
     <div class="intro">
         <label>发料人:</label>
-        <span></span>
+        <span id="auditUser"></span>
     </div>
     <div class="intro">
         <label>领料人:</label>

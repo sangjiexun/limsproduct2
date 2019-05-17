@@ -17,6 +17,7 @@ $(function () {
             $("#applicant").html(data.applicant);
             $("#department").html(data.department);
             $("#auditDate").html(data.auditDate);
+            $("#auditUser").html(data.auditUser);
         }
     });
 });
