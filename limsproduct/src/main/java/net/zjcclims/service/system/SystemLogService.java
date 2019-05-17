@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.zjcclims.domain.SystemLog;
 import net.zjcclims.vo.QueryParamsVO;
@@ -91,4 +92,13 @@ public interface SystemLogService {
 	 * @author 陈乐为 2019年4月17日
 	 */
 	public Integer allLabRoomUseUnplanCount(QueryParamsVO paramsVO);
+
+    /**
+     * Description 开放项目相关报表-实验计划表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListExperimentalSchedule(HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

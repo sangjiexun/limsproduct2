@@ -5,13 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import excelTools.ExcelUtils;
+import excelTools.JsGridReportBase;
+import excelTools.TableData;
 import net.luxunsh.util.EmptyUtil;
-import net.zjcclims.dao.LabAnnexDAO;
-import net.zjcclims.dao.LabCenterDAO;
-import net.zjcclims.dao.OperationItemDAO;
-import net.zjcclims.dao.SystemLogDAO;
+import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 
@@ -35,6 +37,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 	@Autowired private SystemLogDAO systemLogDAO;
 	@Autowired private LabCenterDAO labCenterDAO;
 	@Autowired private LabAnnexDAO labAnnexDAO;
+	@Autowired private SchoolTermDAO schoolTermDAO;
 	public SystemLogServiceImpl() {
 	}
 
@@ -463,5 +466,74 @@ public class SystemLogServiceImpl implements SystemLogService {
 		int count = ((BigInteger) query.getSingleResult()).intValue();
 		return count;
 	}
-	
+
+    /**
+     * Description 开放项目相关报表-实验计划表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+	@Override
+	public void exportListExperimentalSchedule(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<Map> list = new ArrayList<Map>();
+		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+		if (request.getParameter("term") != null) {
+			term = Integer.parseInt(request.getParameter("term"));
+		}
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o order by o.id asc");
+        Query query = entityManager.createQuery(sql.toString());
+		// 当前页打印条件
+        if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
+            String currpage = request.getParameter("currpage");
+            int pagesize = Integer.valueOf(request.getParameter("pagesize"));
+            query.setMaxResults(pagesize);
+            int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+            query.setFirstResult(firstResult);
+        }
+
+        List<OperationItem> operationItemList = query.getResultList();
+        int i = 1;
+        for(OperationItem operationItem :operationItemList){
+            Map map = new HashMap();
+            map.put("serial number", i);//序号
+            i++;
+            map.put("itemName", operationItem.getLpName());//实验内容
+            //器材-实验物资
+            Set<ItemAssets> itemAssets = operationItem.getItemAssets();
+            String Asset = "";
+            if(itemAssets.size()!=0){
+                for(ItemAssets itemAsset : itemAssets){
+                    Asset = Asset + itemAsset.getAsset().getChName();
+                }
+            }
+            map.put("itemAssets", Asset);//实验物资
+            //器材-实验设备
+            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+            String device = "";
+            if(operationItemDevices.size()!=0){
+                for(OperationItemDevice operationItemDevice : operationItemDevices){
+                    device = device + operationItemDevice.getSchoolDevice().getDeviceName();
+                }
+            }
+            map.put("itemDecvices", device);//实验设备
+            if(operationItem.getCDictionaryByLpCategoryApp()!=null){
+                map.put("itemCategory", operationItem.getCDictionaryByLpCategoryApp().getCName());//实验类型
+            }
+            if(operationItem.getPlanWeek()!=null){
+                map.put("planTime", operationItem.getPlanWeek());//计划时间
+            }
+            list.add(map);
+        }
+		//实验室遍历
+		SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
+		String title = schoolTerm.getTermName()+"实验计划表";
+		String[] hearders = new String[]{"序号", "实验内容", "实验物资", "实验设备",
+				"实验类型", "计划时间", "备注"};//表头数组
+		String[] fields = new String[]{"serial number", "itemName", "itemAssets", "itemDecvices", "itemCategory",
+				"planTime", "notes"};
+		TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
+		JsGridReportBase report = new JsGridReportBase(request, response);
+		report.exportExcel(title, shareService.getUserDetail().getCname(), schoolTerm.getTermName(), td);
+	}
 }

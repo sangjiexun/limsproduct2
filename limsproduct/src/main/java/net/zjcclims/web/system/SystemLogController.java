@@ -309,7 +309,6 @@ public class SystemLogController {
         query.setFirstResult(firstResult);
         List<OperationItem> operationItemList = query.getResultList();
         List<ExperimentalScheduleVO> experimentalScheduleVOs = new ArrayList<ExperimentalScheduleVO>();
-
         int i = 1;
         for(OperationItem operationItem :operationItemList){
             ExperimentalScheduleVO experimentalScheduleVO = new ExperimentalScheduleVO();
@@ -347,6 +346,8 @@ public class SystemLogController {
         }
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //总记录数
+        mav.addObject("pagesize",pagesize);
+        mav.addObject("currpage",currpage);
         mav.addObject("totalRecords",totalRecords);
         mav.addObject("pageModel",pageModel);
         mav.addObject("experimentalScheduleVOs",experimentalScheduleVOs);
@@ -775,6 +776,7 @@ public class SystemLogController {
         laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
         laboratoryNoticeVO.setItemName(operationItem.getLpName());
         laboratoryNoticeVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+        laboratoryNoticeVO.setTitle("实验通知单");
         //实验时间
         //当前学期
         int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -845,6 +847,10 @@ public class SystemLogController {
 
         LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
         laboratoryNoticeVO.setItemName(operationItem.getLpName());
+        laboratoryNoticeVO.setTerm(operationItem.getSchoolTerm().getTermName());
+        laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        laboratoryNoticeVO.setGrade(operationItem.getCDictionaryByOpenGrade().getCName());
+        laboratoryNoticeVO.setTitle("分组实验通知、教学记录单");
         //器材-实验物资
         Set<ItemAssets> itemAssets = operationItem.getItemAssets();
         String Asset = "";
@@ -998,6 +1004,18 @@ public class SystemLogController {
         mav.addObject("laboratoryNoticeVO",laboratoryNoticeVO);
         mav.setViewName("reports/systemLog/listStatisticalTableOfExperiments.jsp");
         return mav;
+    }
+
+    /**
+     * Description 开放项目相关报表-实验计划表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    @RequestMapping("/log/exportListExperimentalSchedule")
+    public void exportListExperimentalSchedule(HttpServletRequest request, HttpServletResponse response)throws Exception{
+        systemLogService.exportListExperimentalSchedule(request, response);
     }
 
 }

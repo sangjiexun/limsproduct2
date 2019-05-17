@@ -23,6 +23,12 @@ public class LaboratoryNoticeVO implements Serializable {
     private List<Object[]> InformationList;
     //仪器及药品
     private String deviceAndAsset;
+    //学期
+    private String term;
+    //年级
+    private String grade;
+    //表头
+    private String title;
 
     public String getSubject() {
         return subject;
@@ -78,5 +84,29 @@ public class LaboratoryNoticeVO implements Serializable {
 
     public void setDeviceAndAsset(String deviceAndAsset) {
         this.deviceAndAsset = deviceAndAsset;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
