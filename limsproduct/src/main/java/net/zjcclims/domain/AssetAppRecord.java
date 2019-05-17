@@ -189,8 +189,15 @@ public class AssetAppRecord implements Serializable {
 	@XmlElement
 	Double totalPrice;
 
-	
+	@Column(name = "invoice_number")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String invoiceNumber;
 
+	@Column(name = "info")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String info;
 	/**
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -406,6 +413,22 @@ public class AssetAppRecord implements Serializable {
 
 	public void setTotalPrice(Double totalPrice) {
 		this.totalPrice = totalPrice;
+	}
+
+	public String getInvoiceNumber() {
+		return invoiceNumber;
+	}
+
+	public void setInvoiceNumber(String invoiceNumber) {
+		this.invoiceNumber = invoiceNumber;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
 	}
 
 	/**

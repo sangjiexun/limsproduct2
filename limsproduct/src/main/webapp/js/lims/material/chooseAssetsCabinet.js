@@ -17,8 +17,10 @@ layui.use(['form'], function() {
     form.on('submit(chooseAssetsCabinet)', function(data){
         var cabinet=$("#cabinet").val();
         var id=$("#appId").val();
+        var invoiceNumber=$("#invoiceNumber").val();
+        var itemRemarks=$("#itemRemarks").val();
         $.ajax({
-            url: contextPath + '/lims/api/material/chooseAssetsCabinetForApply?cabinet='+cabinet+'&&id='+id,
+            url: contextPath + '/lims/api/material/chooseAssetsCabinetForApply?cabinet='+cabinet+'&&id='+id+'&&invoiceNumber='+invoiceNumber+'&&itemRemarks='+itemRemarks,
             async: false,
             type: "POST",
             contentType: "application/json;charset=UTF-8",

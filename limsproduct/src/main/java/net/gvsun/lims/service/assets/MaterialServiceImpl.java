@@ -617,6 +617,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "WHERE 1 = 1 AND asr.store_id="+appId;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> assetItemList=query.getResultList();
+        Double totalPrice=0.00;
         for(Object[] o:assetItemList){
             MaterialListDTO materialListDTO=new MaterialListDTO();
             materialListDTO.setName(o[0]!=null?o[0].toString():null);//入库物品名称
@@ -628,6 +629,7 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setInvoiceNumber(o[6]!=null?o[6].toString():null);//发票号
             materialListDTO.setInfo(o[7]!=null?o[7].toString():null);//备注
             materialListDTOList.add(materialListDTO);
+            totalPrice +=Double.parseDouble(o[5].toString());
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("storageItemList",materialListDTOList);//保存入库单条目
@@ -635,6 +637,7 @@ public class MaterialServiceImpl implements MaterialService {
         jsonObject.put("auditDate",assetItemList.get(0)[10].toString().substring(0,19));//入库日期
         jsonObject.put("auditUser",assetItemList.get(0)[11]);
         jsonObject.put("appUser",assetItemList.get(0)[12]);
+        jsonObject.put("totalPrice",totalPrice);
         return jsonObject;
     }
     /**
@@ -758,6 +761,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "where 1=1 AND ar.id="+appId;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> assetList=query.getResultList();
+        Double totalPrice=0.00;
         for(Object[] o:assetList){
             MaterialListDTO materialListDTO=new MaterialListDTO();
             materialListDTO.setName(o[0]!=null?o[0].toString():null);
@@ -775,7 +779,7 @@ public class MaterialServiceImpl implements MaterialService {
             }else{
                 materialListDTO.setInfo("");
             }
-
+            totalPrice +=Double.parseDouble(o[6].toString());
             materialListDTOList.add(materialListDTO);
         }
         JSONObject jsonObject = new JSONObject();
@@ -787,6 +791,7 @@ public class MaterialServiceImpl implements MaterialService {
         jsonObject.put("department",department);//学院
         jsonObject.put("applicant",applicant);//申请人
         jsonObject.put("auditDate",assetList.get(0)[8].toString().substring(0,19));//入库日期
+        jsonObject.put("totalPrice",totalPrice);//总价
         return jsonObject;
     }
     /**
@@ -1076,7 +1081,7 @@ public class MaterialServiceImpl implements MaterialService {
         assetStorage.setDate(calendar.getTime());//保存日期
         //生成入库编号
         String dateStr = sdf.format(calendar.getTime()).replace("-","");//按日期生成编号
-        assetStorage.setBatchNumber(dateStr);
+        assetStorage.setBatchNumber("RK"+dateStr);
         assetStorage=assetStorageDAO.store(assetStorage);
         //对于申领入库，同步物资到入库记录
         if(assetsInStorageDTO.getApplyId()!=null) {
@@ -1086,7 +1091,9 @@ public class MaterialServiceImpl implements MaterialService {
                     "\tapp_price,\n" +
                     "\tapp_supplier,\n" +
                     "\ttotal_price,\n" +
-                    "\tcabinet_id\n" +
+                    "\tcabinet_id,\n" +
+                    "\tinvoice_number,\n" +
+                    "\tinfo\n" +
                     "FROM\n" +
                     "\tasset_app_record aar\n" +
                     "where 1=1 and aar.app_id= "+assetsInStorageDTO.getApplyId()+"";
@@ -1101,6 +1108,8 @@ public class MaterialServiceImpl implements MaterialService {
                 assetStorageRecord.setSupplier(o[3].toString());
                 assetStorageRecord.setTotalPrice(o[4]!=null?Double.parseDouble(o[4].toString()):null);
                 assetStorageRecord.setCabinetId(Integer.parseInt(o[5].toString()));
+                assetStorageRecord.setInvoiceNumber(o[6]!=null?o[6].toString():null);
+                assetStorageRecord.setInfo(o[7]!=null?o[7].toString():null);
                 assetStorageRecordDAO.store(assetStorageRecord);
             }
         }
@@ -1134,7 +1143,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetApp.setCategoryId(Integer.parseInt(assetsApplyDTO.getGoodsCategory()));//保存物资类别
             String dateStr = sdf.format(calendar.getTime()).replace("-","");
             String appNo=dateStr+Integer.parseInt(assetsApplyDTO.getGoodsCategory());//按日期加物资类别生成编号
-            assetApp.setAppNo(appNo);//保存编号
+            assetApp.setAppNo("SG"+appNo);//保存编号
             assetApp.setAssetStatu(0);//保存初始状态
             assetApp.setCourseNo(assetsApplyDTO.getCourseNo());
             assetApp=assetAppDAO.store(assetApp);
@@ -1174,7 +1183,7 @@ public class MaterialServiceImpl implements MaterialService {
             }
             String dateStr = sdf.format(calendar.getTime()).replace("-","");
             String appNo=dateStr+Integer.parseInt(assetsReceiveDTO.getGoodsCategory());//按日期加物资类别生成编号
-            assetReceive.setReceiveNo(appNo);//保存编号
+            assetReceive.setReceiveNo("SL"+appNo);//保存编号
             assetReceive.setStatus(0);//保存初始状态
             assetReceive=assetReceiveDAO.store(assetReceive);
         }catch (Exception e){

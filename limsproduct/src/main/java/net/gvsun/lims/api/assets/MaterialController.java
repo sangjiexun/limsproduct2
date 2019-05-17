@@ -1341,9 +1341,11 @@ public class MaterialController {
      */
     @ResponseBody
     @RequestMapping("/chooseAssetsCabinetForApply")
-    public String chooseAssetsCabinetForApply(@RequestParam Integer id,@RequestParam Integer cabinet){
+    public String chooseAssetsCabinetForApply(@RequestParam Integer id,@RequestParam Integer cabinet,String invoiceNumber,String itemRemarks){
         AssetAppRecord assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(id);
         assetAppRecord.setCabinetId(cabinet);
+        assetAppRecord.setInvoiceNumber(invoiceNumber);
+        assetAppRecord.setInfo(itemRemarks);
         assetAppRecordDAO.store(assetAppRecord);
         return "success";
     }
