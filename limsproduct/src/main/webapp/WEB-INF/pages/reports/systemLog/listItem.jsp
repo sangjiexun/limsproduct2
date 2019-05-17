@@ -50,7 +50,7 @@
 			  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 			  <li class="TabbedPanelsTab selected" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
 		  </c:if>
-
+		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">

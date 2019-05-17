@@ -18,10 +18,54 @@
     document.queryForm.action=url;
     document.queryForm.submit();
   }
-  function btnPrintClick(){  
-      window.print();  
-  } 
+  function btnPrintClick(){
+//      window.print();
+      var bdhtml = window.document.body.innerHTML;
+      var sprnstr = "<!--startprint-->";
+      var eprnstr = "<!--endprint-->";
+      var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr) + 17);
+      prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));
+      window.document.body.innerHTML = prnhtml;
+      window.print();
+      // 还原界面
+      window.document.body.innerHTML = bdhtml
+      window.location.reload()
+
+  }
   </script>
+	<style type="text/css">
+		.content-box .tab_lab_1 {
+			margin: 10px 0 0;
+		}
+		.tab_lab_1 th {
+			text-align: right;
+			height: 40px;
+			background: #fafafa;
+			padding: 0 15px 0 0;
+		}
+		.tab_lab_1 th, .tab_lab_1 td {
+			border: 1px solid #e4e5e7!important;
+		}
+		.tab_lab_1 td {
+			text-align: left;
+			vertical-align: text-top;
+			background: #fff!important;
+			padding: 10px;
+		}
+		.tab_lab_1_tr th{
+			text-align: center;
+			height: 40px;
+		}
+		.tab_lab_1_tr td {
+			text-align: center;
+			vertical-align: text-top;
+			background: #fff!important;
+			padding: 10px;
+		}
+		.tab_lab_2_tr th{
+			height: 40px;
+		}
+	</style>
 </head>
   
 <body>
@@ -44,6 +88,7 @@
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab selected" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
+		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
@@ -66,44 +111,56 @@
 
 		<form>
 	</div>
-	
-	<table class="tb" id="my_show">
-	  <thead>
-	  <tr>
-		<th>实验内容</th>
-	    <th>周次</th>
-	    <th>星期</th>
-		<th>节次</th>
-		<th>操作</th>
-	  </tr>
-	  </thead>
-	  <tbody>
-	  <c:forEach items="${sectionList}" var="curr" varStatus="status">
-		  <tr>
-			<td>${curr[0]}</td>
-			<td>${curr[1]}</td>
-			<td>${curr[2]}</td>
-			<td>${curr[3]}</td>
-			<td><a href="${pageContext.request.contextPath}/log/listLaboratoryNotice?currpage=1&itemId=${curr.id}">查看实验通知单</a></td>
-		  </tr>
-	  </c:forEach>
-	  </tbody>
-	</table>
+
+		<!--startprint-->
+		<table class="tab_lab_1"  cellspacing="0" cellpadding="0">
+			<tr class="tab_lab_2_tr">
+				<th>实验课题</th><td colspan="4">${laboratoryNoticeVO.itemName}</td>
+				<th>演示或分组</th><td colspan="2">${laboratoryNoticeVO.itemCategory}</td>
+			</tr>
+			<tr class="tab_lab_2_tr">
+				<th>实验时间</th><td colspan="7">${laboratoryNoticeVO.itemTime}</td>
+			</tr>
+			<tr class="tab_lab_2_tr">
+				<th>实验班级</th><td></td>
+				<th>学生数</th><td></td>
+				<th>分组数</th><td></td>
+				<th>授课教师</th><td>${laboratoryNoticeVO.teacher}</td>
+			</tr>
+			<tr class="tab_lab_1_tr">
+				<th colspan="4">仪器、材料或药品名称</th>
+				<th>规格</th>
+				<th>单位</th>
+				<th>领出数量</th>
+				<th>归还数量</th>
+			</tr>
+			<c:forEach items="${laboratoryNoticeVO.informationList}" var="curr" varStatus="status">
+			<tr class="tab_lab_1_tr">
+				<td colspan="4">${curr[0]}</td>
+				<td>${curr[1]}</td>
+				<td>${curr[2]}</td>
+				<td>${curr[3]}</td>
+				<td>${curr[4]}</td>
+			</tr>
+			</c:forEach>
+		</table>
+
+		<!--endprint-->
 	<!-- 分页[s] -->
-	<div class="page" >
-        ${pageModel.totalRecords}条记录,共${pageModel.totalPage}页
-    <a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=1')" target="_self">首页</a>
-	<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
-	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
-	<option value="${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
-	<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	
-    <c:if test="${j.index!=pageModel.currpage}">
-    <option value="${pageContext.request.contextPath}/log/listAsset?currpage=${j.index}">${j.index}</option>
-    </c:if>
-    </c:forEach></select>页
-	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
- 	<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.lastPage}')" target="_self">末页</a>
-    </div>
+	<%--<div class="page" >--%>
+        <%--${pageModel.totalRecords}条记录,共${pageModel.totalPage}页--%>
+    <%--<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=1')" target="_self">首页</a>--%>
+	<%--<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.previousPage}')" target="_self">上一页</a>--%>
+	<%--第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">--%>
+	<%--<option value="${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.currpage}">${pageModel.currpage}</option>--%>
+	<%--<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	--%>
+    <%--<c:if test="${j.index!=pageModel.currpage}">--%>
+    <%--<option value="${pageContext.request.contextPath}/log/listAsset?currpage=${j.index}">${j.index}</option>--%>
+    <%--</c:if>--%>
+    <%--</c:forEach></select>页--%>
+	<%--<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.nextPage}')" target="_self">下一页</a>--%>
+ 	<%--<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/log/listAsset?currpage=${pageModel.lastPage}')" target="_self">末页</a>--%>
+    <%--</div>--%>
     <!-- 分页[e] -->
   </div>
   </div>

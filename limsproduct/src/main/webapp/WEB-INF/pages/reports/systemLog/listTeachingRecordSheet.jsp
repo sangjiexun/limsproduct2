@@ -91,6 +91,7 @@
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab selected" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
+		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
 		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>
@@ -122,10 +123,10 @@
 				<th>实验日期</th><td colspan="2"></td>
 			</tr>
 			<tr class="tab_lab_2_tr">
-				<th colspan="2">实验题目</th><td colspan="5"></td>
+				<th colspan="2">实验题目</th><td colspan="5">${laboratoryNoticeVO.itemName}</td>
 			</tr>
 			<tr class="tab_lab_2_tr">
-				<th colspan="2">实验仪器、材料及药品</th><td colspan="5"></td>
+				<th colspan="2">实验仪器、材料及药品</th><td colspan="5">${laboratoryNoticeVO.deviceAndAsset}</td>
 			</tr>
 			<tr class="tab_lab_1_tr">
 				<th width="5%">班级</th>
@@ -135,14 +136,21 @@
 				<th width="15%">实验情况</th>
 				<th width="10%">备注</th>
 			</tr>
+			<c:forEach items="${laboratoryNoticeVO.informationList}" var="curr" varStatus="status">
 			<tr class="tab_lab_1_tr">
-				<td>1</td>
-				<td>2</td>
-				<td>3</td>
-				<td>4</td>
-				<td>5</td>
-				<td>6</td>
+				<td></td>
+				<td>${curr[0]}</td>
+				<%--<td></td>--%>
+				<td>${curr[1]}</td>
+				<td> </td>
+				<td>
+					<label><input name="Fruit" type="radio" value="" />好 </label>
+					<label><input name="Fruit" type="radio" value="" />一般 </label>
+					<label><input name="Fruit" type="radio" value="" />其他 </label>
+				</td>
+				<td> </td>
 			</tr>
+			</c:forEach>
 		</table>
 
 		<!--endprint-->
