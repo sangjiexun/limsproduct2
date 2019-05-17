@@ -38,7 +38,7 @@
   <div id="TabbedPanels1" class="TabbedPanels">
 	  <ul class="TabbedPanelsTabGroup">
 		  <li class="TabbedPanelsTab1" id="s1"><a href="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1">实验计划表</a></li>
-		  <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listInstrumentLendingegistration?currpage=1">仪器借出登记表</a></li>
+		  <li class="TabbedPanelsTab" id="s2"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1">仪器借出登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s3"><a href="${pageContext.request.contextPath}/log/listReceiptOfLowValueConsumables?currpage=1">低值易耗品领用登记单</a></li>
 		  <li class="TabbedPanelsTab" id="s4"><a href="${pageContext.request.contextPath}/log/listDrugCabinet?currpage=1">药品出库登记表</a></li>
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
@@ -51,7 +51,7 @@
 			  <li class="TabbedPanelsTab selected" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
 		  </c:if>
 		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
-		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
+		  <%--<input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>--%>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
   <div class="TabbedPanelsContent">
