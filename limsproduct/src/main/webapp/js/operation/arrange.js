@@ -366,17 +366,17 @@ function getTimetablePlanView() {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newSelfReGroupCourse(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-plus'>排课</span></a>&nbsp;";
                     result += "</td></tr></table>";
                 } else if (row.timetableStatus == 3) {
-                    result += "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',1)\" ><span class='glyphicon glyphicon-ok'>发布排课</span></a>&nbsp;";
+                    result += "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',1,0)\" ><span class='glyphicon glyphicon-ok'>发布排课</span></a>&nbsp;";
                 } else if (row.timetableStatus == 10) {
                     result += "<table><tr><td height=\"25px\">";
                     if (opType == 2) {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newSelfReNoGroupCourse(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-plus'>排课</span></a>&nbsp;";
-                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
+                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
                     }
                     else
                     {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newSelfReGroupCourse(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-plus'>排课</span></a>&nbsp;";
-                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
+                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
                     }
                     result += "</td></tr></table>";
                 }
@@ -638,11 +638,12 @@ function getSchoolClassesUser(classNumber){
         }
     });
 }
-function publicTimetable(timetableStyle, selfId, status) {
+function publicTimetable(timetableStyle, selfId, status,relevantEquipment) {
     var arr = new Object();
     arr.selfId = selfId;
     arr.timetableStyle = timetableStyle;
     arr.status = status;
+    arr.relevantEquipment = relevantEquipment;   //排课完成生成相关联的设备借用记录
     var arrs = JSON.stringify(arr);
     $.ajax({
         url: zuulUrl + "api/timetable/common/apiTimetablePublic",
