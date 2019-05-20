@@ -709,13 +709,14 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tCONCAT(u.cname,\"(\",u.username,\")\") as username,\n" +
                 "  ac.cabinet_name,\n" +
                 "\tacar.quantity,\n" +
-                "  acr.stock_number\n" +
+                "  acar.remain_quantity\n" +
                 "FROM\n" +
                 "\tasset_cabinet_access_record acar\n" +
                 "INNER JOIN asset_cabinet_record acr ON (acar.cabinet_id = acr.cabinet_id and acar.asset_id = acr.asset_id)\n" +
                 "LEFT JOIN asset_cabinet ac on acar.cabinet_id=ac.id\n" +
                 "LEFT JOIN user u on acar.username=u.username\n" +
                 "where acar.asset_id="+id;
+        sql +=" order by acar.create_date desc";
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
         Query query=entityManager.createNativeQuery(sql);
         //分页
@@ -967,13 +968,22 @@ public class MaterialServiceImpl implements MaterialService {
                 assetAppRecord.setId(assetsApplyItemDTO.getId());
             }
             assetAppRecord.setAssetApp(assetAppDAO.findAssetAppById(Integer.parseInt(assetsApplyItemDTO.getAppId())));
-            assetAppRecord.setAsset(assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId())));
+            //对原有的asset信息进行维护
+            Asset asset=assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId()));
+            if(asset.getPrice()==null){
+                asset.setPrice(assetsApplyItemDTO.getPrice().toString());
+            }
+            if(asset.getFactory()==null){
+                asset.setFactory(assetsApplyItemDTO.getFactory());
+            }
+            assetAppRecord.setAsset(asset);
             assetAppRecord.setAppQuantity(assetsApplyItemDTO.getQuantity());
             assetAppRecord.setAppPrice(assetsApplyItemDTO.getPrice());
             Double totalPrice = assetsApplyItemDTO.getPrice().doubleValue() * assetsApplyItemDTO.getQuantity();
             assetAppRecord.setTotalPrice(totalPrice);
             assetAppRecord.setAppSupplier(assetsApplyItemDTO.getFactory());
             assetAppRecordDAO.store(assetAppRecord);
+
         }catch (Exception e){
             e.printStackTrace();
             flag=false;
@@ -1596,6 +1606,11 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetAccessRecord.setType("InStorage");
             assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
             assetCabinetAccessRecord.setCabinetId(Integer.parseInt(o[0].toString()));
+            if(assetCabinetRecord==null) {
+                assetCabinetAccessRecord.setRemainQuantity(Integer.parseInt(o[2].toString()));
+            }else{
+                assetCabinetAccessRecord.setRemainQuantity(assetCabinetRecord.getStockNumber());
+            }
             assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);
         }
     }
@@ -1622,6 +1637,7 @@ public class MaterialServiceImpl implements MaterialService {
         Query query=entityManager.createNativeQuery(sql);//获取入库具体条目
         List<Object[]> objects=query.getResultList();
         for(Object[] o:objects){
+            AssetCabinetRecord assetCabinetRecord=this.findAssetsCabinetRecordByCabinetAndAssets(Integer.parseInt(o[2].toString()),Integer.parseInt(o[0].toString()));
             //生成领用记录
             AssetCabinetAccessRecord assetCabinetAccessRecord=new AssetCabinetAccessRecord();
             assetCabinetAccessRecord.setAppId(id);
@@ -1638,6 +1654,7 @@ public class MaterialServiceImpl implements MaterialService {
                 assetCabinetAccessRecord.setType("Receive");
                 assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
             }
+            assetCabinetAccessRecord.setRemainQuantity(assetCabinetRecord.getStockNumber());
             assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
             assetCabinetAccessRecord.setCabinetId(Integer.parseInt(o[2].toString()));
             assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);

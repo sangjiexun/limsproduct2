@@ -937,9 +937,9 @@ public class MaterialController {
      */
     @RequestMapping(value = "/getInStorageCheckListInfo",produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getInStorageCheckListInfo( String appId){
+    public JSONObject getInStorageCheckListInfo( String appId){
         JSONObject jsonObject=materialService.findAllAssetInStorageItem(Integer.parseInt(appId));
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
     /**
      * 获得领(发)料单所需信息
@@ -948,9 +948,9 @@ public class MaterialController {
      */
     @RequestMapping(value = "/getReceiveCheckListInfo",produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getReceiveCheckListInfo(String appId){
+    public JSONObject getReceiveCheckListInfo(String appId){
         JSONObject jsonObject=materialService.findAllAssetReceiveItem(Integer.parseInt(appId));
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
     /**
      * 判断该类物资是否需要归还

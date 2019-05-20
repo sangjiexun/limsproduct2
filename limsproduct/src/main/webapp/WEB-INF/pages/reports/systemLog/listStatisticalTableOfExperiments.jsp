@@ -44,6 +44,21 @@
             text-align: center;
             font-size: 16px;
         }
+		table {
+			width:100%;
+			border-collapse: collapse;
+			border: 1px solid #d0d6dc;
+		}
+		table thead tr th, table td {
+			border-right: 1px solid #e4e5e7;
+			border-bottom: 1px solid #e4e5e7;
+		}
+		table thead tr th, table td {
+			padding: 7px 7px;
+		}
+		#my_show tr td {
+			border-bottom: 1px solid #cccccc;
+		}
 	</style>
 </head>
   
