@@ -51,4 +51,16 @@ public interface TimetableTeacherRelatedDAO extends
 	 */
 	public Set<TimetableTeacherRelated> findAllTimetableTeacherRelateds(int startResult, int maxRows) throws DataAccessException;
 
+	/**
+	 * JPQL Query - findTimetableTeacherRelatedById
+	 *
+	 */
+	public Set<TimetableTeacherRelated> findTimetableTeacherRelatedByAppointmentId(Integer id_1) throws DataAccessException;
+
+	/**
+	 * JPQL Query - findTimetableTeacherRelatedById
+	 *
+	 */
+	public Set<TimetableTeacherRelated> findTimetableTeacherRelatedByAppointmentId(Integer id_1, int startResult, int maxRows) throws DataAccessException;
+
 }

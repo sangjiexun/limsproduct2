@@ -23,7 +23,8 @@ import javax.persistence.*;
 @NamedQueries({
 		@NamedQuery(name = "findAllTimetableTeacherRelateds", query = "select myTimetableTeacherRelated from TimetableTeacherRelated myTimetableTeacherRelated"),
 		@NamedQuery(name = "findTimetableTeacherRelatedById", query = "select myTimetableTeacherRelated from TimetableTeacherRelated myTimetableTeacherRelated where myTimetableTeacherRelated.id = ?1"),
-		@NamedQuery(name = "findTimetableTeacherRelatedByPrimaryKey", query = "select myTimetableTeacherRelated from TimetableTeacherRelated myTimetableTeacherRelated where myTimetableTeacherRelated.id = ?1") })
+		@NamedQuery(name = "findTimetableTeacherRelatedByPrimaryKey", query = "select myTimetableTeacherRelated from TimetableTeacherRelated myTimetableTeacherRelated where myTimetableTeacherRelated.id = ?1"),
+		@NamedQuery(name = "findTimetableTeacherRelatedByAppointmentId", query = "select myTimetableTeacherRelated from TimetableTeacherRelated myTimetableTeacherRelated where myTimetableTeacherRelated.timetableAppointment.id = ?1")})
 @Table(name = "timetable_teacher_related")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(namespace = "zjcclims/net/zjcclims/domain", name = "TimetableTeacherRelated")

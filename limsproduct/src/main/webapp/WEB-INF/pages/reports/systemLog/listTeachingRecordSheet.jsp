@@ -138,7 +138,8 @@
 				<th width="5%">班级</th>
 				<th width="10%">日期</th>
 				<th width="5%">节次</th>
-				<th width="12.5%">授课教师(签字)</th>
+				<th width="5%">授课教师</th>
+				<th width="7.5%">授课教师(签字)</th>
 				<th width="15%">实验情况</th>
 				<th width="10%">备注</th>
 			</tr>
@@ -148,6 +149,7 @@
 				<td>${curr[0]}</td>
 				<%--<td></td>--%>
 				<td>${curr[1]}</td>
+                <td>${curr[2]}</td>
 				<td> </td>
 				<td>
 					<label><input name="Fruit" type="radio" value="" />好 </label>

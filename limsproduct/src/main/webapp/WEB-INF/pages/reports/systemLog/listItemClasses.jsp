@@ -88,7 +88,7 @@
 			<td>${curr[1]}</td>
 			<td>${curr[2]}</td>
 			<td>${curr[3]}</td>
-			<td><a href="${pageContext.request.contextPath}/log/listLaboratoryNotice?itemId=${curr[0].getId()}&week=${curr[1]}&weekday=${curr[2]}&section=${curr[3]}">查看实验通知单</a></td>
+			<td><a href="${pageContext.request.contextPath}/log/listLaboratoryNotice?itemId=${curr[0].getId()}&week=${curr[1]}&weekday=${curr[2]}&section=${curr[3]}&appointmentId=${curr[4]}">查看实验通知单</a></td>
 		  </tr>
 	  </c:forEach>
 	  </tbody>

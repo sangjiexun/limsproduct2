@@ -117,10 +117,10 @@
 	    <td>${curr[0]}</td>
 	    <td>${curr[1]}</td>
 	    <td>${curr[2]}</td>
-	    <td>100%</td>
-	    <td>${curr[3]}</td>
+	    <td>${curr[3]}%</td>
 	    <td>${curr[4]}</td>
-	    <td>100%</td>
+	    <td>${curr[5]}</td>
+	    <td>${curr[6]}%</td>
 	  </tr>
 	  </c:forEach>
 	  </tbody>
