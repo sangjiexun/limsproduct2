@@ -312,7 +312,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			String status = jsonObject.getString("status");
 			if ("success".equals(status)) {
 				JSONArray jsonArray = jsonObject.getJSONArray("data");
-				if (it.next().getId().toString().equals(jsonArray.getJSONObject(0).getString("businessAppId"))
+				if (l.getId().toString().equals(jsonArray.getJSONObject(0).getString("businessAppId"))
 						&& "0".equals(jsonArray.getJSONObject(0).getString("level"))) {
 					it.remove();
 				}

@@ -219,11 +219,7 @@ public class LabRoomLendingController<JsonResult> {
         String teacherName = request.getParameter("teacher");
         User teacher = userDAO.findUserByUsername(teacherName);
         User user = shareService.getUser();
-        // 检查是否可预约
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
-        if (labRoom.getLabRoomReservation() == 0) {
-            return "noReservation";
-        }
         //检查安全准入
         String checkResult = labRoomService.securityAccess(user.getUsername(), labRoomId, request);
         if (!"success".equals(checkResult)) {

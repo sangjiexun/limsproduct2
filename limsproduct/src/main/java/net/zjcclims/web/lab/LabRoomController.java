@@ -1623,8 +1623,7 @@ public class LabRoomController<JsonResult> {
         // 流媒体服务器地址
         String serverIp = agent.getCommonServer().getServerIp();
         // 端口
-        //String hardwarePort = agent.getHardwarePort();
-        String hardwarePort = "1935";
+        String hardwarePort = agent.getSnNo();
 
         // 摄像头本身ip的 xxx.xxx.xxx.123   最后那个123
         String lastFour = "";
@@ -3346,7 +3345,7 @@ public class LabRoomController<JsonResult> {
             String[] ip = agent.getHardwareIp().split("\\.");
             String ip3 = ip[2] + ip[3];
             url = "rtmp://" + agent.getCommonServer().getServerIp()
-                    + ":1935/live/" + ip3;
+                    + ":"+agent.getSnNo()+"/live/" + ip3;
 //			url = "http://" + agent.getCommonServer().getServerIp()
 //					+ ":8080/players/jwplayer6.html?stream=" + ip3;
 
@@ -3385,7 +3384,7 @@ public class LabRoomController<JsonResult> {
             String[] ip = agent.getHardwareIp().split("\\.");
             String ip3 = ip[3];
 //			String url = "http://" + agent.getCommonServer().getServerIp()+ ":8080/players/jwplayer6.html?stream=" + ip3;
-            mav.addObject("agentPort", 1935);
+            mav.addObject("agentPort", agent.getSnNo());
             mav.addObject("agentIp", agent.getCommonServer().getServerIp());
             mav.addObject("agentRemark", ip3);
         }

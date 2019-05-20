@@ -791,7 +791,6 @@ public class CasualInspectionController<JsonResult> {
      * @date: 2019-01-04
      ****************************************************************************/
     @SystemServiceLog("预览pdf")
-    @ResponseBody
     @RequestMapping("/tcoursesite/showFileForspeE")
     public ModelAndView showFileForspeE(@RequestParam Integer id,HttpServletRequest request) throws Exception {
         ModelAndView mav = new ModelAndView();

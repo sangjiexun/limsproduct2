@@ -221,7 +221,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			mav.addObject("serverIp", agent.getCommonServer().getServerIp());
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 			mav.addObject("hardwarePort", hardwarePort);
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
@@ -303,7 +303,7 @@ public class visualizationShowController<JsonResult> {
 					String serverIp = agent.getCommonServer().getServerIp();
 					mav.addObject("serverIp", serverIp);
 					// 端口
-					String hardwarePort = "1935";//agent.getHardwarePort();
+					String hardwarePort = agent.getSnNo();
 					mav.addObject("hardwarePort", hardwarePort);
 					// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 					String lastFour = "";
@@ -902,7 +902,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			String serverIp = agent.getCommonServer().getServerIp();
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
@@ -959,7 +959,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			String serverIp = agent.getCommonServer().getServerIp();
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
@@ -1221,7 +1221,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			mav.addObject("serverIp", agent.getCommonServer().getServerIp());
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 			mav.addObject("hardwarePort", hardwarePort);
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
