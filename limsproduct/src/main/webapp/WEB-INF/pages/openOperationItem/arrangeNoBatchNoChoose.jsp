@@ -110,6 +110,8 @@
         <div class="TabbedPanelsTabGroup-box">
             <div class="TabbedPanelsContent">
                 <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
+                <input type="hidden" id="selected_role" value="${sessionScope.selected_role}" />
+                <input type="hidden" id="PROJECT_NAME" value="${PROJECT_NAME}" />
                 <div style="width:95%;">
                     <input type="button" id="submitButton" name="submitButton" value=" 确定 " class="btn btn-primary btn-lg"
                            style="float:right">

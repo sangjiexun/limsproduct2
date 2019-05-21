@@ -219,6 +219,7 @@ public class OpenOperationItemController<JsonResult> {
 				mav.addObject("auditShow", auditShow);
 			}
 		}
+		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
 
 		mav.setViewName("openOperationItem/listOpenOperationItem.jsp");
 		return mav;
@@ -790,6 +791,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("type", "0");
 		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "不分批选");
 		mav.setViewName("openOperationItem/arrangeNoBatchChoose.jsp");
@@ -821,6 +823,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("type", "1");
 		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "分批自选");
 		mav.setViewName("openOperationItem/arrangeBatchChoose.jsp");
@@ -852,6 +855,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("type", "2");
 		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "不分批排");
 		mav.setViewName("openOperationItem/arrangeNoBatchNoChoose.jsp");
@@ -883,6 +887,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("type", "3");
 		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "分批直排");
 		mav.setViewName("openOperationItem/arrangeBatchNoChoose.jsp");
@@ -1025,6 +1030,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("type", "-1");
 		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
 		mav.addObject("title", "学生选课");
 		mav.setViewName("openOperationItem/arrangeForStudent.jsp");
 		return mav;

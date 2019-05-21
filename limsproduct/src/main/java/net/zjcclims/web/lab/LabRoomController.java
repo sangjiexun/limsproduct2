@@ -3376,14 +3376,8 @@ public class LabRoomController<JsonResult> {
             }
         }
         if (agent != null) {
-//			int time = shareService.getLabRoomBelongsTime(labRoom);
-//			String[] ip = agent.getHardwareIp().split("\\.");
-//			String ip3 = ip[3];
-//			url = "rtmp://" + agent.getCommonServer().getServerIp()
-//					+ ":1935/live/" + ip3;
             String[] ip = agent.getHardwareIp().split("\\.");
             String ip3 = ip[3];
-//			String url = "http://" + agent.getCommonServer().getServerIp()+ ":8080/players/jwplayer6.html?stream=" + ip3;
             mav.addObject("agentPort", agent.getSnNo());
             mav.addObject("agentIp", agent.getCommonServer().getServerIp());
             mav.addObject("agentRemark", ip3);

@@ -211,8 +211,7 @@ public class visualizationShowController<JsonResult> {
 		mav.addObject("jobReservation", pConfig.jobReservation);
 		mav.addObject("noREC", pConfig.noREC);
 		mav.addObject("proj_name", pConfig.PROJECT_NAME);
-		mav.setViewName("visualization/show/floor.jsp");
-		
+
 		// 视频
 		// 默认读取第一个视频
 		// 如果为空就是没有视频+当前权限不在禁用权限内
@@ -250,7 +249,12 @@ public class visualizationShowController<JsonResult> {
 				mav.addObject("documentUrl", "");
 			}
 		}
-		
+
+		if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+			mav.setViewName("visualization/show/floorZjcc.jsp");
+		}else {
+			mav.setViewName("visualization/show/floor.jsp");
+		}
 		return mav;
 	}
 	/****************************************************************************

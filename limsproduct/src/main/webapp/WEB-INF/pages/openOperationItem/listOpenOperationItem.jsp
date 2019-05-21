@@ -352,7 +352,12 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                 <a class="btn btn-new" href="javascript:void(0);" onclick="batchDelete();">批量删除</a>
             </c:if>
             <c:if test="${status eq 1}">
-                <a class="btn btn-new" href="javascript:void(0);" onclick="newOperationItem();">新建</a>
+                <c:if test="${PROJECT_NAME eq 'ndyzlims' && sessionScope.selected_role ne 'ROLE_TEACHER'}">
+                    <a class="btn btn-new" href="javascript:void(0);" onclick="newOperationItem();">新建</a>
+                </c:if>
+                <c:if test="${PROJECT_NAME ne 'ndyzlims'}">
+                    <a class="btn btn-new" href="javascript:void(0);" onclick="newOperationItem();">新建</a>
+                </c:if>
             </c:if>
         </c:if>
         </c:if>
