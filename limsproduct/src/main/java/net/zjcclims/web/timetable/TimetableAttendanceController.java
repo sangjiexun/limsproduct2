@@ -272,9 +272,9 @@ public class TimetableAttendanceController {
 		mav.addObject("endtime", endtime);
 		mav.addObject("id", id);
 		//id对应的物联设备
-		LabRoomAgent agent=labRoomAgentDAO.findLabRoomAgentByPrimaryKey(id);
-		String ip=agent.getHardwareIp();
-		String port=agent.getManufactor();
+		LabRoomAgent agent = labRoomAgentDAO.findLabRoomAgentByPrimaryKey(id);
+		String ip = agent.getHardwareIp();
+		String port = agent.getManufactor();
 		// 设置分页变量并赋值为20
 		//int pageSize = CommonConstantInterface.INT_PAGESIZE;
 		int pageSize = 30;
@@ -283,7 +283,13 @@ public class TimetableAttendanceController {
 		List<LabAttendance> accessList =null;
 		//查询出来的总记录条数
 		// 根据配置项是否切换获取对应的数据
-		if(pConfig.newServer.equals("false")){
+		if (agent.getCDictionary().getCNumber().equals("6") && agent.getCDictionary().getCCategory().equals("c_agent_type")) {// 智能班牌
+			// 老版获取考勤数据
+			totalRecords = cmsShowService.findLabRoomAccessByIpCount(commonHdwlog,ip,port,request);
+			pageModel = shareService.getPage(page, pageSize, totalRecords);
+			//页面显示的实验室
+			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,page,pageSize,request);
+		}else if(pConfig.newServer.equals("false")){
 			// 老版获取考勤数据
 			totalRecords = cmsShowService.findLabRoomAccessByIpCount(commonHdwlog,ip,port,request);
 			pageModel = shareService.getPage(page, pageSize, totalRecords);
@@ -723,7 +729,10 @@ public class TimetableAttendanceController {
 		String port=agent.getManufactor();
 		List<LabAttendance> accessList =null;
 		// 根据配置项是否切换获取对应的数据
-		if(pConfig.newServer.equals("false")){
+		if (agent.getCDictionary().getCNumber().equals("6") && agent.getCDictionary().getCCategory().equals("c_agent_type")) {// 智能班牌
+			// 老版获取考勤数据
+			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,0,-1,request);
+		}else if(pConfig.newServer.equals("false")){
 			// 老版获取考勤数据
 			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,0,-1,request);
 		}else {

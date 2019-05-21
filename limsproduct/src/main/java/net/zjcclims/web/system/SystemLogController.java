@@ -855,7 +855,13 @@ public class SystemLogController {
     @RequestMapping(value="/log/listStatisticalTableOfExperiments")
     public ModelAndView listStatisticalTableOfExperiments(HttpServletRequest request){
         ModelAndView mav = new ModelAndView();
-        int labRoomId = Integer.valueOf(request.getParameter("labRoomId"));
+        // 从上一个标签页的子页面跳转过来时，如果获取不到实验室参数，重定向到列表
+		if (request.getParameter("labRoomId") == null || request.getParameter("labRoomId").equals("")) {
+			mav.setViewName("redirect:/log/listLabRoom?currpage=1&type=2");
+			return mav;
+		}
+
+		int labRoomId = Integer.valueOf(request.getParameter("labRoomId"));
         LabRoom labRoom = labRoomDAO.findLabRoomById(labRoomId);
 
         LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
