@@ -607,7 +607,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tass.app_id,\n" +
                 "\tass.audit_date,\n" +
                 "\tCONCAT(audit.cname,\"(\",audit.username,\")\"),\n" +
-                "\tCONCAT(app.cname,\"(\",app.username,\")\")\n" +
+                "\tCONCAT(app.cname,\"(\",app.username,\")\"),\n" +
+                "\tass.apply_date\n" +
                 "FROM\n" +
                 "\tasset_storage_record asr\n" +
                 "LEFT JOIN asset a ON asr.asset_id = a.id\n" +
@@ -637,6 +638,7 @@ public class MaterialServiceImpl implements MaterialService {
         jsonObject.put("auditDate",assetItemList.get(0)[10].toString().substring(0,19));//入库日期
         jsonObject.put("auditUser",assetItemList.get(0)[11]);
         jsonObject.put("appUser",assetItemList.get(0)[12]);
+        jsonObject.put("applyDate",assetItemList.get(0)[13]);
         jsonObject.put("totalPrice",totalPrice);
         return jsonObject;
     }
@@ -1092,6 +1094,12 @@ public class MaterialServiceImpl implements MaterialService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
         assetStorage.setDate(calendar.getTime());//保存日期
+        try {
+            Date applyDate = sdf.parse(assetsInStorageDTO.getApplyDate());
+            assetStorage.setApplyDate(applyDate);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         //生成入库编号
         String dateStr = sdf.format(calendar.getTime()).replace("-","");//按日期生成编号
         assetStorage.setBatchNumber("RK"+dateStr);
@@ -1480,7 +1488,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "  ass.center_id,\n" +
                 "  ass.classification_id,\n" +
                 "  ass.total_price,\n" +
-                "  ass.status\n" +
+                "  ass.status,\n" +
+                "  ass.apply_date\n" +
                 "FROM\n" +
                 "\tasset_storage ass\n" +
                 "LEFT JOIN `user` u on ass.username=u.username\n" +
@@ -1499,6 +1508,8 @@ public class MaterialServiceImpl implements MaterialService {
             assetsInStorageDTO.setGoodsCategory(o[7]!=null?o[7].toString():null);//物资类别
             assetsInStorageDTO.setTotalPrice(o[8]!=null?o[8].toString():null);//当前总价
             assetsInStorageDTO.setStatus(o[9]!=null?o[9].toString():null);//状态
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            assetsInStorageDTO.setApplyDate(o[10]!=null?o[10].toString():null);//采购日期
         }else{
             //获取当前日期
             Date dt = new Date();

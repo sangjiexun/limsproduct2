@@ -78,6 +78,14 @@
                     </div>
                 </div>
                 <div class="layui-col-lg6">
+                    <label class="layui-form-label">采购日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" id= "applyDate" name="applyDate" disabled="disabled" />
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-lg6">
                     <label class="layui-form-label">物资总金额</label>
                     <div class="layui-input-block">
                         <input type="text" id= "totalPrice" name="totalPrice" disabled="disabled" />

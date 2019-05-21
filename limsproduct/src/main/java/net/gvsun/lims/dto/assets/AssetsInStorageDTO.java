@@ -48,6 +48,8 @@ public class AssetsInStorageDTO implements Serializable{
     private Integer auditFlag;
     //15.流程发起标志位(0代表审核人 1代表发起人)
     private Integer appFlag;
+    //16.采购日期
+    private String applyDate;
     public Integer getId() {
         return id;
     }
@@ -206,5 +208,13 @@ public class AssetsInStorageDTO implements Serializable{
 
     public void setAppFlag(Integer appFlag) {
         this.appFlag = appFlag;
+    }
+
+    public String getApplyDate() {
+        return applyDate;
+    }
+
+    public void setApplyDate(String applyDate) {
+        this.applyDate = applyDate;
     }
 }

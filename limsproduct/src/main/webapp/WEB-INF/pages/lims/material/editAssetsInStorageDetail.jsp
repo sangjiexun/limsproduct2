@@ -69,20 +69,28 @@
                 </div>
             </div>
             <div class="layui-row">
-                <div class="layui-col-lg6">
-                    <label class="layui-form-label">物资类别</label>
+            <div class="layui-col-lg6">
+                <label class="layui-form-label">物资类别</label>
+                <div class="layui-input-block">
+                    <select name="goodsCategory" id="goodsCategory" lay-verify="required" >
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-lg6" >
+                <label class="layui-form-label">采购时间</label>
+                <div class="layui-input-block">
+                    <input type="text" id= "applyDate" name="applyDate"  />
+                </div>
+            </div>
+        </div>
+            <div class="layui-row">
+                <div class="layui-col-lg6" id="price">
+                    <label class="layui-form-label">物资总金额</label>
                     <div class="layui-input-block">
-                        <select name="goodsCategory" id="goodsCategory" lay-verify="required" >
-                            <option value=""></option>
-                        </select>
+                        <input type="text" id= "totalPrice" name="totalPrice" disabled="disabled" />
                     </div>
                 </div>
-                    <div class="layui-col-lg6" id="price">
-                        <label class="layui-form-label">物资总金额</label>
-                        <div class="layui-input-block">
-                            <input type="text" id= "totalPrice" name="totalPrice" disabled="disabled" />
-                        </div>
-                    </div>
             </div>
             <div class="layui-col-lg12">
                 <label class="layui-form-label">入库销售清单</label>

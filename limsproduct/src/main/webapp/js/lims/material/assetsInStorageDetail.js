@@ -33,6 +33,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
                 "department": data.department,
                 "goodsCategory": data.goodsCategory,
                 "totalPrice": data.totalPrice,
+                "applyDate": data.applyDate,
             });
             academyNumber=data.academyNumber;
             department=data.department;
