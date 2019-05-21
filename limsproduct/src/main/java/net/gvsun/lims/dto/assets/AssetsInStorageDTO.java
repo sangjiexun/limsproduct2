@@ -50,6 +50,8 @@ public class AssetsInStorageDTO implements Serializable{
     private Integer appFlag;
     //16.采购日期
     private String applyDate;
+    //16.拒绝原因
+    private String rejectReason;
     public Integer getId() {
         return id;
     }
@@ -216,5 +218,13 @@ public class AssetsInStorageDTO implements Serializable{
 
     public void setApplyDate(String applyDate) {
         this.applyDate = applyDate;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

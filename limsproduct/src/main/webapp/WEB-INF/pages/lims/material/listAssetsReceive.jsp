@@ -45,13 +45,19 @@
 			<a class="layui-btn layui-btn-xs" lay-event="detail">待实验中心主任审核</a>
 			{{# }  else if(d.status==1 && d.auditFlag==1){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">审核</a>
-			{{# }  else if(d.status==2){ }}
+			{{# }  else if(d.status==2 && d.appFlag==0){ }}
+			<a class="layui-btn layui-btn-xs" lay-event="inbound">待确认领用</a>
+			{{# }  else if(d.status==2 && d.appFlag==1){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="inbound">确认领用</a>
 			{{# }  else if(d.status==3){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
-			{{# }  else if(d.status==4 && d.isNeedReturn==0){ }}
+			{{# }  else if(d.status==4 && d.isNeedReturn==0 && d.appFlag==0){ }}
+			<a class="layui-btn layui-btn-xs" lay-event="return">待余料归还</a>
+			{{# }  else if(d.status==4 && d.isNeedReturn==0 && d.appFlag==1){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="return">余料归还</a>
-			{{# }  else if(d.status==4 && d.isNeedReturn==1){ }}
+			{{# }  else if(d.status==4 && d.isNeedReturn==1 && d.appFlag==0){ }}
+			<a class="layui-btn layui-btn-xs" lay-event="detail">待确认归还</a>
+			{{# }  else if(d.status==4 && d.isNeedReturn==1 && d.appFlag==1){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">确认归还</a>
 			{{# }  else if(d.status==5){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>

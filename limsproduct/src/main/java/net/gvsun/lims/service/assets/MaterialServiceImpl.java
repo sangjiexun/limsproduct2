@@ -268,11 +268,6 @@ public class MaterialServiceImpl implements MaterialService {
         String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
         User user=shareService.getUser();//获得用户
         String username=user.getUsername();//用户编号
-//        Set<LabCenter> labCenters=user.getSchoolAcademy().getLabCenters();
-//        List<Integer> centerIds=new ArrayList<>();
-//        for(LabCenter labCenter:labCenters){
-//            centerIds.add(labCenter.getId());
-//        }
         if(authorityName.equals("ROLE_TEACHER")){
             sql+=" and aa.app_user = '"+username+"'";//教师只看自己
         }
@@ -283,6 +278,9 @@ public class MaterialServiceImpl implements MaterialService {
                 sql+=" aa.center_id ="+centerIds.get(i)+" or";
             }
             sql+=" aa.center_id ="+centerIds.get(centerIds.size()-1)+" )";
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_OPEARTIONSECURITYMANAGEMENT")){
+            sql+=" and aa.asset_statu >0 ";//审核权限只看提交后的数据
         }
         sql+=" order by aa.app_date desc ";
         Query query=entityManager.createNativeQuery(sql);
@@ -367,6 +365,9 @@ public class MaterialServiceImpl implements MaterialService {
             }
             sql+=" ass.center_id ="+centerIds.get(centerIds.size()-1)+" )";
         }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_OPEARTIONSECURITYMANAGEMENT")){
+            sql+=" and ass.status >0 ";//审核权限只看提交后的数据
+        }
         sql+=" order by ass.date desc ";
         Query query=entityManager.createNativeQuery(sql);
         //分页记录
@@ -448,6 +449,9 @@ public class MaterialServiceImpl implements MaterialService {
                 sql+=" ar.center_id ="+centerIds.get(i)+" or";
             }
             sql+=" ar.center_id ="+centerIds.get(centerIds.size()-1)+" )";
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_OPEARTIONSECURITYMANAGEMENT")){
+            sql+=" and ar. STATUS >0 ";//审核权限只看提交后的数据
         }
         sql+=" order by ar.receive_date desc";
         Query query=entityManager.createNativeQuery(sql);
@@ -1102,7 +1106,8 @@ public class MaterialServiceImpl implements MaterialService {
         }
         //生成入库编号
         String dateStr = sdf.format(calendar.getTime()).replace("-","");//按日期生成编号
-        assetStorage.setBatchNumber("RK"+dateStr);
+        String appNo=this.getAssetsRelatedAppNo("InStorage");//获取数量编号
+        assetStorage.setBatchNumber("RK"+dateStr+appNo);
         assetStorage=assetStorageDAO.store(assetStorage);
         //对于申领入库，同步物资到入库记录
         if(assetsInStorageDTO.getApplyId()!=null) {
@@ -1162,9 +1167,9 @@ public class MaterialServiceImpl implements MaterialService {
                 assetApp.setCenterId(Integer.parseInt(assetsApplyDTO.getDepartment()));//保存中心
             }
             assetApp.setCategoryId(Integer.parseInt(assetsApplyDTO.getGoodsCategory()));//保存物资类别
-            String dateStr = sdf.format(calendar.getTime()).replace("-","");
-            String appNo=dateStr+Integer.parseInt(assetsApplyDTO.getGoodsCategory());//按日期加物资类别生成编号
-            assetApp.setAppNo("SG"+appNo);//保存编号
+            String dateStr = sdf.format(calendar.getTime()).replace("-","");//获取日期编号
+            String appNo=this.getAssetsRelatedAppNo("Apply");//获取数量编号
+            assetApp.setAppNo("SG"+dateStr+appNo);//保存编号
             assetApp.setAssetStatu(0);//保存初始状态
             assetApp.setCourseNo(assetsApplyDTO.getCourseNo());
             assetApp=assetAppDAO.store(assetApp);
@@ -1202,9 +1207,9 @@ public class MaterialServiceImpl implements MaterialService {
             if(assetsReceiveDTO.getDepartment()!=null&&!assetsReceiveDTO.getDepartment().equals("")) {
                 assetReceive.setCenterId(Integer.parseInt(assetsReceiveDTO.getDepartment()));//保存中心
             }
-            String dateStr = sdf.format(calendar.getTime()).replace("-","");
-            String appNo=dateStr+Integer.parseInt(assetsReceiveDTO.getGoodsCategory());//按日期加物资类别生成编号
-            assetReceive.setReceiveNo("SL"+appNo);//保存编号
+            String dateStr = sdf.format(calendar.getTime()).replace("-","");//获取日期编号
+            String appNo=this.getAssetsRelatedAppNo("Receive");//获取数量编号
+            assetReceive.setReceiveNo("SL"+dateStr+appNo);//保存编号
             assetReceive.setAssetUsage(assetsReceiveDTO.getPurpose());//申领用途
             assetReceive.setStatus(0);//保存初始状态
             assetReceive=assetReceiveDAO.store(assetReceive);
@@ -1315,7 +1320,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tlc.id,\n" +
                 "\taa.category_id,\n" +
                 "\taa.price,\n" +
-                "\taa.asset_statu\n" +
+                "\taa.asset_statu,\n" +
+                "\taa.reject_reason\n" +
                 "FROM\n" +
                 "\tasset_app aa\n" +
                 "LEFT JOIN `user` u ON aa.app_user = u.username\n" +
@@ -1335,6 +1341,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetsApplyDTO.setGoodsCategory(o[6]!=null?o[6].toString():null);//物资类别
             assetsApplyDTO.setPrice(o[7]!=null?Double.parseDouble(o[7].toString()):null);//当前总价
             assetsApplyDTO.setStatus(o[8]!=null?o[8].toString():null);//状态位
+            assetsApplyDTO.setRejectReason(o[9]!=null?o[9].toString():null);//拒绝原因
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1489,7 +1496,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "  ass.classification_id,\n" +
                 "  ass.total_price,\n" +
                 "  ass.status,\n" +
-                "  ass.apply_date\n" +
+                "  ass.apply_date,\n" +
+                "  ass.reject_reason\n" +
                 "FROM\n" +
                 "\tasset_storage ass\n" +
                 "LEFT JOIN `user` u on ass.username=u.username\n" +
@@ -1508,8 +1516,8 @@ public class MaterialServiceImpl implements MaterialService {
             assetsInStorageDTO.setGoodsCategory(o[7]!=null?o[7].toString():null);//物资类别
             assetsInStorageDTO.setTotalPrice(o[8]!=null?o[8].toString():null);//当前总价
             assetsInStorageDTO.setStatus(o[9]!=null?o[9].toString():null);//状态
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             assetsInStorageDTO.setApplyDate(o[10]!=null?o[10].toString():null);//采购日期
+            assetsInStorageDTO.setRejectReason(o[11]!=null?o[11].toString():null);//拒绝原因
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1542,7 +1550,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tar.receive_no,\n" +
                 "\tar. STATUS,\n" +
                 "  ac.is_need_return,\n" +
-                "  ar.asset_usage\n" +
+                "  ar.asset_usage,\n" +
+                "  ar.reject_reason\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON ar.app_user = u.username\n" +
@@ -1563,6 +1572,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetsReceiveDTO.setStatus(o[8]!=null?o[8].toString():null);//状态
             assetsReceiveDTO.setIsNeedReturn(o[9]!=null?Integer.parseInt(o[9].toString()):null);//是否需要归还
             assetsReceiveDTO.setPurpose(o[10]!=null?o[10].toString():null);//申领用途
+            assetsReceiveDTO.setRejectReason(o[11]!=null?o[11].toString():null);//拒绝原因
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1884,7 +1894,7 @@ public class MaterialServiceImpl implements MaterialService {
             amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
         }
-        if(amount<=quantity){//总数小于申请数时，无法申请
+        if(amount<quantity){//总数小于申请数时，无法申请
             return "insufficient";
         }else{
             if(Integer.parseInt(objects.get(max)[1].toString())>=quantity){
@@ -2441,5 +2451,30 @@ public class MaterialServiceImpl implements MaterialService {
         Query query=entityManager.createNativeQuery(sql);
         List<Integer> objects=query.getResultList();
         return objects;
+    }
+    /**
+     * Description 获取入库单后三位编号
+     * @author 吴奇臻 2019-5-21
+     */
+    public String getAssetsRelatedAppNo(String type){
+        String sql="";
+        if(type.equals("Apply")) {
+            sql = "select count(*) from asset_app aa where DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(aa.app_date, '%Y-%m-%d')";
+        }else if(type.equals("InStorage")){
+            sql = "select count(*) from asset_storage ass where DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(ass.date, '%Y-%m-%d')";
+        }else if(type.equals("Receive")){
+            sql = "select count(*) from asset_receive ar where DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(ar.receive_date, '%Y-%m-%d')";
+        }
+        Query query=entityManager.createNativeQuery(sql);
+        Integer no=Integer.parseInt(query.getSingleResult().toString());
+        String appNo="";
+        if(no<10){
+            appNo="00"+no;
+        }else if (no<100){
+            appNo="0"+no;
+        }else{
+            appNo=no.toString();
+        }
+        return appNo;
     }
 }

@@ -505,4 +505,10 @@ public interface MaterialService {
      * @author 伍菁 2019-4-22
      */
     boolean deleteAssetCabinetRecords(Integer assetId);
+
+    /**
+     * Description 获取申购、入库、申领后三位编号
+     * @author 吴奇臻 2019-5-21
+     */
+    String getAssetsRelatedAppNo(String type);
 }

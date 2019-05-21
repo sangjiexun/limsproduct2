@@ -91,6 +91,12 @@
                         <input type="text" id= "totalPrice" name="totalPrice" disabled="disabled" />
                     </div>
                 </div>
+                <div class="layui-col-lg6" id="reason">
+                    <label class="layui-form-label">拒绝原因</label>
+                    <div class="layui-input-block">
+                        <input type="text" id= "rejectReason" name="rejectReason" disabled="disabled" />
+                    </div>
+                </div>
             </div>
             <div class="layui-col-lg12">
                 <label class="layui-form-label">销售清单图</label>
@@ -112,16 +118,16 @@
                     </div>
                 </div>
             </div>
-            <div class="layui-form-item">
-                <div class="layui-input-block" id="check">
-                    <button data-method="admitAssetsInStorage" class="layui-btn admit_btn">通过</button>
-                    <button data-method="rejectAssetsInStorage" class="layui-btn layui-btn-danger reject_btn">拒绝</button>
-                </div>
-                <div class="layui-input-block" id="confirm">
-                    <button data-method="confirmAssetsInStorage" class="layui-btn confirm_btn">确认入库</button>
-                </div>
-            </div>
         </form>
+        <div class="layui-form-item">
+            <div class="layui-input-block" id="check">
+                <button data-method="admitAssetsInStorage" class="layui-btn admit_btn">通过</button>
+                <button data-method="rejectAssetsInStorage" class="layui-btn layui-btn-danger reject_btn">拒绝</button>
+            </div>
+            <div class="layui-input-block" id="confirm">
+                <button data-method="confirmAssetsInStorage" class="layui-btn confirm_btn">确认入库</button>
+            </div>
+        </div>
         <div id="generate">
         <button data-method="exportAssetInStorageItem" class="layui-btn layui-btn-xs layui-btn-normal export_btn">生成入库单</button>
         </div>

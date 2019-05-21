@@ -98,13 +98,21 @@
                     </div>
                 </div>
             </div>
-            <div class="layui-form-item" id="audit">
-                <div class="layui-input-block">
-                    <button data-method="admitAssetsApply" class="layui-btn admit_btn">通过</button>
-                    <button data-method="rejectAssetsApply" class="layui-btn layui-btn-danger reject_btn">拒绝</button>
+            <div class="layui-row">
+                <div class="layui-col-lg6" id="reject">
+                    <label class="layui-form-label">拒绝原因</label>
+                    <div class="layui-input-block">
+                        <input type="text" id= "rejectReason" name="rejectReason" disabled="disabled" />
+                    </div>
                 </div>
             </div>
         </form>
+        <div class="layui-form-item" id="audit">
+            <div class="layui-input-block">
+                <button data-method="admitAssetsApply" class="layui-btn admit_btn">通过</button>
+                <button data-method="rejectAssetsApply" class="layui-btn layui-btn-danger reject_btn">拒绝</button>
+            </div>
+        </div>
         <table class="layui-hide add_progress" id="assetsList" lay-filter="assetsList"></table>
     </div>
 </div>

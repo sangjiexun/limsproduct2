@@ -50,6 +50,8 @@ public class AssetsReceiveDTO {
     private Integer auditFlag;
     //15.流程发起标志位(0代表审核人 1代表发起人)
     private Integer appFlag;
+    //15.拒绝原因
+    private String rejectReason;
     public String getId() {
         return id;
     }
@@ -232,5 +234,13 @@ public class AssetsReceiveDTO {
 
     public void setAppFlag(Integer appFlag) {
         this.appFlag = appFlag;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }
