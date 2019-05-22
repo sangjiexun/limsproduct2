@@ -91,6 +91,12 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
         .clear{
             clear: both;
         }
+        .content-box>table tr:nth-child(even) td .table_tab tr:nth-child(odd) td{
+            background: #ffffff!important;
+        }
+        /*.table_tab tr:nth-child(odd) td {*/
+            /*background: #ffffff!important;*/
+        /*}*/
     </style>
     <!-- 导入弹出框的样式结束 -->
 
@@ -413,9 +419,9 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                     <%--<form:options items="${cDictionaries}" itemLabel="CName" itemValue="id"/>--%>
                                 </form:select>
                             </li>
-                            <li>
-                                <input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
+                            <li style="float: right;">
                                 <input type="submit" value="查询"/>
+                                <input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
                             </li>
 
                         </ul>
@@ -481,7 +487,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%--                            </td>--%>
                             <td>
                                 <c:if test="${fn:length(curr.itemPlans) > 0}">
-                                    <table>
+                                    <table class="table_tab">
                                         <c:if test="${curr.itemPlans.iterator().next().type eq 0 or curr.itemPlans.iterator().next().type eq 1 or curr.itemPlans.iterator().next().type eq 3}">
                                             <tr>
                                                 <td width="13%">批/组</td>
