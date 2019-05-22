@@ -32,7 +32,7 @@ public class AssetsReceiveDTO {
     private String returnTime;
     //13、用途
     private String purpose;
-    //14、备注
+    //14、库存备注,备注
     private String remarks;
     //15、物资类型
     private String goodsCategory;

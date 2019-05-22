@@ -245,7 +245,7 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
-        String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId());
+        String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId(),Integer.parseInt(assetsApplyItemDTO.getAppId()));
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             assetsApplyItemDTO.setCabinet(s);
             materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
@@ -543,6 +543,7 @@ public class MaterialController {
         }else if(tag.equals("fail")){
             assetReceive.setStatus(3);//审核被拒绝
             assetReceive.setRejectReason(reason);//保存拒绝原因
+            materialService.returnAssetsReceiveItemAmount(id);//返还物品柜数量
         }
         assetReceive.setCurAuditLevel(tag);
         assetReceiveDAO.store(assetReceive);

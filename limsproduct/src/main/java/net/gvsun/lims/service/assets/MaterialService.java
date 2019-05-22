@@ -416,7 +416,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId);
+    String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId,Integer appId);
 
     /**
      * 根据物资及数量自动获取库存数最大的物品柜
@@ -511,4 +511,10 @@ public interface MaterialService {
      * @author 吴奇臻 2019-5-21
      */
     String getAssetsRelatedAppNo(String type);
+
+    /**
+     * Description 审核拒绝返回申领的数量
+     * @author 吴奇臻 2019-5-22
+     */
+    void returnAssetsReceiveItemAmount(Integer receiveId);
 }

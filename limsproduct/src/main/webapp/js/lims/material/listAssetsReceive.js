@@ -77,6 +77,12 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
                 sort: true,
                 templet:'#zh'
             }, {
+                field: 'remarks',
+                title: '库存备注',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            },{
                 fixed: 'right',
                 title: '操作',
                 width: 250,

@@ -96,7 +96,7 @@
                 <div class="layui-col-lg12">
                     <label class="layui-form-label">申领用途</label>
                     <div class="layui-input-block">
-                        <input type="textarea " name="purpose" autocomplete="off" class="layui-textarea" placeholder="请填写申领用途"/>
+                        <input type="text" name="purpose" autocomplete="off" class="layui-textarea" placeholder="请填写申领用途"/>
                     </div>
                 </div>
             </div>

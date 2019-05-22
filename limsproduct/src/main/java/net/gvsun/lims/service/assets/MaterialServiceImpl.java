@@ -486,6 +486,26 @@ public class MaterialServiceImpl implements MaterialService {
             }else{
                 assetsReceiveDTO.setAppFlag(0);
             }
+            String sql1="SELECT\n" +
+                    "  acr.stock_number\n" +
+                    "FROM\n" +
+                    "\tasset_receive_record arr\n" +
+                    "LEFT JOIN asset_receive ar on arr.receive_id = ar.id\n" +
+                    "LEFT JOIN asset_cabinet_record acr on (arr.asset_id = acr.asset_id and arr.cabinet_id=acr.cabinet_id)\n" +
+                    "WHERE 1=1 AND ar.id="+o[0].toString();
+            Query query1=entityManager.createNativeQuery(sql1);
+            try {
+                List<Integer> amounts = query1.getResultList();
+                if (amounts != null && amounts.size() > 0) {
+                    for (int i = 0; i < amounts.size(); i++) {
+                        if (amounts.get(i) < 0) {
+                            assetsReceiveDTO.setRemarks("库存不足");
+                        }
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             assetsReceiveDTOList.add(assetsReceiveDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -1871,13 +1891,14 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    public String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId){
+    public String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId,Integer appId){
         String sql="select cabinet_id,stock_number from asset_cabinet_record acr where acr.asset_id="+assetsId;//查询物品柜记录
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> objects=query.getResultList();
         Integer amount=0;//计算物资总量
         Integer cabinetId=0;//分配物品柜
         Integer max=0;//获取最大值
+        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(appId);
         if(objects.size()>1) {//物品柜不止一个时
             for (int i = 0; i < objects.size(); i++) {
                 amount += Integer.parseInt(objects.get(i)[1].toString());
@@ -1894,10 +1915,9 @@ public class MaterialServiceImpl implements MaterialService {
             amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
         }
-        if(amount<quantity){//总数小于申请数时，无法申请
+        if(amount<quantity&&assetReceive.getOperationItem()==null){//总数小于申请数时，无法申请
             return "insufficient";
         }else{
-            if(Integer.parseInt(objects.get(max)[1].toString())>=quantity){
                 AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(cabinetId,assetsId);
                 if(itemId!=null&&!itemId.equals("")) {
                     AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(itemId);
@@ -1907,10 +1927,7 @@ public class MaterialServiceImpl implements MaterialService {
                 }
                 assetCabinetRecordDAO.store(assetCabinetRecord);
                 return cabinetId.toString();
-            }else{
-                return "notEnough";
             }
-        }
     }
 
     /**
@@ -2476,5 +2493,29 @@ public class MaterialServiceImpl implements MaterialService {
             appNo=no.toString();
         }
         return appNo;
+    }
+    /**
+     * Description 审核拒绝返回申领的数量
+     * @author 吴奇臻 2019-5-22
+     */
+    public void returnAssetsReceiveItemAmount(Integer receiveId){
+        String sql="SELECT\n" +
+                "\tarr.quantity,\n" +
+                "\tarr.cabinet_id,\n" +
+                "\tarr.asset_id\n" +
+                "FROM\n" +
+                "\tasset_receive_record arr\n" +
+                "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
+                "WHERE 1=1 AND ar.id = "+receiveId;
+        Query query=entityManager.createNativeQuery(sql);
+        List<Object[]>objects=query.getResultList();
+        for(int i=0;i<objects.size();i++){
+            AssetCabinetRecord assetCabinetRecord=this.findAssetsCabinetRecordByCabinetAndAssets(Integer.parseInt(objects.get(i)[1].toString()),Integer.parseInt(objects.get(i)[2].toString()));
+            //原数据库表定义类型为decimal,先做截取处理
+            String quantity=objects.get(i)[0].toString();
+            String quantity1=quantity.substring(0,quantity.length()-3);
+            assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+Integer.parseInt(quantity1));
+            assetCabinetRecordDAO.store(assetCabinetRecord);
+        }
     }
 }
