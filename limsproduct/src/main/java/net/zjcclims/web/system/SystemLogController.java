@@ -49,7 +49,7 @@ public class SystemLogController {
 	@Autowired private AssetCabinetDAO assetCabinetDAO;
 	@Autowired private OperationItemDAO operationItemDAO;
 	@Autowired private TimetableAppointmentDAO timetableAppointmentDAO;
-	@Autowired private SchoolWeekDAO schoolWeekDAO;
+	@Autowired private SchoolTermDAO schoolTermDAO;
 	@Autowired private AssetReceiveDAO assetReceiveDAO;
 	@Autowired private LabRoomDAO labRoomDAO;
     @PersistenceContext
@@ -301,8 +301,13 @@ public class SystemLogController {
 		int pagesize = 20;
 		String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o order by o.id asc");
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o where 1=1");
 
+        //学期条件筛选
+        if(request.getParameter("termId")!=null && !"".equals(request.getParameter("termId"))){
+            sql.append(" and o.schoolTerm.id =" + request.getParameter("termId"));
+        }
+        sql.append(" order by o.id asc");
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -342,10 +347,15 @@ public class SystemLogController {
             if(operationItem.getPlanWeek()!=null){
                 experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
             }
+            //学期
+            experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
             experimentalScheduleVOs.add(experimentalScheduleVO);
             i++;
         }
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
+        //学期
+        Set<SchoolTerm> schoolTermList = schoolTermDAO.findAllSchoolTerms();
+        mav.addObject("schoolTermList",schoolTermList);
         //总记录数
         mav.addObject("pagesize",pagesize);
         mav.addObject("currpage",currpage);
@@ -686,16 +696,22 @@ public class SystemLogController {
         String type = request.getParameter("type");
 
 
-        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o");
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o where 1=1");
 
         //实验通知单演示性实验查询条件
         if(Integer.valueOf(type) == 6){
-            sql.append(" where o.CDictionaryByLpCategoryApp.id = 776");
+            sql.append(" and o.CDictionaryByLpCategoryApp.id = 776");
         }
         //教学记录单分组实验查询条件
         if(Integer.valueOf(type) == 7){
-            sql.append(" where o.CDictionaryByLpCategoryApp.id = 777");
+            sql.append(" and o.CDictionaryByLpCategoryApp.id = 777");
         }
+
+        //学期条件筛选
+        if(request.getParameter("termId")!=null && !"".equals(request.getParameter("termId"))){
+            sql.append(" and o.schoolTerm.id =" + request.getParameter("termId"));
+        }
+        sql.append(" order by o.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
@@ -704,6 +720,10 @@ public class SystemLogController {
         query.setFirstResult(firstResult);
         List<OperationItem> operationItemList = query.getResultList();
         mav.addObject("operationItemList",operationItemList);
+
+        //学期
+        Set<SchoolTerm> schoolTermList = schoolTermDAO.findAllSchoolTerms();
+        mav.addObject("schoolTermList",schoolTermList);
 
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //标记区分  6实验通知单 7教学记录单

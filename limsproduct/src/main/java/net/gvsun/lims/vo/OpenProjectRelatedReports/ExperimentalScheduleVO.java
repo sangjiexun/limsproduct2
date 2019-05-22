@@ -20,6 +20,8 @@ public class ExperimentalScheduleVO implements Serializable {
     private String itemCategory;
     //计划时间
     private String planTime;
+    //学期
+    private String termName;
 
     public Integer getId() {
         return id;
@@ -67,5 +69,13 @@ public class ExperimentalScheduleVO implements Serializable {
 
     public void setPlanTime(String planTime) {
         this.planTime = planTime;
+    }
+
+    public String getTermName() {
+        return termName;
+    }
+
+    public void setTermName(String termName) {
+        this.termName = termName;
     }
 }
