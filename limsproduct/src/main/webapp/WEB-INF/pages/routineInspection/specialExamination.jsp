@@ -117,12 +117,12 @@
                 dataType: "json",
                 success: function (data) {
                     $("#riIdSub").val(igId);
-                    $("#riTimeSub").val(data.riTime);
-                    $("#riCenterNameSub").val(data.riCenterName);
-                    $("#riRoomNameSub").val(data.riRoomName);
-                    $("#riCnamSub").val(data.riCnam);
-                    $("#riCheckContentSub").val(data.riCheckContent);
-                    $("#urlSub").attr("src", "${pageContext.request.contextPath}" + data.url)
+                    $("#riTimeSub").val(decodeURI(data.riTime));
+                    $("#riCenterNameSub").val(decodeURI(data.riCenterName));
+                    $("#riRoomNameSub").val(decodeURI(data.riRoomName));
+                    $("#riCnamSub").val(decodeURI(data.riCnam));
+                    $("#riCheckContentSub").val(decodeURI(data.riCheckContent));
+                    $("#urlSub").attr("src", "${pageContext.request.contextPath}" + decodeURI(data.url))
                     $("#newDiv").hide();
                     $("#examineDiv").hide();
                     $("#subDiv").show();
