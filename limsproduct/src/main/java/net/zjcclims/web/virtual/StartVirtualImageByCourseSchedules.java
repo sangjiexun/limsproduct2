@@ -55,7 +55,7 @@ public class StartVirtualImageByCourseSchedules extends Thread {
         } catch (ParseException e) {
             e.printStackTrace();
         }*/
-        timer.schedule(timerTask, 0, 24 * 60 * 60 * 1000);
+        //timer.schedule(timerTask, 0, 24 * 60 * 60 * 1000);
         //timer.schedule(timerTask, 0, 10 * 1000);
     }
 }
