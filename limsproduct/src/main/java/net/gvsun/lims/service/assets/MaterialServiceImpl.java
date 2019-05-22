@@ -58,6 +58,8 @@ public class MaterialServiceImpl implements MaterialService {
     private AuditService auditService;
     @Autowired
     private AssetCabinetDAO assetCabinetDAO;
+    @Autowired
+    private OperationItemDAO operationItemDAO;
 
     /**
      * 物资分类列表
@@ -1232,6 +1234,10 @@ public class MaterialServiceImpl implements MaterialService {
             assetReceive.setReceiveNo("SL"+dateStr+appNo);//保存编号
             assetReceive.setAssetUsage(assetsReceiveDTO.getPurpose());//申领用途
             assetReceive.setStatus(0);//保存初始状态
+            if (assetsReceiveDTO.getItemId()!=null) {
+                OperationItem item = operationItemDAO.findOperationItemByPrimaryKey(assetsReceiveDTO.getItemId());
+                assetReceive.setOperationItem(item);
+            }
             assetReceive=assetReceiveDAO.store(assetReceive);
         }catch (Exception e){
             e.printStackTrace();
@@ -1919,7 +1925,7 @@ public class MaterialServiceImpl implements MaterialService {
             return "insufficient";
         }else{
                 AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(cabinetId,assetsId);
-                if(itemId!=null&&!itemId.equals("")) {
+                if(itemId!=null&&!itemId.equals("")&& itemId != 0) {
                     AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(itemId);
                     assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+assetReceiveRecord.getQuantity().intValue()-quantity);
                 }else{

@@ -1070,6 +1070,7 @@ public class OpenOperationItemController<JsonResult> {
 					assetsReceiveDTO.setEndTime(endStr);
 
 					assetsReceiveDTO.setDepartment(operationItem.getLabCenter().getId().toString());
+					assetsReceiveDTO.setItemId(operationItem.getId());
 					assetsReceiveDTO.setGoodsCategory(operationItem.getItemAssets().iterator().next().getAsset().getCategory().toString());
 					Integer assetsReceiveId = materialService.saveAssetsReceiveDetail(assetsReceiveDTO);
 
