@@ -1088,6 +1088,9 @@ public class OpenOperationItemController<JsonResult> {
 							}
 						}
 						assetsApplyItemDTO.setQuantity(quantity);
+						// 物品柜
+						String cabinetId = materialService.allocateCabinetFromAssets(itemAssets.getAsset().getId(),quantity,0,assetsReceiveId);
+						assetsApplyItemDTO.setCabinet(cabinetId);
 						materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
 					}
 				}

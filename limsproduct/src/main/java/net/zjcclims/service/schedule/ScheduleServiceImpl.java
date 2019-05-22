@@ -37,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             week = Integer.valueOf(request.getParameter("week"));
         }
 
-        Query query = entityManager.createNativeQuery("call proc_teacher_schedule("+schoolTerm.getId()+","+schoolTerm.getTermCode()+",null ,"+user.getUsername()+","+week+")");
+        Query query = entityManager.createNativeQuery("call proc_teacher_schedule("+schoolTerm.getId()+","+schoolTerm.getTermCode()+",null ,'"+user.getUsername()+"',"+week+")");
         // 获取list对象
         List<Object[]> list = query.getResultList();
         List<ScheduleVO> scheduleVOS = new ArrayList<>();
@@ -45,7 +45,11 @@ public class ScheduleServiceImpl implements ScheduleService {
             ScheduleVO scheduleVO = new ScheduleVO();
             scheduleVO.setSection(obj[7].toString());// 节次
             scheduleVO.setWeekday(obj[4].toString());// 星期
-            scheduleVO.setWeeks("第"+obj[5].toString()+"-"+obj[6].toString()+"周");
+            if (obj[5].toString().equals(obj[6].toString())) {
+                scheduleVO.setWeeks("第"+obj[5].toString()+"周");
+            }else {
+                scheduleVO.setWeeks("第"+obj[5].toString()+"-"+obj[6].toString()+"周");
+            }
             scheduleVO.setCourse(obj[2].toString());// 课程
             if(obj[3]!=null) {
                 scheduleVO.setItem(obj[3].toString());// 项目

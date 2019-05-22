@@ -259,11 +259,11 @@ public class LabRoomController<JsonResult> {
         String auth = request.getSession().getAttribute("selected_role").toString();
         int authLevel = shareService.getLevelByAuthName(auth);
         mav.addObject("authLevel", authLevel);
-        if(authLevel < 6 && authLevel > 0) {
-            // 本学院所有在校教师及近5年学生
-            List<User> userList = labRoomService.findUserByacno(acno);
-            mav.addObject("userList", userList);
-        }
+//        if(authLevel < 6 && authLevel > 0) {
+//            // 本学院所有在校教师及近5年学生
+//            List<User> userList = labRoomService.findUserByacno(acno);
+//            mav.addObject("userList", userList);
+//        }
         // 当前用户
         mav.addObject("username", shareService.getUserDetail().getUsername());
 
