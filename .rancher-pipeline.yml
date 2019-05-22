@@ -2,7 +2,7 @@ stages:
 - name: compile
   steps:
   - runScriptConfig:
-      image: harbor.gvsun.net:443/mvn/mvn:3.6.1
+      image: java:8
       shellScript: cd limsproduct && mvn clean package
 timeout: 60
 notification: {}
