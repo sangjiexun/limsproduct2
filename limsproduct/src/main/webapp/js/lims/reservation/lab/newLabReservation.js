@@ -5,6 +5,7 @@ var classesUrl = zuulUrl + "api/timetable/common/apiClassListBySelect";
 var weekUrl = zuulUrl + "api/timetable/common/apiWeekListBySelect";
 var usableListUrl = zuulUrl + "api/timetable/common/apiGetUsableList";
 var usableListDateUrl = zuulUrl + "api/labReservation/apiGetUsableDateList";
+var usableListSectionUrl = zuulUrl + "api/labReservation/apiGetUsableSectionList";
 var currTermUrl = zuulUrl + "api/school/apiCurrSchoolTerm";
 var dateUrl = zuulUrl + "api/common/apiSystemTimeList";
 var saveReserByWeekUrl = zuulUrl + "api/labReservation/apiSaveLabRoomReservation";
@@ -431,7 +432,7 @@ $(document).ready(function () {
                 "weekday": weekday
             });
             $.ajax({
-                url: usableListUrl,
+                url: usableListSectionUrl,
                 type: "POST",
                 data: data1,
                 headers: {Authorization: getJWTAuthority()},

@@ -304,8 +304,10 @@ public class SystemLogController {
         StringBuffer sql = new StringBuffer("select distinct o from OperationItem o where 1=1");
 
         //学期条件筛选
-        if(request.getParameter("termId")!=null && !"".equals(request.getParameter("termId"))){
-            sql.append(" and o.schoolTerm.id =" + request.getParameter("termId"));
+        if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
+            int selectedTermId = Integer.valueOf(request.getParameter("term"));
+            sql.append(" and o.schoolTerm.id =" + selectedTermId);
+            mav.addObject("selectedTermId", selectedTermId);
         }
         sql.append(" order by o.id asc");
         Query query = entityManager.createQuery(sql.toString());
@@ -708,8 +710,10 @@ public class SystemLogController {
         }
 
         //学期条件筛选
-        if(request.getParameter("termId")!=null && !"".equals(request.getParameter("termId"))){
-            sql.append(" and o.schoolTerm.id =" + request.getParameter("termId"));
+        if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
+            int selectedTermId = Integer.valueOf(request.getParameter("term"));
+            sql.append(" and o.schoolTerm.id =" + selectedTermId);
+            mav.addObject("selectedTermId", selectedTermId);
         }
         sql.append(" order by o.id asc");
 
