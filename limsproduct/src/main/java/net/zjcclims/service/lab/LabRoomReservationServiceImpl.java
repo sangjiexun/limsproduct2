@@ -231,14 +231,10 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if (labRoom.getLabRoonAbbreviation() != null && !labRoom.getLabRoonAbbreviation().equals("")){
 			hql += " and l in (select l from LabRoomDevice d,LabRoom l where d.id not in (select ld.labRoomDevice.id from OperationItemDevice ld) and d.labRoom.id=l.id and d.schoolDevice.deviceName like'%"+labRoom.getLabRoonAbbreviation()+"%')" ;
 		}
-		if(acno!=null && !acno.equals("-1")){
-
+		if(acno!=null && !acno.equals("-1")){// 20190506全校
             // 开放范围
-            hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where openSAs.academyNumber = '" +
-                    acno +
-                    "')";
-
-			hql += " and l.labCenter.schoolAcademy.academyNumber='"+ acno +"'";
+            hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))";
+			hql += " order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
 		}
 		return labRoomDAO.executeQuery(hql,(currpage-1)*pageSize,pageSize);
 	}
@@ -312,7 +308,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			String status = jsonObject.getString("status");
 			if ("success".equals(status)) {
 				JSONArray jsonArray = jsonObject.getJSONArray("data");
-				if (it.next().getId().toString().equals(jsonArray.getJSONObject(0).getString("businessAppId"))
+				if (l.getId().toString().equals(jsonArray.getJSONObject(0).getString("businessAppId"))
 						&& "0".equals(jsonArray.getJSONObject(0).getString("level"))) {
 					it.remove();
 				}

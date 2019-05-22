@@ -46,6 +46,20 @@
                     </div>
                 </div>
             </div>
+            <div class="layui-row">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">发票号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="invoiceNumber" id="invoiceNumber"   autocomplete="on" class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="itemRemarks" id="itemRemarks" autocomplete="on" class="layui-input" />
+                    </div>
+                </div>
+            </div>
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="chooseAssetsCabinet">确定</button>

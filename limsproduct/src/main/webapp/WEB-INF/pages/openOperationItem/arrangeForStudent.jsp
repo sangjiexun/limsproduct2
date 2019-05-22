@@ -107,6 +107,8 @@
         <div class="TabbedPanelsTabGroup-box">
             <div class="TabbedPanelsContent">
                 <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
+                <input type="hidden" id="selected_role" value="${sessionScope.selected_role}" />
+                <input type="hidden" id="PROJECT_NAME" value="${PROJECT_NAME}" />
                 <input id="type" name="type" type="hidden" value="${type}" />
                 <input id="term" name="term" type="hidden" value="${termId}"/>
                 <input id="termId" name="termId" type="hidden" value="${termId}"/>

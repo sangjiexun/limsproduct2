@@ -3,6 +3,7 @@ package net.zjcclims.service.cmsshow;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.domain.*;
@@ -289,4 +290,14 @@ public interface CMSShowService {
 	 * @CreateDate: 2019/3/28 10:28
 	 */
 	public List<Object[]> getCommonHwdlogList(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize);
+
+	/**
+	 * Description 导出--实验室考勤名单
+	 * @param labAttendanceList
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 * @author 陈乐为 2019年5月15日
+	 */
+	public void exportLabAttendance(List<LabAttendance> labAttendanceList, HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

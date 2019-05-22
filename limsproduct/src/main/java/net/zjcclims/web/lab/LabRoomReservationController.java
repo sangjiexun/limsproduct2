@@ -215,7 +215,18 @@ public class LabRoomReservationController<JsonResult> {
         }
         mav.addObject("isHaveDeans", isHaveDeans);
         //下拉框实验室
-        List<LabRoom> labRooms = labRoomDAO.executeQuery("select l from LabRoom l where l.labRoomLevel != 0 and l.labRoomReservation = 1");
+        String sql = "select l from LabRoom l where l.labRoomReservation = 1 and l.labRoomActive=1";
+        if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+            sql = "select l from LabRoom l where l.labRoomLevel != 0 and l.labRoomReservation = 1";
+        }
+
+        if(acno!=null && !acno.equals("-1")){// 20190506全校
+            // 开放范围
+            sql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))";
+            sql += " order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
+        }
+
+        List<LabRoom> labRooms = labRoomDAO.executeQuery(sql, 0, -1);
         mav.addObject("labRooms", labRooms);
         //选择年级
         mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));

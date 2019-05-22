@@ -44,6 +44,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
                 "beginTime": data.beginTime,
                 "endTime": data.endTime,
                 "isNeedReturn": data.isNeedReturn,
+                "purpose": data.purpose,
             });
             academyNumber=data.academyNumber;
             department=data.department;
@@ -203,7 +204,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
         if(layEvent === 'detail') {
             layer.msg('查看该项目');
         } else if(layEvent === 'del') {
-            layer.confirm('are you sure?', function(index) {
+            layer.confirm('确定删除?', function(index) {
                 // obj.del(); //删除对应行（tr）的DOM结构
                 $.ajax({
                     url: contextPath + '/lims/api/material/deleteAssetsReceiveItem?id='+data.id,

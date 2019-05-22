@@ -868,7 +868,13 @@ public class LabReservationController<JsonResult> {
 		List<LabAttendance> accessList =null;
 		//查询出来的总记录条数
 		// 根据配置项是否切换获取对应的数据
-		if(pConfig.newServer.equals("false")){
+		if (agent.getCDictionary().getCNumber().equals("6") && agent.getCDictionary().getCCategory().equals("c_agent_type")) {// 智能班牌
+			// 老版获取考勤数据
+			totalRecords = cmsShowService.findLabRoomAccessByIpCount(commonHdwlog,ip,port,request);
+			pageModel = shareService.getPage(page, pageSize, totalRecords);
+			//页面显示的实验室
+			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,page,pageSize,request);
+		}else if(pConfig.newServer.equals("false")){
 			// 老版获取考勤数据
 			totalRecords = cmsShowService.findLabRoomAccessByIpCount(commonHdwlog,ip,port,request);
 			pageModel = shareService.getPage(page, pageSize, totalRecords);

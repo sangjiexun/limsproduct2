@@ -45,8 +45,12 @@
 			<a class="layui-btn layui-btn-xs" lay-event="detail">待实验中心主任审核</a>
 			{{# }  else if(d.status==1 && d.auditFlag==1){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">审核</a>
-			{{# }  else if(d.status==2){ }}
+			{{# }  else if(d.status==2 && d.appFlag==1 ){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="inbound">确认入库</a>
+			{{# }  else if(d.status==2 && d.appFlag==0 ){ }}
+			<a class="layui-btn layui-btn-xs" lay-event="detail">待确认入库</a>
+			{{# }  else if(d.status==3){ }}
+			<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
 			{{# }  else if(d.status==4){ }}
 			<a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
 			{{#  } }}

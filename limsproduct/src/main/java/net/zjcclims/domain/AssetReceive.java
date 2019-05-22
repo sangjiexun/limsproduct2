@@ -211,6 +211,16 @@ public class AssetReceive implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	Calendar auditDate;
+
+	@Column(name = "audit_user")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String auditUser;
+
+	@Column(name = "reject_reason")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String rejectReason;
 	/**
 	 */
 	@OneToMany(mappedBy = "assetReceive", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
@@ -463,6 +473,14 @@ public class AssetReceive implements Serializable {
 		this.curAuditLevel = curAuditLevel;
 	}
 
+	public String getAuditUser() {
+		return auditUser;
+	}
+
+	public void setAuditUser(String auditUser) {
+		this.auditUser = auditUser;
+	}
+
 	/**
 	 * ��ע
 	 * 
@@ -477,6 +495,14 @@ public class AssetReceive implements Serializable {
 	 */
 	public String getMem() {
 		return this.mem;
+	}
+
+	public String getRejectReason() {
+		return rejectReason;
+	}
+
+	public void setRejectReason(String rejectReason) {
+		this.rejectReason = rejectReason;
 	}
 
 	/**

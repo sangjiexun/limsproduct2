@@ -64,6 +64,9 @@ public class MaterialController {
     private AssetStorageRecordDAO assetStorageRecordDAO;
 
     @Autowired
+    private AssetCabinetDAO assetCabinetDAO;
+
+    @Autowired
     private AuditService auditService;
 
     /**
@@ -93,6 +96,20 @@ public class MaterialController {
         JSONObject jsonObject = materialService.findAllAssetApplyList(page,limit,status,kind,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
+
+    /**
+     * 物品柜列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return json字符串格式的分类列表
+     * @author 吴奇臻 2019-05-15
+     */
+    @RequestMapping("/assetsAllCabinetList")
+    @ResponseBody
+    public String assetsCabinetList(@RequestParam Integer page, Integer limit){
+        JSONObject jsonObject = materialService.findAllAssetCabinetList(page,limit);
+        return shareService.htmlEncode(jsonObject.toJSONString());
+    }
     /**
      * 物资入库记录列表
      * @param page 页当前数
@@ -116,7 +133,7 @@ public class MaterialController {
     @RequestMapping("/assetsReceiveList")
     @ResponseBody
     public String assetsReveiveList(HttpServletRequest request, @RequestParam Integer page, Integer limit,String status){
-        JSONObject jsonObject = materialService.findAllAssetReceiveList(page,limit,status);
+        JSONObject jsonObject = materialService.findAllAssetReceiveList(page,limit,status,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -157,6 +174,20 @@ public class MaterialController {
     @ResponseBody
     public String assetsReceiveItemList(HttpServletRequest request, @RequestParam Integer page, Integer limit,Integer id){
         JSONObject jsonObject = materialService.findAllAssetReceiveItemList(page,limit,id);
+        return shareService.htmlEncode(jsonObject.toJSONString());
+    }
+
+    /**
+     * 物资出入库记录表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return json字符串格式的分类列表
+     * @author 吴奇臻 2019-05-15
+     */
+    @RequestMapping("/assetCabinetAccessRecordList")
+    @ResponseBody
+    public String assetCabinetAccessRecordList(HttpServletRequest request, @RequestParam Integer page, Integer limit,Integer id){
+        JSONObject jsonObject = materialService.findAllAssetCabinetAccessRecordList(page,limit,id);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -214,12 +245,12 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
-        String s=materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()),assetsApplyItemDTO.getQuantity(),Integer.parseInt(assetsApplyItemDTO.getId()));
+        String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId(),Integer.parseInt(assetsApplyItemDTO.getAppId()));
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             assetsApplyItemDTO.setCabinet(s);
             materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
         }
-       return s;
+        return s;
     }
     /**
      * Description 保存物资申请记录
@@ -339,6 +370,23 @@ public class MaterialController {
         return flag;
     }
     /**
+     * Description 获取物资申购审核标志位
+     * @param id 参数封装DTO
+     * @return 是-"success"，否-"fail"
+     * @author 吴奇臻 2019-4-17
+     */
+    @RequestMapping("/getAssetsReceiveAuditFlag")
+    @ResponseBody
+    public Boolean getAssetsReceiveAuditFlag(HttpServletRequest request,@RequestParam Integer id){
+        boolean flag=false;
+        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
+        String authorityName=request.getSession().getAttribute("selected_role").toString().split("_")[1];//权限名
+        if(assetReceive.getCurAuditLevel().equals(authorityName)){
+            flag=true;
+        }
+        return flag;
+    }
+    /**
      * Description 提交物资申购记录
      * @param id 参数封装DTO
      * @return 成功-"success"，失败-"fail"
@@ -405,14 +453,16 @@ public class MaterialController {
      */
     @RequestMapping("/changeAssetsApplyStatus")
     @ResponseBody
-    public String changeAssetsApplyStatus(@RequestParam Integer id,String result){
+    public String changeAssetsApplyStatus(@RequestParam Integer id,String result,String reason){
         AssetApp assetApp=assetAppDAO.findAssetAppById(id);
         assetApp.setAssetStatu(1);//提交审核
         //调用审核服务
         String businessType="AssetsClassification"+ "ApplyAudit"+assetApp.getCategoryId();
+        //审核人
+        String auditUser= shareService.getUser().getUsername();
         //保存审核结果
         try {
-            auditService.saveBusinessLevel(id.toString(), assetApp.getCategoryId().toString(), result, "无", businessType, shareService.getUser().getUsername());
+            auditService.saveBusinessLevel(id.toString(), assetApp.getCategoryId().toString(), result, "无", businessType, auditUser);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -422,6 +472,7 @@ public class MaterialController {
             assetApp.setAssetStatu(2);//审核完成并通过
         }else if(tag.equals("fail")){
             assetApp.setAssetStatu(3);//审核被拒绝
+            assetApp.setRejectReason(reason);
         }
         assetApp.setCurAuditLevel(tag);
         assetAppDAO.store(assetApp);
@@ -435,23 +486,26 @@ public class MaterialController {
      */
     @RequestMapping("/changeAssetsInStorageStatus")
     @ResponseBody
-    public String changeAssetsInStorageStatus(@RequestParam Integer id,String result){
+    public String changeAssetsInStorageStatus(@RequestParam Integer id,String result,String reason){
         AssetStorage assetStorage=materialService.findAssetStorageById(id);
         assetStorage.setStatus(1);//提交审核
         //调用审核服务
         String businessType="AssetsClassification"+ "StorageAudit"+assetStorage.getClassficationId();
+        String auditUser= shareService.getUser().getUsername();
         //保存审核结果
         try {
-            auditService.saveBusinessLevel(id.toString(), assetStorage.getClassficationId().toString(), result, "无", businessType, shareService.getUser().getUsername());
+            auditService.saveBusinessLevel(id.toString(), assetStorage.getClassficationId().toString(), result, "无", businessType, auditUser);
         }catch (Exception e){
             e.printStackTrace();
         }
         //获取审核后的状态结果
         String tag = auditService.getAuditLevelName(id.toString(), businessType);
         if(tag.equals("pass")){
+            assetStorage.setAuditUser(auditUser);//保存最后一级审核人
             assetStorage.setStatus(2);//审核完成并通过
         }else if(tag.equals("fail")){
             assetStorage.setStatus(3);//审核被拒绝
+            assetStorage.setRejectReason(reason);
         }
         assetStorage.setCurAuditLevel(tag);
         assetStorage.setAuditDate(new Date());
@@ -466,14 +520,16 @@ public class MaterialController {
      */
     @RequestMapping("/changeAssetsReceiveStatus")
     @ResponseBody
-    public String changeAssetsReceiveStatus(@RequestParam Integer id,String result){
+    public String changeAssetsReceiveStatus(@RequestParam Integer id,String result,String reason){
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(1);//提交审核
         //调用审核服务
         String businessType="AssetsClassification"+ "ReceiveAudit"+assetReceive.getCategoryId();
+        //审核人
+        String auditUser= shareService.getUser().getUsername();
         //保存审核结果
         try {
-            auditService.saveBusinessLevel(id.toString(), assetReceive.getCategoryId().toString(), result, "无", businessType, shareService.getUser().getUsername());
+            auditService.saveBusinessLevel(id.toString(), assetReceive.getCategoryId().toString(), result, "无", businessType, auditUser);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -481,10 +537,13 @@ public class MaterialController {
         String tag = auditService.getAuditLevelName(id.toString(), businessType);
         if(tag.equals("pass")){
             assetReceive.setStatus(2);//审核完成并通过
+            assetReceive.setAuditUser(auditUser);//保存最后一级审核人
             Calendar calendar=Calendar.getInstance();
             assetReceive.setAuditDate(calendar);
         }else if(tag.equals("fail")){
             assetReceive.setStatus(3);//审核被拒绝
+            assetReceive.setRejectReason(reason);//保存拒绝原因
+            materialService.returnAssetsReceiveItemAmount(id);//返还物品柜数量
         }
         assetReceive.setCurAuditLevel(tag);
         assetReceiveDAO.store(assetReceive);
@@ -517,8 +576,10 @@ public class MaterialController {
     public String confirmAssetsReceive(@RequestParam Integer id){
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(4);//确认领用
-        Calendar calendar=Calendar.getInstance();
-        assetReceive.setStartData(calendar);//更新领用时间为开始时间
+//        Calendar calendar=Calendar.getInstance();
+//        assetReceive.setStartData(calendar);//更新领用时间为开始时间
+        //更新库存并生成领用
+        materialService.saveAssetsCabinetRecordFromReceive(id);
         assetReceiveDAO.store(assetReceive);
         return "success";
     }
@@ -534,25 +595,24 @@ public class MaterialController {
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(5);//确认归还
         Calendar calendar=Calendar.getInstance();
-        assetReceive.setEndDate(calendar);//更新领用时间为开始时间
+        assetReceive.setEndDate(calendar);//更新结束时间为归还时间
+        //更新库存并生成领用
+        materialService.saveAssetsCabinetRecordFromReceive(id);
         assetReceiveDAO.store(assetReceive);
         return "success";
     }
     /**
-     * Description 确认物资余料归还
-     * @param id 参数封装DTO
-     * @return 成功-"success"，失败-"fail"
-     * @author 吴奇臻 2019-4-2
+     * Description 删除物品柜
+     *
+     *
+     * @author 吴奇臻 2019-5-15
      */
-    @RequestMapping("/confirmReturnAssetsReceiveRemain")
+    @RequestMapping("/deleteAssetsCabinet")
     @ResponseBody
-    public String confirmReturnAssetsReceiveRemain(@RequestParam Integer id){
-        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
-        assetReceive.setStatus(5);//确认归还
-        Calendar calendar=Calendar.getInstance();
-        assetReceive.setEndDate(calendar);//更新领用时间为开始时间
-        assetReceiveDAO.store(assetReceive);
-        return "success";
+    public String deleteAssetsCabinet(Integer id){
+       AssetCabinet assetCabinet=assetCabinetDAO.findAssetCabinetByPrimaryKey(id);
+       assetCabinetDAO.remove(assetCabinet);
+       return "success";
     }
     /**
      * Description 删除物资名录
@@ -689,6 +749,19 @@ public class MaterialController {
         //删除条目
         assetReceiveRecordDAO.remove(assetReceiveRecord);
         return "success";
+    }
+
+    /**
+     * Description 编辑,查看物品柜
+     * @param id 物品柜ID
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    @RequestMapping("/editAssetsCabinet")
+    @ResponseBody
+    public AssetsCabinetDTO editAssetsCabinet(Integer id){
+        AssetsCabinetDTO assetsCabinetDTO = materialService.findAssetsCabinetById(id);
+        return assetsCabinetDTO;
     }
     /**
      * Description 编辑,查看物资名录
@@ -868,9 +941,9 @@ public class MaterialController {
      */
     @RequestMapping(value = "/getInStorageCheckListInfo",produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getInStorageCheckListInfo( String appId){
+    public JSONObject getInStorageCheckListInfo( String appId){
         JSONObject jsonObject=materialService.findAllAssetInStorageItem(Integer.parseInt(appId));
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
     /**
      * 获得领(发)料单所需信息
@@ -879,9 +952,9 @@ public class MaterialController {
      */
     @RequestMapping(value = "/getReceiveCheckListInfo",produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getReceiveCheckListInfo(String appId){
+    public JSONObject getReceiveCheckListInfo(String appId){
         JSONObject jsonObject=materialService.findAllAssetReceiveItem(Integer.parseInt(appId));
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
     /**
      * 判断该类物资是否需要归还
@@ -1036,6 +1109,17 @@ public class MaterialController {
         return mav;
     }
     /**
+     * 物品柜列表API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-124
+     */
+    @RequestMapping("/listAssetsCabinetAPI")
+    public ModelAndView listAssetsCabinetAPI(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("lims/material/listAssetsCabinet.jsp");
+        return mav;
+    }
+    /**
      * 查看物资名录详情API
      * * @return 跳转页面
      * @author 吴奇臻 2019-3-24
@@ -1068,6 +1152,32 @@ public class MaterialController {
     public ModelAndView listAssetsApplyAPI(){
         ModelAndView mav = new ModelAndView();
         mav.setViewName("lims/material/listAssetsApply.jsp");
+        return mav;
+    }
+
+    /**
+     * 新建/编辑物品柜详情API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/editAssetsCabinetDetailAPI")
+    public ModelAndView editAssetsCabinetDetailAPI( String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/editAssetsCabinetDetail.jsp");
+        return mav;
+    }
+
+    /**
+     * 查看物资申购详情API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/checkAssetsCabinetDetailAPI")
+    public ModelAndView checkAssetsCabinetDetailAPI( String id){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.setViewName("lims/material/assetsCabinetDetail.jsp");
         return mav;
     }
     /**
@@ -1235,9 +1345,11 @@ public class MaterialController {
      */
     @ResponseBody
     @RequestMapping("/chooseAssetsCabinetForApply")
-    public String chooseAssetsCabinetForApply(@RequestParam Integer id,@RequestParam Integer cabinet){
+    public String chooseAssetsCabinetForApply(@RequestParam Integer id,@RequestParam Integer cabinet,String invoiceNumber,String itemRemarks){
         AssetAppRecord assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(id);
         assetAppRecord.setCabinetId(cabinet);
+        assetAppRecord.setInvoiceNumber(invoiceNumber);
+        assetAppRecord.setInfo(itemRemarks);
         assetAppRecordDAO.store(assetAppRecord);
         return "success";
     }
@@ -1302,6 +1414,19 @@ public class MaterialController {
         return mav;
     }
     /**
+     * 拒绝相关流程页面
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-4-30
+     */
+    @RequestMapping("/rejectAssetsRelatedProcess")
+    public ModelAndView rejectAssetsRelatedProcess(@RequestParam Integer id,@RequestParam String type){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.addObject("type",type);
+        mav.setViewName("lims/material/rejectAssetsRelatedProcess.jsp");
+        return mav;
+    }
+    /**
      * Description 物资分类列表API
      * @return 跳转页面
      * @author 伍菁 2019-4-1
@@ -1348,6 +1473,22 @@ public class MaterialController {
     @ResponseBody
     public String saveAssetClassification(@RequestBody MaterialKindDTO materialKindDTO){
         if(materialService.saveAssetClassification(materialKindDTO)){
+            return "success";
+        }else{
+            return "fail";
+        }
+    }
+
+    /**
+     * Description 保存物品柜
+     *
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    @RequestMapping("/saveAssetsCabinet")
+    @ResponseBody
+    public String saveAssetsCabinet(@RequestBody AssetsCabinetDTO assetsCabinetDTO){
+        if(materialService.saveAssetsCabinet(assetsCabinetDTO)){
             return "success";
         }else{
             return "fail";
@@ -1410,7 +1551,7 @@ public class MaterialController {
      * @return 跳转页面
      * @author 伍菁 2019-04-17
      **/
-    @RequestMapping("/listAssetCabinetRecordAPI")
+    @RequestMapping("/listAssetsCabinetRecordAPI")
     public ModelAndView listAssetCabinetRecordAPI(){
         ModelAndView mav = new ModelAndView();
         mav.setViewName("lims/material/listAssetCabinetRecord.jsp");

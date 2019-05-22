@@ -135,7 +135,7 @@
         </form>
         <table class="layui-hide add_progress" id="assetsList" lay-filter="assetsList"></table>
         <script type="text/html" id="parentbar">
-            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="choose">选择物品柜</a>
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="choose">添加物品柜等信息</a>
         </script>
     </div>
 </div>

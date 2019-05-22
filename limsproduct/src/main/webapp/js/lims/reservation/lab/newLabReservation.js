@@ -4,7 +4,8 @@ var weekdayUrl = zuulUrl + "api/timetable/common/apiWeekDayListBySelect";
 var classesUrl = zuulUrl + "api/timetable/common/apiClassListBySelect";
 var weekUrl = zuulUrl + "api/timetable/common/apiWeekListBySelect";
 var usableListUrl = zuulUrl + "api/timetable/common/apiGetUsableList";
-var usableListDateUrl = zuulUrl + "api/timetable/common/apiGetUsableDateList";
+var usableListDateUrl = zuulUrl + "api/labReservation/apiGetUsableDateList";
+var usableListSectionUrl = zuulUrl + "api/labReservation/apiGetUsableSectionList";
 var currTermUrl = zuulUrl + "api/school/apiCurrSchoolTerm";
 var dateUrl = zuulUrl + "api/common/apiSystemTimeList";
 var saveReserByWeekUrl = zuulUrl + "api/labReservation/apiSaveLabRoomReservation";
@@ -250,6 +251,25 @@ $(document).ready(function () {
                 }
             });
         }
+        function showClasses(week){
+            $("#"+week+" .layui-form-checkbox").each(function(i,j){
+                j.onclick=function(){
+                    this.classList.toggle('layui-form-checked');
+                    // oldChecked toggle
+                    if(this.getAttribute('oldChecked')==null){
+                        this.setAttribute('oldChecked','');
+                    }else{
+                        this.removeAttribute('oldChecked');
+                    }
+                    var weekFlag = $('#weekday').val();
+                    if (weekFlag != null && weekFlag != '' && weekFlag != undefined) {
+                        // $("#week_div").show();
+                        // $("#week_box input[type='checkbox']").prop("checked", true);
+                        getClasses1();
+                    }
+                }
+            });
+        }
         form.on('checkbox(allChoose)', function (data) {
         // $(".section-class").click(function () {
             $("#week_div").show();
@@ -412,7 +432,7 @@ $(document).ready(function () {
                 "weekday": weekday
             });
             $.ajax({
-                url: usableListUrl,
+                url: usableListSectionUrl,
                 type: "POST",
                 data: data1,
                 headers: {Authorization: getJWTAuthority()},
@@ -421,6 +441,7 @@ $(document).ready(function () {
                 success: function (result) {
                     var list = result.results;    //返回的数据
                     //add_role_name给select定义的id
+                    $("#section_box").empty();
                     for (var i = 0; i < list.length; i++) {
                         // $("#section_box").append(" <input type=\"checkbox\" name=\"classes\" title='第" + list[i].text + "节' value='" + list[i].id + "' lay-filter=\"classes_choose\" >");
                         var x = "<div lay-filter='classes_choose' name='classes' value=" + list[i].id + " class=\"layui-unselect layui-form-checkbox\"><span>第"+ list[i].text+"节</span><i class='layui-icon layui-icon-ok'></i></div>"
@@ -433,7 +454,7 @@ $(document).ready(function () {
                     noneRule('section_none', 'section_box')
                     optionRule('section_box')
                     clickRule('section_box')
-                    showWeeks('section_box')
+                    // showWeeks('section_box')
                 }
             });
         }
@@ -478,6 +499,7 @@ $(document).ready(function () {
                     noneRule('week_none', 'week_box');
                     optionRule('week_box')
                     clickRule('week_box')
+                    showClasses('week_box')
                 }
             });
         }

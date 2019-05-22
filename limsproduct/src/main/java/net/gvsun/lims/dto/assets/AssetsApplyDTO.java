@@ -37,8 +37,12 @@ public class AssetsApplyDTO implements Serializable{
     private String curAuditLevel;
     //审核标志位（0待审核，1审核）
     private Integer auditFlag;
+    //流程人标志位（0审核人，1发起人）
+    private Integer appFlag;
     // 课程编号
     private String courseNo;
+    // 拒绝原因
+    private String rejectReason;
 
     public String getId() {
         return id;
@@ -152,11 +156,27 @@ public class AssetsApplyDTO implements Serializable{
         this.auditFlag = auditFlag;
     }
 
+    public Integer getAppFlag() {
+        return appFlag;
+    }
+
+    public void setAppFlag(Integer appFlag) {
+        this.appFlag = appFlag;
+    }
+
     public String getCourseNo() {
         return courseNo;
     }
 
     public void setCourseNo(String courseNo) {
         this.courseNo = courseNo;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

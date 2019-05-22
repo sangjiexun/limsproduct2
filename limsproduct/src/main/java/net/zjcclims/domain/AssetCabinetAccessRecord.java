@@ -52,6 +52,17 @@ public class AssetCabinetAccessRecord implements Serializable {
 	@XmlElement
 	Integer quantity;
 
+	@Column(name = "cabinet_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer cabinetId;
+
+	@Column(name = "remain_quantity")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer remainQuantity;
+
+
 	public Integer getId() {
 		return id;
 	}
@@ -106,6 +117,22 @@ public class AssetCabinetAccessRecord implements Serializable {
 
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
+	}
+
+	public Integer getCabinetId() {
+		return cabinetId;
+	}
+
+	public void setCabinetId(Integer cabinetId) {
+		this.cabinetId = cabinetId;
+	}
+
+	public Integer getRemainQuantity() {
+		return remainQuantity;
+	}
+
+	public void setRemainQuantity(Integer remainQuantity) {
+		this.remainQuantity = remainQuantity;
 	}
 
 	/**

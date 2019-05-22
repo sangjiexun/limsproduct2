@@ -48,6 +48,15 @@ public interface MaterialService {
      * @author 吴奇臻 2019-03-27
      */
     List<LabCenter> findAllLabCenterList();
+
+    /**
+     * 物资分类列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-3-26
+     */
+    JSONObject findAllAssetCabinetList(Integer page, Integer limit);
     /**
      * 物资分类列表
      * @param page 页当前数
@@ -82,7 +91,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-1
      */
-    JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status);
+    JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status,HttpServletRequest request);
 
     /**
      * 物资申购条目列表
@@ -112,10 +121,17 @@ public interface MaterialService {
      * 物资申领条目列表
      * @param page 页当前数
      * @param limit 当前页限制大小
-     * * @return 状态字符串
      * @author 吴奇臻 2019-3-26
      */
     JSONObject findAllAssetReceiveItemList(Integer page, Integer limit,Integer id);
+
+    /**
+     * 物资出入库记录列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * @author 吴奇臻 2019-5-15
+     */
+    JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id);
     /**
      * 物资申领条目列表
      * * @return 状态字符串
@@ -233,6 +249,13 @@ public interface MaterialService {
     MaterialListDTO findAssetById(Integer id);
 
     /**
+     * 根据id获取物品柜数据
+     *
+     * @author 吴奇臻 2019-3-27
+     */
+    AssetsCabinetDTO findAssetsCabinetById(Integer id);
+
+    /**
      * 根据id获物资申购数据
      * @param id 名录id
      * * @return 状态字符串
@@ -287,6 +310,18 @@ public interface MaterialService {
      * @author 吴奇臻 2019-4-2
      */
     void saveAssetsCabinetRecordFromInStorage(Integer id);
+
+    /**
+     * 根据申领id生成出入库记录
+     * @param id 名录id
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-4-2
+     */
+    void saveAssetsCabinetRecordFromReceive(Integer id);
+
+
+
+
 
     /**
      * 根据物品柜id和物资id确认物品柜物资记录
@@ -381,7 +416,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId);
+    String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId,Integer appId);
 
     /**
      * 根据物资及数量自动获取库存数最大的物品柜
@@ -408,6 +443,12 @@ public interface MaterialService {
      * @author 伍菁 2019-4-2
      */
     boolean saveAssetClassification(MaterialKindDTO materialKindDTO);
+
+    /**
+     * Description 保存物品柜
+     * @author 吴奇臻 2019-5-15
+     */
+    boolean saveAssetsCabinet(AssetsCabinetDTO assetsCabinetDTO);
     /**
      * Description 编辑,查看物资类别
      * @param id 物资类别ID
@@ -464,4 +505,16 @@ public interface MaterialService {
      * @author 伍菁 2019-4-22
      */
     boolean deleteAssetCabinetRecords(Integer assetId);
+
+    /**
+     * Description 获取申购、入库、申领后三位编号
+     * @author 吴奇臻 2019-5-21
+     */
+    String getAssetsRelatedAppNo(String type);
+
+    /**
+     * Description 审核拒绝返回申领的数量
+     * @author 吴奇臻 2019-5-22
+     */
+    void returnAssetsReceiveItemAmount(Integer receiveId);
 }

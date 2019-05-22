@@ -3,8 +3,8 @@ var contextPath = $("meta[name='contextPath']").attr("content");
 $(function () {
     $.ajax({
         url: contextPath + "/lims/api/material/getReceiveCheckListInfo?appId="+appId,
-        contentType: "application/json;charset=utf-8",
-        dataType: "json",
+        dataType:"json",
+        contentType:"application/json;charset=utf-8",
         type: "post",
         async: false,
         success: function (data) {
@@ -12,9 +12,12 @@ $(function () {
                 var tr = $(['<tr >', '<td >' + item.name + '</td>', '<td>' + item.type + '</td>','<td>' + item.factory + '</td>', '<td>' + item.unit + '</td>',  '<td>' + item.amount + '</td>', '<td>' + item.price + '</td>', '<td>' + item.totalPrice + '</td>','<td>' + item.info + '</td>', '</tr>'].join(''));
                 $("#itemList").append(tr);
             });
+            var trSum=$(['<tr >', '<td ></td>', '<td></td>','<td></td>', '<td></td>',  '<td></td>', '<td></td>', '<td>共' + data.totalPrice + '</td>','<td></td>', '</tr>'].join(''));
+            $("#itemList").append(trSum);
             $("#applicant").html(data.applicant);
             $("#department").html(data.department);
             $("#auditDate").html(data.auditDate);
+            $("#auditUser").html(data.auditUser);
         }
     });
 });

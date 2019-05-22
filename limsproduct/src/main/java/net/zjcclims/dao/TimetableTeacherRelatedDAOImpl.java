@@ -139,6 +139,29 @@ public class TimetableTeacherRelatedDAOImpl extends AbstractJpaDao<TimetableTeac
 	}
 
 	/**
+	 * JPQL Query - findTimetableTeacherRelatedById
+	 *
+	 */
+	@Transactional
+	public Set<TimetableTeacherRelated> findTimetableTeacherRelatedByAppointmentId(Integer id) throws DataAccessException{
+		return findTimetableTeacherRelatedByAppointmentId(id, -1, -1);
+	}
+
+	/**
+	 * JPQL Query - findTimetableTeacherRelatedById
+	 *
+	 */
+	@Transactional
+	public Set<TimetableTeacherRelated> findTimetableTeacherRelatedByAppointmentId(Integer id, int startResult, int maxRows) throws DataAccessException{
+		try {
+			Query query = createNamedQuery("findTimetableTeacherRelatedByAppointmentId", startResult, maxRows, id);
+			return new LinkedHashSet<TimetableTeacherRelated>(query.getResultList());
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+
+	/**
 	 * Used to determine whether or not to merge the entity or persist the entity when calling Store
 	 * @see store
 	 * 

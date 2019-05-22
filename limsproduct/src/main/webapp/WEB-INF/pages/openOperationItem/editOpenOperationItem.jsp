@@ -247,13 +247,19 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                             </fieldset>
                             <fieldset>
                                 <label>实验项目开发人：${creator.cname}</label>
-                                <label>职称：
+                            </fieldset>
+                            <fieldset>
+                                <label>院系：${creator.schoolAcademy.academyName}</label>
+                            </fieldset>
+                            <fieldset style="height: 76px;">
+                                <%--<label>实验项目开发人：${creator.cname}</label>--%>
+                                <label>职称：</label>
                                 <form:select path="CDictionaryByTitle.id" id="CDictionaryByTitle" required="true">
                                     <form:option value="">- - - -请选择- - - -</form:option>
                                     <form:options items="${titles}" itemLabel="CName" itemValue="id"/>
                                 </form:select>
-                                    </label>
-                                <label>院系：${creator.schoolAcademy.academyName}</label>
+
+                                    <%--<label>院系：${creator.schoolAcademy.academyName}</label>--%>
                             </fieldset>
                             <fieldset>
                                 <label>实验者总人数<font color="red">*</font>:(该实验项目一学年内上课人数：一人做两次实验按一人计算）</label>
@@ -263,12 +269,12 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 />
                             </fieldset>
                             <fieldset>
-                                <label>实验最小单位：
+                                <label>实验最小单位： </label>
                                     <form:select path="CDictionaryByMinUnit.id" id="CDictionaryByMinUnit" required="true">
                                         <form:option value="">- - - -请选择- - - -</form:option>
                                         <form:options items="${minUnits}" itemLabel="CName" itemValue="id"/>
                                     </form:select>
-                                </label>
+
                                 <div id="group">
                                     <label>实验组数：
                                     </label>
@@ -307,16 +313,40 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                     </c:forEach>
                                 </select>
                             </fieldset>
-                            <fieldset>
-                                <div>
+                            <fieldset style="height: 71px;">
+                                <%--<div>--%>
                                 <label>开放学院：</label>
                                 <select name="lpCollege" id="lpCollege" class="chzn-select" multiple>
                                     <c:forEach items="${academies}" varStatus="i" var="academy">
                                         <option value="${academy.academyNumber}">${academy.academyName}[${academy.academyNumber}]</option>
                                     </c:forEach>
                                 </select>
-                                </div>
-                                <div>
+                                <%--</div>--%>
+                                <%--<div>--%>
+                                <%--<label>开放专业：</label>--%>
+                                <%--<form:select path="lpMajorFit" id="lpMajorFit" class="chzn-select" multiple="true">--%>
+                                    <%--<c:forEach items="${chooseMajors}" varStatus="j" var="m">--%>
+                                        <%--<form:option value="${m.majorNumber}" selected="selected">[${m.majorNumber}]${m.majorName}</form:option>--%>
+                                    <%--</c:forEach>--%>
+                                    <%--<c:forEach items="${majors}" varStatus="i" var="m">--%>
+                                        <%--<form:option value="${m.majorNumber}">[${m.majorNumber}]${m.majorName}</form:option>--%>
+                                    <%--</c:forEach>--%>
+                                <%--</form:select>--%>
+                                <%--</div>--%>
+                                <%--<div>--%>
+                                <%--<label>开放年级：</label>--%>
+                                <%--<form:select path="CDictionaryByOpenGrade.id" id="CDictionaryByOpenGrade" required="true">--%>
+                                    <%--<form:options items="${grades}" itemLabel="CName" itemValue="id"/>--%>
+                                <%--</form:select>--%>
+                                <%--</div>--%>
+                                <%--<div>--%>
+                                <%--<label>开放学期：</label>--%>
+                                <%--<form:select path="CDictionaryByOpenTerm.id" id="CDictionaryByOpenTerm" required="true">--%>
+                                    <%--<form:options items="${terms}" itemLabel="CName" itemValue="id"/>--%>
+                                <%--</form:select>--%>
+                                <%--</div>--%>
+                            </fieldset>
+                            <fieldset>
                                 <label>开放专业：</label>
                                 <form:select path="lpMajorFit" id="lpMajorFit" class="chzn-select" multiple="true">
                                     <c:forEach items="${chooseMajors}" varStatus="j" var="m">
@@ -326,19 +356,18 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                         <form:option value="${m.majorNumber}">[${m.majorNumber}]${m.majorName}</form:option>
                                     </c:forEach>
                                 </form:select>
-                                </div>
-                                <div>
+                            </fieldset>
+                            <fieldset>
                                 <label>开放年级：</label>
                                 <form:select path="CDictionaryByOpenGrade.id" id="CDictionaryByOpenGrade" required="true">
                                     <form:options items="${grades}" itemLabel="CName" itemValue="id"/>
                                 </form:select>
-                                </div>
-                                <div>
+                            </fieldset>
+                            <fieldset>
                                 <label>开放学期：</label>
                                 <form:select path="CDictionaryByOpenTerm.id" id="CDictionaryByOpenTerm" required="true">
                                     <form:options items="${terms}" itemLabel="CName" itemValue="id"/>
                                 </form:select>
-                                </div>
                             </fieldset>
                             <fieldset>
                                 <label>实验隶属课程<font color="red">*</font>：</label>
@@ -495,7 +524,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                         <div class="moudle_footer">
                             <div class="submit_link">
                                 <a class="btn btn-return" type="button" href="${pageContext.request.contextPath}/openOperationItem/listOpenOperationItem?currpage=1&status=1&orderBy=9">返回</a>
-                                <input class="btn btn-return" type="submit" value="保存" onclick="saveEditForm();">
+                                <input class="btn btn-big" type="submit" value="保存" onclick="saveEditForm();">
                             </div>
                         </div>
                     </form:form>

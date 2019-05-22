@@ -46,6 +46,12 @@ public class AssetsInStorageDTO implements Serializable{
     private String curAuditLevel;
     //15.审核标志位
     private Integer auditFlag;
+    //15.流程发起标志位(0代表审核人 1代表发起人)
+    private Integer appFlag;
+    //16.采购日期
+    private String applyDate;
+    //16.拒绝原因
+    private String rejectReason;
     public Integer getId() {
         return id;
     }
@@ -196,5 +202,29 @@ public class AssetsInStorageDTO implements Serializable{
 
     public void setAuditFlag(Integer auditFlag) {
         this.auditFlag = auditFlag;
+    }
+
+    public Integer getAppFlag() {
+        return appFlag;
+    }
+
+    public void setAppFlag(Integer appFlag) {
+        this.appFlag = appFlag;
+    }
+
+    public String getApplyDate() {
+        return applyDate;
+    }
+
+    public void setApplyDate(String applyDate) {
+        this.applyDate = applyDate;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

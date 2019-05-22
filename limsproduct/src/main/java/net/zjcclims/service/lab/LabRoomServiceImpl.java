@@ -1931,11 +1931,10 @@ public class LabRoomServiceImpl implements LabRoomService {
 		//id对应的设备
 		LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(id);
 
-
 		//是否需要安全准入
 		CDictionary a = labRoom.getCDictionaryByAllowSecurityAccess();
 
-		if (a != null && a.getId() == 621) {//需要安全准入
+		if (a != null && a.getCNumber().equals("1") && a.getCCategory().equals("c_active")) {//需要安全准入
 //			//培训形式
 //			CDictionary c = labRoom.getCDictionaryByTrainType();
 //			if (c != null && c.getId() == 627) {//集中培训
@@ -2015,7 +2014,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 //					}
 //				}
 //			}
-		if (a != null && a.getId() == 621) {//需要安全准入
+		if (a != null && a.getCNumber().equals("1") && a.getCCategory().equals("c_active")) {//需要安全准入
 			if (judge.equals("ROLE_STUDENT") ||
 					(labRoom.getUser() != null && labRoom.getUser().getUsername().equals(username))) {
 				// do nothing
@@ -2522,7 +2521,9 @@ public class LabRoomServiceImpl implements LabRoomService {
 			hql.append(" and l.labCenter.schoolAcademy.academyNumber='"+ acno +"'");
 		}*/
 		hql.append(" and l.labRoomActive=1 and l.labRoomReservation=1");
-		if (request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN")) {
+		// 浙江建设{实验室管理员和物联管理员不可预约自己管理的实验室}
+		if (pConfig.PROJECT_NAME.equals("zjcclims") &&
+				(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN"))) {
 			hql.append(" and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')");
 		}
 		if (acno != null && !acno.equals("-1")) {

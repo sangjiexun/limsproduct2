@@ -77,6 +77,12 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
                 sort: true,
                 templet:'#zh'
             }, {
+                field: 'remarks',
+                title: '库存备注',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            },{
                 fixed: 'right',
                 title: '操作',
                 width: 250,
@@ -121,7 +127,7 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
         if(layEvent === 'detail') {
             layer.msg('查看该项目');
         } else if(layEvent === 'del') {
-            layer.confirm('are you sure?', function(index) {
+            layer.confirm('确定删除?', function(index) {
                 // obj.del(); //删除对应行（tr）的DOM结构
                 $.ajax({
                     url: contextPath + '/lims/api/material/deleteAssetsReceive?id='+data.id,
@@ -142,7 +148,7 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
                 //向服务端发送删除指令
             });
         } else if(layEvent === 'submit') {
-            layer.confirm('are you sure?', function(index) {
+            layer.confirm('确定提交?', function(index) {
                 $.ajax({
                     url: contextPath + '/lims/api/material/submitAssetsReceive?id='+data.id,
                     // data: jsonData,

@@ -189,7 +189,7 @@ public class OAuth2Controller<JsonResult> {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String logintime = df.format(time.getTime());
         request.getSession().setAttribute("logintime", logintime);
-        mav.setViewName("redirect:/j_spring_security_check");
+        mav.setViewName("redirect:/xxx");
         return mav;
     }
 

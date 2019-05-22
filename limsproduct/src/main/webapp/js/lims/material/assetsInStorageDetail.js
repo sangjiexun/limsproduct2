@@ -33,6 +33,8 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
                 "department": data.department,
                 "goodsCategory": data.goodsCategory,
                 "totalPrice": data.totalPrice,
+                "applyDate": data.applyDate,
+                "rejectReason":data.rejectReason,
             });
             academyNumber=data.academyNumber;
             department=data.department;
@@ -45,6 +47,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
             }
             if(data.status!=='4'){
                 $("#generate").hide();
+            }
+            if(data.status!=='3'){
+                $("#reject").hide();
             }
         },
         error:function () {
@@ -221,7 +226,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
     var active = {
         admitAssetsInStorage: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=yes',
+                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=pass',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -241,22 +246,34 @@ layui.use(['laypage', 'layer', 'table', 'element','form','upload'], function() {
     //审核拒绝
     var active2 = {
         rejectAssetsInStorage: function() {
-            $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=no',
-                async: false,
-                type: "POST",
-                contentType: "application/json;charset=UTF-8",
-                success:function (res) {
-                    console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
-                },
-                error:function(){
-                    alert("后台出了点问题，请重试！");
-                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                }
+            var realURL=contextPath + '/lims/api/material/rejectAssetsRelatedProcess?id='+id+'&&type=InStorage';
+            var index = layer.open({
+                type: 2 //此处以iframe举例
+                ,
+                title: '请填写拒绝原因',
+                area: ['450px', '300px'],
+                shade: 0,
+                maxmin: true,
+                content: realURL,
+                zIndex: layer.zIndex //重点1
+                ,
             });
+            // $.ajax({
+            //     url: contextPath + '/lims/api/material/changeAssetsInStorageStatus?id='+id+'&&result=fail',
+            //     async: false,
+            //     type: "POST",
+            //     contentType: "application/json;charset=UTF-8",
+            //     success:function (res) {
+            //         console.log(res);
+            //         var index=parent.layer.getFrameIndex(window.name);
+            //         parent.layer.close(index);
+            //         window.parent.location.reload();
+            //     },
+            //     error:function(){
+            //         alert("后台出了点问题，请重试！");
+            //         return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            //     }
+            // });
         }
     };
     //确认入库

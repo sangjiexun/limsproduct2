@@ -92,39 +92,34 @@
                     </div>
                 </div>
             </div>
-            <%--<div class="layui-col-lg12">--%>
-                <%--<label class="layui-form-label">物资图片</label>--%>
-                <%--<div class="layui-input-block mix_uploadbox">--%>
-                    <%--<div class="layui-upload">--%>
-                        <%--<div class="layui-upload-list">--%>
-                            <%--<table class="layui-table">--%>
-                                <%--<thead>--%>
-                                <%--<tr>--%>
-                                    <%--<th>文件名</th>--%>
-                                    <%--<th>大小</th>--%>
-                                    <%--<th>状态</th>--%>
-                                    <%--<th>缩略图</th>--%>
-                                <%--</tr>--%>
-                                <%--</thead>--%>
-                                <%--<tbody id="paclist"></tbody>--%>
-                            <%--</table>--%>
-                        <%--</div>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-            <div class="layui-form-item">
-                <div class="layui-input-block" id="check">
-                    <button data-method="admitAssetsReceive" class="layui-btn admit_btn">通过</button>
-                    <button data-method="rejectAssetsReceive" class="layui-btn layui-btn-danger reject_btn">拒绝</button>
-                </div>
-                <div class="layui-input-block" id="confirm">
-                    <button data-method="confirmAssetsReceive" class="layui-btn confirm_btn">确认领用</button>
-                </div>
-                <div class="layui-input-block" id="confirmReturn">
-                    <button data-method="confirmReturnAssetsReceive" class="layui-btn return_btn">确认归还</button>
+            <div class="layui-row">
+                <div class="layui-col-lg12">
+                    <label class="layui-form-label">申领用途</label>
+                    <div class="layui-input-block">
+                        <input type="textarea " name="purpose" autocomplete="off" class="layui-textarea" placeholder="请填写申领用途" disabled="disabled" readonly="readonly"/>
+                    </div>
                 </div>
             </div>
-        </form>
+            <div class="layui-row">
+                <div class="layui-col-lg6" id="reject">
+                    <label class="layui-form-label">拒绝原因</label>
+                    <div class="layui-input-block">
+                        <input type="text" id= "rejectReason" name="rejectReason" disabled="disabled" />
+                    </div>
+                </div>
+            </div>
+        </form><div class="layui-form-item">
+        <div class="layui-input-block" id="check">
+            <button data-method="admitAssetsReceive" class="layui-btn admit_btn">通过</button>
+            <button data-method="rejectAssetsReceive" class="layui-btn layui-btn-danger reject_btn">拒绝</button>
+        </div>
+        <div class="layui-input-block" id="confirm">
+            <button data-method="confirmAssetsReceive" class="layui-btn confirm_btn">确认领用</button>
+        </div>
+        <div class="layui-input-block" id="confirmReturn">
+            <button data-method="confirmReturnAssetsReceive" class="layui-btn return_btn">确认归还</button>
+        </div>
+    </div>
         <button data-method="exportAssetReceiveItem" class="layui-btn layui-btn-xs layui-btn-normal export_btn">生成领(发)料单</button>
         <table class="layui-hide add_progress" id="assetsList" lay-filter="assetsReceiveList"></table>
     </div>

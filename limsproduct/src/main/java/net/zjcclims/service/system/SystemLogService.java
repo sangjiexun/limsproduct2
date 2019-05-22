@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import net.gvsun.lims.vo.OpenProjectRelatedReports.LaboratoryNoticeVO;
 import net.zjcclims.domain.SystemLog;
 import net.zjcclims.vo.QueryParamsVO;
 
@@ -91,4 +93,67 @@ public interface SystemLogService {
 	 * @author 陈乐为 2019年4月17日
 	 */
 	public Integer allLabRoomUseUnplanCount(QueryParamsVO paramsVO);
+
+
+    /**
+     * Description 开放项目相关报表--实验通知单
+     * @param request
+     * @return
+     * @Author Hezhaoyi
+     * 2019-5-20
+     */
+	public LaboratoryNoticeVO listLaboratoryNotice(HttpServletRequest request);
+
+    /**
+     * Description:开放项目相关报表--分组实验通知、教学记录单
+     * @param request
+     * @return
+     * @Author Hezhaoyi 2019-5-10
+     */
+	public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request);
+    /**
+     * Description 开放项目相关报表-实验计划表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListExperimentalSchedule(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
+     * Description 开放项目相关报表-仪器借出登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListInstrumentLendingegistration(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
+     * Description 开放项目相关报表-低值易耗品领用登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListReceiptOfLowValueConsumables(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
+     * Description 开放项目相关报表-药品出库登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListDrugDepotRegistrationForm(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
+     * Description 开放项目相关报表-耗材领用登记表{导出excel}
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Hezhaoyi 2019-5-17
+     */
+    public void exportListConsumablesAcquisitionRecordSheet(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
 }

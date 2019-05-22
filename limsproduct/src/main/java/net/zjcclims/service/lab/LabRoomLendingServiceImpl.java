@@ -521,7 +521,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                 int stu_num = 0;
                 if(number != null) {
                     String[] stunum = number.split("-");
-                    if(stunum.length > 0) {
+                    if(stunum.length > 1) {
                         stu_num = Integer.valueOf(stunum[1]);
                     }else {
                         stu_num = Integer.valueOf(number);
@@ -1217,15 +1217,23 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
             refuseItemBackup.setType("LabRoomReservation");
             refuseItemBackup.setLabRoomName(labReservation.getLabRoom().getLabRoomName());
             String operationItems = "";
+            if (pConfig.PROJECT_NAME.equals("shjulims")) {
                 operationItems += "预约用途： " + labReservation.getCDictionaryByLendingType().getCName() +
-                                    "\n使用对象： " + labReservation.getCDictionaryByLendingUserType().getCName() +
-                                    ("校内学生".equals(labReservation.getCDictionaryByLendingUserType().getCName()) ?
-                                            "\n班级： " + labReservation.getSchoolClasses().getClassName() : "") +
-                                    "\n预约部门： " + labReservation.getLendingUnit() +
-                                    "\n使用人数： " + labReservation.getNumber() +
-                                    "\n预约人电话： " + labReservation.getLendingUserPhone() +
-                                    "\n预约原因： " + labReservation.getLendingReason()
+                        "\n预约部门： " + labReservation.getLendingUnit() +
+                        "\n使用人数： " + labReservation.getNumber() +
+                        "\n预约人电话： " + labReservation.getLendingUserPhone() +
+                        "\n预约原因： " + labReservation.getLendingReason() ;
+            } else {
+                operationItems += "预约用途： " + labReservation.getCDictionaryByLendingType().getCName() +
+                        "\n使用对象： " + labReservation.getCDictionaryByLendingUserType().getCName() +
+                        ("校内学生".equals(labReservation.getCDictionaryByLendingUserType().getCName()) ?
+                                "\n班级： " + labReservation.getSchoolClasses().getClassName() : "") +
+                        "\n预约部门： " + labReservation.getLendingUnit() +
+                        "\n使用人数： " + labReservation.getNumber() +
+                        "\n预约人电话： " + labReservation.getLendingUserPhone() +
+                        "\n预约原因： " + labReservation.getLendingReason()
                 ;
+            }
             refuseItemBackup.setOperationItemName(operationItems);
             refuseItemBackup.setMemo("预约作废");
             refuseItemBackupDAO.store(refuseItemBackup);
@@ -1443,15 +1451,23 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
             refuseItemBackup.setType("CancelLabRoomReservation");
             refuseItemBackup.setLabRoomName(labReservation.getLabRoom().getLabRoomName());
             String operationItems = "";
-            operationItems += "预约用途： " + labReservation.getCDictionaryByLendingType().getCName() +
-                    "\n使用对象： " + labReservation.getCDictionaryByLendingUserType().getCName() +
-                    ("校内学生".equals(labReservation.getCDictionaryByLendingUserType().getCName()) ?
-                            "\n班级： " + labReservation.getSchoolClasses().getClassName() : "") +
-                    "\n预约部门： " + labReservation.getLendingUnit() +
-                    "\n使用人数： " + labReservation.getNumber() +
-                    "\n预约人电话： " + labReservation.getLendingUserPhone() +
-                    "\n预约原因： " + labReservation.getLendingReason()
-            ;
+            if (pConfig.PROJECT_NAME.equals("shjulims")) {
+                operationItems += "预约用途： " + labReservation.getCDictionaryByLendingType().getCName() +
+                        "\n预约部门： " + labReservation.getLendingUnit() +
+                        "\n使用人数： " + labReservation.getNumber() +
+                        "\n预约人电话： " + labReservation.getLendingUserPhone() +
+                        "\n预约原因： " + labReservation.getLendingReason() ;
+            } else {
+                operationItems += "预约用途： " + labReservation.getCDictionaryByLendingType().getCName() +
+                        "\n使用对象： " + labReservation.getCDictionaryByLendingUserType().getCName() +
+                        ("校内学生".equals(labReservation.getCDictionaryByLendingUserType().getCName()) ?
+                                "\n班级： " + labReservation.getSchoolClasses().getClassName() : "") +
+                        "\n预约部门： " + labReservation.getLendingUnit() +
+                        "\n使用人数： " + labReservation.getNumber() +
+                        "\n预约人电话： " + labReservation.getLendingUserPhone() +
+                        "\n预约原因： " + labReservation.getLendingReason()
+                ;
+            }
             refuseItemBackup.setOperationItemName(operationItems);
             refuseItemBackup.setMemo("预约取消");
             refuseItemBackupDAO.store(refuseItemBackup);

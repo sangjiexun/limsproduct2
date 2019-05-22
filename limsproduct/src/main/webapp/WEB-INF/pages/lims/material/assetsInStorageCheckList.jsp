@@ -34,7 +34,7 @@
 <button id="renderPdf">导出到PDF</button>
 <input type="hidden" id="appId" value="${id}">
 <div class="title">
-    <span>盐城工学院材料入库单</span>
+    <span>材料入库单</span>
 </div>
 <div class="top">
     <div class="intro">
@@ -43,7 +43,7 @@
     </div>
     <div class="intro">
         <label>采购日期:</label>
-        <span>2019年4月28日</span>
+        <span id="applyDate"></span>
     </div>
     <div class="intro">
         <label>入库日期:</label>
@@ -68,15 +68,15 @@
 <div class="bottom">
     <div class="intro">
         <label>科长（审核）:</label>
-        <span></span>
+        <span ></span>
     </div>
     <div class="intro">
         <label>验收:</label>
-        <span></span>
+        <span id="auditUser"></span>
     </div>
     <div class="intro">
         <label>采购人:</label>
-        <span>2019年4月28日</span>
+        <span id="appUser"></span>
     </div>
 </div>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/lims/material/assetsInStorageCheckList.js"></script>

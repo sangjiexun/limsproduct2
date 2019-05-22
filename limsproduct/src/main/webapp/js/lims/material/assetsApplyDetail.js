@@ -33,10 +33,17 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 "department": data.department,
                 "goodsCategory": data.goodsCategory,
                 "price": data.price,
+                "rejectReason": data.rejectReason,
             });
             academyNumber=data.academyNumber;
             department=data.department;
             goodsCategory=data.goodsCategory;
+            if(data.status==='0'){
+                $("#audit").hide();
+            }
+            if(data.status!=='3'){
+                $("#reject").hide();
+            }
         },
         error:function () {
             if(assetsApplyId!=""){
@@ -180,7 +187,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active = {
         admitAssetsApply: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=yes',
+                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=pass',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -200,21 +207,17 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     //审核拒绝
     var active2 = {
         rejectAssetsApply: function() {
-            $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsApplyStatus?id='+assetsApplyId+'&&result=no',
-                async: false,
-                type: "POST",
-                contentType: "application/json;charset=UTF-8",
-                success:function (res) {
-                    console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
-                },
-                error:function(){
-                    alert("后台出了点问题，请重试！");
-                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                }
+            var realURL=contextPath + '/lims/api/material/rejectAssetsRelatedProcess?id='+assetsApplyId+'&&type=Apply';
+            var index = layer.open({
+                type: 2 //此处以iframe举例
+                ,
+                title: '请填写拒绝原因',
+                area: ['450px', '300px'],
+                shade: 0,
+                maxmin: true,
+                content: realURL,
+                zIndex: layer.zIndex //重点1
+                ,
             });
         }
     };

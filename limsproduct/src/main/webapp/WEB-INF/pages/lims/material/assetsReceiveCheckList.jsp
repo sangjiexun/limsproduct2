@@ -27,6 +27,9 @@
         .layui-input-block input{
             margin-top: 7px;
         }
+        .intro {
+            width:20%;
+        }
     </style>
 </head>
 
@@ -34,7 +37,7 @@
 <button id="renderPdf">导出到PDF</button>
 <input type="hidden" id="appId" value="${id}">
 <div class="title">
-    <span>盐城工学院材料领(发)料单</span>
+    <span>材料领(发)料单</span>
 </div>
 <div class="top">
     <div class="intro">
@@ -42,7 +45,7 @@
         <span id="department"></span>
     </div>
 
-    <div class="intro">
+    <div class="intro" style="float: right">
         <label>审核日期:</label>
         <span id="auditDate"></span>
     </div>
@@ -73,7 +76,7 @@
     </div>
     <div class="intro">
         <label>发料人:</label>
-        <span></span>
+        <span id="auditUser"></span>
     </div>
     <div class="intro">
         <label>领料人:</label>

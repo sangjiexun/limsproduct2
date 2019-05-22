@@ -39,7 +39,7 @@
                 <div class="layui-col-lg12">
                     <label class="layui-form-label">子项目名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspname" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspname" autocomplete="off" value="${sonProject.projectName}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
             </div>
@@ -47,13 +47,13 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">所属父项目</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspparentname" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspparentname" autocomplete="off" value="${sonProject.parentProjectName}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">所属学院</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspinstitute" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspinstitute" autocomplete="off" value="${sonProject.academyName}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
             </div>
@@ -61,13 +61,13 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">创建人</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspfounder" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspfounder" autocomplete="off" value="${sonProject.createUser}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">创建人所属部门</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspfounderdepartment" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspfounderdepartment" autocomplete="off" value="${sonProject.unitName}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
             </div>
@@ -75,13 +75,13 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">创建时间</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspfounderdate" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspfounderdate" autocomplete="off" value="${sonProject.createTime}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">经费预算</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspbudget" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspbudget" autocomplete="off" value="${sonProject.budget}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
             </div>
@@ -89,13 +89,13 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">预算结算时间</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspbudgetsettlement" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspbudgetsettlement" autocomplete="off" value="${sonProject.budgetBalanceTime}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">项目实施时间</label>
                     <div class="layui-input-block">
-                        <input type="text" name="dspdate" autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <input type="text" name="dspdate" autocomplete="off" value="${sonProject.projectImplementTime}" class="layui-input" disabled="disabled" readonly="readonly" />
                     </div>
                 </div>
             </div>

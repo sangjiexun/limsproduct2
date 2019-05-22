@@ -42,6 +42,8 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 "beginTime": data.beginTime,
                 "endTime": data.endTime,
                 "isNeedReturn": data.isNeedReturn,
+                "purpose": data.purpose,
+                "rejectReason": data.rejectReason,
             });
             academyNumber=data.academyNumber;
             department=data.department;
@@ -55,6 +57,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             }
             if(!(data.status==='4'&&isNeedReturn===1)){
                 $("#confirmReturn").hide();
+            }
+            if(data.status!=='3'){
+                $("#reject").hide();
             }
         },
         error:function () {
@@ -106,27 +111,15 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             layui.form.render("select");
         }
     });
-    //上传
-    var paclistView = $('#paclist');
-    // 获取图片
+    //获取审核标志位
     $.ajax({
-        url: contextPath + '/lims/api/material/getAssetsRelatedImage?id='+id+'&&type='+"assetReceive",
-        async: false,
-        type: "GET",
-        contentType: "application/json;charset=UTF-8",
-        success:function (data) {
-            $.each(data, function (index, item) {
-                var image="";
-                image +='<img class="img" ';
-                image +=' src="'+item.imageUrl+'" ';
-                image +=' width="50" ';
-                image +=' height="50" ';
-                image +=' onclick="previewImg(this)">';
-                var tr = $(['<tr id="upload-' + index + '">', '<td class="wordbreak">' + item.imageName + '</td>', '<td>' + item.imageSize + '</td>', '<td>上传成功</td>',  '<td></td>', '</tr>'].join('')),
-                    tds = tr.children();
-                tds.eq(3).html(image);
-                paclistView.append(tr);
-            });
+        url: contextPath+'/lims/api/material/getAssetsReceiveAuditFlag?id='+id,
+        dataType: 'json',
+        type: 'get',
+        success: function (data) {
+            if(data!==true){
+                $("#check").hide();
+            }
         }
     });
     var tableIns=table.render({
@@ -211,7 +204,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     var active = {
         admitAssetsReceive: function() {
             $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=yes',
+                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=pass',
                 async: false,
                 type: "POST",
                 contentType: "application/json;charset=UTF-8",
@@ -231,21 +224,17 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
     //审核拒绝
     var active2 = {
         rejectAssetsReceive: function() {
-            $.ajax({
-                url: contextPath + '/lims/api/material/changeAssetsReceiveStatus?id='+id+'&&result=no',
-                async: false,
-                type: "POST",
-                contentType: "application/json;charset=UTF-8",
-                success:function (res) {
-                    console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
-                },
-                error:function(){
-                    alert("后台出了点问题，请重试！");
-                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-                }
+            var realURL=contextPath + '/lims/api/material/rejectAssetsRelatedProcess?id='+id+'&&type=Receive';
+            var index = layer.open({
+                type: 2 //此处以iframe举例
+                ,
+                title: '请填写拒绝原因',
+                area: ['450px', '300px'],
+                shade: 0,
+                maxmin: true,
+                content: realURL,
+                zIndex: layer.zIndex //重点1
+                ,
             });
         }
     };

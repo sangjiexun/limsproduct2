@@ -92,33 +92,14 @@
                     </div>
                 </div>
             </div>
-            <%--<div class="layui-col-lg12">--%>
-                <%--<label class="layui-form-label">领(发)料单</label>--%>
-                <%--<div class="layui-input-block mix_uploadbox">--%>
-                    <%--<div class="layui-upload">--%>
-                        <%--<button type="button" class="layui-btn" id="assetsImage">--%>
-                            <%--<i class="layui-icon">&#xe67c;</i>上传领(发)料单图片--%>
-                        <%--</button>--%>
-                        <%--<div class="layui-upload-list">--%>
-                            <%--<table class="layui-table">--%>
-                                <%--<thead>--%>
-                                <%--<tr>--%>
-                                    <%--<th>文件名</th>--%>
-                                    <%--<th>大小</th>--%>
-                                    <%--<th>状态</th>--%>
-                                    <%--<th>缩略图</th>--%>
-                                    <%--<th>操作</th>--%>
-                                <%--</tr>--%>
-                                <%--</thead>--%>
-                                <%--<tbody id="paclist"></tbody>--%>
-                            <%--</table>--%>
-                            <%--<div class="upload_btn">--%>
-                                <%--<button type="button" class="layui-btn" id="pacbtn">开始上传</button>--%>
-                            <%--</div>--%>
-                        <%--</div>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
+            <div class="layui-row">
+                <div class="layui-col-lg12">
+                    <label class="layui-form-label">申领用途</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="purpose" autocomplete="off" class="layui-textarea" placeholder="请填写申领用途"/>
+                    </div>
+                </div>
+            </div>
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="saveAssetsReceiveDetail">保存</button>

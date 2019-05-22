@@ -544,6 +544,9 @@
 
                     <div class="right-content">
                         <div class="content-box">
+                            <div class="title">
+                                <div id="title">可预约<spring:message code="all.trainingRoom.labroom"/>列表</div>
+                            </div>
                             <div class="tool-box">
                                 <ul>
                                     <form:form name="form"

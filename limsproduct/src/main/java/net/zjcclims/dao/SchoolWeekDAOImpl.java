@@ -111,6 +111,28 @@ public class SchoolWeekDAOImpl extends AbstractJpaDao<SchoolWeek> implements
 	}
 
 	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+	@Transactional
+	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId) throws DataAccessException {
+
+		return findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId, -1, -1);
+	}
+
+	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId,int startResult, int maxRows) throws DataAccessException {
+		Query query = createNamedQuery("findSchoolWeekByWeekAndWeekdayAndTerm", startResult, maxRows, week,weekday,termId);
+		return (net.zjcclims.domain.SchoolWeek)query.getSingleResult();
+	}
+
+	/**
 	 * JPQL Query - findAllSchoolWeeks
 	 *
 	 */

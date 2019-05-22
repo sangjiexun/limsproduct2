@@ -170,6 +170,32 @@ public class MaterialServiceImpl implements MaterialService {
         }
         return  labCenterList;
     }
+
+    /**
+     * 物品柜列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-5-15
+     */
+    public JSONObject findAllAssetCabinetList(Integer page, Integer limit){
+        List<AssetsCabinetDTO> assetsCabinetDTOList=new ArrayList<>();
+        String sql="select id,cabinet_code,cabinet_name from asset_cabinet";
+        Query query=entityManager.createNativeQuery(sql);
+        query.setMaxResults(limit);
+        query.setFirstResult((page-1)*limit);
+        List<Object[]> assetCabinetList=query.getResultList();
+        for(Object[] o:assetCabinetList){
+           AssetsCabinetDTO assetsCabinetDTO=new AssetsCabinetDTO();
+           assetsCabinetDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+           assetsCabinetDTO.setCabinetCode(o[1]!=null?o[1].toString():null);
+           assetsCabinetDTO.setCabinetName(o[2]!=null?o[2].toString():null);
+           assetsCabinetDTOList.add(assetsCabinetDTO);
+        }
+        int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
+        JSONObject jsonObject=this.getJSON(assetsCabinetDTOList,totalRecords);
+        return jsonObject;
+    }
     /**
      * 物资名录列表
      * @param page 页当前数
@@ -242,11 +268,6 @@ public class MaterialServiceImpl implements MaterialService {
         String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
         User user=shareService.getUser();//获得用户
         String username=user.getUsername();//用户编号
-//        Set<LabCenter> labCenters=user.getSchoolAcademy().getLabCenters();
-//        List<Integer> centerIds=new ArrayList<>();
-//        for(LabCenter labCenter:labCenters){
-//            centerIds.add(labCenter.getId());
-//        }
         if(authorityName.equals("ROLE_TEACHER")){
             sql+=" and aa.app_user = '"+username+"'";//教师只看自己
         }
@@ -257,6 +278,9 @@ public class MaterialServiceImpl implements MaterialService {
                 sql+=" aa.center_id ="+centerIds.get(i)+" or";
             }
             sql+=" aa.center_id ="+centerIds.get(centerIds.size()-1)+" )";
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_OPEARTIONSECURITYMANAGEMENT")){
+            sql+=" and aa.asset_statu >0 ";//审核权限只看提交后的数据
         }
         sql+=" order by aa.app_date desc ";
         Query query=entityManager.createNativeQuery(sql);
@@ -279,6 +303,15 @@ public class MaterialServiceImpl implements MaterialService {
                 }else{
                     assetsApplyDTO.setAuditFlag(0);
                 }
+            }
+            String appUser="";
+            if(o[3]!=null){
+                appUser=o[3].toString();
+            }
+            if(appUser.contains(shareService.getUser().getUsername())){
+                assetsApplyDTO.setAppFlag(1);
+            }else{
+                assetsApplyDTO.setAppFlag(0);
             }
             assetsApplyDTOList.add(assetsApplyDTO);
         }
@@ -313,7 +346,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "LEFT JOIN lab_center la on ass.center_id=la.id\n" +
                 "LEFT JOIN `user` u on ass.username=u.username\n" +
                 "LEFT JOIN asset_classification ac on ass.classification_id=ac.id\n" +
-                "LEFT JOIN asset_cabinet aca on ass.cabinet_id=aca.id ";
+                "LEFT JOIN asset_cabinet aca on ass.cabinet_id=aca.id WHERE 1=1 ";
         if(status!=null&&!status.equals("")){
             sql+="and ass.status = "+status+"";
         }
@@ -331,6 +364,9 @@ public class MaterialServiceImpl implements MaterialService {
                 sql+=" ass.center_id ="+centerIds.get(i)+" or";
             }
             sql+=" ass.center_id ="+centerIds.get(centerIds.size()-1)+" )";
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_OPEARTIONSECURITYMANAGEMENT")){
+            sql+=" and ass.status >0 ";//审核权限只看提交后的数据
         }
         sql+=" order by ass.date desc ";
         Query query=entityManager.createNativeQuery(sql);
@@ -356,6 +392,15 @@ public class MaterialServiceImpl implements MaterialService {
                     assetsInStorageDTO.setAuditFlag(0);
                 }
             }
+            String appUser="";
+            if(o[2]!=null){
+                appUser=o[2].toString();
+            }
+            if(appUser.contains(shareService.getUser().getUsername())){
+                assetsInStorageDTO.setAppFlag(1);
+            }else{
+                assetsInStorageDTO.setAppFlag(0);
+            }
             assetsInStorageDTOList.add(assetsInStorageDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -370,7 +415,7 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-1
      */
-    public JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status){
+    public JSONObject findAllAssetReceiveList(Integer page, Integer limit,String status,HttpServletRequest request){
         List<AssetsReceiveDTO> assetsReceiveDTOList=new ArrayList<>();
         //查询语句
         String sql="SELECT\n" +
@@ -381,13 +426,32 @@ public class MaterialServiceImpl implements MaterialService {
                 "  ac.cname,\n" +
                 "\tar. STATUS,\n" +
                 "\tar.asset_usage,\n" +
-                "\tac.is_need_return\n" +
+                "\tac.is_need_return,\n" +
+                "  ar.cur_audit_level\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON u.username = ar.app_user\n" +
-                "LEFT JOIN asset_classification ac on ar.category_id=ac.id";
+                "LEFT JOIN asset_classification ac on ar.category_id=ac.id WHERE 1=1 ";
         if(status!=null&&!status.equals("")){
             sql+=" and ar.status = "+status+"";
+        }
+        //添加权限相关筛选条件
+        String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
+        User user=shareService.getUser();//获得用户
+        String username=user.getUsername();//用户编号
+        if(authorityName.equals("ROLE_TEACHER")){
+            sql+=" and ar.app_user = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
+            List<Integer> centerIds=this.getCenterIDListFormUsername(username);
+            sql+=" and ( ";
+            for(int i=0;i<centerIds.size()-1;i++){
+                sql+=" ar.center_id ="+centerIds.get(i)+" or";
+            }
+            sql+=" ar.center_id ="+centerIds.get(centerIds.size()-1)+" )";
+        }
+        if(authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_OPEARTIONSECURITYMANAGEMENT")){
+            sql+=" and ar. STATUS >0 ";//审核权限只看提交后的数据
         }
         sql+=" order by ar.receive_date desc";
         Query query=entityManager.createNativeQuery(sql);
@@ -405,6 +469,43 @@ public class MaterialServiceImpl implements MaterialService {
             assetsReceiveDTO.setStatus(o[5]!=null?o[5].toString():null);
             assetsReceiveDTO.setPurpose(o[6]!=null?o[6].toString():null);
             assetsReceiveDTO.setIsNeedReturn(o[7]!=null?Integer.parseInt(o[7].toString()):null);
+            if(o[8]!=null) {
+                assetsReceiveDTO.setCurAuditLevel(o[8].toString());
+                if(authorityName.split("_")[1].equals(o[8].toString())){
+                    assetsReceiveDTO.setAuditFlag(1);
+                }else{
+                    assetsReceiveDTO.setAuditFlag(0);
+                }
+            }
+            String appUser="";
+            if(o[3]!=null){
+                appUser=o[3].toString();
+            }
+            if(appUser.contains(shareService.getUser().getUsername())){
+                assetsReceiveDTO.setAppFlag(1);
+            }else{
+                assetsReceiveDTO.setAppFlag(0);
+            }
+            String sql1="SELECT\n" +
+                    "  acr.stock_number\n" +
+                    "FROM\n" +
+                    "\tasset_receive_record arr\n" +
+                    "LEFT JOIN asset_receive ar on arr.receive_id = ar.id\n" +
+                    "LEFT JOIN asset_cabinet_record acr on (arr.asset_id = acr.asset_id and arr.cabinet_id=acr.cabinet_id)\n" +
+                    "WHERE 1=1 AND ar.id="+o[0].toString();
+            Query query1=entityManager.createNativeQuery(sql1);
+            try {
+                List<Integer> amounts = query1.getResultList();
+                if (amounts != null && amounts.size() > 0) {
+                    for (int i = 0; i < amounts.size(); i++) {
+                        if (amounts.get(i) < 0) {
+                            assetsReceiveDTO.setRemarks("库存不足");
+                        }
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             assetsReceiveDTOList.add(assetsReceiveDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -528,14 +629,20 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tasr.info,\n" +
                 "\tasr.supplier,\n" +
                 "\tass.app_id,\n" +
-                "\tass.audit_date\n" +
+                "\tass.audit_date,\n" +
+                "\tCONCAT(audit.cname,\"(\",audit.username,\")\"),\n" +
+                "\tCONCAT(app.cname,\"(\",app.username,\")\"),\n" +
+                "\tass.apply_date\n" +
                 "FROM\n" +
                 "\tasset_storage_record asr\n" +
                 "LEFT JOIN asset a ON asr.asset_id = a.id\n" +
                 "LEFT JOIN asset_storage ass on asr.store_id=ass.id\n" +
+                "LEFT JOIN user audit on audit.username=ass.audit_user\n" +
+                "LEFT JOIN user app on app.username=ass.username\n" +
                 "WHERE 1 = 1 AND asr.store_id="+appId;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> assetItemList=query.getResultList();
+        Double totalPrice=0.00;
         for(Object[] o:assetItemList){
             MaterialListDTO materialListDTO=new MaterialListDTO();
             materialListDTO.setName(o[0]!=null?o[0].toString():null);//入库物品名称
@@ -547,11 +654,16 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setInvoiceNumber(o[6]!=null?o[6].toString():null);//发票号
             materialListDTO.setInfo(o[7]!=null?o[7].toString():null);//备注
             materialListDTOList.add(materialListDTO);
+            totalPrice +=Double.parseDouble(o[5].toString());
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("storageItemList",materialListDTOList);//保存入库单条目
         jsonObject.put("supplier",assetItemList.get(0)[8]);//供应商
         jsonObject.put("auditDate",assetItemList.get(0)[10].toString().substring(0,19));//入库日期
+        jsonObject.put("auditUser",assetItemList.get(0)[11]);
+        jsonObject.put("appUser",assetItemList.get(0)[12]);
+        jsonObject.put("applyDate",assetItemList.get(0)[13]);
+        jsonObject.put("totalPrice",totalPrice);
         return jsonObject;
     }
     /**
@@ -577,7 +689,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset a ON arr.asset_id = a.id\n" +
                 "LEFT JOIN asset_cabinet ac on arr.cabinet_id=ac.id\n" +
-                "LEFT JOIN asset_cabinet_record acr on acr.asset_id=arr.asset_id\n" +
+                "LEFT JOIN asset_cabinet_record acr on (acr.asset_id=arr.asset_id and arr.cabinet_id=acr.cabinet_id)\n" +
                 "WHERE 1 = 1 AND arr.receive_id = "+id;
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
         Query query=entityManager.createNativeQuery(sql);
@@ -607,6 +719,50 @@ public class MaterialServiceImpl implements MaterialService {
         JSONObject jsonObject=this.getJSON(materialListDTOList,totalRecords);
         return jsonObject;
     }
+
+    /**
+     * 物资出入库记录列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * @author 吴奇臻 2019-5-15
+     */
+    public JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id){
+        List<AssetsCabinetAccessRecordDTO> assetsCabinetAccessRecordDTOList=new ArrayList<>();
+        String sql="SELECT\n" +
+                "\tacar.app_id,\n" +
+                "\tacar.type,\n" +
+                "\tacar.create_date,\n" +
+                "\tCONCAT(u.cname,\"(\",u.username,\")\") as username,\n" +
+                "  ac.cabinet_name,\n" +
+                "\tacar.quantity,\n" +
+                "  acar.remain_quantity\n" +
+                "FROM\n" +
+                "\tasset_cabinet_access_record acar\n" +
+                "INNER JOIN asset_cabinet_record acr ON (acar.cabinet_id = acr.cabinet_id and acar.asset_id = acr.asset_id)\n" +
+                "LEFT JOIN asset_cabinet ac on acar.cabinet_id=ac.id\n" +
+                "LEFT JOIN user u on acar.username=u.username\n" +
+                "where acar.asset_id="+id;
+        sql +=" order by acar.create_date desc";
+        int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
+        Query query=entityManager.createNativeQuery(sql);
+        //分页
+        query.setMaxResults(limit);
+        query.setFirstResult((page-1)*limit);
+        List<Object[]> assetAccessRecordList=query.getResultList();
+        for(Object[] o:assetAccessRecordList){
+            AssetsCabinetAccessRecordDTO assetsCabinetAccessRecordDTO=new AssetsCabinetAccessRecordDTO();
+            assetsCabinetAccessRecordDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+            assetsCabinetAccessRecordDTO.setRecordType(o[1]!=null?(o[1].toString()):null);
+            assetsCabinetAccessRecordDTO.setDate(o[2]!=null?(o[2].toString()):null);
+            assetsCabinetAccessRecordDTO.setUsername(o[3]!=null?(o[3].toString()):null);
+            assetsCabinetAccessRecordDTO.setCabinetName(o[4]!=null?(o[4].toString()):null);
+            assetsCabinetAccessRecordDTO.setQuantity(o[5]!=null?(o[5].toString()):null);
+            assetsCabinetAccessRecordDTO.setAmount(o[6]!=null?(o[6].toString()):null);
+            assetsCabinetAccessRecordDTOList.add(assetsCabinetAccessRecordDTO);
+        }
+        JSONObject jsonObject=this.getJSON(assetsCabinetAccessRecordDTOList,totalRecords);
+        return jsonObject;
+    }
     /**
      * 物资申领条目列表
      * * @return 状态字符串
@@ -624,14 +780,17 @@ public class MaterialServiceImpl implements MaterialService {
                 "a.price,\n" +
                 "arr.quantity*a.price as total_price,\n" +
                 "arr.info,\n" +
-                "ar.audit_date\n" +
+                "ar.audit_date,\n" +
+                "CONCAT(u.cname,\"(\",u.username,\")\")\n" +
                 "FROM\n" +
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
                 "LEFT JOIN asset a on arr.asset_id = a.id\n" +
+                "LEFT JOIN user u on ar.audit_user=u.username\n" +
                 "where 1=1 AND ar.id="+appId;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> assetList=query.getResultList();
+        Double totalPrice=0.00;
         for(Object[] o:assetList){
             MaterialListDTO materialListDTO=new MaterialListDTO();
             materialListDTO.setName(o[0]!=null?o[0].toString():null);
@@ -649,7 +808,7 @@ public class MaterialServiceImpl implements MaterialService {
             }else{
                 materialListDTO.setInfo("");
             }
-
+            totalPrice +=Double.parseDouble(o[6].toString());
             materialListDTOList.add(materialListDTO);
         }
         JSONObject jsonObject = new JSONObject();
@@ -661,6 +820,8 @@ public class MaterialServiceImpl implements MaterialService {
         jsonObject.put("department",department);//学院
         jsonObject.put("applicant",applicant);//申请人
         jsonObject.put("auditDate",assetList.get(0)[8].toString().substring(0,19));//入库日期
+        jsonObject.put("totalPrice",totalPrice);//总价
+        jsonObject.put("auditUser",assetList.get(0)[9].toString());//审核人
         return jsonObject;
     }
     /**
@@ -751,7 +912,7 @@ public class MaterialServiceImpl implements MaterialService {
         }
         //修改数量后进行价格计算
         if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")){
-            assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(Integer.parseInt(assetsApplyItemDTO.getId()));
+            assetAppRecord=assetAppRecordDAO.findAssetAppRecordById(assetsApplyItemDTO.getId());
             new_price=old_price-assetAppRecord.getTotalPrice()+price;
         }else {
             new_price = price + old_price;
@@ -797,7 +958,7 @@ public class MaterialServiceImpl implements MaterialService {
         AssetReceiveRecord assetReceiveRecord=new AssetReceiveRecord();
         try{
             if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")) {
-                assetReceiveRecord.setId(Integer.parseInt(assetsApplyItemDTO.getId()));
+                assetReceiveRecord.setId(assetsApplyItemDTO.getId());
             }
             assetReceiveRecord.setAssetReceive(assetReceiveDAO.findAssetReceiveById(Integer.parseInt(assetsApplyItemDTO.getAppId())));
             assetReceiveRecord.setAsset(assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId())));
@@ -830,16 +991,25 @@ public class MaterialServiceImpl implements MaterialService {
         AssetAppRecord assetAppRecord=new AssetAppRecord();
         try{
             if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")) {
-                assetAppRecord.setId(Integer.parseInt(assetsApplyItemDTO.getId()));
+                assetAppRecord.setId(assetsApplyItemDTO.getId());
             }
             assetAppRecord.setAssetApp(assetAppDAO.findAssetAppById(Integer.parseInt(assetsApplyItemDTO.getAppId())));
-            assetAppRecord.setAsset(assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId())));
+            //对原有的asset信息进行维护
+            Asset asset=assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId()));
+            if(asset.getPrice()==null){
+                asset.setPrice(assetsApplyItemDTO.getPrice().toString());
+            }
+            if(asset.getFactory()==null){
+                asset.setFactory(assetsApplyItemDTO.getFactory());
+            }
+            assetAppRecord.setAsset(asset);
             assetAppRecord.setAppQuantity(assetsApplyItemDTO.getQuantity());
             assetAppRecord.setAppPrice(assetsApplyItemDTO.getPrice());
             Double totalPrice = assetsApplyItemDTO.getPrice().doubleValue() * assetsApplyItemDTO.getQuantity();
             assetAppRecord.setTotalPrice(totalPrice);
             assetAppRecord.setAppSupplier(assetsApplyItemDTO.getFactory());
             assetAppRecordDAO.store(assetAppRecord);
+
         }catch (Exception e){
             e.printStackTrace();
             flag=false;
@@ -855,7 +1025,7 @@ public class MaterialServiceImpl implements MaterialService {
     public boolean saveAssetsInStorageRecordDetail(AssetsApplyItemDTO assetsApplyItemDTO){
         AssetStorageRecord assetStorageRecord=new AssetStorageRecord();
         if(assetsApplyItemDTO.getId()!=null&&!assetsApplyItemDTO.getId().equals("")){
-            assetStorageRecord=this.findAssetStorageRecordById(Integer.parseInt(assetsApplyItemDTO.getId()));//获取原assetStorageRecord
+            assetStorageRecord=this.findAssetStorageRecordById(assetsApplyItemDTO.getId());//获取原assetStorageRecord
             AssetStorage assetStorage=this.findAssetStorageById(Integer.parseInt(assetsApplyItemDTO.getAppId()));
             //价格计算
             BigDecimal bd=new BigDecimal(assetsApplyItemDTO.getPrice().toString());
@@ -911,8 +1081,19 @@ public class MaterialServiceImpl implements MaterialService {
      */
     public Integer saveAssetsInStorageDetail(AssetsInStorageDTO assetsInStorageDTO){
         AssetStorage assetStorage=new AssetStorage();
-
         if(assetsInStorageDTO.getApplyId()!=null) {
+            String sql2 = "SELECT\n" +
+                    "\tasset_id,\n" +
+                    "\tcabinet_id\n" +
+                    "FROM\n" +
+                    "\tasset_app_record aar\n" +
+                    "where 1=1 and aar.app_id= "+assetsInStorageDTO.getApplyId()+"";
+            Query query=entityManager.createNativeQuery(sql2);
+            List<Object[]> objects=query.getResultList();
+            for(Object[] o:objects){
+                if(o[1]==null){
+                    return 0;
+                }            }
             assetStorage.setAppId(assetsInStorageDTO.getApplyId());//保存对应申购记录编号
             AssetApp assetApp=assetAppDAO.findAssetAppById(assetsInStorageDTO.getApplyId());
             assetApp.setAssetStatu(4);//已发起入库
@@ -937,9 +1118,16 @@ public class MaterialServiceImpl implements MaterialService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
         assetStorage.setDate(calendar.getTime());//保存日期
+        try {
+            Date applyDate = sdf.parse(assetsInStorageDTO.getApplyDate());
+            assetStorage.setApplyDate(applyDate);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         //生成入库编号
         String dateStr = sdf.format(calendar.getTime()).replace("-","");//按日期生成编号
-        assetStorage.setBatchNumber(dateStr);
+        String appNo=this.getAssetsRelatedAppNo("InStorage");//获取数量编号
+        assetStorage.setBatchNumber("RK"+dateStr+appNo);
         assetStorage=assetStorageDAO.store(assetStorage);
         //对于申领入库，同步物资到入库记录
         if(assetsInStorageDTO.getApplyId()!=null) {
@@ -949,7 +1137,9 @@ public class MaterialServiceImpl implements MaterialService {
                     "\tapp_price,\n" +
                     "\tapp_supplier,\n" +
                     "\ttotal_price,\n" +
-                    "\tcabinet_id\n" +
+                    "\tcabinet_id,\n" +
+                    "\tinvoice_number,\n" +
+                    "\tinfo\n" +
                     "FROM\n" +
                     "\tasset_app_record aar\n" +
                     "where 1=1 and aar.app_id= "+assetsInStorageDTO.getApplyId()+"";
@@ -962,8 +1152,10 @@ public class MaterialServiceImpl implements MaterialService {
                 assetStorageRecord.setQuantity(o[1].toString());
                 assetStorageRecord.setPrice(Double.parseDouble(o[2].toString()));
                 assetStorageRecord.setSupplier(o[3].toString());
-                assetStorageRecord.setTotalPrice(Double.parseDouble(o[4].toString()));
+                assetStorageRecord.setTotalPrice(o[4]!=null?Double.parseDouble(o[4].toString()):null);
                 assetStorageRecord.setCabinetId(Integer.parseInt(o[5].toString()));
+                assetStorageRecord.setInvoiceNumber(o[6]!=null?o[6].toString():null);
+                assetStorageRecord.setInfo(o[7]!=null?o[7].toString():null);
                 assetStorageRecordDAO.store(assetStorageRecord);
             }
         }
@@ -995,9 +1187,9 @@ public class MaterialServiceImpl implements MaterialService {
                 assetApp.setCenterId(Integer.parseInt(assetsApplyDTO.getDepartment()));//保存中心
             }
             assetApp.setCategoryId(Integer.parseInt(assetsApplyDTO.getGoodsCategory()));//保存物资类别
-            String dateStr = sdf.format(calendar.getTime()).replace("-","");
-            String appNo=dateStr+Integer.parseInt(assetsApplyDTO.getGoodsCategory());//按日期加物资类别生成编号
-            assetApp.setAppNo(appNo);//保存编号
+            String dateStr = sdf.format(calendar.getTime()).replace("-","");//获取日期编号
+            String appNo=this.getAssetsRelatedAppNo("Apply");//获取数量编号
+            assetApp.setAppNo("SG"+dateStr+appNo);//保存编号
             assetApp.setAssetStatu(0);//保存初始状态
             assetApp.setCourseNo(assetsApplyDTO.getCourseNo());
             assetApp=assetAppDAO.store(assetApp);
@@ -1035,9 +1227,10 @@ public class MaterialServiceImpl implements MaterialService {
             if(assetsReceiveDTO.getDepartment()!=null&&!assetsReceiveDTO.getDepartment().equals("")) {
                 assetReceive.setCenterId(Integer.parseInt(assetsReceiveDTO.getDepartment()));//保存中心
             }
-            String dateStr = sdf.format(calendar.getTime()).replace("-","");
-            String appNo=dateStr+Integer.parseInt(assetsReceiveDTO.getGoodsCategory());//按日期加物资类别生成编号
-            assetReceive.setReceiveNo(appNo);//保存编号
+            String dateStr = sdf.format(calendar.getTime()).replace("-","");//获取日期编号
+            String appNo=this.getAssetsRelatedAppNo("Receive");//获取数量编号
+            assetReceive.setReceiveNo("SL"+dateStr+appNo);//保存编号
+            assetReceive.setAssetUsage(assetsReceiveDTO.getPurpose());//申领用途
             assetReceive.setStatus(0);//保存初始状态
             assetReceive=assetReceiveDAO.store(assetReceive);
         }catch (Exception e){
@@ -1115,6 +1308,22 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     /**
+     * 根据id获取物品柜数据
+     *
+     * @author 吴奇臻 2019-5-15
+     */
+    public AssetsCabinetDTO findAssetsCabinetById(Integer id){
+        AssetsCabinetDTO assetsCabinetDTO=new AssetsCabinetDTO();
+        String sql="select id,cabinet_code,cabinet_name from asset_cabinet ac where ac.id="+id;
+        Query query=entityManager.createNativeQuery(sql);
+        List<Object[]> objects=query.getResultList();
+        Object[] o=objects.get(0);
+        assetsCabinetDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+        assetsCabinetDTO.setCabinetCode(o[1]!=null?o[1].toString():null);
+        assetsCabinetDTO.setCabinetName(o[2]!=null?o[2].toString():null);
+        return assetsCabinetDTO;
+    }
+    /**
      * 根据id获物资申购数据
      * @param id 名录id
      * * @return 状态字符串
@@ -1130,7 +1339,9 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tsa.academy_number,\n" +
                 "\tlc.id,\n" +
                 "\taa.category_id,\n" +
-                "\taa.price\n" +
+                "\taa.price,\n" +
+                "\taa.asset_statu,\n" +
+                "\taa.reject_reason\n" +
                 "FROM\n" +
                 "\tasset_app aa\n" +
                 "LEFT JOIN `user` u ON aa.app_user = u.username\n" +
@@ -1149,6 +1360,8 @@ public class MaterialServiceImpl implements MaterialService {
             assetsApplyDTO.setDepartment(o[5]!=null?o[5].toString():null);//中心
             assetsApplyDTO.setGoodsCategory(o[6]!=null?o[6].toString():null);//物资类别
             assetsApplyDTO.setPrice(o[7]!=null?Double.parseDouble(o[7].toString()):null);//当前总价
+            assetsApplyDTO.setStatus(o[8]!=null?o[8].toString():null);//状态位
+            assetsApplyDTO.setRejectReason(o[9]!=null?o[9].toString():null);//拒绝原因
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1302,7 +1515,9 @@ public class MaterialServiceImpl implements MaterialService {
                 "  ass.center_id,\n" +
                 "  ass.classification_id,\n" +
                 "  ass.total_price,\n" +
-                "  ass.status\n" +
+                "  ass.status,\n" +
+                "  ass.apply_date,\n" +
+                "  ass.reject_reason\n" +
                 "FROM\n" +
                 "\tasset_storage ass\n" +
                 "LEFT JOIN `user` u on ass.username=u.username\n" +
@@ -1321,6 +1536,8 @@ public class MaterialServiceImpl implements MaterialService {
             assetsInStorageDTO.setGoodsCategory(o[7]!=null?o[7].toString():null);//物资类别
             assetsInStorageDTO.setTotalPrice(o[8]!=null?o[8].toString():null);//当前总价
             assetsInStorageDTO.setStatus(o[9]!=null?o[9].toString():null);//状态
+            assetsInStorageDTO.setApplyDate(o[10]!=null?o[10].toString():null);//采购日期
+            assetsInStorageDTO.setRejectReason(o[11]!=null?o[11].toString():null);//拒绝原因
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1352,7 +1569,9 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tar.end_date,\n" +
                 "\tar.receive_no,\n" +
                 "\tar. STATUS,\n" +
-                "  ac.is_need_return\n" +
+                "  ac.is_need_return,\n" +
+                "  ar.asset_usage,\n" +
+                "  ar.reject_reason\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON ar.app_user = u.username\n" +
@@ -1372,6 +1591,8 @@ public class MaterialServiceImpl implements MaterialService {
             assetsReceiveDTO.setBatchNumber(o[7]!=null?o[7].toString():null);//编号
             assetsReceiveDTO.setStatus(o[8]!=null?o[8].toString():null);//状态
             assetsReceiveDTO.setIsNeedReturn(o[9]!=null?Integer.parseInt(o[9].toString()):null);//是否需要归还
+            assetsReceiveDTO.setPurpose(o[10]!=null?o[10].toString():null);//申领用途
+            assetsReceiveDTO.setRejectReason(o[11]!=null?o[11].toString():null);//拒绝原因
         }else{
             //获取当前日期
             Date dt = new Date();
@@ -1423,8 +1644,60 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetAccessRecord.setAssetId(Integer.parseInt(o[1].toString()));
             assetCabinetAccessRecord.setCreateDate(new Date());
             assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[2].toString()));
-            assetCabinetAccessRecord.setType("物资入库");
+            assetCabinetAccessRecord.setType("InStorage");
             assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
+            assetCabinetAccessRecord.setCabinetId(Integer.parseInt(o[0].toString()));
+            if(assetCabinetRecord==null) {
+                assetCabinetAccessRecord.setRemainQuantity(Integer.parseInt(o[2].toString()));
+            }else{
+                assetCabinetAccessRecord.setRemainQuantity(assetCabinetRecord.getStockNumber());
+            }
+            assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);
+        }
+    }
+
+    /**
+     * 根据申领id生成出入库记录
+     * @param id 名录id
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-5-15
+     */
+    public void saveAssetsCabinetRecordFromReceive(Integer id){
+        String sql="SELECT\n" +
+                "\tarr.asset_id,\n" +
+                "\tarr.quantity,\n" +
+                "\tarr.cabinet_id,\n" +
+                "  arr.return_quantity,\n" +
+                "  ar.status,\n" +
+                "  ac.is_need_return\n" +
+                "FROM\n" +
+                "\tasset_receive_record arr\n" +
+                "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
+                "LEFT JOIN asset_classification ac on ar.category_id=ac.id\n" +
+                "WHERE 1=1 and ar.id="+id;
+        Query query=entityManager.createNativeQuery(sql);//获取入库具体条目
+        List<Object[]> objects=query.getResultList();
+        for(Object[] o:objects){
+            AssetCabinetRecord assetCabinetRecord=this.findAssetsCabinetRecordByCabinetAndAssets(Integer.parseInt(o[2].toString()),Integer.parseInt(o[0].toString()));
+            //生成领用记录
+            AssetCabinetAccessRecord assetCabinetAccessRecord=new AssetCabinetAccessRecord();
+            assetCabinetAccessRecord.setAppId(id);
+            assetCabinetAccessRecord.setAssetId(Integer.parseInt(o[0].toString()));
+            assetCabinetAccessRecord.setCreateDate(new Date());
+            if(Integer.parseInt(o[4].toString())==4) {//
+                assetCabinetAccessRecord.setType("ReceiveReturn");
+                if(Integer.parseInt(o[5].toString())==0) {//余料归还
+                    assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[3].toString()));
+                }else{//领用归还
+                    assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+                }
+            }else{//领用
+                assetCabinetAccessRecord.setType("Receive");
+                assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+            }
+            assetCabinetAccessRecord.setRemainQuantity(assetCabinetRecord.getStockNumber());
+            assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
+            assetCabinetAccessRecord.setCabinetId(Integer.parseInt(o[2].toString()));
             assetCabinetAccessRecordDAO.store(assetCabinetAccessRecord);
         }
     }
@@ -1618,16 +1891,17 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
-    public String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId){
+    public String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId,Integer appId){
         String sql="select cabinet_id,stock_number from asset_cabinet_record acr where acr.asset_id="+assetsId;//查询物品柜记录
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> objects=query.getResultList();
         Integer amount=0;//计算物资总量
         Integer cabinetId=0;//分配物品柜
         Integer max=0;//获取最大值
+        AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(appId);
         if(objects.size()>1) {//物品柜不止一个时
             for (int i = 0; i < objects.size(); i++) {
-                amount = +Integer.parseInt(objects.get(i)[1].toString());
+                amount += Integer.parseInt(objects.get(i)[1].toString());
             }
             for (int i = 0; i < objects.size() - 1; i++) {//选取物品柜
                 if (Integer.parseInt(objects.get(i)[1].toString()) > Integer.parseInt(objects.get(i + 1)[1].toString())) {
@@ -1638,13 +1912,12 @@ public class MaterialServiceImpl implements MaterialService {
                 cabinetId = Integer.parseInt(objects.get(max)[0].toString());
             }
         }else{//只有一个物品柜时
-            amount = +Integer.parseInt(objects.get(0)[1].toString());
+            amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
         }
-        if(amount<=quantity){//总数小于申请数时，无法申请
+        if(amount<quantity&&assetReceive.getOperationItem()==null){//总数小于申请数时，无法申请
             return "insufficient";
         }else{
-            if(Integer.parseInt(objects.get(max)[1].toString())>=quantity){
                 AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(cabinetId,assetsId);
                 if(itemId!=null&&!itemId.equals("")) {
                     AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(itemId);
@@ -1654,10 +1927,7 @@ public class MaterialServiceImpl implements MaterialService {
                 }
                 assetCabinetRecordDAO.store(assetCabinetRecord);
                 return cabinetId.toString();
-            }else{
-                return "notEnough";
             }
-        }
     }
 
     /**
@@ -1728,16 +1998,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (!"无需审核".equals(applyAudit) && !"".equals(applyAudit) && applyAudit != null) {
                 String[] strings1 = applyAudit.split(",");
                 for (int i = 0; i < strings1.length; i++) {
-                    if ("TEACHER".equals(strings1[i])) {
-                        applyAuditName += "教师" + "->";
+                    if ("OPEARTIONSECURITYMANAGEMENT".equals(strings1[i])) {
+                        applyAuditName += "运行与安全管理科" + "->";
                     } else if ("EXCENTERDIRECTOR".equals(strings1[i])) {
                         applyAuditName += "实验中心主任" + "->";
-                    } else if ("EQUIPMENTADMIN".equals(strings1[i])) {
-                        applyAuditName += "设备管理员" + "->";
-                    } else if ("CHARGEADMIN".equals(strings1[i])) {
-                        applyAuditName += "费用管理员" + "->";
-                    } else if ("TEAMHEADER".equals(strings1[i])) {
-                        applyAuditName += "课题组负责人" + "->";
                     }
                 }
                 applyAuditName = applyAuditName.substring(0, applyAuditName.length() - 2);
@@ -1749,16 +2013,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (!"无需审核".equals(storageAudit) && !"".equals(storageAudit) && storageAudit != null) {
                 String[] strings2 = storageAudit.split(",");
                 for (int j = 0; j < strings2.length; j++) {
-                    if ("TEACHER".equals(strings2[j])) {
-                        storageAuditName += "教师" + "->";
+                    if ("OPEARTIONSECURITYMANAGEMENT".equals(strings2[j])) {
+                        storageAuditName += "运行与安全管理科" + "->";
                     } else if ("EXCENTERDIRECTOR".equals(strings2[j])) {
                         storageAuditName += "实验中心主任" + "->";
-                    } else if ("EQUIPMENTADMIN".equals(strings2[j])) {
-                        storageAuditName += "设备管理员" + "->";
-                    } else if ("CHARGEADMIN".equals(strings2[j])) {
-                        storageAuditName += "费用管理员" + "->";
-                    } else if ("TEAMHEADER".equals(strings2[j])) {
-                        storageAuditName += "课题组负责人" + "->";
                     }
                 }
                 storageAuditName = storageAuditName.substring(0, storageAuditName.length() - 2);
@@ -1770,16 +2028,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (!"无需审核".equals(receiveAudit) && !"".equals(receiveAudit) && receiveAudit != null) {
                 String[] strings3 = receiveAudit.split(",");
                 for (int x = 0; x < strings3.length; x++) {
-                    if ("TEACHER".equals(strings3[x])) {
-                        receiveAuditName += "教师" + "->";
+                    if ("OPEARTIONSECURITYMANAGEMENT".equals(strings3[x])) {
+                        receiveAuditName += "运行与安全管理科" + "->";
                     } else if ("EXCENTERDIRECTOR".equals(strings3[x])) {
                         receiveAuditName += "实验中心主任" + "->";
-                    } else if ("EQUIPMENTADMIN".equals(strings3[x])) {
-                        receiveAuditName += "设备管理员" + "->";
-                    } else if ("CHARGEADMIN".equals(strings3[x])) {
-                        receiveAuditName += "费用管理员" + "->";
-                    } else if ("TEAMHEADER".equals(strings3[x])) {
-                        receiveAuditName += "课题组负责人" + "->";
                     }
                 }
                 receiveAuditName = receiveAuditName.substring(0, receiveAuditName.length() - 2);
@@ -1875,6 +2127,25 @@ public class MaterialServiceImpl implements MaterialService {
             flag=false;
         }
         return flag;
+    }
+
+    /**
+     * Description 保存物品柜
+     * @author 吴奇臻 2019-5-15
+     */
+    public boolean saveAssetsCabinet(AssetsCabinetDTO assetsCabinetDTO){
+        boolean flag=true;
+        try {
+            AssetCabinet assetCabinet = new AssetCabinet();
+            assetCabinet.setId(assetsCabinetDTO.getId());
+            assetCabinet.setCabinetCode(assetsCabinetDTO.getCabinetCode());
+            assetCabinet.setCabinetName(assetsCabinetDTO.getCabinetName());
+            assetCabinetDAO.store(assetCabinet);
+        }catch (Exception e){
+            e.printStackTrace();
+            flag=false;
+        }
+        return  flag;
     }
     /**
      * 根据id获取物资类别详细数据
@@ -2015,6 +2286,7 @@ public class MaterialServiceImpl implements MaterialService {
         }
         sql += "\nGROUP BY r.asset_id";
         Query query=entityManager.createNativeQuery(sql);
+        int totalRecords=query.getResultList().size();
         //分页
         query.setMaxResults(limit);
         query.setFirstResult((page-1)*limit);
@@ -2030,7 +2302,6 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetRecordDTO.setSum(o[6]!=null?o[6].toString():null);
             assetCabinetRecordDTOList.add(assetCabinetRecordDTO);
         }
-        int totalRecords=assetCabinetRecordList.size();
         JSONObject jsonObject=this.getJSON(assetCabinetRecordDTOList,totalRecords);
         return   jsonObject;
     }
@@ -2197,5 +2468,54 @@ public class MaterialServiceImpl implements MaterialService {
         Query query=entityManager.createNativeQuery(sql);
         List<Integer> objects=query.getResultList();
         return objects;
+    }
+    /**
+     * Description 获取入库单后三位编号
+     * @author 吴奇臻 2019-5-21
+     */
+    public String getAssetsRelatedAppNo(String type){
+        String sql="";
+        if(type.equals("Apply")) {
+            sql = "select count(*) from asset_app aa where DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(aa.app_date, '%Y-%m-%d')";
+        }else if(type.equals("InStorage")){
+            sql = "select count(*) from asset_storage ass where DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(ass.date, '%Y-%m-%d')";
+        }else if(type.equals("Receive")){
+            sql = "select count(*) from asset_receive ar where DATE_FORMAT(NOW(), '%Y-%m-%d') = DATE_FORMAT(ar.receive_date, '%Y-%m-%d')";
+        }
+        Query query=entityManager.createNativeQuery(sql);
+        Integer no=Integer.parseInt(query.getSingleResult().toString());
+        String appNo="";
+        if(no<10){
+            appNo="00"+no;
+        }else if (no<100){
+            appNo="0"+no;
+        }else{
+            appNo=no.toString();
+        }
+        return appNo;
+    }
+    /**
+     * Description 审核拒绝返回申领的数量
+     * @author 吴奇臻 2019-5-22
+     */
+    public void returnAssetsReceiveItemAmount(Integer receiveId){
+        String sql="SELECT\n" +
+                "\tarr.quantity,\n" +
+                "\tarr.cabinet_id,\n" +
+                "\tarr.asset_id\n" +
+                "FROM\n" +
+                "\tasset_receive_record arr\n" +
+                "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
+                "WHERE 1=1 AND ar.id = "+receiveId;
+        Query query=entityManager.createNativeQuery(sql);
+        List<Object[]>objects=query.getResultList();
+        for(int i=0;i<objects.size();i++){
+            AssetCabinetRecord assetCabinetRecord=this.findAssetsCabinetRecordByCabinetAndAssets(Integer.parseInt(objects.get(i)[1].toString()),Integer.parseInt(objects.get(i)[2].toString()));
+            //原数据库表定义类型为decimal,先做截取处理
+            String quantity=objects.get(i)[0].toString();
+            String quantity1=quantity.substring(0,quantity.length()-3);
+            assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+Integer.parseInt(quantity1));
+            assetCabinetRecordDAO.store(assetCabinetRecord);
+        }
     }
 }

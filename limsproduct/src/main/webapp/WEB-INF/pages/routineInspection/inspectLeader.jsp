@@ -2,11 +2,12 @@
 <%@ page language="java" isELIgnored="false" contentType="text/html; charset=utf-8" pageEncoding="UTF-8" %>
 <jsp:directive.include file="/WEB-INF/sitemesh-decorators/include.jsp"/>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%--<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">--%>
 
 <html>
 <head>
     <meta name="decorator" content="iframe"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/swfupload/uploadify.css"/>
     <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/swfupload.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/jquery.uploadify.min.js"></script>
@@ -16,22 +17,26 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css"/>
     <!-- 下拉的样式结束 -->
 
-    <script>
+    <script type="text/javascript">
         //查看
         function examine(igId) {
             $.ajax({
                 type: "GET",
                 url: "${pageContext.request.contextPath}/ajaxGetRecord",
                 data: {id: igId},
+                async: false,
+                contentType: "text/json;charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    $("#riTime").val(data.riTime);
-                    $("#riCenterName").val(data.riCenterName);
-                    $("#riRoomName").val(data.riRoomName);
-                    $("#riCnam").val(data.riCnam);
-                    $("#riCheckContent").val(data.riCheckContent);
-                    $("#riSafetyManagement").val(data.riSafetyManagement);
-                    $("#url").attr("src", "${pageContext.request.contextPath}" + data.url)
+                    // var obj = JSON.parse(data);
+
+                    $("#riTime").val(decodeURI(data.riTime));
+                    $("#riCenterName").val(decodeURI(data.riCenterName));
+                    $("#riRoomName").val(decodeURI(data.riRoomName));
+                    $("#riCnam").val(decodeURI(data.riCnam));
+                    $("#riCheckContent").val(decodeURI(data.riCheckContent));
+                    $("#riSafetyManagement").val(decodeURI(data.riSafetyManagement));
+                    $("#url").attr("src", "${pageContext.request.contextPath}" + decodeURI(data.url))
                     $("#auditDiv").hide();
                     $("#examineDiv").show();
                 },

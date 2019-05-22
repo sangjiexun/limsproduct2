@@ -233,6 +233,10 @@ public class AssetApp implements Serializable {
 	@XmlElement
 	String courseNo;
 
+	@Column(name = "reject_reason")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String rejectReason;
 	public String getCourseNo() {
 		return courseNo;
 	}
@@ -449,7 +453,15 @@ public class AssetApp implements Serializable {
 	public String getMem() {
 		return this.mem;
 	}
-	
+
+	public String getRejectReason() {
+		return rejectReason;
+	}
+
+	public void setRejectReason(String rejectReason) {
+		this.rejectReason = rejectReason;
+	}
+
 	public Integer getStockStatus() {
 		return stockStatus;
 	}

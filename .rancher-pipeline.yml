@@ -1,0 +1,8 @@
+stages:
+- name: compile
+  steps:
+  - runScriptConfig:
+      image: nickilchen/maven:3.6.1
+      shellScript: cd limsproduct && mvn clean package
+timeout: 60
+notification: {}

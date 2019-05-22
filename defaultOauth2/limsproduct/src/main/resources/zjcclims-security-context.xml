@@ -66,6 +66,8 @@
 		<intercept-url pattern="/classBrand/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cmsReport/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/wxAPI/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/activeMq/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/openOperationItem/saveAssetApp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<!-- courseSite.jsp页面未登录可以访问 -->
 		<intercept-url pattern="/lims/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/jquery/locale/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />

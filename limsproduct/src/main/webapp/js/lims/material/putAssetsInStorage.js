@@ -326,9 +326,13 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
             contentType: "application/json;charset=UTF-8",
             success:function (res) {
                 console.log(res);
+                if(res!==0){
                 var index=parent.layer.getFrameIndex(window.name);
                 parent.layer.close(index);
                 window.parent.location.reload();
+                }else{
+                    alert("请补充物品柜信息")
+                }
             },
             error:function(){
                 alert("后台出了点问题，请重试！");

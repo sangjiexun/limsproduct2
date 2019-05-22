@@ -32,7 +32,7 @@ public class AssetsReceiveDTO {
     private String returnTime;
     //13、用途
     private String purpose;
-    //14、备注
+    //14、库存备注,备注
     private String remarks;
     //15、物资类型
     private String goodsCategory;
@@ -44,7 +44,14 @@ public class AssetsReceiveDTO {
     private Integer isNeedReturn;
     //18、file
     private String file;
-
+    //15.当前审核层级
+    private String curAuditLevel;
+    //15.审核标志位
+    private Integer auditFlag;
+    //15.流程发起标志位(0代表审核人 1代表发起人)
+    private Integer appFlag;
+    //15.拒绝原因
+    private String rejectReason;
     public String getId() {
         return id;
     }
@@ -203,5 +210,37 @@ public class AssetsReceiveDTO {
 
     public void setFile(String file) {
         this.file = file;
+    }
+
+    public String getCurAuditLevel() {
+        return curAuditLevel;
+    }
+
+    public void setCurAuditLevel(String curAuditLevel) {
+        this.curAuditLevel = curAuditLevel;
+    }
+
+    public Integer getAuditFlag() {
+        return auditFlag;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
+    }
+
+    public Integer getAppFlag() {
+        return appFlag;
+    }
+
+    public void setAppFlag(Integer appFlag) {
+        this.appFlag = appFlag;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

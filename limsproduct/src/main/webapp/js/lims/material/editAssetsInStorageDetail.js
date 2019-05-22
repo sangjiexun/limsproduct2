@@ -12,6 +12,10 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
         table = layui.table //表格
         ,
         element = layui.element //元素操作
+    var laydate = layui.laydate;//日期
+    laydate.render({
+        elem: '#applyDate'
+    });
     var upload=layui.upload;
     var form = layui.form;//表单
     var id=$("#id").val();
@@ -34,6 +38,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
                 "goodsCategory": data.goodsCategory,
                 "totalPrice": data.totalPrice,
                 "cabinet": data.cabinet,
+                "applyDate": data.applyDate,
             });
             academyNumber=data.academyNumber;
             department=data.department;
@@ -213,7 +218,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
         if(layEvent === 'detail') {
             layer.msg('查看该项目');
         } else if(layEvent === 'del') {
-            layer.confirm('are you sure?', function(index) {
+            layer.confirm('确定删除?', function(index) {
                 // obj.del(); //删除对应行（tr）的DOM结构
                 $.ajax({
                     url: contextPath + '/lims/api/material/deleteAssetsInStorageItem?id='+data.id,

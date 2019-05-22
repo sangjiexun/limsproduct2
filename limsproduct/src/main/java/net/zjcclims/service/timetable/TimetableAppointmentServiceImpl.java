@@ -4241,7 +4241,7 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 		}else if("1".equals(user.getUserRole())){
 			sql+=" and rs.job_no='"+user.getUsername()+"'";
 		}
-		sql+=" group by rs.course_no,rs.start_class,rs.end_class,rs.weeks,rs.weekday";
+		sql+=" group by rs.course_name,rs.start_class,rs.end_class,rs.weeks,rs.weekday";
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object[]> list =new ArrayList<Object[]>(query.getResultList());
 

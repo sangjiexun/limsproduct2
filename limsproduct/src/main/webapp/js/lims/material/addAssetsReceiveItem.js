@@ -141,9 +141,15 @@ layui.use(['form'], function() {
             contentType: "application/json;charset=UTF-8",
             success:function (res) {
                 if(res=="insufficient"){
-                    alert("库存不足")
+                    alert("库存不足");
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    window.parent.location.reload();
                 }else if(res=="notEnough"){
-                    alert("单个物品柜数量不足，请联系库存管理员获取")
+                    alert("单个物品柜数量不足，请联系库存管理员获取");
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    window.parent.location.reload();
                 }else {
                     var index = parent.layer.getFrameIndex(window.name);
                     parent.layer.close(index);

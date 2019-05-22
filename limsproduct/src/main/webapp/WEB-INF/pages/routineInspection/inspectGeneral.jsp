@@ -59,16 +59,17 @@
                 type: "GET",
                 url: "${pageContext.request.contextPath}/ajaxGetRecord",
                 data: {id: igId},
+                contentType: "text/json;charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    $("#riTime").val(data.riTime);
-                    $("#riCenterName").val(data.riCenterName);
-                    $("#riRoomName").val(data.riRoomName);
-                    $("#riCnam").val(data.riCnam);
-                    $("#riCheckContent").val(data.riCheckContent);
-                    $("#riSafetyManagement").val(data.riSafetyManagement);
+                    $("#riTime").val(decodeURI(data.riTime));
+                    $("#riCenterName").val(decodeURI(data.riCenterName));
+                    $("#riRoomName").val(decodeURI(data.riRoomName));
+                    $("#riCnam").val(decodeURI(data.riCnam));
+                    $("#riCheckContent").val(decodeURI(data.riCheckContent));
+                    $("#riSafetyManagement").val(decodeURI(data.riSafetyManagement));
 
-                    $("#url").attr("src", "${pageContext.request.contextPath}" + data.url)
+                    $("#url").attr("src", "${pageContext.request.contextPath}" + decodeURI(data.url))
                     $("#subDiv").hide();
                     $("#newDiv").hide();
                     $("#examineDiv").show();
@@ -95,13 +96,13 @@
                 dataType: "json",
                 success: function (data) {
                     $("#riIdSub").val(igId);
-                    $("#riTimeSub").val(data.riTime);
-                    $("#riCenterNameSub").val(data.riCenterName);
-                    $("#riRoomNameSub").val(data.riRoomName);
-                    $("#riCnamSub").val(data.riCnam);
-                    $("#riCheckContentSub").val(data.riCheckContent);
-                    $("#riCheckSafetyManagement").val(data.riSafetyManagement);
-                    $("#urlSub").attr("src", "${pageContext.request.contextPath}" + data.url)
+                    $("#riTimeSub").val(decodeURI(data.riTime));
+                    $("#riCenterNameSub").val(decodeURI(data.riCenterName));
+                    $("#riRoomNameSub").val(decodeURI(data.riRoomName));
+                    $("#riCnamSub").val(decodeURI(data.riCnam));
+                    $("#riCheckContentSub").val(decodeURI(data.riCheckContent));
+                    $("#riCheckSafetyManagement").val(decodeURI(data.riSafetyManagement));
+                    $("#urlSub").attr("src", "${pageContext.request.contextPath}" + decodeURI(data.url))
                     $("#newDiv").hide();
                     $("#examineDiv").hide();
                     $("#subDiv").show();

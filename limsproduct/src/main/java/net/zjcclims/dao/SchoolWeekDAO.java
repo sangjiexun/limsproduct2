@@ -40,6 +40,18 @@ public interface SchoolWeekDAO extends JpaDao<SchoolWeek> {
 	public Set<SchoolWeek> findSchoolWeekByWeekday(Integer weekday, int startResult, int maxRows) throws DataAccessException;
 
 	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId) throws DataAccessException ;
+
+	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+
+	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId, int startResult, int maxRows) throws DataAccessException;
+	/**
 	 * JPQL Query - findAllSchoolWeeks
 	 *
 	 */

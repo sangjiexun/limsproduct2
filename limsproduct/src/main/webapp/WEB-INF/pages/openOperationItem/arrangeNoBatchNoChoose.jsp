@@ -8,6 +8,7 @@
 <head>
     <meta name="decorator" content="none"/>
     <meta name="contextPath" content="${pageContext.request.contextPath}"/>
+    <link href="${pageContext.request.contextPath}/static_limsproduct/css/global_static.css" rel="stylesheet" type="text/css">
     <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css" rel="stylesheet"/>
     <link type="text/css" rel="stylesheet"
           href="${pageContext.request.contextPath}/bootstrap/css/plugins/bootstrap-table/bootstrap-table.min.css"/>
@@ -61,8 +62,13 @@
     <!-- 下拉的样式 -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
+
+
     <!-- 下拉的样式结束 -->
     <style>
+        html {
+            height: 100%;
+        }
         .chzn-container{
             width: 100%!important;
         }
@@ -97,6 +103,12 @@
         .fixed-table-container thead th .desc{
             background-image:url('${pageContext.request.contextPath}/images/sort_dsc.gif');cursor:pointer;background-position:right;background-size:30px 30px;background-repeat:no-repeat;padding-right:10px
         }
+        .btn-lg, .btn-group-lg > .btn {
+            padding: 7px 7px;
+            font-size: 13px;
+            line-height: 1.3333333;
+            border-radius: 3px;
+        }
     </style>
 
 </head>
@@ -107,6 +119,8 @@
         <div class="TabbedPanelsTabGroup-box">
             <div class="TabbedPanelsContent">
                 <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
+                <input type="hidden" id="selected_role" value="${sessionScope.selected_role}" />
+                <input type="hidden" id="PROJECT_NAME" value="${PROJECT_NAME}" />
                 <div style="width:95%;">
                     <input type="button" id="submitButton" name="submitButton" value=" 确定 " class="btn btn-primary btn-lg"
                            style="float:right">
@@ -122,13 +136,13 @@
                     <input type="hidden" id="courseCode" name="courseCode" value="code-${user.schoolAcademy.academyNumber}-${maxId}" >
                     <table border="0" align="center" style="width:100%;border-collapse:separate; border-spacing:0px 10px;">
                         <tr style="overflow: hidden">
-                            <td align=left width="12%"><h3>学院信息<font color="red"> *</font>：</h3></td>
+                            <td align=left width="12%"><div style="font-size: 17px">学院信息<font color="red"> *</font>：</div></td>
                             <td width="39%">
                                 <select id="academyNumber" name="academyNumber" required>
                                 </select>
                                 <label for="academyNumber"></label>
                             </td>
-                            <td align=left width="12%"><h3>教师信息<font color="red"> *</font>：</h3></td>
+                            <td align=left width="12%"><div style="font-size: 17px">教师信息<font color="red"> *</font>：</div></td>
                             <td width="39%">
                                 <select id="teacher" name="teacher" required>
                                 </select>
@@ -136,7 +150,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td align=left width="12%"><h3>学生名单<font color="red"> *</font>：</h3></td>
+                            <td align=left width="12%"><div style="font-size: 17px">学生名单<font color="red"> *</font>：</div></td>
                             <td colspan="3">
                                 <textarea name="students" id="students"  style="width:95%;word-break: break-all;" rows="10"></textarea>
                                 <script type="text/javascript">
