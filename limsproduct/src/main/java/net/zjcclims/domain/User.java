@@ -290,6 +290,23 @@ public class User implements Serializable {
 	}
 
 	/**
+	 * 登录账号对应的域账号
+	 *
+	 */
+	@Column(name = "domain_account")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String domainAccount;
+
+	public String getDomainAccount() {
+		return domainAccount;
+	}
+
+	public void setDomainAccount(String domainAccount) {
+		this.domainAccount = domainAccount;
+	}
+
+	/**
 	 */
 
 	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
