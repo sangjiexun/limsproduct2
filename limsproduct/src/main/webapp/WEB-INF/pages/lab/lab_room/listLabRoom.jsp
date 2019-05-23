@@ -298,9 +298,9 @@
 			<c:if test="${authLevel eq '1' || authLevel eq '3' || authLevel eq '5'}">
 				<a class="btn btn-new" onclick="newLabRoom()">新建</a>
 			</c:if>
-			<c:if test="${authLevel lt 6 && authLevel ne 0}">
+			<%--<c:if test="${authLevel lt 6 && authLevel ne 0}">
 				<button class="btn btn-new" data-toggle="modal" data-target="#myModal">批量设置管理员</button>
-			</c:if>
+			</c:if>--%>
 		</ul>
 		<div class="TabbedPanelsContentGroup">
 			<div class="TabbedPanelsContent">

@@ -41,6 +41,8 @@ public class AssetsApplyDTO implements Serializable{
     private Integer appFlag;
     // 课程编号
     private String courseNo;
+    // 拒绝原因
+    private String rejectReason;
 
     public String getId() {
         return id;
@@ -168,5 +170,13 @@ public class AssetsApplyDTO implements Serializable{
 
     public void setCourseNo(String courseNo) {
         this.courseNo = courseNo;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

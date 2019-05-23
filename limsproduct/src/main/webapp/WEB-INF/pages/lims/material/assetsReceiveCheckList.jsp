@@ -27,6 +27,9 @@
         .layui-input-block input{
             margin-top: 7px;
         }
+        .intro {
+            width:20%;
+        }
     </style>
 </head>
 
@@ -42,7 +45,7 @@
         <span id="department"></span>
     </div>
 
-    <div class="intro">
+    <div class="intro" style="float: right">
         <label>审核日期:</label>
         <span id="auditDate"></span>
     </div>

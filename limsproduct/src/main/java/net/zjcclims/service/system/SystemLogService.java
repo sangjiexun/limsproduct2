@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.gvsun.lims.vo.OpenProjectRelatedReports.LaboratoryNoticeVO;
 import net.zjcclims.domain.SystemLog;
 import net.zjcclims.vo.QueryParamsVO;
 
@@ -93,6 +94,23 @@ public interface SystemLogService {
 	 */
 	public Integer allLabRoomUseUnplanCount(QueryParamsVO paramsVO);
 
+
+    /**
+     * Description 开放项目相关报表--实验通知单
+     * @param request
+     * @return
+     * @Author Hezhaoyi
+     * 2019-5-20
+     */
+	public LaboratoryNoticeVO listLaboratoryNotice(HttpServletRequest request);
+
+    /**
+     * Description:开放项目相关报表--分组实验通知、教学记录单
+     * @param request
+     * @return
+     * @Author Hezhaoyi 2019-5-10
+     */
+	public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request);
     /**
      * Description 开放项目相关报表-实验计划表{导出excel}
      * @param request

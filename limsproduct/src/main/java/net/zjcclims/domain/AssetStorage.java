@@ -114,6 +114,16 @@ public class AssetStorage implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	String auditUser;
+
+	@Column(name = "apply_date")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Date applyDate;
+
+	@Column(name = "reject_reason")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String rejectReason;
 	public Integer getId() {
 		return id;
 	}
@@ -256,6 +266,22 @@ public class AssetStorage implements Serializable {
 
 	public void setAuditUser(String auditUser) {
 		this.auditUser = auditUser;
+	}
+
+	public Date getApplyDate() {
+		return applyDate;
+	}
+
+	public void setApplyDate(Date applyDate) {
+		this.applyDate = applyDate;
+	}
+
+	public String getRejectReason() {
+		return rejectReason;
+	}
+
+	public void setRejectReason(String rejectReason) {
+		this.rejectReason = rejectReason;
 	}
 
 	/**

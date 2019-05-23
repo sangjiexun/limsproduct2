@@ -57,15 +57,26 @@
 	  <%--<div id="title">年度使用绩效评价表</div>--%>
 	<%--</div>--%>
 	
-	<div class="tool-box" style="display: none">
+	<div class="tool-box">
 		<form name="queryForm" action="${pageContext.request.contextPath}/log/listExperimentalSchedule?currpage=1" method="post">
 			 <ul>
-  				<%--<li><spring:message code="all.trainingRoom.labroom" />:<input type="text" id="roomName" name="roomName" value="${roomName}"/></li>--%>
-  				<%--<li>--%>
-					<%--<input type="submit" value="查询"/>--%>
-					<%--<input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>--%>
-  				  	<%--&lt;%&ndash;<input type="button" value="打印" onclick="btnPrintClick();"/>&ndash;%&gt;--%>
-			      <%--</li>--%>
+				 <li>学期:
+					 <select id="term" name="term" class="chzn-select" style="width:160px;">
+						 <c:forEach items="${schoolTermList}" var="curr">
+							 <c:if test="${curr.id eq selectedTermId}">
+								 <option value="${curr.id }" selected="selected">${curr.termName}</option>
+							 </c:if>
+							 <c:if test="${curr.id ne selectedTermId}">
+								 <option value="${curr.id }">${curr.termName }</option>
+							 </c:if>
+						 </c:forEach>
+					 </select>
+				 </li>
+				 <li>
+					<input type="submit" value="查询"/>
+					<input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
+  				  	<%--<input type="button" value="打印" onclick="btnPrintClick();"/>--%>
+			      </li>
   				</ul>
 
 		<form>
@@ -80,6 +91,7 @@
 	    <th>仪器设备</th>
 	    <th>实验类型</th>
 	    <th>计划时间</th>
+	    <th>学期</th>
 	    <th>备注</th>
 	  </tr>
 	  </thead>
@@ -92,6 +104,7 @@
 	    <td>${curr.itemDecvices}</td>
 	    <td>${curr.itemCategory}</td>
 	    <td>${curr.planTime}</td>
+	    <td>${curr.termName}</td>
 	    <td></td>
 	  </tr>
 	  </c:forEach>

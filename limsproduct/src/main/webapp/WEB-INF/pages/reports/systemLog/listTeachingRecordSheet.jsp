@@ -95,7 +95,7 @@
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab selected" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
-		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
+		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=2">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
 		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>
@@ -138,7 +138,8 @@
 				<th width="5%">班级</th>
 				<th width="10%">日期</th>
 				<th width="5%">节次</th>
-				<th width="12.5%">授课教师(签字)</th>
+				<th width="5%">授课教师</th>
+				<th width="7.5%">授课教师(签字)</th>
 				<th width="15%">实验情况</th>
 				<th width="10%">备注</th>
 			</tr>
@@ -148,6 +149,7 @@
 				<td>${curr[0]}</td>
 				<%--<td></td>--%>
 				<td>${curr[1]}</td>
+                <td>${curr[2]}</td>
 				<td> </td>
 				<td>
 					<label><input name="Fruit" type="radio" value="" />好 </label>

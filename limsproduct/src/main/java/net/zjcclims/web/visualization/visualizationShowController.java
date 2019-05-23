@@ -211,8 +211,7 @@ public class visualizationShowController<JsonResult> {
 		mav.addObject("jobReservation", pConfig.jobReservation);
 		mav.addObject("noREC", pConfig.noREC);
 		mav.addObject("proj_name", pConfig.PROJECT_NAME);
-		mav.setViewName("visualization/show/floor.jsp");
-		
+
 		// 视频
 		// 默认读取第一个视频
 		// 如果为空就是没有视频+当前权限不在禁用权限内
@@ -221,7 +220,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			mav.addObject("serverIp", agent.getCommonServer().getServerIp());
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 			mav.addObject("hardwarePort", hardwarePort);
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
@@ -250,7 +249,12 @@ public class visualizationShowController<JsonResult> {
 				mav.addObject("documentUrl", "");
 			}
 		}
-		
+
+		if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+			mav.setViewName("visualization/show/floorZjcc.jsp");
+		}else {
+			mav.setViewName("visualization/show/floor.jsp");
+		}
 		return mav;
 	}
 	/****************************************************************************
@@ -303,7 +307,7 @@ public class visualizationShowController<JsonResult> {
 					String serverIp = agent.getCommonServer().getServerIp();
 					mav.addObject("serverIp", serverIp);
 					// 端口
-					String hardwarePort = "1935";//agent.getHardwarePort();
+					String hardwarePort = agent.getSnNo();
 					mav.addObject("hardwarePort", hardwarePort);
 					// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 					String lastFour = "";
@@ -902,7 +906,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			String serverIp = agent.getCommonServer().getServerIp();
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
@@ -959,7 +963,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			String serverIp = agent.getCommonServer().getServerIp();
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";
@@ -1221,7 +1225,7 @@ public class visualizationShowController<JsonResult> {
 			// 流媒体服务器地址
 			mav.addObject("serverIp", agent.getCommonServer().getServerIp());
 			// 端口
-			String hardwarePort = "1935";//agent.getHardwarePort();
+			String hardwarePort = agent.getSnNo();
 			mav.addObject("hardwarePort", hardwarePort);
 			// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 			String lastFour = "";

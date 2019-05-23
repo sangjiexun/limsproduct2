@@ -12,6 +12,7 @@ import net.zjcclims.vo.CourseSchedule;
 import net.zjcclims.web.common.PConfig;
 import net.zjcclims.web.virtual.StartVirtualImageByCourseSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,8 @@ public class VirtualServiceImpl implements VirtualService {
     private MessageDAO messageDAO;
     @Autowired
     private LabRoomAdminService labRoomAdminService;
+    @Value("${virtualCallBackUrl}")
+    public String virtualCallBackUrl;
 
     /*************************************************************************************
      * Description:得到所有虚拟实验室数量
@@ -1558,7 +1561,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @author 陈敬2019年3月13日
      ************************************************************************************/
     public String generateCallbackRUL() {
-        String callbackURL = "http://10.2.47.48:80/shufelims/virtual/reserveVirtualImageCallback";
+        String callbackURL = virtualCallBackUrl;
         //String realURL = getUrl(callbackURL);
         //realURL += "&virtualImageID=" + virtualImageID + "&courseStartTime=" + stringCourseStartTime + "&courseEndTime=" + stringCourseEndTime;
         return callbackURL;

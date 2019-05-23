@@ -196,14 +196,14 @@
                                          课程：${current[0]}<br>
                                          实验室：${current[6]}<br>
                                          教师：${current[7]}<br>
-                                         班级：${current[1]}<br>
+                                         <%--班级：${current[1]}<br>
                                          节次：<c:if test="${current[4]==current[5]}">
                                                   ${current[4]}<br>
                                                 </c:if>
                                                <c:if test="${current[4]!=current[5]}">
                                                 ${current[4]}-${current[5]}<br>
                                                </c:if>
-                                         周次：${current[3]}<br>
+                                         周次：${current[3]}<br>--%>
                                                 <c:set var="sameClass" value="${sameClass + 1}"></c:set>
                                                 <c:forEach items="${courseSchedules}" var="schedule">
                                                     <c:if test="${current[8] eq schedule[0] && current[9] >= schedule[2] && current[10] <= schedule[3]}">

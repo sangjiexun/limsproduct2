@@ -161,7 +161,7 @@
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>http://219.223.236.12</param-value>
+      <param-value>http://lab.hitsz.edu.cn</param-value>
     </init-param>
   </filter>
   <filter-mapping>
@@ -178,7 +178,7 @@
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>http://219.223.236.12</param-value>
+      <param-value>http://lab.hitsz.edu.cn</param-value>
     </init-param>
     <init-param>
       <param-name>encoding</param-name>

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.vo.OpenProjectRelatedReports.LaboratoryNoticeVO;
 import net.luxunsh.util.EmptyUtil;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -42,6 +43,9 @@ public class SystemLogServiceImpl implements SystemLogService {
 	@Autowired private UserDAO userDAO;
 	@Autowired private AssetCabinetDAO assetCabinetDAO;
 	@Autowired private LabRoomDAO labRoomDAO;
+	@Autowired private SchoolWeekDAO schoolWeekDAO;
+	@Autowired private TimetableAppointmentDAO timetableAppointmentDAO;
+	@Autowired private TimetableTeacherRelatedDAO timetableTeacherRelatedDAO;
 	public SystemLogServiceImpl() {
 	}
 
@@ -471,6 +475,219 @@ public class SystemLogServiceImpl implements SystemLogService {
 		return count;
 	}
 
+    /**
+     * Description 开放项目相关报表--实验通知单
+     * @param request
+     * @return
+     * @Author Hezhaoyi
+     * 2019-5-20
+     */
+	public LaboratoryNoticeVO listLaboratoryNotice(HttpServletRequest request){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+		int itemId = Integer.valueOf(request.getParameter("itemId"));
+		int week = Integer.valueOf(request.getParameter("week"));
+		int weekday = Integer.valueOf(request.getParameter("weekday"));
+		int section = Integer.valueOf(request.getParameter("section"));
+		int appointmentId = Integer.valueOf(request.getParameter("appointmentId"));
+		OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
+		LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
+		if(operationItem.getSystemSubject12()!=null){
+			laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+		}
+		laboratoryNoticeVO.setItemName(operationItem.getLpName());
+		laboratoryNoticeVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+		laboratoryNoticeVO.setTitle("实验通知单");
+		//实验时间
+		//当前学期
+		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+		SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId);
+		laboratoryNoticeVO.setItemTime(sdf.format(schoolWeek.getDate().getTime())+"第"+section+"节");
+		//授课教师
+        Set<TimetableTeacherRelated> timetableTeacherRelatedList = timetableTeacherRelatedDAO.findTimetableTeacherRelatedByAppointmentId(appointmentId);
+        String teacher = "";
+        for(TimetableTeacherRelated timetableTeacherRelated :timetableTeacherRelatedList){
+            teacher = teacher + " " + timetableTeacherRelated.getUser().getCname();
+        }
+        laboratoryNoticeVO.setTeacher(teacher);
+		//仪器、材料或药品信息
+		List<Object[]> deviceAndsssetInformationList = new ArrayList<>();
+		//仪器
+
+		if(operationItem.getOperationItemDevices()!=null){
+			String device = "";
+			for(OperationItemDevice operationItemDevice : operationItem.getOperationItemDevices()){
+				Object[] object = new Object[5];
+				device = operationItemDevice.getSchoolDevice().getDeviceName();
+				object[0] = device;
+				object[3] = 1;
+				deviceAndsssetInformationList.add(object);
+			}
+		}
+		//物资
+		if(operationItem.getItemAssets()!=null){
+			String Asset = "";
+			for(ItemAssets itemAssets : operationItem.getItemAssets()){
+				Object[] object = new Object[5];
+				Asset asset =itemAssets.getAsset();
+				//名称
+				object[0] = asset.getChName();
+				//规格
+				object[1] = asset.getSpecifications();
+				//单位
+				object[2] = asset.getUnit();
+				//数量
+                object[3] = itemAssets.getAmount();
+
+				StringBuffer sql = new StringBuffer("SELECT a FROM AssetReceive a WHERE a.operationItem.id="+ operationItem.getId());
+				List<AssetReceive> assetReceiveList = entityManager.createQuery(sql.toString()).getResultList();
+				if(assetReceiveList.size()!=0){
+					AssetReceive assetReceive = assetReceiveList.get(0);
+					//领出数量
+					for(AssetReceiveRecord assetReceiveRecord :assetReceive.getAssetReceiveRecords()){
+						object[3] = assetReceiveRecord.getQuantity();
+						if(assetReceiveRecord.getReturnQuantity()!=null){
+							object[4] = assetReceiveRecord.getReturnQuantity();
+						}
+					}
+				}
+				deviceAndsssetInformationList.add(object);
+			}
+		}
+		laboratoryNoticeVO.setInformationList(deviceAndsssetInformationList);
+		return laboratoryNoticeVO;
+	}
+
+    /**
+     * Description:开放项目相关报表--分组实验通知、教学记录单
+     * @param request
+     * @return
+     * @Author Hezhaoyi 2019-5-10
+     */
+    public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        int itemId = Integer.valueOf(request.getParameter("itemId"));
+        OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
+
+        LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
+        laboratoryNoticeVO.setItemName(operationItem.getLpName());
+        laboratoryNoticeVO.setTerm(operationItem.getSchoolTerm().getTermName());
+        if(operationItem.getSystemSubject12()!=null){
+            laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+        }
+        laboratoryNoticeVO.setGrade(operationItem.getCDictionaryByOpenGrade().getCName());
+        laboratoryNoticeVO.setTitle("分组实验通知、教学记录单");
+        //器材-实验物资
+        Set<ItemAssets> itemAssets = operationItem.getItemAssets();
+        String Asset = "";
+        if(itemAssets.size()!=0){
+            for(ItemAssets itemAsset : itemAssets){
+                Asset = Asset +" "+ itemAsset.getAsset().getChName();
+            }
+        }
+        //器材-实验设备
+        Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+        String device = "";
+        if(operationItemDevices.size()!=0){
+            for(OperationItemDevice operationItemDevice : operationItemDevices){
+                device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
+            }
+        }
+        laboratoryNoticeVO.setDeviceAndAsset(device+Asset);
+        //课次时间信息
+        int startWeek = 0;
+        int endWeek = 0;
+        int startClass = 0;
+        int endClass = 0;
+        int weekday = 0;
+        List<Object[]> sectionList = new ArrayList();
+        StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
+        List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
+        if(itemPlanList.size()!=0){
+            ItemPlan itemPlan = itemPlanList.get(0);
+            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+            //根据TimetableAppointment获取起止周次节次星期
+            for(TimetableAppointment timetableAppointment:timetableAppointments){
+                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+                for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+                    startWeek = timetableAppointmentSameNumber.getStartWeek();
+                    endWeek = timetableAppointmentSameNumber.getEndWeek();
+                    startClass = timetableAppointmentSameNumber.getStartClass();
+                    endClass = timetableAppointmentSameNumber.getEndClass();
+                    weekday = timetableAppointment.getWeekday();
+
+                    if(startWeek!=0){
+                        if(startWeek<endWeek){
+                            if(startClass<endClass){
+                                Object[] object = new Object[4];
+                                object[0]= startWeek;
+                                object[1] = weekday;
+                                object[2] = startClass;
+                                object[3] = timetableAppointment.getId();
+                                sectionList.add(object);
+                                startClass++;
+                            }else {
+                                Object[] object = new Object[4];
+                                object[0]= startWeek;
+                                object[1] = weekday;
+                                object[2] = endClass;
+                                object[3] = timetableAppointment.getId();
+                                sectionList.add(object);
+                            }
+                            startWeek++;
+                        }else {
+                            if(startClass<endClass){
+                                Object[] object = new Object[4];
+                                object[0]= startWeek;
+                                object[1] = weekday;
+                                object[2] = startClass;
+                                object[3] = timetableAppointment.getId();
+                                sectionList.add(object);
+                                startClass++;
+                            }else {
+                                Object[] object = new Object[4];
+                                object[0]= startWeek;
+                                object[1] = weekday;
+                                object[2] = endClass;
+                                object[3] = timetableAppointment.getId();
+                                sectionList.add(object);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        List<Object[]> InformationList = new ArrayList<>();
+        if(sectionList.size()!=0){
+            for(Object[] object :sectionList){
+                int week = (Integer) object[0];
+                int weekday1 = (Integer)object[1];
+                //实验时间
+                //当前学期
+                Object[] objectInfo = new Object[3];
+                int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+                SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday1,termId);
+                //时间
+                objectInfo[0] = sdf.format(schoolWeek.getDate().getTime());
+                //节次
+                objectInfo[1] = object[2];
+                //授课教师
+                int appointmentId = (Integer)object[3];
+                Set<TimetableTeacherRelated> timetableTeacherRelatedList = timetableTeacherRelatedDAO.findTimetableTeacherRelatedByAppointmentId(appointmentId);
+                String teacher = "";
+                for(TimetableTeacherRelated timetableTeacherRelated :timetableTeacherRelatedList){
+                    teacher = teacher + " " + timetableTeacherRelated.getUser().getCname();
+                }
+                objectInfo[2] = teacher;
+                InformationList.add(objectInfo);
+            }
+        }
+        laboratoryNoticeVO.setInformationList(InformationList);
+        return laboratoryNoticeVO;
+    }
     /**
      * Description 开放项目相关报表-实验计划表{导出excel}
      * @param request

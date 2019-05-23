@@ -101,7 +101,7 @@
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">发票号</label>
                     <div class="layui-input-block">
-                        <input type="text" name="invoiceNumber" lay-verify="required"  autocomplete="on" class="layui-input" />
+                        <input type="text" name="invoiceNumber"   autocomplete="on" class="layui-input" />
                     </div>
                 </div>
                 <div class="layui-col-lg6">

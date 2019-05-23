@@ -40,6 +40,9 @@
 		.content-box .tab_lab_1 {
 			margin: 10px 0 0;
 		}
+		.tab_lab_1{
+			width:100%;
+		}
 		.tab_lab_1 th {
 			text-align: right;
 			height: 40px;
@@ -95,7 +98,7 @@
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab selected" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
-		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
+		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=2">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="打印" onclick="btnPrintClick();"/>
           <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>

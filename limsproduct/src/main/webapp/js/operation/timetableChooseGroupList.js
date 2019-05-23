@@ -91,9 +91,9 @@ $(document).ready(function () {
                         dataType: "json",
                         data: arrs,
                         success : function(data,status) {
-                                if (status == "success") {
-                                    alert("编辑成功");
-                                }
+                            if (status == "success") {
+                                alert("编辑成功");
+                            }
                         },
                         error: function () {
                             alert("Error");

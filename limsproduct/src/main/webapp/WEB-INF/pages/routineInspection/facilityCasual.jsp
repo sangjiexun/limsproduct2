@@ -25,15 +25,15 @@
                 data: {id: igId},
                 dataType: "json",
                 success: function (data) {
-                    $("#riTime").val(data.riTime);
-                    $("#riCenterName").val(data.riCenterName);
-                    $("#riRoomName").val(data.riRoomName);
-                    $("#riCnam").val(data.riCnam);
-                    $("#riCheckContent").val(data.riCheckContent);
-                    $("#riSafetyManagement").val(data.riSafetyManagement);
-                    $("#url").attr("src", "${pageContext.request.contextPath}" + data.url);
-                    $("#doc_name").text(data.doc_name);
-                    $("#doc_name").attr("href", "${pageContext.request.contextPath}" + data.url);
+                    $("#riTime").val(decodeURI(data.riTime));
+                    $("#riCenterName").val(decodeURI(data.riCenterName));
+                    $("#riRoomName").val(decodeURI(data.riRoomName));
+                    $("#riCnam").val(decodeURI(data.riCnam));
+                    $("#riCheckContent").val(decodeURI(data.riCheckContent));
+                    $("#riSafetyManagement").val(decodeURI(data.riSafetyManagement));
+                    $("#url").attr("src", "${pageContext.request.contextPath}" + decodeURI(data.url));
+                    $("#doc_name").text(decodeURI(data.doc_name));
+                    $("#doc_name").attr("href", "${pageContext.request.contextPath}" + decodeURI(data.url));
                     $("#auditDiv").hide();
                     $("#examineDiv").show();
                 },

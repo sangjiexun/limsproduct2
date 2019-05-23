@@ -245,7 +245,7 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
-        String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId());
+        String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId(),Integer.parseInt(assetsApplyItemDTO.getAppId()));
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             assetsApplyItemDTO.setCabinet(s);
             materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
@@ -453,7 +453,7 @@ public class MaterialController {
      */
     @RequestMapping("/changeAssetsApplyStatus")
     @ResponseBody
-    public String changeAssetsApplyStatus(@RequestParam Integer id,String result){
+    public String changeAssetsApplyStatus(@RequestParam Integer id,String result,String reason){
         AssetApp assetApp=assetAppDAO.findAssetAppById(id);
         assetApp.setAssetStatu(1);//提交审核
         //调用审核服务
@@ -472,6 +472,7 @@ public class MaterialController {
             assetApp.setAssetStatu(2);//审核完成并通过
         }else if(tag.equals("fail")){
             assetApp.setAssetStatu(3);//审核被拒绝
+            assetApp.setRejectReason(reason);
         }
         assetApp.setCurAuditLevel(tag);
         assetAppDAO.store(assetApp);
@@ -485,7 +486,7 @@ public class MaterialController {
      */
     @RequestMapping("/changeAssetsInStorageStatus")
     @ResponseBody
-    public String changeAssetsInStorageStatus(@RequestParam Integer id,String result){
+    public String changeAssetsInStorageStatus(@RequestParam Integer id,String result,String reason){
         AssetStorage assetStorage=materialService.findAssetStorageById(id);
         assetStorage.setStatus(1);//提交审核
         //调用审核服务
@@ -504,6 +505,7 @@ public class MaterialController {
             assetStorage.setStatus(2);//审核完成并通过
         }else if(tag.equals("fail")){
             assetStorage.setStatus(3);//审核被拒绝
+            assetStorage.setRejectReason(reason);
         }
         assetStorage.setCurAuditLevel(tag);
         assetStorage.setAuditDate(new Date());
@@ -518,7 +520,7 @@ public class MaterialController {
      */
     @RequestMapping("/changeAssetsReceiveStatus")
     @ResponseBody
-    public String changeAssetsReceiveStatus(@RequestParam Integer id,String result){
+    public String changeAssetsReceiveStatus(@RequestParam Integer id,String result,String reason){
         AssetReceive assetReceive=assetReceiveDAO.findAssetReceiveById(id);
         assetReceive.setStatus(1);//提交审核
         //调用审核服务
@@ -540,6 +542,8 @@ public class MaterialController {
             assetReceive.setAuditDate(calendar);
         }else if(tag.equals("fail")){
             assetReceive.setStatus(3);//审核被拒绝
+            assetReceive.setRejectReason(reason);//保存拒绝原因
+            materialService.returnAssetsReceiveItemAmount(id);//返还物品柜数量
         }
         assetReceive.setCurAuditLevel(tag);
         assetReceiveDAO.store(assetReceive);
@@ -937,9 +941,9 @@ public class MaterialController {
      */
     @RequestMapping(value = "/getInStorageCheckListInfo",produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getInStorageCheckListInfo( String appId){
+    public JSONObject getInStorageCheckListInfo( String appId){
         JSONObject jsonObject=materialService.findAllAssetInStorageItem(Integer.parseInt(appId));
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
     /**
      * 获得领(发)料单所需信息
@@ -948,9 +952,9 @@ public class MaterialController {
      */
     @RequestMapping(value = "/getReceiveCheckListInfo",produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getReceiveCheckListInfo(String appId){
+    public JSONObject getReceiveCheckListInfo(String appId){
         JSONObject jsonObject=materialService.findAllAssetReceiveItem(Integer.parseInt(appId));
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
     /**
      * 判断该类物资是否需要归还
@@ -1407,6 +1411,19 @@ public class MaterialController {
         ModelAndView mav = new ModelAndView();
         mav.addObject("id",id);
         mav.setViewName("lims/material/assetsReceiveCheckList.jsp");
+        return mav;
+    }
+    /**
+     * 拒绝相关流程页面
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-4-30
+     */
+    @RequestMapping("/rejectAssetsRelatedProcess")
+    public ModelAndView rejectAssetsRelatedProcess(@RequestParam Integer id,@RequestParam String type){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.addObject("type",type);
+        mav.setViewName("lims/material/rejectAssetsRelatedProcess.jsp");
         return mav;
     }
     /**

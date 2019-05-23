@@ -1,5 +1,6 @@
 package net.zjcclims.web.routineInspection;
 
+import net.sf.json.JSONObject;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
+import java.net.URLEncoder;
 import java.util.*;
 
 @Controller("RoutineInspectionController")
@@ -392,71 +394,52 @@ public class RoutineInspectionController<JsonResult> {
      * @作者：赵昶
      * @日期：2017-09-07
      *****************************************************************/
-    @RequestMapping(value = "/ajaxGetRecord", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/ajaxGetRecord", produces = "application/text;charset=utf-8")
     public @ResponseBody
-    String ajaxGetRecord(HttpServletRequest request,@RequestParam int id) {
-        RoutineInspection ri = routineInspectionDAO
-                .findRoutineInspectionById(id);
-        StringBuffer result = new StringBuffer();
-        result.append("{");
-        // 时间：
-        result.append("\"riTime\"" + ":" + "\""
-                + ri.getSchoolTerm().getTermName() + ri.getWeek() + "\"" + ",");
+    String String(HttpServletRequest request,@RequestParam int id) throws IOException {
+        RoutineInspection ri = routineInspectionDAO.findRoutineInspectionById(id);
+        JSONObject aapJson1 = new JSONObject();
+        // 时间
+        aapJson1.put("riTime",URLEncoder.encode(ri.getSchoolTerm().getTermName() + ri.getWeek(),"utf-8"));
         if (ri.getLabRoom() != null) {
             // 学院
-            result.append("\"riCenterName\"" + ":" + "\""
-                    + ri.getLabRoom().getLabAnnex().getLabCenter().getSchoolAcademy().getAcademyName()
-                    + "\"" + ",");
+            aapJson1.put("riCenterName", URLEncoder.encode(ri.getLabRoom().getSchoolAcademy().getAcademyName(),"utf-8"));
             // 实验室
-            result.append("\"riRoomName\"" + ":" + "\""
-                    + ri.getLabRoom().getLabRoomName() + "\"" + ",");
+            aapJson1.put("riRoomName", URLEncoder.encode(ri.getLabRoom().getLabRoomName(),"utf-8"));
         }
         // 检查人
         if(request.getSession().getAttribute("selected_role").equals("ROLE_EXCENTERDIRECTOR")){
-            result.append("\"riCnam\"" + ":" + "\"" + "保密" + "\"" + ",");
+            aapJson1.put("riCnam", URLEncoder.encode("保密","utf-8"));
         }else {
-            result.append("\"riCnam\"" + ":" + "\"" + ri.getUser().getCname() + "\"" + ",");
+            aapJson1.put("riCnam", URLEncoder.encode(ri.getUser().getCname(),"utf-8"));
         }
-
         // 系统换行符
         String lineSeparator = "\r\n";
         // 日常管理情况
-        result.append("\"riCheckContent\"" + ":" + "\"" + ri.getCheckContent().replaceAll(lineSeparator, "\\\\n")
-                + "\"" + ",");
+        aapJson1.put("riCheckContent", URLEncoder.encode(ri.getCheckContent().replaceAll(lineSeparator, "\\\\n"),"utf-8"));
         // 安全管理情况
-        result.append("\"riSafetyManagement\"" + ":" + "\"" + ri.getSafetyManagement().replaceAll(lineSeparator, "\\\\n")
-                + "\"" + ",");
-
+        aapJson1.put("riSafetyManagement", URLEncoder.encode(ri.getSafetyManagement().replaceAll(lineSeparator, "\\\\n"),"utf-8"));
         if (ri.getLabCenter() != null) {
-            // 实验中心
-            result.append("\"riLabCenterName\"" + ":" + "\""
-                    + ri.getLabCenter().getCenterName() + "\"" + ",");
+            aapJson1.put("riLabCenterName", URLEncoder.encode(ri.getLabCenter().getCenterName(),"utf-8"));// 实验中心
             if (ri.getLabRoom() == null) {
-                // 学院
-                result.append("\"riCenterName\"" + ":" + "\""
-                        + ri.getLabCenter().getSchoolAcademy().getAcademyName()
-                        + "\"" + ",");
+                aapJson1.put("riCenterName", URLEncoder.encode(ri.getLabCenter().getSchoolAcademy().getAcademyName(),"utf-8"));// 学院
             }
         }
-
         // 图片url，注意图片地址链接中的“斜杠”传递时可能出错
         String sql = "select s from CommonDocument s where 1=1";
         sql += " and s.routineInspection=" + id;
         List<CommonDocument> commonDocuments = commonDocumentDAO
                 .executeQuery(sql);
         if (commonDocuments != null && commonDocuments.size() > 0) {
-            result.append("\"url\"" + ":" + "\""
-                    + commonDocuments.get(0).getDocumentUrl() + "\"" + ",");
-            result.append("\"doc_name\"" + ":" + "\"点击下载 "
-                    + commonDocuments.get(0).getDocumentName() + "\"" + ",");
+            aapJson1.put("url", URLEncoder.encode(commonDocuments.get(0).getDocumentUrl(),"utf-8"));
+            aapJson1.put("doc_name", URLEncoder.encode("点击下载"+commonDocuments.get(0).getDocumentName(),"utf-8"));
         }
 
         // 审核情况
-        result.append("\"riTypeAuditing\"" + ":" + "\"" + ri.getTypeAuditing()
-                + "\"");
-        result.append("}");
+        aapJson1.put("riTypeAuditing", URLEncoder.encode(ri.getTypeAuditing(),"utf-8"));
 
-        return result.toString();
+        String appString = aapJson1.toString();
+        return appString;
     }
 
     /*****************************************************************

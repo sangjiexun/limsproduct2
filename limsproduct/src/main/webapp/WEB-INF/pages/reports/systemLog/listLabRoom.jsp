@@ -10,7 +10,7 @@
   <script type="text/javascript">
   function cancel()
   {
-	  window.location.href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1type=${type}";
+	  window.location.href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=${type}";
   }
   //跳转
   function targetUrl(url)

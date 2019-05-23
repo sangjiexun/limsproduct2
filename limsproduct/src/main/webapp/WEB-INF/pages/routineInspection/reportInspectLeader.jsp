@@ -24,15 +24,16 @@
                 url: "${pageContext.request.contextPath}/ajaxGetRecord",
                 data: {id: igId},
                 dataType: "json",
+                contentType: "text/json;charset=UTF-8",
                 success: function (data) {
-                    $("#riTime").val(data.riTime);
-                    $("#riCenterName").val(data.riCenterName);
-                    $("#riRoomName").val(data.riRoomName);
-                    $("#riCnam").val(data.riCnam);
-                    $("#riCheckContent").val(data.riCheckContent);
-                    $("#riSafetyManagement").val(data.riSafetyManagement);
-                    $("#riLabCenterName").val(data.riLabCenterName);
-                    $("#url").attr("src", "${pageContext.request.contextPath}" + data.url)
+                    $("#riTime").val(decodeURI(data.riTime));
+                    $("#riCenterName").val(decodeURI(data.riCenterName));
+                    $("#riRoomName").val(decodeURI(data.riRoomName));
+                    $("#riCnam").val(decodeURI(data.riCnam));
+                    $("#riCheckContent").val(decodeURI(data.riCheckContent));
+                    $("#riSafetyManagement").val(decodeURI(data.riSafetyManagement));
+                    $("#riLabCenterName").val(decodeURI(data.riLabCenterName));
+                    $("#url").attr("src", "${pageContext.request.contextPath}" + decodeURI(data.url))
                     $("#auditDiv").hide();
                     $("#examineDiv").show();
                 },

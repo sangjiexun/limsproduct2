@@ -47,7 +47,7 @@
 		  <li class="TabbedPanelsTab" id="s5"><a href="${pageContext.request.contextPath}/log/listAsset?currpage=1">耗材领用记录单</a></li>
 		  <li class="TabbedPanelsTab selected" id="s6"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=6">实验通知单</a></li>
 		  <li class="TabbedPanelsTab" id="s7"><a href="${pageContext.request.contextPath}/log/listItem?currpage=1&type=7">分组实验通知、教学记录单</a></li>
-		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listStatisticalTableOfExperiments?currpage=1">实验开出情况统计表</a></li>
+		  <li class="TabbedPanelsTab" id="s8"><a href="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=2">实验开出情况统计表</a></li>
 		  <input class="btn btn-new" type="button" value="返回" onclick="goBack();"/>
 	  </ul>
   <div class="TabbedPanelsContentGroup">
@@ -88,7 +88,7 @@
 			<td>${curr[1]}</td>
 			<td>${curr[2]}</td>
 			<td>${curr[3]}</td>
-			<td><a href="${pageContext.request.contextPath}/log/listLaboratoryNotice?itemId=${curr[0].getId()}&week=${curr[1]}&weekday=${curr[2]}&section=${curr[3]}">查看实验通知单</a></td>
+			<td><a href="${pageContext.request.contextPath}/log/listLaboratoryNotice?itemId=${curr[0].getId()}&week=${curr[1]}&weekday=${curr[2]}&section=${curr[3]}&appointmentId=${curr[4]}">查看实验通知单</a></td>
 		  </tr>
 	  </c:forEach>
 	  </tbody>
