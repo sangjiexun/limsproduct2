@@ -25,6 +25,12 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <script src="${pageContext.request.contextPath}/js/lims/reservation/lab/optionRule.js"></script>
     <script src="${pageContext.request.contextPath}/layui/layui.js"></script>
+    <script src="${pageContext.request.contextPath}/static_limsproduct/jquery-ui-1.11.4.custom/external/jquery/jquery.js"></script>
+    <script src="${pageContext.request.contextPath}/static_limsproduct/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+    <link href="${pageContext.request.contextPath}/static_limsproduct/jquery-ui-1.11.4.custom/jquery-ui.structure.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/static_limsproduct/jquery-ui-1.11.4.custom/jquery-ui.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/static_limsproduct/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/static_limsproduct/jquery-ui-1.11.4.custom/jquery-ui.structure.css" rel="stylesheet">
     <style type="text/css">
         label { width: 10em; float: left; }
         label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
@@ -87,6 +93,14 @@
             -ms-user-select:none;
             user-select:none;
         }
+        #feedback { font-size: 1.4em; }
+        /*#tab_stu .check_box .ui-selecting:not(.not_check) { background: #FECA40; }*/
+        #tab_stu .ui-selecting:not(.not_check) { background: #FECA40; }
+        /*#tab_stu .check_box .ui-selected:not(.not_check) { background: #F39814; color: white; }*/
+        /*#tab_stu .check_box .ui-selected:not(.not_check) { background: #F39814; color: white; }*/
+        #tab_stu .ui-selected:not(.not_check){ background: #F39814; color: white; }
+        /*#tab_stu { list-style-type: none; margin: 0; padding: 0; width: 450px; }*/
+        /*#tab_stu td { margin: 3px; padding: 1px; float: left; width: 100px; height: 80px; font-size: 4em; text-align: center; }*/
     </style>
 </head>
 
@@ -153,7 +167,7 @@
     </table>
     <div class="layui-form-item" style="float: right;">
         <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="timetableSubmit">立即提交</button>
+            <button class="layui-btn" lay-submit lay-filter="timetableSubmit">查看判冲结果</button>
             <%--<button type="reset" class="layui-btn layui-btn-primary">重置</button>--%>
         </div>
     </div>
