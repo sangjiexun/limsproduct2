@@ -412,6 +412,7 @@ $(document).ready(function () {
             arr.classes = $("#classes").val();
             arr.labRoomIds = $("#labRoom_id").val();
             arr.tearchs = $("#teacherRelated").val();
+            arr.term = $("#term").val();
             arr.items = $("#items").val();
             arr.tutors = $("#tutorRelated").val();
             arr.virtualId = $("#virtualId").val();

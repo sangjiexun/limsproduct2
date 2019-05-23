@@ -214,7 +214,7 @@ public class LabRoomController<JsonResult> {
         if(type==ConstantInterface.LAB_FOR_ROOM) {// 实验室
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 1, labRoom,9, request, acno).size();
             mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
-            // 本学院所有可用实验室
+            // 本学院所有可用实验室-批量添加管理员
             List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
             mav.addObject("labRoomList", labRoomList);
             mav.setViewName("lab/lab_room/listLabRoom.jsp");
@@ -2542,18 +2542,18 @@ public class LabRoomController<JsonResult> {
         }
         if ("success".equals(data)) {
             //demo
-            boolean flag = true;
+            boolean flag = false;
             String[] RSWITCH = {"on", "off"};
             String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", labRoom.getId().toString());
             params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
-                params.put("businessType",grade + "StationReservation");
+                params.put("businessUid", "-1");
+                params.put("businessType",pConfig.PROJECT_NAME + grade + "StationReservation");
             }
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
-            String status = jsonObject.getString("status");
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
             if (auditConfigs != null && auditConfigs.size() != 0) {
                 for (int i = 0; i < auditConfigs.size(); i++) {

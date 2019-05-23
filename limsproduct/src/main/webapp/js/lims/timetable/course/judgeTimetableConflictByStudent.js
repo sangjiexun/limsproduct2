@@ -229,6 +229,7 @@ $(document).ready(function () {
                         var str = "";
                         str+="<table class='tab_stu' id='tab_stu' border='1' align='center'><caption>";
                         str+="学生判冲";
+                        str+="<span>(可按住ctrl键多选,亦可拖动鼠标多选)</span>";
                         str+="</caption>";
                         str+="<thead>";
                         str+="<tr>";
@@ -239,23 +240,23 @@ $(document).ready(function () {
                         }
                         str+="</tr>";
                         str+="</thead>";
-                        str+="<tbody>";
+                        str+="<tbody id='select_box'>";
                         var haved
                         for(var i=0;i<weekdayss.length;i++){
                             for(var j=0;j<sectionss.length;j++){
-                                str+="<tr>"
+                                str+="<tr class='check_box'>"
                                 if(haved!=i){
-                                    str+="<td rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
+                                    str+="<td class='not_check' rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
                                     haved = i;
                                 }
-                                str+="<td>第"+sectionss[j]+"节</td>";
+                                str+="<td class='not_check'>第"+sectionss[j]+"节</td>";
                                 for(var y=0;y<weekss.length;y++){
                                     for(var x=1;x<result.data.length;x++){
                                         // console.log(result.data[x]);
                                         if(result.data[x].week == weekss[y]){
                                             if(result.data[x].weekday == weekdayss[i]){
                                                 if(result.data[x].section == sectionss[j]){
-                                                    str+="<td><span>"+ result.data[x].conflictRate +"%</span></td>";
+                                                    str+="<td data='"+ result.data[x].tag +"'><span data='"+ result.data[x].tag +"'>"+ result.data[x].conflictRate +"%</span></td>";
                                                 }
                                             }
                                         }
@@ -266,81 +267,16 @@ $(document).ready(function () {
                         }
                         str+="</tbody>";
                         str+="</table>";
+                        str+="<div style='float: right;'>";
+                        str+="<button class='layui-btn' onclick='chooseLabRoom()'>选择实验室</button>";
+                        str+="</div>";
                         $("#table_student").append(str);
-
-                        var key = 0;
-                        var arrPos = new Array();
-                        $("#tab_stu").mousemove(function(e){
-                            var x = e.clientX, y = e.clientY;
-                            if (arrPos.length > 0) {
-                                if (y <= arrPos[0][1]+10 &&y >= arrPos[0][1]-10 &&1==key && e.target.tagName =="td")
-                                {
-                                    $(e.target).css("background","#666").addClass("selected");
-                                }
-                            }
-                        });
-                        $("#tab_stu").mousedown(function(e){
-                            var x = e.clientX, y = e.clientY;
-                            arrPos.push(Array(x,y));
-                            $("#result").html("X:"+x+";Y:"+y)
-                            key=1;
-                        });
-                        $("#tab_stu").mouseup(function(e){
-                            arrPos=new Array();
-                            key=0;
-                        });
-
-                        // $("#tab_stu tbody td").mousedown(function () {
-                        //     //每次先清除一下上次选中的单元格的背景色
-                        //     $("#tab_stu tbody td").css('background-color', '');
-                        //
-                        //     $("#tab_stu tbody td").mousemove(onMousemove);
-                        //     $("#tab_stu tbody td").mouseup(onMouseup);
-                        // });
-                        //
-                        // function onMousemove() {
-                        //     $(this).css('background-color', '#aaa');
-                        // }
-                        //
-                        // var cellVal = parseFloat(0,10);
-                        // var cellIndex = 0;
-                        // var re = /(^[\-0-9][0-9]*(.[0-9]+)?)$/; //判断字符串是否为数字
-                        // function onMouseup() {
-                        //     $("#tab_stu tbody").find("td").each(function () {
-                        //
-                        //         if($(this).attr('style')=="background-color: rgb(170, 170, 170);"){
-                        //             var nubmer = $(this).context.innerText;
-                        //             if (!re.test(nubmer)) {
-                        //                 nubmer = 0;
-                        //             }
-                        //
-                        //             cellVal += parseFloat(nubmer,10);//cellIndex
-                        //             cellIndex = $(this).context.cellIndex;//选中数据所在第几列
-                        //         }
-                        //     });
-                        //     var html = "";
-                        //     for(var i=0;i<cellIndex;i++){
-                        //         html+="<td></td>"
-                        //     }
-                        //
-                        //     html+="<td>"+cellVal.toFixed(2)+"</td>";
-                        //
-                        //     //共有多少列
-                        //     var totalTh = $("#tab_stu th").size();
-                        //
-                        //     for(var i=0;i<totalTh - (cellIndex+1);i++){
-                        //         html+="<td></td>"
-                        //     }
-                        //
-                        //     $("tfoot").html(html);
-                        //     cellVal = 0;
-                        //     cellIndex = 0;
-                        //     $("#tab_stu tbody td").unbind('mousemove', onMousemove);
-                        // }
+                        $("#tab_stu").selectable({ filter: "td" });
                     }
                 });
             // var index = parent.layer.getFrameIndex(window.name);
             // parent.layer.close(index);//关闭当前页
+
             return false;
         });
 
@@ -348,7 +284,15 @@ $(document).ready(function () {
     })
 
 });
-
+function chooseLabRoom() {
+    var timetableClass = [];
+    $( ".ui-selected" ).each(function() {
+        var index = $(this).attr( 'data');
+        // result.append( " #" + ( index + 1 ) );
+        timetableClass.push(index)
+    });
+    alert(timetableClass)
+}
 function validform() {
     return $("#form_lab").validate();
 }
