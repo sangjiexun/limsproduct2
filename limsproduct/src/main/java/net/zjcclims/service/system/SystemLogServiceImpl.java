@@ -565,7 +565,7 @@ public class SystemLogServiceImpl implements SystemLogService {
      * @Author Hezhaoyi 2019-5-10
      */
     public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         int itemId = Integer.valueOf(request.getParameter("itemId"));
         OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
@@ -604,61 +604,60 @@ public class SystemLogServiceImpl implements SystemLogService {
         List<Object[]> sectionList = new ArrayList();
         StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
         List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
-        if(itemPlanList.size()!=0){
-            ItemPlan itemPlan = itemPlanList.get(0);
-            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
-            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
-            //根据TimetableAppointment获取起止周次节次星期
-            for(TimetableAppointment timetableAppointment:timetableAppointments){
-                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
-                for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
-                    startWeek = timetableAppointmentSameNumber.getStartWeek();
-                    endWeek = timetableAppointmentSameNumber.getEndWeek();
-                    startClass = timetableAppointmentSameNumber.getStartClass();
-                    endClass = timetableAppointmentSameNumber.getEndClass();
-                    weekday = timetableAppointment.getWeekday();
+        for(ItemPlan itemPlan:itemPlanList){
+			TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+			//根据TimetableAppointment获取起止周次节次星期
+			for(TimetableAppointment timetableAppointment:timetableAppointments){
+				Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+				for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+					startWeek = timetableAppointmentSameNumber.getStartWeek();
+					endWeek = timetableAppointmentSameNumber.getEndWeek();
+					startClass = timetableAppointmentSameNumber.getStartClass();
+					endClass = timetableAppointmentSameNumber.getEndClass();
+					weekday = timetableAppointment.getWeekday();
 
-                    if(startWeek!=0){
-                        if(startWeek<endWeek){
-                            if(startClass<endClass){
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = startClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                                startClass++;
-                            }else {
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = endClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                            }
-                            startWeek++;
-                        }else {
-                            if(startClass<endClass){
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = startClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                                startClass++;
-                            }else {
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = endClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+					if(startWeek!=0){
+						if(startWeek<endWeek){
+							if(startClass<endClass){
+								Object[] object = new Object[4];
+								object[0]= startWeek;
+								object[1] = weekday;
+								object[2] = startClass;
+								object[3] = timetableAppointment.getId();
+								sectionList.add(object);
+								startClass++;
+							}else {
+								Object[] object = new Object[4];
+								object[0]= startWeek;
+								object[1] = weekday;
+								object[2] = endClass;
+								object[3] = timetableAppointment.getId();
+								sectionList.add(object);
+							}
+							startWeek++;
+						}else {
+							if(startClass<endClass){
+								Object[] object = new Object[4];
+								object[0]= startWeek;
+								object[1] = weekday;
+								object[2] = startClass;
+								object[3] = timetableAppointment.getId();
+								sectionList.add(object);
+								startClass++;
+							}else {
+								Object[] object = new Object[4];
+								object[0]= startWeek;
+								object[1] = weekday;
+								object[2] = endClass;
+								object[3] = timetableAppointment.getId();
+								sectionList.add(object);
+							}
+						}
+					}
+				}
+			}
+		}
 
         List<Object[]> InformationList = new ArrayList<>();
         if(sectionList.size()!=0){

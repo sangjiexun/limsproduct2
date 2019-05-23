@@ -63,8 +63,6 @@ public class Asset implements Serializable {
 
 	@Column(name = "ch_name")
 	@Basic(fetch = FetchType.EAGER)
-	
-	
 	@XmlElement
 	String chName;
 	/**
