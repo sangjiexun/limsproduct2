@@ -496,7 +496,7 @@ public class SystemLogController {
         String currpage = request.getParameter("currpage");
 
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 8 order by arr.id asc");
+        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 2 order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
