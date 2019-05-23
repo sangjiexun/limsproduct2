@@ -315,10 +315,31 @@ public class SystemLogController {
         query.setMaxResults(pagesize);
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
-        List<OperationItem> operationItemList = query.getResultList();
+        List<OperationItem> operationItemListNew = query.getResultList();
         List<ExperimentalScheduleVO> experimentalScheduleVOs = new ArrayList<ExperimentalScheduleVO>();
         int i = 1;
-        for(OperationItem operationItem :operationItemList){
+        List<OperationItem> operationItemList = new ArrayList<>();
+        for(OperationItem operationItem :operationItemListNew){
+            boolean flag = false;
+            StringBuffer sql1 = new StringBuffer("select distinct m from ItemPlan m where m.operationItem.id=" + operationItem.getId());
+            Query query1 = entityManager.createQuery(sql1.toString());
+            List<ItemPlan> itemPlanList = query1.getResultList();
+            for(ItemPlan itemPlan:itemPlanList){
+                TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+                StringBuffer sql2 = new StringBuffer("select distinct t from TimetableAppointment t where t.timetableSelfCourse.id=" + timetableSelfCourse.getId());
+                Query query2 = entityManager.createQuery(sql2.toString());
+                List<TimetableAppointment> timetableAppointmentList = query2.getResultList();
+                for(TimetableAppointment timetableAppointment :timetableAppointmentList){
+                    if(flag == false){
+                        if(timetableAppointment.getStatus()!=null && timetableAppointment.getStatus()==1){
+                            operationItemList.add(operationItem);
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
+        for(OperationItem operationItem:operationItemList){
             ExperimentalScheduleVO experimentalScheduleVO = new ExperimentalScheduleVO();
             experimentalScheduleVO.setId(i);
             //实验名称
@@ -350,7 +371,9 @@ public class SystemLogController {
                 experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
             }
             //学期
-            experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
+            if(operationItem.getSchoolTerm()!=null){
+                experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
+            }
             experimentalScheduleVOs.add(experimentalScheduleVO);
             i++;
         }
@@ -722,7 +745,28 @@ public class SystemLogController {
         query.setMaxResults(pagesize);
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
-        List<OperationItem> operationItemList = query.getResultList();
+        List<OperationItem> operationItemListNew = query.getResultList();
+        List<OperationItem> operationItemList = new ArrayList<>();
+        for(OperationItem operationItem :operationItemListNew){
+            StringBuffer sql1 = new StringBuffer("select distinct m from ItemPlan m where m.operationItem.id=" + operationItem.getId());
+            Query query1 = entityManager.createQuery(sql1.toString());
+            List<ItemPlan> itemPlanList = query1.getResultList();
+            boolean flag = false;
+            for(ItemPlan itemPlan:itemPlanList){
+                TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+                StringBuffer sql2 = new StringBuffer("select distinct t from TimetableAppointment t where t.timetableSelfCourse.id=" + timetableSelfCourse.getId());
+                Query query2 = entityManager.createQuery(sql2.toString());
+                List<TimetableAppointment> timetableAppointmentList = query2.getResultList();
+                for(TimetableAppointment timetableAppointment :timetableAppointmentList) {
+                    if(flag == false){
+                        if (timetableAppointment.getStatus() != null && timetableAppointment.getStatus() == 1) {
+                            operationItemList.add(operationItem);
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
         mav.addObject("operationItemList",operationItemList);
 
         //学期
