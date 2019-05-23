@@ -810,8 +810,7 @@ public class LabRoomController<JsonResult> {
         mav.addObject("admin", new LabRoomAdmin());
         // 物联硬件
         mav.addObject("agent", new LabRoomAgent());
-        List<LabRoomAgent> agentList = labRoomService
-                .findLabRoomAgentByRoomId(id);
+        List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentByRoomId(id);
         mav.addObject("agentList", agentList);
         // 判断中控是否已经添加
         for(LabRoomAgent agent : agentList) {

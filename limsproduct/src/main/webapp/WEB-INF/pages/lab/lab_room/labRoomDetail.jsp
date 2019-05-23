@@ -1516,11 +1516,11 @@ td {
 															<%--<a href="javascript:void(0)"--%>
 															   <%--onclick="opendoor(${agent.id});">开门</a>--%>
 															<c:if test="${newServer eq 'true'}"><!-- 新版物联 -->
-																																<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">开门</a>
-																															</c:if>
-																														<c:if test="${newServer ne 'true'}">
-																															<a href="javascript:void(0)" onclick="opendoor(${agent.id});">开门</a>
-																														</c:if>
+																<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">开门</a>
+															</c:if>
+															<c:if test="${newServer ne 'true'}">
+																<a href="javascript:void(0)" onclick="opendoor(${agent.id});">开门</a>
+															</c:if>
 														</c:when>
 														<c:when test="${agent.CDictionary.CNumber eq '6'}">
 															<a href="javascript:void(0)"
