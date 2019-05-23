@@ -317,6 +317,7 @@ $(document).ready(function () {
             arr.weeks = $("#weeks").val();
             arr.weekday = $("#weekday").val();
             arr.status = 10;
+            arr.term = $("#term").val();
             arr.timetableStyle = $("#timetableStyle").val();
             arr.classes = $("#classes").val();
             arr.labRoomIds = $("#labRoom_id").val();
