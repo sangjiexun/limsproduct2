@@ -484,7 +484,7 @@ public class SystemLogServiceImpl implements SystemLogService {
      * 2019-5-20
      */
 	public LaboratoryNoticeVO listLaboratoryNotice(HttpServletRequest request){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		int itemId = Integer.valueOf(request.getParameter("itemId"));
 		int week = Integer.valueOf(request.getParameter("week"));
