@@ -145,7 +145,7 @@
 			</tr>
 			<c:forEach items="${laboratoryNoticeVO.informationList}" var="curr" varStatus="status">
 			<tr class="tab_lab_1_tr">
-				<td></td>
+				<td>${curr[3]}</td>
 				<td>${curr[0]}</td>
 				<%--<td></td>--%>
 				<td>${curr[1]}</td>
