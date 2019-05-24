@@ -156,4 +156,14 @@
 		<context:property-placeholder location="classpath:config/medlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
 	</beans>
 
+	<!-- 哈工大深圳版本 -->
+	<beans profile="hitszlims">
+		<context:property-placeholder location="classpath:config/hitszlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 宁德一中版本 -->
+	<beans profile="ndyzlims">
+		<context:property-placeholder location="classpath:config/ndyzlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
 </beans>
