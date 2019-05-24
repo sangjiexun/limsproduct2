@@ -209,6 +209,10 @@ $(document).ready(function () {
                 // data.field.courseNo = $("#courseNo").val();
                 data.field.weekdays = weekdayss;
                 data1 = JSON.stringify(data.field);
+                if(data.field.sections == "" || data.field.weeks == "" || data.field.weekdays==""){
+                    alert("请选择周次/节次/星期!")
+                    return false;
+                }
                 $.ajax({
                     url: zuulUrl + "api/school/judgeTimetableConflictByStudent",
                     headers: {Authorization: getJWTAuthority()},
@@ -227,9 +231,12 @@ $(document).ready(function () {
                         var weekdayss=weekday.slice(0,weekday.length-1).split(",");
 
                         var str = "";
-                        str+="<table class='tab_stu' id='tab_stu' border='1' align='center'><caption>";
+                        str+="<table class='tab_stu' id='tab_stu' border='1' align='left'><caption>";
                         str+="学生判冲";
-                        str+="<span>(可按住ctrl键多选,亦可拖动鼠标多选)</span>";
+                        str+="<span>(可拖动鼠标多选)</span>";
+                        str+="<div style='float: right;'>";
+                        str+="<button class='layui-btn' onclick='chooseLabRoom()'>选择实验室</button>";
+                        str+="</div>";
                         str+="</caption>";
                         str+="<thead>";
                         str+="<tr>";
@@ -240,13 +247,14 @@ $(document).ready(function () {
                         }
                         str+="</tr>";
                         str+="</thead>";
-                        str+="<tbody id='select_box'>";
+                        // str+="<tbody id='select_box'>";
                         var haved
                         for(var i=0;i<weekdayss.length;i++){
+                            str+="<tbody data-album='"+ weekdayss[i] +"'>";
                             for(var j=0;j<sectionss.length;j++){
                                 str+="<tr class='check_box'>"
                                 if(haved!=i){
-                                    str+="<td class='not_check' rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
+                                    str+="<td class='not_check' data='"+ weekdayss[i] +"' rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
                                     haved = i;
                                 }
                                 str+="<td class='not_check'>第"+sectionss[j]+"节</td>";
@@ -264,14 +272,22 @@ $(document).ready(function () {
                                 }
                                 str+="</tr>"
                             }
+                            str+="</tbody>";
                         }
                         str+="</tbody>";
                         str+="</table>";
-                        str+="<div style='float: right;'>";
-                        str+="<button class='layui-btn' onclick='chooseLabRoom()'>选择实验室</button>";
-                        str+="</div>";
+
                         $("#table_student").append(str);
-                        $("#tab_stu").selectable({ filter: "td" });
+                        // $("#tab_stu").selectable({ filter: "td" });
+                        $("[data-album]").selectable({ filter: "td",
+                            start: function() {
+                                $( "#tab_stu td" ).each(function() {
+                                    if($(this).hasClass('ui-selected')){
+                                        $(this).removeClass("ui-selected");
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             // var index = parent.layer.getFrameIndex(window.name);
@@ -287,11 +303,36 @@ $(document).ready(function () {
 function chooseLabRoom() {
     var timetableClass = [];
     $( ".ui-selected" ).each(function() {
-        var index = $(this).attr( 'data');
-        // result.append( " #" + ( index + 1 ) );
-        timetableClass.push(index)
+        if(!$(this).hasClass('not_check')){
+            var index = $(this).attr( 'data');
+            timetableClass.push(index)
+        }
     });
-    alert(timetableClass)
+    // alert(timetableClass)
+    var data1 = JSON.stringify({
+        "tag": timetableClass,
+        "term": $("#term").val()
+    });
+    console.log(data1);
+    if(timetableClass.length==0){
+        alert("请至少选择一个!");
+        return false;
+    }
+    $.ajax({
+        url: zuulUrl + "/api/school/apiGetUsableList",
+        headers: {Authorization: getJWTAuthority()},
+        data: data1,
+        async: false,
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        success: function (result) {
+            for(var i =0;i<timetableClass.length;i++){
+                var timetab=timetableClass[i].split("-");
+            }
+
+            console.log(result)
+        }
+    });
 }
 function validform() {
     return $("#form_lab").validate();
