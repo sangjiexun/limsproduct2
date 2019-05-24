@@ -93,12 +93,16 @@
             -ms-user-select:none;
             user-select:none;
         }
+        .tab_stu {
+            margin-left: 50px;
+            margin-bottom: 50px;
+        }
         #feedback { font-size: 1.4em; }
         /*#tab_stu .check_box .ui-selecting:not(.not_check) { background: #FECA40; }*/
-        #tab_stu .ui-selecting:not(.not_check) { background: #FECA40; }
+        #tab_stu .ui-selecting:not(.not_check) { background: #409effcc; }
         /*#tab_stu .check_box .ui-selected:not(.not_check) { background: #F39814; color: white; }*/
         /*#tab_stu .check_box .ui-selected:not(.not_check) { background: #F39814; color: white; }*/
-        #tab_stu .ui-selected:not(.not_check){ background: #F39814; color: white; }
+        #tab_stu .ui-selected:not(.not_check){ background: #409eff; color: white; }
         /*#tab_stu { list-style-type: none; margin: 0; padding: 0; width: 450px; }*/
         /*#tab_stu td { margin: 3px; padding: 1px; float: left; width: 100px; height: 80px; font-size: 4em; text-align: center; }*/
     </style>
@@ -173,7 +177,7 @@
     </div>
     <hr/>
 </form>
-<div id="table_student">
+<div id="table_student" style="overflow: hidden">
 
 </div>
 </body>
