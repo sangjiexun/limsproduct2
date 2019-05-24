@@ -62,6 +62,7 @@
 			 <ul>
 				 <li>学期:
 					 <select id="term" name="term" class="chzn-select" style="width:160px;">
+						 <option value="">请选择</option>
 						 <c:forEach items="${schoolTermList}" var="curr">
 							 <c:if test="${curr.id eq selectedTermId}">
 								 <option value="${curr.id }" selected="selected">${curr.termName}</option>
