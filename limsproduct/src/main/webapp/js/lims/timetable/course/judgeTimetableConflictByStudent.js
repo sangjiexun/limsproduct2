@@ -326,13 +326,65 @@ function chooseLabRoom() {
         type: "POST",
         contentType: "application/json;charset=UTF-8",
         success: function (result) {
-            for(var i =0;i<timetableClass.length;i++){
-                var timetab=timetableClass[i].split("-");
+            $('#lab_stu').remove();
+            // for(var i =0;i<timetableClass.length;i++){
+            //     var timetab=timetableClass[i].split("-");
+            // }
+            var str = "";
+            str+="<table class='lab_stu' id='lab_stu' border='1' align='right'>"
+            str+="<caption>";
+            str+="选择实验室";
+            str+="<div style='float: right;'>";
+            str+="<button class='layui-btn' onclick='confirmLabRoom()'>确定实验室</button>";
+            str+="</div>";
+            str+="</caption>";
+            str+="<thead>"
+            str+="<tr>"
+            str+="<th>周次</th><th>星期</th><th>节次</th><th>项目</th><th>实验室</th><th>操作</th>"
+            str+="</tr>"
+            str+="</thead>"
+            str+="<tbody>"
+            for(var i=0;i<result.length;i++){
+                str+="<tr>"
+                str+="<td>"+ result[i].weeks +"</td>"
+                str+="<td>"+ result[i].weekdays +"</td>"
+                str+="<td>"+ result[i].sections +"</td>"
+                str+="<td>"+ result[i].resultsOperationItem.text +"</td>"
+                str+="<td><select id='' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var j=0;j<result[i].resultsLabRoom.length;j++){
+                    str+="<option value='"+ result[i].results[j].id +"'>"+ result[i].results[j].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><a onclick='deleteTime()'>删除</a></td>"
+                str+="</tr>"
             }
-
-            console.log(result)
+            str+="</tbody>"
+            str+="</table>"
+            // $(".cho_lab").trigger("chosen:updated");
+            $(".cho_lab").trigger("liszt:updated");
+            $('.cho_lab').chosen();
+            $('.cho_lab').searchableSelect();
+            $("#table_student").append(str);
+            console.log(result);
+            var config = {
+                '.chzn-select': {search_contains : true},
+                '.chzn-select-deselect'  : {allow_single_deselect:true},
+                '.chzn-select-no-single' : {disable_search_threshold:10},
+                '.chzn-select-no-results': {no_results_text:'选项, 没有发现!'},
+                '.chzn-select-width'     : {width:"95%"}
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
         }
     });
+}
+function confirmLabRoom() {
+    console.log('确定');
+}
+function deleteTime() {
+    console.log("delete");
 }
 function validform() {
     return $("#form_lab").validate();

@@ -12,6 +12,7 @@
     <link href="${pageContext.request.contextPath}/select2/select2.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/select2/select2-bootstrap4.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
+    <link href="${pageContext.request.contextPath}/static_limsproduct/css/global_static.css" rel="stylesheet" type="text/css">
     <!-- jquery的js引用 -->
     <script src="${pageContext.request.contextPath}/jquery/lib/jquery.js" type="text/javascript"></script>
     <!-- select2的js引用 -->
@@ -19,6 +20,10 @@
     <!-- jquery的页面验证 -->
     <script src="${pageContext.request.contextPath}/jquery/jquery.validate.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/jquery/messages_zh.js" type="text/javascript"></script>
+    <!-- 下拉框的样式 -->
+    <link rel="stylesheet" href="/limsproduct/chosen/docsupport/prism.css" />
+    <link rel="stylesheet" href="/limsproduct/chosen/chosen.css" />
+    <!-- 下拉的样式结束 -->
     <!-- 页面业务的js引用 -->
     <script src="${pageContext.request.contextPath}/js/lims/timetable/course/judgeTimetableConflictByStudent.js"
             type="text/javascript"></script>
@@ -84,6 +89,15 @@
         .tab_stu th, .tab_stu td {
             border: 1px solid #e4e5e7!important;
         }
+        .lab_stu thead tr th, .lab_stu td {
+            padding: 7px 7px;
+        }
+        .lab_stu th {
+            background: #fafafa;
+        }
+        .lab_stu th, .lab_stu td {
+            border: 1px solid #e4e5e7!important;
+        }
         #tab_stu {
             moz-user-select: -moz-none;
             -moz-user-select: none;
@@ -93,9 +107,26 @@
             -ms-user-select:none;
             user-select:none;
         }
+        #lab_stu {
+            moz-user-select: -moz-none;
+            -moz-user-select: none;
+            -o-user-select:none;
+            -khtml-user-select:none;
+            -webkit-user-select:none;
+            -ms-user-select:none;
+            user-select:none;
+        }
         .tab_stu {
-            margin-left: 50px;
+            margin-left: 5%;
             margin-bottom: 50px;
+            margin-right: 5%;
+            width: 40%;
+        }
+        .lab_stu {
+            margin-left: 5%;
+            margin-bottom: 50px;
+            margin-right: 5%;
+            width: 40%;
         }
         #feedback { font-size: 1.4em; }
         /*#tab_stu .check_box .ui-selecting:not(.not_check) { background: #FECA40; }*/
@@ -103,9 +134,11 @@
         /*#tab_stu .check_box .ui-selected:not(.not_check) { background: #F39814; color: white; }*/
         /*#tab_stu .check_box .ui-selected:not(.not_check) { background: #F39814; color: white; }*/
         #tab_stu .ui-selected:not(.not_check){ background: #409eff; color: white; }
+        #tab_stu .ui-selected:not(.not_check) span{ color: white; }
         /*#tab_stu { list-style-type: none; margin: 0; padding: 0; width: 450px; }*/
         /*#tab_stu td { margin: 3px; padding: 1px; float: left; width: 100px; height: 80px; font-size: 4em; text-align: center; }*/
     </style>
+
 </head>
 
 <body>
@@ -177,9 +210,28 @@
     </div>
     <hr/>
 </form>
-<div id="table_student" style="overflow: hidden">
+<div id="table_student" style="">
 
 </div>
+
+<!-- 下拉框的js -->
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.searchableSelect.js"></script>
+<link href="${pageContext.request.contextPath}/css/jquery.searchableSelect.css" rel="stylesheet" type="text/css">
+<script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    var config = {
+        '.chzn-select': {search_contains : true},
+        '.chzn-select-deselect'  : {allow_single_deselect:true},
+        '.chzn-select-no-single' : {disable_search_threshold:10},
+        '.chzn-select-no-results': {no_results_text:'选项, 没有发现!'},
+        '.chzn-select-width'     : {width:"95%"}
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<!-- 下拉框的js -->
 </body>
 </html>
 
