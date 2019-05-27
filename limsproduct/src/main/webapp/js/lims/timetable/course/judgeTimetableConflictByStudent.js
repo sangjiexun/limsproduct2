@@ -2,6 +2,7 @@ var contextPath = $("meta[name='contextPath']").attr("content");
 // var zuulUrl ="";
 var zuulUrl = $("#zuulServerUrl").val() + contextPath + "/timetable/";
 var studentTimetableUrl = zuulUrl + "api/school/judgeTimetableConflictByStudent";
+var msgindex;
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     layui.use(['layer', 'form', 'element', 'jquery', 'layer'], function () {
@@ -217,10 +218,15 @@ $(document).ready(function () {
                     url: zuulUrl + "api/school/judgeTimetableConflictByStudent",
                     headers: {Authorization: getJWTAuthority()},
                     data: data1,
-                    async: false,
+                    // async: false,
                     type: "POST",
                     contentType: "application/json;charset=UTF-8",
+                    beforeSend: function () {
+                        loading("数据提交中，请稍后......");
+                    },
                     success: function (result) {
+                        // var index = layer.msg("上传成功")
+                        layer.close(msgindex);
                         $("#table_student").html("");
                         console.log(result);
                         var section = result.data[0].sections;
@@ -296,7 +302,13 @@ $(document).ready(function () {
             return false;
         });
 
-
+        function loading(msg){
+            msgindex = layer.msg(msg, {
+                icon:16,
+                shade:[0.1, '#fff'],
+                time:false  //不自动关闭
+            })
+        }
     })
 
 });
@@ -349,13 +361,13 @@ function chooseLabRoom() {
                 str+="<td>"+ result[i].weeks +"</td>"
                 str+="<td>"+ result[i].weekdays +"</td>"
                 str+="<td>"+ result[i].sections +"</td>"
-                str+="<td><select id='' class='cho_lab chzn-select'>"
+                str+="<td><select id='resultsOperationItem_select' class='cho_lab chzn-select'>"
                 str+="<option value=''>请选择</option>"
                 for(var x=0;x<result[i].resultsOperationItem.length;x++){
                     str+="<option value='"+ result[i].resultsOperationItem[x].id +"'>"+ result[i].resultsOperationItem[x].text +"</option>"
                 }
                 str+="</select></td>"
-                str+="<td><select id='' class='cho_lab chzn-select'>"
+                str+="<td><select id='resultsLabRoom_select' class='cho_lab chzn-select'>"
                 str+="<option value=''>请选择</option>"
                 for(var j=0;j<result[i].resultsLabRoom.length;j++){
                     str+="<option value='"+ result[i].resultsLabRoom[j].id +"'>"+ result[i].resultsLabRoom[j].text +"</option>"
