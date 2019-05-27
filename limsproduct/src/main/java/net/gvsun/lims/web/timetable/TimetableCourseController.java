@@ -136,6 +136,41 @@ public class TimetableCourseController<JsonResult> {
     }
 
     /************************************************************
+     * Descriptions：判冲排课管理-显示教务排课的主显示页面
+     *
+     * @作者：Hezhaoyi
+     * @时间：2019-5-27
+     ************************************************************/
+    @RequestMapping("/eduCourseByJudgeConflictList")
+    public ModelAndView eduCourseByJudgeConflictList(@ModelAttribute("selected_academy") String acno) {
+        ModelAndView mav = new ModelAndView();
+        // 当前学期
+        mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
+        // 获取学期列表
+        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        mav.addObject("schoolTerms", schoolTerms);
+        mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
+        // 获取实验室排课的通用配置对象；
+        CStaticValue cStaticValue = cStaticValueService.getCStaticValueByTimetableLabDevice(acno);
+        mav.addObject("cStaticValue", cStaticValue);
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        // 获取可选的教师列表列表
+        mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
+        // 操作权限配置
+        mav.addObject("eduAjust", pConfig.eduAjust);
+        mav.addObject("eduBatch", pConfig.eduBatch);
+        mav.addObject("eduDirect", pConfig.eduDirect);
+        mav.addObject("eduNoBatch", pConfig.eduNoBatch);
+        // 是否审核
+        mav.addObject("auditOrNot", shareService.getAuditOrNot("TimetableAuditOrNot"));
+        // 审核参数
+        mav.addObject("businessType", "TimetableAudit");
+        System.out.println("微服务排课请求开始时间"+new Date());
+        mav.setViewName("lims/timetable/course/eduCourseByJudgeConflictList.jsp");
+        return mav;
+    }
+
+    /************************************************************
      * Descriptions：教务排课管理-显示教务排课的调停课主显示页面
      *
      * @作者：魏诚
