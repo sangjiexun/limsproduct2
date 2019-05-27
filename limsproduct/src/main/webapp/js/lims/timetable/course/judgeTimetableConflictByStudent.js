@@ -373,7 +373,7 @@ function chooseLabRoom() {
                     str+="<option value='"+ result[i].resultsLabRoom[j].id +"'>"+ result[i].resultsLabRoom[j].text +"</option>"
                 }
                 str+="</select></td>"
-                str+="<td><a onclick='deleteTime()'>删除</a></td>"
+                str+="<td><a onclick='deleteTime(this)'>删除</a></td>"
                 str+="</tr>"
             }
             str+="</tbody>"
@@ -443,8 +443,9 @@ function confirmLabRoom() {
         }
     });
 }
-function deleteTime() {
+function deleteTime(obj) {
     console.log("delete");
+    $(obj).parent().parent().parent()[0].removeChild($(obj).parent().parent()[0]);
 }
 function validform() {
     return $("#form_lab").validate();
