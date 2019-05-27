@@ -106,6 +106,7 @@
             -webkit-user-select:none;
             -ms-user-select:none;
             user-select:none;
+            margin: auto;
         }
         #lab_stu {
             moz-user-select: -moz-none;
@@ -115,18 +116,22 @@
             -webkit-user-select:none;
             -ms-user-select:none;
             user-select:none;
+            margin: auto;
         }
         .tab_stu {
             margin-left: 5%;
             margin-bottom: 50px;
             margin-right: 5%;
-            width: 40%;
+            width: 70%;
         }
         .lab_stu {
             margin-left: 5%;
             margin-bottom: 50px;
             margin-right: 5%;
-            width: 40%;
+            width: 70%;
+        }
+        #table_student1,#table_student2 {
+            text-align: center;
         }
         #feedback { font-size: 1.4em; }
         /*#tab_stu .check_box .ui-selecting:not(.not_check) { background: #FECA40; }*/
@@ -210,7 +215,11 @@
     </div>
     <hr/>
 </form>
-<div id="table_student" style="">
+<div id="table_student1" style="">
+
+</div>
+<hr/>
+<div id="table_student2" style="">
 
 </div>
 

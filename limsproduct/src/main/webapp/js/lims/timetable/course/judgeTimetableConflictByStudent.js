@@ -227,7 +227,7 @@ $(document).ready(function () {
                     success: function (result) {
                         // var index = layer.msg("上传成功")
                         layer.close(msgindex);
-                        $("#table_student").html("");
+                        $("#table_student1").html("");
                         console.log(result);
                         var section = result.data[0].sections;
                         var week = result.data[0].weeks;
@@ -283,7 +283,7 @@ $(document).ready(function () {
                         str+="</tbody>";
                         str+="</table>";
 
-                        $("#table_student").append(str);
+                        $("#table_student1").append(str);
                         // $("#tab_stu").selectable({ filter: "td" });
                         $("[data-album]").selectable({ filter: "td",
                             start: function() {
@@ -337,7 +337,11 @@ function chooseLabRoom() {
         async: false,
         type: "POST",
         contentType: "application/json;charset=UTF-8",
+        // beforeSend: function () {
+        //     loading("数据提交中，请稍后......");
+        // },
         success: function (result) {
+            // layer.close(msgindex);
             $('#lab_stu').remove();
             // for(var i =0;i<timetableClass.length;i++){
             //     var timetab=timetableClass[i].split("-");
@@ -347,7 +351,7 @@ function chooseLabRoom() {
             str+="<caption>";
             str+="选择实验室";
             str+="<div style='float: right;'>";
-            str+="<button class='layui-btn' onclick='confirmLabRoom()'>确定实验室</button>";
+            str+="<button class='layui-btn' onclick='confirmLabRoom()'>排课</button>";
             str+="</div>";
             str+="</caption>";
             str+="<thead>"
@@ -394,7 +398,7 @@ function chooseLabRoom() {
             $(".cho_lab").trigger("liszt:updated");
             $('.cho_lab').chosen();
             $('.cho_lab').searchableSelect();
-            $("#table_student").append(str);
+            $("#table_student2").append(str);
             console.log(result);
             var config = {
                 '.chzn-select': {search_contains : true},
