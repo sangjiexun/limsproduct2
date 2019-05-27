@@ -240,7 +240,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
                     tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
                     var image="";
                     image +='<img class="img" ';
-                    image +=' src="/limsproduct/upload/assetsPic/'+res.data+'" ';
+                    image +=' src="'+contextPath+'/upload/assetsPic/'+res.data+'" ';
                     image +=' width="50" ';
                     image +=' height="50" >';
                     tds.eq(3).html(image); //
