@@ -349,11 +349,16 @@ function chooseLabRoom() {
                 str+="<td>"+ result[i].weeks +"</td>"
                 str+="<td>"+ result[i].weekdays +"</td>"
                 str+="<td>"+ result[i].sections +"</td>"
-                str+="<td>"+ result[i].resultsOperationItem.text +"</td>"
+                str+="<td><select id='' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var x=0;x<result[i].resultsOperationItem.length;x++){
+                    str+="<option value='"+ result[i].resultsOperationItem[x].id +"'>"+ result[i].resultsOperationItem[x].text +"</option>"
+                }
+                str+="</select></td>"
                 str+="<td><select id='' class='cho_lab chzn-select'>"
                 str+="<option value=''>请选择</option>"
                 for(var j=0;j<result[i].resultsLabRoom.length;j++){
-                    str+="<option value='"+ result[i].results[j].id +"'>"+ result[i].results[j].text +"</option>"
+                    str+="<option value='"+ result[i].resultsLabRoom[j].id +"'>"+ result[i].resultsLabRoom[j].text +"</option>"
                 }
                 str+="</select></td>"
                 str+="<td><a onclick='deleteTime()'>删除</a></td>"
