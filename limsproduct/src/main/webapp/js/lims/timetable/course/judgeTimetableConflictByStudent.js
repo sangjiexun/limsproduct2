@@ -397,8 +397,51 @@ function chooseLabRoom() {
         }
     });
 }
+function choLabroom(weeks,weekday,classes,labRoomId,item) {
+    var JudgeConflictTimeTableVO = new Object();
+    JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
+    // JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
+    JudgeConflictTimeTableVO.weeks = weeks;
+    JudgeConflictTimeTableVO.weekday = weekday;
+    JudgeConflictTimeTableVO.classes = classes;
+    JudgeConflictTimeTableVO.labRoomId = labRoomId;
+    JudgeConflictTimeTableVO.item = item;
+    return JudgeConflictTimeTableVO;
+}
 function confirmLabRoom() {
     console.log('确定');
+    var JudgeConflictTimeTableVOs = [];
+    $('#lab_stu tbody tr').each(function(i){
+        var tdArr = $(this).children();
+        var JudgeConflictTimeTableVO;
+        var weeks = tdArr.eq(0).text();
+        var weekday = tdArr.eq(1).text();
+        var classes = tdArr.eq(2).text();
+        var item = tdArr.eq(3).find("#resultsOperationItem_select").val();
+        var labRoomId = tdArr.eq(4).find("#resultsLabRoom_select").val();
+        JudgeConflictTimeTableVO = choLabroom(weeks,weekday,classes,labRoomId,item);
+        JudgeConflictTimeTableVOs.push(JudgeConflictTimeTableVO);
+    });
+    console.log(JSON.stringify(JudgeConflictTimeTableVOs))
+    $.ajax({
+        url: zuulUrl + "/api/school/apiSaveTimetableAppointmentByJudgeConflict",
+        headers: {Authorization: getJWTAuthority()},
+        type:'post',
+        data:JSON.stringify(JudgeConflictTimeTableVOs),
+        async:false,  // 设置同步方式
+        // cache:false,
+        contentType:"application/json;charset=utf-8",
+        success:function(data){
+            // if(data=="success"){
+            //     alert("审核完成");
+            //     window.location.reload();
+            // }
+            // else{
+            //     alert("审核未完成");
+            // }
+            console.log(data);
+        }
+    });
 }
 function deleteTime() {
     console.log("delete");
