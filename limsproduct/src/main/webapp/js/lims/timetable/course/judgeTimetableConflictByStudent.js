@@ -237,7 +237,7 @@ $(document).ready(function () {
                         var weekdayss=weekday.slice(0,weekday.length-1).split(",");
 
                         var str = "";
-                        str+="<table class='tab_stu' id='tab_stu' border='1' align='left'><caption>";
+                        str+="<table class='tab_stu' id='tab_stu' border='1' align='center'><caption>";
                         str+="学生判冲";
                         str+="<span>(可拖动鼠标多选)</span>";
                         str+="<div style='float: right;'>";
@@ -343,7 +343,7 @@ function chooseLabRoom() {
             //     var timetab=timetableClass[i].split("-");
             // }
             var str = "";
-            str+="<table class='lab_stu' id='lab_stu' border='1' align='right'>"
+            str+="<table class='lab_stu' id='lab_stu' border='1' align='center'>"
             str+="<caption>";
             str+="选择实验室";
             str+="<div style='float: right;'>";
@@ -352,7 +352,7 @@ function chooseLabRoom() {
             str+="</caption>";
             str+="<thead>"
             str+="<tr>"
-            str+="<th>周次</th><th>星期</th><th>节次</th><th>项目</th><th>实验室</th><th>操作</th>"
+            str+="<th>周次</th><th>星期</th><th>节次</th><th>项目</th><th>实验室</th><th>教师</th><th>助教</th><th>操作</th>"
             str+="</tr>"
             str+="</thead>"
             str+="<tbody>"
@@ -371,6 +371,18 @@ function chooseLabRoom() {
                 str+="<option value=''>请选择</option>"
                 for(var j=0;j<result[i].resultsLabRoom.length;j++){
                     str+="<option value='"+ result[i].resultsLabRoom[j].id +"'>"+ result[i].resultsLabRoom[j].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><select id='resultsTeacher_select' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var y=0;y<result[i].resultsTeacher.length;y++){
+                    str+="<option value='"+ result[i].resultsTeacher[y].id +"'>"+ result[i].resultsTeacher[y].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><select id='resultsTutor_select' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var z=0;z<result[i].resultsTeacher.length;z++){
+                    str+="<option value='"+ result[i].resultsTeacher[z].id +"'>"+ result[i].resultsTeacher[z].text +"</option>"
                 }
                 str+="</select></td>"
                 str+="<td><a onclick='deleteTime(this)'>删除</a></td>"
@@ -397,7 +409,7 @@ function chooseLabRoom() {
         }
     });
 }
-function choLabroom(weeks,weekday,classes,labRoomId,item) {
+function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     var JudgeConflictTimeTableVO = new Object();
     JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
     // JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
@@ -406,6 +418,8 @@ function choLabroom(weeks,weekday,classes,labRoomId,item) {
     JudgeConflictTimeTableVO.classes = classes;
     JudgeConflictTimeTableVO.labRoomId = labRoomId;
     JudgeConflictTimeTableVO.item = item;
+    JudgeConflictTimeTableVO.teacher = teacher;
+    JudgeConflictTimeTableVO.tutor = tutor;
     return JudgeConflictTimeTableVO;
 }
 function confirmLabRoom() {
@@ -419,7 +433,9 @@ function confirmLabRoom() {
         var classes = tdArr.eq(2).text();
         var item = tdArr.eq(3).find("#resultsOperationItem_select").val();
         var labRoomId = tdArr.eq(4).find("#resultsLabRoom_select").val();
-        JudgeConflictTimeTableVO = choLabroom(weeks,weekday,classes,labRoomId,item);
+        var teacher = tdArr.eq(5).find("#resultsTeacher_select").val();
+        var tutor = tdArr.eq(6).find("#resultsTutor_select").val();
+        JudgeConflictTimeTableVO = choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor);
         JudgeConflictTimeTableVOs.push(JudgeConflictTimeTableVO);
     });
     console.log(JSON.stringify(JudgeConflictTimeTableVOs))
