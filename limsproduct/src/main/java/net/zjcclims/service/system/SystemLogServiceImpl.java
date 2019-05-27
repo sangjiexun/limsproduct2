@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.Now;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 @Service("SystemLogService")
 public class SystemLogServiceImpl implements SystemLogService {
@@ -483,7 +484,7 @@ public class SystemLogServiceImpl implements SystemLogService {
      * 2019-5-20
      */
 	public LaboratoryNoticeVO listLaboratoryNotice(HttpServletRequest request){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		int itemId = Integer.valueOf(request.getParameter("itemId"));
 		int week = Integer.valueOf(request.getParameter("week"));
@@ -503,6 +504,25 @@ public class SystemLogServiceImpl implements SystemLogService {
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
 		SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId);
 		laboratoryNoticeVO.setItemTime(sdf.format(schoolWeek.getDate().getTime())+"第"+section+"节");
+		//实验班级
+        TimetableAppointment timetableAppointment = timetableAppointmentDAO.findTimetableAppointmentById(appointmentId);
+        StringBuffer sql1 = new StringBuffer("select tcs from TimetableCourseStudent tcs where tcs.timetableSelfCourse.id="+timetableAppointment.getTimetableSelfCourse().getId());
+        List<TimetableCourseStudent> timetableCourseStudentList = entityManager.createQuery(sql1.toString()).getResultList();
+        //学生数
+        int studentNum = timetableCourseStudentList.size();
+        laboratoryNoticeVO.setStudentNum(studentNum);
+        String classesAll = "";
+        for(TimetableCourseStudent timetableCourseStudent :timetableCourseStudentList){
+            classesAll = classesAll + timetableCourseStudent.getUser().getSchoolClasses().getClassName() +",";
+        }
+        //去重
+        StringBuffer sb = new StringBuffer(classesAll);
+        String rs = sb.reverse().toString().replaceAll("(.)(?=.*\\1)", "");
+        StringBuffer Class = new StringBuffer(rs);
+        String classes = Class.reverse().toString();
+		classes = classes.substring(0, classes.length()-1);
+        laboratoryNoticeVO.setClasses(classes);
+
 		//授课教师
         Set<TimetableTeacherRelated> timetableTeacherRelatedList = timetableTeacherRelatedDAO.findTimetableTeacherRelatedByAppointmentId(appointmentId);
         String teacher = "";
@@ -565,7 +585,7 @@ public class SystemLogServiceImpl implements SystemLogService {
      * @Author Hezhaoyi 2019-5-10
      */
     public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         int itemId = Integer.valueOf(request.getParameter("itemId"));
         OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
@@ -601,73 +621,70 @@ public class SystemLogServiceImpl implements SystemLogService {
         int startClass = 0;
         int endClass = 0;
         int weekday = 0;
-        List<Object[]> sectionList = new ArrayList();
+        List<String> sectionList = new ArrayList();
+        String section = "";
         StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
         List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
-        if(itemPlanList.size()!=0){
-            ItemPlan itemPlan = itemPlanList.get(0);
-            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
-            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
-            //根据TimetableAppointment获取起止周次节次星期
-            for(TimetableAppointment timetableAppointment:timetableAppointments){
-                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
-                for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
-                    startWeek = timetableAppointmentSameNumber.getStartWeek();
-                    endWeek = timetableAppointmentSameNumber.getEndWeek();
-                    startClass = timetableAppointmentSameNumber.getStartClass();
-                    endClass = timetableAppointmentSameNumber.getEndClass();
-                    weekday = timetableAppointment.getWeekday();
+        for(ItemPlan itemPlan:itemPlanList){
+			TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+			//根据TimetableAppointment获取起止周次节次星期
+			for(TimetableAppointment timetableAppointment:timetableAppointments){
+				Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+				for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+					startWeek = timetableAppointmentSameNumber.getStartWeek();
+					endWeek = timetableAppointmentSameNumber.getEndWeek();
+					startClass = timetableAppointmentSameNumber.getStartClass();
+					endClass = timetableAppointmentSameNumber.getEndClass();
+					weekday = timetableAppointment.getWeekday();
 
-                    if(startWeek!=0){
-                        if(startWeek<endWeek){
-                            if(startClass<endClass){
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = startClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                                startClass++;
-                            }else {
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = endClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                            }
-                            startWeek++;
-                        }else {
-                            if(startClass<endClass){
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = startClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                                startClass++;
-                            }else {
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = endClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                            }
-                        }
-                    }
-                }
-            }
+					if(startWeek!=0){
+						if(startWeek<endWeek){
+							if(startClass<endClass){
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(startClass)+"-"+timetableAppointment.getId();
+								sectionList.add(section);
+								startClass++;
+							}else {
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(endClass)+"-"+timetableAppointment.getId();
+                                sectionList.add(section);
+							}
+							startWeek++;
+						}else {
+							if(startClass<endClass){
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(startClass)+"-"+timetableAppointment.getId();
+								sectionList.add(section);
+								startClass++;
+							}else {
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(endClass)+"-"+timetableAppointment.getId();
+								sectionList.add(section);
+							}
+						}
+					}
+				}
+			}
+		}
+		//排序
+        Collections.sort(sectionList);
+        List<Object[]> sectionSortList = new ArrayList<>();
+        for(int i=0;i<sectionList.size();i++){
+            String[] sectionSort = sectionList.get(i).split("-");
+            Object[] object = new Object[4];
+            object[0] = Integer.valueOf(sectionSort[0]);
+            object[1] = Integer.valueOf(sectionSort[1]);
+            object[2] = Integer.valueOf(sectionSort[2]);
+            object[3] = Integer.valueOf(sectionSort[3]);
+            sectionSortList.add(object);
         }
+
 
         List<Object[]> InformationList = new ArrayList<>();
         if(sectionList.size()!=0){
-            for(Object[] object :sectionList){
+            for(Object[] object :sectionSortList){
                 int week = (Integer) object[0];
                 int weekday1 = (Integer)object[1];
                 //实验时间
                 //当前学期
-                Object[] objectInfo = new Object[3];
+                Object[] objectInfo = new Object[4];
                 int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
                 SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday1,termId);
                 //时间
@@ -682,6 +699,22 @@ public class SystemLogServiceImpl implements SystemLogService {
                     teacher = teacher + " " + timetableTeacherRelated.getUser().getCname();
                 }
                 objectInfo[2] = teacher;
+                //实验班级
+                TimetableAppointment timetableAppointment = timetableAppointmentDAO.findTimetableAppointmentById(appointmentId);
+                StringBuffer sql1 = new StringBuffer("select tcs from TimetableCourseStudent tcs where tcs.timetableSelfCourse.id="+timetableAppointment.getTimetableSelfCourse().getId());
+                List<TimetableCourseStudent> timetableCourseStudentList = entityManager.createQuery(sql1.toString()).getResultList();
+                String classesAll = "";
+                for(TimetableCourseStudent timetableCourseStudent :timetableCourseStudentList){
+                    classesAll = classesAll + timetableCourseStudent.getUser().getSchoolClasses().getClassName() +",";
+                }
+                //去重
+                StringBuffer sb = new StringBuffer(classesAll);
+                String rs = sb.reverse().toString().replaceAll("(.)(?=.*\\1)", "");
+                StringBuffer Class = new StringBuffer(rs);
+                String classes = Class.reverse().toString();
+                classes = classes.substring(0, classes.length()-1);
+                objectInfo[3]=classes;
+
                 InformationList.add(objectInfo);
             }
         }

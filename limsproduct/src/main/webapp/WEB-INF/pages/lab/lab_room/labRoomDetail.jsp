@@ -1093,6 +1093,38 @@ function  saveLabRoomAdmin(typeId){
         });
 
     }
+    //物联硬件提交前判空
+    function checkAuthorized(){
+		var username = $("#username3").val();
+		var startDate = $("#startDate").val();
+        var endDate = $("#endDate").val();
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+        if(username==null||username==""){
+            alert("请选择人员")
+            return false;
+        }
+        else if(startDate==null||startDate==""){
+            alert("请选择开始日期")
+            return false;
+        }
+        else if(endDate==null||endDate==""){
+            alert("请选择结束日期")
+            return false;
+        }
+        else if(startTime==null||startTime==""){
+            alert("请选择开始时间")
+            return false;
+        }
+        else if(endTime==null||endTime==""){
+            alert("请选择结束时间")
+            return false;
+        }
+        else{
+            return true;
+		}
+
+    }
 </script>
 
 <style>
@@ -1516,11 +1548,11 @@ td {
 															<%--<a href="javascript:void(0)"--%>
 															   <%--onclick="opendoor(${agent.id});">开门</a>--%>
 															<c:if test="${newServer eq 'true'}"><!-- 新版物联 -->
-																																<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">开门</a>
-																															</c:if>
-																														<c:if test="${newServer ne 'true'}">
-																															<a href="javascript:void(0)" onclick="opendoor(${agent.id});">开门</a>
-																														</c:if>
+																<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">开门</a>
+															</c:if>
+															<c:if test="${newServer ne 'true'}">
+																<a href="javascript:void(0)" onclick="opendoor(${agent.id});">开门</a>
+															</c:if>
 														</c:when>
 														<c:when test="${agent.CDictionary.CNumber eq '6'}">
 															<a href="javascript:void(0)"
@@ -2144,7 +2176,7 @@ td {
 						</div>--%>
 						<div class="title" style="border-top:none;clear:both;">
 							<div class="select_s" >
-								<form name="form" action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoom.id}&type=${type}" method="post" >
+								<form name="form" action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoom.id}&type=${type}" method="post" onsubmit="return checkAuthorized()">
 									<div class="tool-box" style="float:left;">
 										<ul>
 										<li>人员名称/编号：</li>

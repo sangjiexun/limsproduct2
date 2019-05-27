@@ -29,6 +29,10 @@ public class LaboratoryNoticeVO implements Serializable {
     private String grade;
     //表头
     private String title;
+    //实验班级
+    private String classes;
+    //学生数
+    private Integer studentNum;
 
     public String getSubject() {
         return subject;
@@ -108,5 +112,21 @@ public class LaboratoryNoticeVO implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getClasses() {
+        return classes;
+    }
+
+    public void setClasses(String classes) {
+        this.classes = classes;
+    }
+
+    public Integer getStudentNum() {
+        return studentNum;
+    }
+
+    public void setStudentNum(Integer studentNum) {
+        this.studentNum = studentNum;
     }
 }

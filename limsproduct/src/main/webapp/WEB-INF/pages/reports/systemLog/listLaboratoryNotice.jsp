@@ -140,8 +140,8 @@
 				<th>实验时间</th><td colspan="7">${laboratoryNoticeVO.itemTime}</td>
 			</tr>
 			<tr class="tab_lab_2_tr">
-				<th>实验班级</th><td></td>
-				<th>学生数</th><td></td>
+				<th>实验班级</th><td>${laboratoryNoticeVO.classes}</td>
+				<th>学生数</th><td>${laboratoryNoticeVO.studentNum}</td>
 				<th>分组数</th><td></td>
 				<th>授课教师</th><td>${laboratoryNoticeVO.teacher}</td>
 			</tr>
