@@ -213,7 +213,9 @@ public class LabRoomController<JsonResult> {
         int totalRecords=0;
         if(type==ConstantInterface.LAB_FOR_ROOM) {// 实验室
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 1, labRoom,9, request, acno).size();
-            mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
+            List<LabRoom> listLabRoom = labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno);
+            mav.addObject("listLabRoom", labRoomService.sortLabRoomByAgent(listLabRoom,shareService.getUserDetail().getUsername()));
+            //mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
             // 本学院所有可用实验室-批量添加管理员
             List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
             mav.addObject("labRoomList", labRoomList);
