@@ -1388,11 +1388,13 @@ td {
 					<div class="edit-content-box">
 						<div class="title">
 							<div id="title">实验项目</div>
-							<c:if test="${flag==true}">
-								<a class="btn btn-new" href="javascript:void(0)"
-									onclick="addOperationItem();">添加实验项目</a>
+							<c:if test="${authLevel gt 0}">
+								<c:if test="${flag==true}">
+									<a class="btn btn-new" href="javascript:void(0)"
+										onclick="addOperationItem();">添加实验项目</a>
+								</c:if>
+								<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomOperationItem();">批量删除</a>
 							</c:if>
-							<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomOperationItem();">批量删除</a>
 						</div>
 	<div class="tool-box">
 		<form:form name="queryForm" action="${pageContext.request.contextPath}/labRoom/getLabRoom?id=${labRoom.id}&currpage=1&type=${type}" method="post" modelAttribute="operationItem">
@@ -1495,7 +1497,9 @@ td {
 								<div id="title">物联硬件</div>
 								<sec:authorize
 									ifAnyGranted="ROLE_SUPERADMIN,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_ASSETMANAGEMENT,ROLE_DEPARTMENTHEADER,ROLE_COLLEGELEADER">
-									<a class="btn btn-new" onclick="addAgent();">添加硬件</a>
+									<c:if test="${authLevel gt 0}">
+										<a class="btn btn-new" onclick="addAgent();">添加硬件</a>
+									</c:if>
 								</sec:authorize>
 							</div>
 							<div class="edit-content">
@@ -1786,10 +1790,12 @@ td {
 					<div class="edit-content-box">
 						<div class="title">
 							<div id="title">软件列表</div>
-							<c:if test="${flag==true}">
-								<a class="btn btn-new" onclick="addSoftware()">添加软件</a>
+							<c:if test="${authLevel gt 0}">
+								<c:if test="${flag==true}">
+									<a class="btn btn-new" onclick="addSoftware()">添加软件</a>
+								</c:if>
+								<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomSoftware();">批量删除</a>
 							</c:if>
-							<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomSoftware();">批量删除</a>
 						</div>
 						<div class="edit-content">
 							<table class="tb" id="my_show">
@@ -1878,7 +1884,7 @@ td {
 					<div class="edit-content-box">
 						<div class="title">
 							<div id="title">仪器设备</div>
-							<c:if test="${flag==true}">
+							<c:if test="${flag==true && authLevel gt 0}">
 								<a class="btn btn-new" onclick="openwin() ">添加设备</a>
 								<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabDevice();">批量删除</a>
                                 <input class="btn btn-new" type="button" value="批量导入" onclick="importDevice();"/>
@@ -2174,41 +2180,43 @@ td {
 								</ul>
 							</form:form>
 						</div>--%>
-						<div class="title" style="border-top:none;clear:both;">
-							<div class="select_s" >
-								<form name="form" action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoom.id}&type=${type}" method="post" onsubmit="return checkAuthorized()">
-									<div class="tool-box" style="float:left;">
-										<ul>
-										<li>人员名称/编号：</li>
-										<li>
-										<select id="username3" name="username3" class="chzn-select">
+						<c:if test="${authLevel gt 0}">
+							<div class="title" style="border-top:none;clear:both;">
+								<div class="select_s" >
+									<form name="form" action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoom.id}&type=${type}" method="post" onsubmit="return checkAuthorized()">
+										<div class="tool-box" style="float:left;">
+											<ul>
+											<li>人员名称/编号：</li>
+											<li>
+												<select id="username3" name="username3" class="chzn-select">
 											<%--<c:forEach items="${userList}" var="curr">--%>
 												<%--<option value="${curr.username}">${curr.cname }${curr.username}</option>--%>
 											<%--</c:forEach>--%>
-										</select>
-										</li>
-										</ul>
-									</div>
-									<div style="float:left;">
-										<span class="f14" style="float:left;">开始日期：</span>
-										<input id="startDate" name="startDate" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" style="width:100px; margin-top: 1px;" readonly />
-									</div>
-									<div style="float:left;">
-										<span class="f14" style="float:left;">结束日期：</span>
-										<input id="endDate" name="endDate" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" style="width:100px; margin-top: 1px;" readonly />
-									</div>
-									<div style="float:left;">
-										<span class="f14" style="float:left;">开始时间：</span>
-										<input id="startTime" name="startTime" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'HH:mm'})" style="width:100px; margin-top: 1px;" readonly />
-									</div>
-									<div style="float:left;">
-										<span class="f14" style="float:left;">结束时间：</span>
-										<input id="endTime" name="endTime" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'HH:mm'})" style="width:100px; margin-top: 1px;" readonly />
-									</div>
-									<input class="search r btn btn-new" type="submit" value="添加" />
-								</form>
+												</select>
+											</li>
+											</ul>
+										</div>
+										<div style="float:left;">
+											<span class="f14" style="float:left;">开始日期：</span>
+											<input id="startDate" name="startDate" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" style="width:100px; margin-top: 1px;" readonly />
+										</div>
+										<div style="float:left;">
+											<span class="f14" style="float:left;">结束日期：</span>
+											<input id="endDate" name="endDate" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" style="width:100px; margin-top: 1px;" readonly />
+										</div>
+										<div style="float:left;">
+											<span class="f14" style="float:left;">开始时间：</span>
+											<input id="startTime" name="startTime" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'HH:mm'})" style="width:100px; margin-top: 1px;" readonly />
+										</div>
+										<div style="float:left;">
+											<span class="f14" style="float:left;">结束时间：</span>
+											<input id="endTime" name="endTime" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'HH:mm'})" style="width:100px; margin-top: 1px;" readonly />
+										</div>
+										<input class="search r btn btn-new" type="submit" value="添加" />
+									</form>
+								</div>
 							</div>
-						</div>
+						</c:if>
 					</div>
 				<div class="edit-content">
 					<table class="tb" id="my_show">
@@ -2289,7 +2297,7 @@ td {
 							<div id="title">
                                 实验室设备禁用时间设置
 							</div>
-							<c:if test="${flag==true}">
+							<c:if test="${flag==true && authLevel gt 0}">
 								<a class="btn btn-new" onclick="newLimitTime() ">添加实验室禁用时间段</a>
 							</c:if>
 							<%--<a class="btn btn-new" href="${pageContext.request.contextPath}/appointment/findLabRoomByLabAnnexId?annexId=${annexId}&page=1">返回列表页面</a>--%>
@@ -2336,7 +2344,7 @@ td {
 					<div class="content-box">
 						<div class="title">
 							<div id="title">实验室设备开放时间设置</div>
-							<c:if test="${flag==true}">
+							<c:if test="${flag==true && authLevel gt 0}">
 								<a class="btn btn-new" id="show_open_time" onclick="editOpenTime() ">设置</a>
 							</c:if>
 							<%--<a class="btn btn-new" href="${pageContext.request.contextPath}/appointment/findLabRoomByLabAnnexId?annexId=${annexId}&page=1">返回列表页面</a>--%>
