@@ -1560,7 +1560,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if (labRoom.getLabRoonAbbreviation() != null && !labRoom.getLabRoonAbbreviation().equals("")){
 			hql += " and l in (select l from LabRoomDevice d,LabRoom l where d.id not in (select ld.labRoomDevice.id from OperationItemDevice ld) and d.labRoom.id=l.id and d.schoolDevice.deviceName like'%"+labRoom.getLabRoonAbbreviation()+"%')" ;
 		}
-		if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN")){
+		//浙江建设，实验室管理员预约列表只能看自己管理的
+		if(pConfig.PROJECT_NAME.equals("zjcclims") && (request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN"))){
 			hql += " and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')";
 		}
 		if(acno!=null && !acno.equals("-1")){
