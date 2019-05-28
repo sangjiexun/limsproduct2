@@ -153,6 +153,7 @@ public class VirtualController<JsonResult> {
         mav.setViewName("redirect:/virtual/listVirtualImage?currpage=1");
         return mav;
     }
+
     /*************************************************************************************
      * Description:查看虚拟实验室下的镜像
      *
@@ -230,6 +231,41 @@ public class VirtualController<JsonResult> {
         mav.setViewName("/virtual/virtualImageAppointment.jsp");
         return mav;
     }
+
+    /*************************************************************************************
+     * Description:镜像预约直连模块
+     *
+     * @author: 杨新蔚
+     * @date: 2018/12/17
+     *************************************************************************************/
+    @RequestMapping("/virtualImageReservationCitrix")
+    public ModelAndView virtualImageReservationCitrix(@ModelAttribute VirtualImageReservation virtualImageReservation, @RequestParam int currpage) {
+        ModelAndView mav = new ModelAndView();
+        int pageSize = 10;
+        // 获取可预约虚拟镜像(可以不关联的实验室)
+        int totalRecords = virtualService.getAllVirtualImageCount(null);
+        List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null,1,-1);
+        Map<String, Integer> pageModel = shareService.getPage(currpage,pageSize, totalRecords);
+        mav.addObject("pageModel", pageModel);
+        mav.addObject("page", currpage);
+        mav.addObject("totalRecords", totalRecords);
+        mav.addObject("VirtualImages", virtualImageList);
+        mav.setViewName("/virtual/virtualImageAppointmentCitrix.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:更新镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2018/12/17
+     *************************************************************************************/
+    @ResponseBody
+    @RequestMapping(value="/updateImageCitrix",produces = "application/json; charset=utf-8")
+    public String updateImageCitrix(HttpServletRequest request) throws ParseException {
+        return virtualService.updateImageCitrix(request);
+    }
+
     /*************************************************************************************
      * Description:镜像预约检查
      *
@@ -734,6 +770,19 @@ public class VirtualController<JsonResult> {
     }
 
     /*************************************************************************************
+     * Description:镜像预约保存(直连Citrix)
+     *
+     * @author: 杨新蔚
+     * @date: 2018/12/17
+     *************************************************************************************/
+    @ResponseBody
+    @RequestMapping(value="/saveVirtualImageReservationCitrix",produces = "application/json; charset=utf-8")
+    public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException {
+        return virtualService.saveVirtualImageReservationCitrix(request);
+    }
+
+
+    /*************************************************************************************
      * Description:citrix登陆
      *
      * @author: 杨新蔚
@@ -743,6 +792,19 @@ public class VirtualController<JsonResult> {
     public void virtualLogin(Integer virtualImageReservationid,HttpServletRequest request,HttpServletResponse response) {
         virtualService.virtualLogin(virtualImageReservationid,request,response);
     }
+
+    /*************************************************************************************
+     * Description:citrix登陆(直连)
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    @RequestMapping(value="/virtualLoginCitrix",produces = "application/json; charset=utf-8")
+    public void virtualLoginCitrix(Integer virtualImageReservationid,HttpServletRequest request,HttpServletResponse response) {
+        virtualService.virtualLoginCitrix(virtualImageReservationid,request,response);
+    }
+
+
 
     /*************************************************************************************
      * Description: 学生登陆前查询没有被使用的虚拟桌面ID，用该ID登陆

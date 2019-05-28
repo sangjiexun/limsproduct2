@@ -103,6 +103,14 @@ public interface VirtualService {
     public void updateVirtualImage();
 
     /*************************************************************************************
+     * Description:直连Citrix更新虚拟镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String updateImageCitrix(HttpServletRequest request);
+
+    /*************************************************************************************
      * Description:调用接口查看虚拟实验室下的镜像
      *
      * @author: 贺照易
@@ -167,6 +175,14 @@ public interface VirtualService {
     public String saveVirtualImageReservation(HttpServletRequest request) throws ParseException;
 
     /*************************************************************************************
+     * Description:保存虚拟镜像预约-Citrix直连
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException;
+
+    /*************************************************************************************
      * Description:预约审核方法
      *
      * @author: 杨新蔚
@@ -192,6 +208,14 @@ public interface VirtualService {
      * @date: 2018/12/20
      *************************************************************************************/
     public String virtualLogin(Integer id, HttpServletRequest request, HttpServletResponse response);
+
+    /*************************************************************************************
+     * Description:调用登录接口(直连)-下载ica文件
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String virtualLoginCitrix(Integer id, HttpServletRequest request, HttpServletResponse response);
 
     /*************************************************************************************
      * Description:查看虚拟镜像报表

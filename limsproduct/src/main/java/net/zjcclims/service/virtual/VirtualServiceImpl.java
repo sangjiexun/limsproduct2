@@ -685,6 +685,57 @@ public class VirtualServiceImpl implements VirtualService {
     }
 
     /*************************************************************************************
+     * Description:直连Citrix更新虚拟镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String updateImageCitrix(HttpServletRequest request){
+        Map<String,String> headers=new HashMap<>();
+        headers.put("Content-Type","application/x-www-form-urlencoded");
+        headers.put("X-Citrix-IsUsingHTTPS","No");
+        try {
+            //登录前接口获取cookie、csrftoken
+            String post = HttpClientUtil.postWithoutCookie("http://10.2.39.50/Citrix/GVSUNWeb/Authentication/GetAuthMethods", null, headers);
+            String post1 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/Login", null, headers);
+            //登录接口调用
+            Map<String,String> params=new HashMap<>();
+            //学生域账号，user.getDomainAccount，临时用固定账号测试
+            params.put("username","cmop\\user1");
+            params.put("password","abc@123");
+            params.put("saveCredentials","false");
+            params.put("loginBtn","登录");
+            params.put("StateContext","");
+            String post2 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt", params, headers);
+            String post3 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/Resources/List", null, headers);
+            System.out.println(post3);
+            JSONObject jsonObject = JSONObject.fromObject(post3);
+            JSONArray jac = jsonObject.getJSONArray("resources");
+            for (int i=0;i<jac.size();i++){
+               JSONObject jsonObject1= (JSONObject)jac.get(i);
+               if (jsonObject1.has("isdesktop")&&"true".equals(jsonObject1.getString("isdesktop"))){
+                   VirtualImage vi = new VirtualImage();
+                   // 赋值
+                   // 临时保存citrix本地存储id
+                   vi.setId(100+i);
+                   vi.setName(jsonObject1.get("name").toString());
+                   // 临时保存citrix镜像桌面启动url
+                   vi.setHardwareSet(jsonObject1.get("launchurl").toString());
+                   // 临时保存citrix镜像桌面id
+                   vi.setImageCode(jsonObject1.get("id").toString());
+                   saveVirtualImage(vi);
+               }
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
+        //String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+        return "success";
+    }
+
+
+    /*************************************************************************************
      * Description:查看虚拟实验室下的镜像-调用查看实验室接口
      *
      * @author: 贺照易
@@ -1124,6 +1175,35 @@ public class VirtualServiceImpl implements VirtualService {
     }
 
     /*************************************************************************************
+     * Description:保存虚拟镜像预约-Citrix直连
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException{
+    VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(Integer.parseInt(request.getParameter("VirtualImage")));
+        String startTime = request.getParameter("startTime");
+        String endTime = request.getParameter("endTime");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date1 = sdf.parse(startTime);
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.setTime(date1);
+        Date date2 = sdf.parse(endTime);
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(date2);
+        VirtualImageReservation virtualImageReservation = new VirtualImageReservation();
+        virtualImageReservation.setVirtualImage(virtualImage);
+        virtualImageReservation.setStartTime(calendarStart);
+        virtualImageReservation.setEndTime(calendarEnd);
+        virtualImageReservation.setCreateTime(Calendar.getInstance());
+        virtualImageReservation.setUser(shareService.getUserDetail());
+        virtualImageReservation.setRemarks(request.getParameter("remarks"));
+        virtualImageReservation.setAuditStage(6);
+        virtualImageReservationDAO.store(virtualImageReservation);
+        return "success";
+    }
+
+    /*************************************************************************************
      * Description:预约审核方法
      *
      * @author: 杨新蔚
@@ -1370,6 +1450,53 @@ public class VirtualServiceImpl implements VirtualService {
             return "success";
         }
     }
+
+    /*************************************************************************************
+     * Description:调用登录接口（直连）-下载ica文件
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String virtualLoginCitrix(Integer id, HttpServletRequest request, HttpServletResponse response) {
+        Map<String,String> headers=new HashMap<>();
+        headers.put("Content-Type","application/x-www-form-urlencoded");
+        headers.put("X-Citrix-IsUsingHTTPS","No");
+        try {
+            //登录前接口获取cookie、csrftoken
+            String post = HttpClientUtil.postWithoutCookie("http://10.2.39.50/Citrix/GVSUNWeb/Authentication/GetAuthMethods", null, headers);
+            String post1 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/Login", null, headers);
+            //登录接口调用
+            Map<String, String> params = new HashMap<>();
+            //学生域账号，user.getDomainAccount，临时用固定账号测试
+            params.put("username","cmop\\user1");
+            params.put("password", "abc@123");
+            params.put("saveCredentials", "false");
+            params.put("loginBtn", "login");
+            params.put("StateContext", "");
+            String post2 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt", params, headers);
+            String post3 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/Resources/List", null, headers);
+            VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
+            String icaString=virtualImageReservation.getVirtualImage().getHardwareSet();
+            Map<String, String> paramsGet = new HashMap<>();
+            //下载ica所需参数
+            paramsGet.put("launchId", virtualImageReservation.getVirtualImage().getImageCode());
+            paramsGet.put("displayNameDesktopTitle", "Desktop");
+            String json = HttpClientUtil.getWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/"+icaString, paramsGet, headers);
+            //写入ica文件
+            String filename = "";
+            long timestamp = System.currentTimeMillis();
+            creatTxtFile(timestamp + "", request);
+            filename = writeTxtFile(json);
+            download(filename, response);
+            delFile(filename);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
+		return "success";
+    }
+
+
 
     /*************************************************************************************
      * Description:查看虚拟镜像报表

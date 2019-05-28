@@ -28,7 +28,7 @@
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/My97DatePicker/WdatePicker.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/virtual/virtualImageAppointment.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/virtual/virtualImageAppointmentCitrix.js"></script>
 
     <style type="text/css">
         /*#labRoom_chzn, #usingObj_chzn {*/
@@ -217,9 +217,9 @@
 <!--导航结束  -->
 <div id="TabbedPanels1" class="TabbedPanels">
     <ul class="TabbedPanelsTabGroup" style="margin-bottom:10px;">
-          <li class="TabbedPanelsTab selected" id="s1">
+          <li class="TabbedPanelsTab" id="s1">
               <a href="${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1">虚拟镜像预约</a></li>
-        <li class="TabbedPanelsTab" id="s4">
+        <li class="TabbedPanelsTab selected" id="s4">
             <a href="${pageContext.request.contextPath}/virtual/virtualImageReservationCitrix?currpage=1">虚拟镜像预约(直连)</a></li>
         <li class="TabbedPanelsTab" id="s2"><a
                   href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=0&page=1&isaudit=2">我的虚拟镜像申请</a>
@@ -272,9 +272,7 @@
                             </tr>
                             <tr>
                                 <td colspan="6" style="text-align:right;">
-<%--
-                                    <input type="button" value="登录测试" class="btn btn-new" onclick="testLogin()">
---%>
+                                    <input type="button" value="更新镜像" class="btn btn-new" onclick="updateImage()">
                                     <input type="button" value="提交" class="btn btn-new" onclick="saveReservation()">
                                 </td>
                             </tr>
