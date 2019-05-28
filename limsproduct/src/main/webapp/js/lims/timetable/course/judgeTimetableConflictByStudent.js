@@ -426,6 +426,7 @@ function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     JudgeConflictTimeTableVO.tutor = tutor;
     JudgeConflictTimeTableVO.timetableStyle = 3;
     JudgeConflictTimeTableVO.status = 10;
+    JudgeConflictTimeTableVO.term = $("#term").val();
     return JudgeConflictTimeTableVO;
 }
 function confirmLabRoom() {
