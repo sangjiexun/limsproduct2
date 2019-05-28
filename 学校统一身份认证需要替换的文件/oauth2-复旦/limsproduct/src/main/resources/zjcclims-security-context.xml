@@ -16,7 +16,9 @@
         <intercept-url pattern="/upload/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/**/*.css" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <intercept-url pattern="/virtual/reserveVirtualImageCallback" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
         <!--配置不需要登陆也可以访问 -->
+        <intercept-url pattern="/instrument/getTimeTableAppointmentForInstrument" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/api/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/labshow/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/cmsshow/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -60,6 +62,7 @@
         <intercept-url pattern="/cmsReport/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/wxAPI/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 <intercept-url pattern="/activeMq/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/openOperationItem/saveAssetApp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <!-- courseSite.jsp页面未登录可以访问 -->
         <intercept-url pattern="/lims/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <intercept-url pattern="/jquery/locale/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
