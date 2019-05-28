@@ -203,7 +203,7 @@
             软件筛选<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >
             <input type="button" id="judgeTimetable" name="judgeTimetable" value=" 学生判冲模式 " class="btn btn-primary btn-lg"
                    style="float:right;">
-            <input type="button" id="eduReTimetable" name="judgeTimetable" value=" 二次不分批排课 " class="btn btn-primary btn-lg"
+            <input type="button" id="eduReTimetable" name="eduReTimetable" value=" 二次不分批排课 " class="btn btn-primary btn-lg"
                    style="float:right;display: none;">
             <input type="button" id="submitButton" name="submitButton" value=" 确定 " class="btn btn-primary btn-lg"
                    style="float:right;margin-right: 10px;">
@@ -344,6 +344,8 @@
                 <%--<input type="hidden" id="academyNumber" value="${academyNumber}">--%>
                 <input type="hidden" id="courseNo" name="courseNo" value="${courseNo}">
                 <input type="hidden" id="term" value="${term}">
+                <input type="hidden" id="timetableStyle" value="3">
+                <input type="hidden" id="status" value="10">
                 <%--<h3>开始直接排1课</h3>--%>
                 <%--软件筛选<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >--%>
                 <!-- schoolCourseDetail的no -->

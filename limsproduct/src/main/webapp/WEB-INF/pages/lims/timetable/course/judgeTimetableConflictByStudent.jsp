@@ -154,6 +154,8 @@
     <%--<input type="hidden" id="academyNumber" value="${academyNumber}">--%>
     <input type="hidden" id="courseNo" name="courseNo" value="${courseNo}">
     <input type="hidden" id="term" value="${term}">
+    <input type="hidden" id="timetableStyle" value="3">
+    <input type="hidden" id="status" value="10">
     <h3>开始直接排1课</h3>
     <%--软件筛选<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >--%>
     <!-- schoolCourseDetail的no -->

@@ -16,12 +16,14 @@ $(document).ready(function () {
         getWeeks1();
         function getWeekday1(){
             var term = $('#term').val();
+            var timetableStyle = $('#timetableStyle').val();
+            var courseNo = $('#courseNo').val();
             // var data1 = JSON.stringify({
             //     "term": $('#term').val(),
             //     "type": 2,
             // });
             $.ajax({
-                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=2&termId="+term,
+                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=2&termId="+term+"&timetableStyle="+timetableStyle+"&courseNo="+courseNo,
                 type: "GET",
                 // data: data1,
                 headers: {Authorization: getJWTAuthority()},
@@ -52,12 +54,14 @@ $(document).ready(function () {
 
         function getClasses1() {
             var term = $('#term').val();
+            var timetableStyle = $('#timetableStyle').val();
+            var courseNo = $('#courseNo').val();
             // var data1 = JSON.stringify({
             //     "term": $('#term').val(),
             //     "type": 2,
             // });
             $.ajax({
-                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=3&termId="+term,
+                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=3&termId="+term+"&timetableStyle="+timetableStyle+"&courseNo="+courseNo,
                 type: "GET",
                 // data: data1,
                 headers: {Authorization: getJWTAuthority()},
@@ -87,13 +91,15 @@ $(document).ready(function () {
 
         function getWeeks1() {
             var term = $('#term').val();
+            var timetableStyle = $('#timetableStyle').val();
+            var courseNo = $('#courseNo').val();
             // var data1 = JSON.stringify({
             //     "term": $('#term').val(),
             //     "type": 2,
             // });
             $.ajax({
                 // url: weekUrl + "?term=16&weekday=-1",
-                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=1&termId="+term,
+                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=1&termId="+term+"&timetableStyle="+timetableStyle+"&courseNo="+courseNo,
                 headers: {Authorization: getJWTAuthority()},
                 // data: data1,
                 // async: false,
@@ -158,16 +164,16 @@ $(document).ready(function () {
             console.log(data.othis); //得到美化后的DOM对象
             getWeeks1();
         });
-        $("#weekday").change(function () {
-            $(this).valid();
-            getClasses1();
-            getWeeks1();
-        });
-        $("#labRoom_id").change(function () {
-            $(this).valid();
-            getClasses1();
-            getWeeks1();
-        });
+        // $("#weekday").change(function () {
+        //     $(this).valid();
+        //     getClasses1();
+        //     getWeeks1();
+        // });
+        // $("#labRoom_id").change(function () {
+        //     $(this).valid();
+        //     getClasses1();
+        //     getWeeks1();
+        // });
         form.on('submit(timetableSubmit)', function(data){
             var data1;
                 var classs = "";
@@ -424,8 +430,8 @@ function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     JudgeConflictTimeTableVO.item = item;
     JudgeConflictTimeTableVO.teacher = teacher;
     JudgeConflictTimeTableVO.tutor = tutor;
-    JudgeConflictTimeTableVO.timetableStyle = 3;
-    JudgeConflictTimeTableVO.status = 10;
+    JudgeConflictTimeTableVO.timetableStyle = $('#timetableStyle').val();
+    JudgeConflictTimeTableVO.status = $('#status').val();
     JudgeConflictTimeTableVO.term = $("#term").val();
     return JudgeConflictTimeTableVO;
 }
@@ -455,14 +461,11 @@ function confirmLabRoom() {
         // cache:false,
         contentType:"application/json;charset=utf-8",
         success:function(data){
-            // if(data=="success"){
-            //     alert("审核完成");
-            //     window.location.reload();
-            // }
-            // else{
-            //     alert("审核未完成");
-            // }
-            console.log(data);
+            if(data){
+                window.location.reload();
+            }else{
+                alert("排课失败!")
+            }
         }
     });
 }

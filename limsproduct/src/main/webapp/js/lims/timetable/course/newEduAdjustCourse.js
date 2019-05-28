@@ -441,6 +441,24 @@ $(document).ready(function () {
         }
     })
 
+    /*
+     *学生判冲模式
+     */
+    $("#judgeTimetable").on('click', function () {
+        $('#submitButton').hide();
+        $('#eduAdiustCourse').hide();
+        $('#eduAdiust').show();
+        $('#judgeTimetable').hide();
+        $('#judgeTimetableCourse').show();
+    });
+    $("#eduAdiust").on('click', function () {
+        $('#judgeTimetableCourse').hide();
+        $('#eduAdiust').hide();
+        $('#judgeTimetable').show();
+        $('#eduAdiustCourse').show();
+        $('#submitButton').show();
+    });
+
     $("#form_lab").validate();
 
     $("#labRoom_id").change(function () {
