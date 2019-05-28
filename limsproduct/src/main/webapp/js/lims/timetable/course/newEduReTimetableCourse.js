@@ -439,7 +439,24 @@ $(document).ready(function () {
         } else {
             alert("请验证输入！");
         }
-    })
+    });
+    /*
+     *学生判冲模式
+     */
+    $("#judgeTimetable").on('click', function () {
+        $('#submitButton').hide();
+        $('#eduReTimetableCourse').hide();
+        $('#eduReTimetable').show();
+        $('#judgeTimetable').hide();
+        $('#judgeTimetableCourse').show();
+    });
+    $("#eduReTimetable").on('click', function () {
+        $('#judgeTimetableCourse').hide();
+        $('#eduReTimetable').hide();
+        $('#judgeTimetable').show();
+        $('#eduReTimetableCourse').show();
+        $('#submitButton').show();
+    });
 
     $("#form_lab").validate();
 

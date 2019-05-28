@@ -206,8 +206,8 @@ $(document).ready(function () {
                 data.field.sections = classs;
                 data.field.weeks = weekss;
                 data.field.termId = $("#term").val();
-                data.field.courseNo = "225151-17-10061363";
-                // data.field.courseNo = $("#courseNo").val();
+                // data.field.courseNo = "225151-17-10061363";
+                data.field.courseNo = $("#courseNo").val();
                 data.field.weekdays = weekdayss;
                 data1 = JSON.stringify(data.field);
                 if(data.field.sections == "" || data.field.weeks == "" || data.field.weekdays==""){
@@ -406,7 +406,7 @@ function chooseLabRoom() {
                 '.chzn-select-no-single' : {disable_search_threshold:10},
                 '.chzn-select-no-results': {no_results_text:'选项, 没有发现!'},
                 '.chzn-select-width'     : {width:"95%"}
-            }
+            };
             for (var selector in config) {
                 $(selector).chosen(config[selector]);
             }
@@ -415,8 +415,8 @@ function chooseLabRoom() {
 }
 function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     var JudgeConflictTimeTableVO = new Object();
-    JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
-    // JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
+    // JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
+    JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
     JudgeConflictTimeTableVO.weeks = weeks;
     JudgeConflictTimeTableVO.weekday = weekday;
     JudgeConflictTimeTableVO.classes = classes;
@@ -424,6 +424,8 @@ function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     JudgeConflictTimeTableVO.item = item;
     JudgeConflictTimeTableVO.teacher = teacher;
     JudgeConflictTimeTableVO.tutor = tutor;
+    JudgeConflictTimeTableVO.timetableStyle = 3;
+    JudgeConflictTimeTableVO.status = 10;
     return JudgeConflictTimeTableVO;
 }
 function confirmLabRoom() {
