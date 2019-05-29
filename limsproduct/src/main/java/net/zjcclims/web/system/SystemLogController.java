@@ -409,7 +409,13 @@ public class SystemLogController {
         //页面标记-1仪器借出一级页面2实验开出情况一级页面
         String type = request.getParameter("type");
 
-        StringBuffer sql = new StringBuffer("select distinct l from LabRoom l order by l.id asc");
+        StringBuffer sql = new StringBuffer("select distinct l from LabRoom l where 1=1");
+        if(request.getParameter("labname") != null && !request.getParameter("labname").equals("")){
+            String selectedLabname = request.getParameter("labname");
+            sql.append(" and l.labRoomName like'%" + selectedLabname + "%'");
+            mav.addObject("selectedLabname", selectedLabname);
+        }
+        sql.append(" order by l.id asc");
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -726,7 +732,8 @@ public class SystemLogController {
         String type = request.getParameter("type");
 
 
-        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o where 1=1");
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o,SchoolCourseInfo s");
+        sql.append(" where o.schoolCourseInfo.courseNumber = s.courseNumber");
 
         //实验通知单演示性实验查询条件
         if(Integer.valueOf(type) == 6){
@@ -738,11 +745,27 @@ public class SystemLogController {
         }
 
         //学期条件筛选
-        if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
-            int selectedTermId = Integer.valueOf(request.getParameter("term"));
-            sql.append(" and o.schoolTerm.id =" + selectedTermId);
-            mav.addObject("selectedTermId", selectedTermId);
+		if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
+			int selectedTermId = Integer.valueOf(request.getParameter("term"));
+			sql.append(" and o.schoolTerm.id =" + selectedTermId);
+			mav.addObject("selectedTermId", selectedTermId);
+		}
+
+		//实验内容条件筛选
+		if(request.getParameter("lpname") != null && !request.getParameter("lpname").equals("")){
+			String selectedLpname = request.getParameter("lpname");
+			sql.append(" and o.lpName like '%" + selectedLpname + "%' ");
+			mav.addObject("selectedLpname", selectedLpname);
+		}
+
+        //实验内容条件筛选
+        if(request.getParameter("lpcourse") != null && !request.getParameter("lpcourse").equals("")){
+            String selectedLpcourse = request.getParameter("lpcourse");
+
+            sql.append(" and s.courseName like '%" + selectedLpcourse + "%' " );
+            mav.addObject("selectedLpcourse", selectedLpcourse);
         }
+
         sql.append(" order by o.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
@@ -942,7 +965,8 @@ public class SystemLogController {
         //高一年级
         Object[] objectOne = new Object[7];
         //演示实验
-        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int oneCategory1 = systemLogService.listStatisticalTableOfExperiments(779,776,labRoomId);
         objectOne[0] = "高一年级";
         objectOne[1] = oneCategory1;
         objectOne[2] = oneCategory1;
@@ -953,7 +977,8 @@ public class SystemLogController {
             objectOne[3] = 0;
         }
         //分组实验
-        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int oneCategory2 = systemLogService.listStatisticalTableOfExperiments(779,777,labRoomId);
         objectOne[4] = oneCategory2;
         objectOne[5] = oneCategory2;
         if(oneCategory2!=0){
@@ -966,7 +991,8 @@ public class SystemLogController {
         //高二年级
         Object[] objectTwo = new Object[7];
         //演示实验
-        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int TwoCategory1 = systemLogService.listStatisticalTableOfExperiments(780,776,labRoomId);
         objectTwo[0] = "高二年级";
         objectTwo[1] = TwoCategory1;
         objectTwo[2] = TwoCategory1;
@@ -977,7 +1003,8 @@ public class SystemLogController {
             objectTwo[3] = 0;
         }
         //分组实验
-        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int TwoCategory2 = systemLogService.listStatisticalTableOfExperiments(780,777,labRoomId);
         objectTwo[4] = TwoCategory2;
         objectTwo[5] = TwoCategory2;
         if(TwoCategory2!=0){
@@ -990,7 +1017,8 @@ public class SystemLogController {
         //高三年级
         Object[] objectThree = new Object[7];
         //演示实验
-        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int threeCategory1 = systemLogService.listStatisticalTableOfExperiments(781,776,labRoomId);
         objectThree[0] = "高三年级";
         objectThree[1] = threeCategory1;
         objectThree[2] = threeCategory1;
@@ -1001,7 +1029,8 @@ public class SystemLogController {
             objectThree[3] = 0;
         }
         //分组实验
-        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int threeCategory2 = systemLogService.listStatisticalTableOfExperiments(781,777,labRoomId);
         objectThree[4] = threeCategory2;
         objectThree[5] = threeCategory2;
         if(threeCategory2!=0){

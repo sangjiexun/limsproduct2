@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.gvsun.lims.vo.OpenProjectRelatedReports.LaboratoryNoticeVO;
+import net.zjcclims.domain.OperationItem;
 import net.zjcclims.domain.SystemLog;
 import net.zjcclims.vo.QueryParamsVO;
 
@@ -111,6 +112,8 @@ public interface SystemLogService {
      * @Author Hezhaoyi 2019-5-10
      */
 	public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request);
+
+    public int listStatisticalTableOfExperiments(Integer openGrade,Integer categoryApp,Integer labRoomId);
     /**
      * Description 开放项目相关报表-实验计划表{导出excel}
      * @param request

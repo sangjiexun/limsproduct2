@@ -65,15 +65,15 @@
 	  <%--<div id="title">年度使用绩效评价表</div>--%>
 	<%--</div>--%>
 	
-	<div class="tool-box" style="display: none">
-		<form name="queryForm" action="${pageContext.request.contextPath}/log/listLabRoom?currpage=1" method="post">
+	<div class="tool-box" style="">
+		<form name="queryForm" action="${pageContext.request.contextPath}/log/listLabRoom?currpage=1&type=${type}" method="post">
 			 <ul>
-  				<%--<li><spring:message code="all.trainingRoom.labroom" />:<input type="text" id="roomName" name="roomName" value="${roomName}"/></li>--%>
-  				<%--<li>--%>
-					<%--<input type="submit" value="查询"/>--%>
-					<%--<input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>--%>
-  				  	<%--&lt;%&ndash;<input type="button" value="打印" onclick="btnPrintClick();"/>&ndash;%&gt;--%>
-			      <%--</li>--%>
+  				<li>实验室名称:<input type="text" id="labname" name="labname" value="${selectedLabname}"/></li>
+  				<li>
+					<input type="submit" value="查询"/>
+					<input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
+  				  	<%--<input type="button" value="打印" onclick="btnPrintClick();"/>--%>
+			      </li>
   				</ul>
 
 		<form>
