@@ -362,7 +362,7 @@ function chooseLabRoom() {
             str+="</caption>";
             str+="<thead>"
             str+="<tr>"
-            str+="<th>周次</th><th>星期</th><th>节次</th><th>项目</th><th>实验室</th><th>教师</th><th>助教</th><th>操作</th>"
+            str+="<th>周次</th><th>星期</th><th>节次</th><th>项目</th><th>实验室<font color='red'> *</font></th><th>教师<font color='red'> *</font></th><th>助教</th><th>操作</th>"
             str+="</tr>"
             str+="</thead>"
             str+="<tbody>"
@@ -436,6 +436,7 @@ function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     return JudgeConflictTimeTableVO;
 }
 function confirmLabRoom() {
+    var flag;
     console.log('确定');
     var JudgeConflictTimeTableVOs = [];
     $('#lab_stu tbody tr').each(function(i){
@@ -448,26 +449,34 @@ function confirmLabRoom() {
         var labRoomId = tdArr.eq(4).find("#resultsLabRoom_select").val();
         var teacher = tdArr.eq(5).find("#resultsTeacher_select").val();
         var tutor = tdArr.eq(6).find("#resultsTutor_select").val();
+        if($("#resultsLabRoom_select").val()==''||$("#resultsTeacher_select").val()==''){
+            alert("请填写必填项!")
+            flag = 1;
+        }
         JudgeConflictTimeTableVO = choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor);
         JudgeConflictTimeTableVOs.push(JudgeConflictTimeTableVO);
     });
     console.log(JSON.stringify(JudgeConflictTimeTableVOs))
-    $.ajax({
-        url: zuulUrl + "/api/school/apiSaveTimetableAppointmentByJudgeConflict",
-        headers: {Authorization: getJWTAuthority()},
-        type:'post',
-        data:JSON.stringify(JudgeConflictTimeTableVOs),
-        async:false,  // 设置同步方式
-        // cache:false,
-        contentType:"application/json;charset=utf-8",
-        success:function(data){
-            if(data){
-                window.location.reload();
-            }else{
-                alert("排课失败!")
+    if(flag == 1){
+        return false;
+    }else{
+        $.ajax({
+            url: zuulUrl + "/api/school/apiSaveTimetableAppointmentByJudgeConflict",
+            headers: {Authorization: getJWTAuthority()},
+            type:'post',
+            data:JSON.stringify(JudgeConflictTimeTableVOs),
+            async:false,  // 设置同步方式
+            // cache:false,
+            contentType:"application/json;charset=utf-8",
+            success:function(data){
+                if(data){
+                    window.location.reload();
+                }else{
+                    alert("排课失败!")
+                }
             }
-        }
-    });
+        });
+    }
 }
 function deleteTime(obj) {
     console.log("delete");

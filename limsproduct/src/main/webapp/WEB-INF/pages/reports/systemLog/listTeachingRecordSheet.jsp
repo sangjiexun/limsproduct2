@@ -152,7 +152,7 @@
                 <td>${curr[2]}</td>
 				<td> </td>
 				<td>
-					<label><input name="Fruit" type="radio" value="" />好 </label>
+					<label><input name="Fruit" type="radio" checked value="" />好 </label>
 					<label><input name="Fruit" type="radio" value="" />一般 </label>
 					<label><input name="Fruit" type="radio" value="" />其他 </label>
 				</td>
