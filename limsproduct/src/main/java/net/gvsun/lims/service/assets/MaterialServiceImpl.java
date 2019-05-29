@@ -230,7 +230,7 @@ public class MaterialServiceImpl implements MaterialService {
         List<MaterialListDTO> materialListDTOList = new ArrayList<>();
         String sql = "select ac.cname,a.id,a.ch_name,a.specifications,a.unit,a.price,a.factory,a.qRCode_url,a.cas,function from asset a LEFT JOIN asset_classification ac on a.category = ac.id where 1=1 ";
         if(keywords!=null&&!keywords.equals("")){
-            sql+="and a.ch_name like '%"+keywords+"%'";
+            sql+="and (a.ch_name like '%"+keywords+"%' or  a.cas like '%"+keywords+"%' or  ac.cname like '%"+keywords+"%') ";
         }
         if(kind!=null&&!kind.equals("")){
             sql+="and ac.id = '"+kind+"'";
@@ -449,7 +449,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tar. STATUS,\n" +
                 "\tar.asset_usage,\n" +
                 "\tac.is_need_return,\n" +
-                "  ar.cur_audit_level\n" +
+                "  ar.cur_audit_level,\n" +
+                "  ar.start_data\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON u.username = ar.app_user\n" +
@@ -485,7 +486,7 @@ public class MaterialServiceImpl implements MaterialService {
             AssetsReceiveDTO assetsReceiveDTO=new AssetsReceiveDTO();
             assetsReceiveDTO.setId(o[0]!=null?o[0].toString():null);
             assetsReceiveDTO.setBatchNumber(o[1]!=null?o[1].toString():null);
-            assetsReceiveDTO.setApplicationTime(o[2]!=null?o[2].toString():null);
+            assetsReceiveDTO.setApplicationTime(o[2]!=null?o[2].toString().substring(0,19):null);
             assetsReceiveDTO.setUsername(o[3]!=null?o[3].toString():null);
             assetsReceiveDTO.setGoodsCategory(o[4]!=null?o[4].toString():null);
             assetsReceiveDTO.setStatus(o[5]!=null?o[5].toString():null);
@@ -499,6 +500,7 @@ public class MaterialServiceImpl implements MaterialService {
                     assetsReceiveDTO.setAuditFlag(0);
                 }
             }
+            assetsReceiveDTO.setBeginTime(o[9]!=null?o[9].toString().substring(0,19):null);
             String appUser="";
             if(o[3]!=null){
                 appUser=o[3].toString();
@@ -1289,7 +1291,7 @@ public class MaterialServiceImpl implements MaterialService {
             Calendar calendar = Calendar.getInstance();
             assetReceive.setReceiveDate(calendar);//保存当前日期
             assetReceive.setUser(shareService.getUser());//保存申请人
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             //保存开始日期与结束日期
             Calendar calendarBegin = Calendar.getInstance();
             calendarBegin.setTime(sdf.parse(assetsReceiveDTO.getBeginTime()));
@@ -1303,9 +1305,12 @@ public class MaterialServiceImpl implements MaterialService {
             if(assetsReceiveDTO.getDepartment()!=null&&!assetsReceiveDTO.getDepartment().equals("")) {
                 assetReceive.setCenterId(Integer.parseInt(assetsReceiveDTO.getDepartment()));//保存中心
             }
-            String dateStr = sdf.format(calendar.getTime()).replace("-","");//获取日期编号
-            String appNo=this.getAssetsRelatedAppNo("Receive");//获取数量编号
-            assetReceive.setReceiveNo("SL"+dateStr+appNo);//保存编号
+            if(assetsReceiveDTO.getId()!=null&&!assetsReceiveDTO.getId().equals("")) {
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+                String dateStr = sdf2.format(calendar.getTime()).replace("-", "");//获取日期编号
+                String appNo = this.getAssetsRelatedAppNo("Receive");//获取数量编号
+                assetReceive.setReceiveNo("SL" + dateStr + appNo);//保存编号
+            }
             assetReceive.setAssetUsage(assetsReceiveDTO.getPurpose());//申领用途
             assetReceive.setStatus(0);//保存初始状态
             if (assetsReceiveDTO.getItemId()!=null) {
@@ -1667,12 +1672,12 @@ public class MaterialServiceImpl implements MaterialService {
         if(objects.size()!=0){
             Object[] o=objects.get(0);
             assetsReceiveDTO.setGoodsCategory(o[0]!=null?o[0].toString():null);//物资类别
-            assetsReceiveDTO.setApplicationTime(o[1]!=null?o[1].toString():null);//发起申领时间
+            assetsReceiveDTO.setApplicationTime(o[1]!=null?o[1].toString().substring(0,19):null);//发起申领时间
             assetsReceiveDTO.setUsername(o[2]!=null?o[2].toString():null);//申领人
             assetsReceiveDTO.setAcademyNumber(o[3]!=null?o[3].toString():null);//学院
             assetsReceiveDTO.setDepartment(o[4]!=null?o[4].toString():null);//中心
-            assetsReceiveDTO.setBeginTime(o[5]!=null?o[5].toString():null);//使用时间
-            assetsReceiveDTO.setEndTime(o[6]!=null?o[6].toString():null);//预计归还时间
+            assetsReceiveDTO.setBeginTime(o[5]!=null?o[5].toString().substring(0,19):null);//使用时间
+            assetsReceiveDTO.setEndTime(o[6]!=null?o[6].toString().substring(0,19):null);//预计归还时间
             assetsReceiveDTO.setBatchNumber(o[7]!=null?o[7].toString():null);//编号
             assetsReceiveDTO.setStatus(o[8]!=null?o[8].toString():null);//状态
             assetsReceiveDTO.setIsNeedReturn(o[9]!=null?Integer.parseInt(o[9].toString()):null);//是否需要归还
@@ -2374,7 +2379,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "GROUP BY asset_id) \n" +
                 "AS s ON s.asset_id = r.asset_id";
         if(cas!=null&&!"".equals(cas)){
-            sql += "\nWHERE a.cas LIKE'%"+cas+"%'";
+            sql += "\nwhere (a.cas LIKE '%"+cas+"%' or a.ch_name like '%"+cas+"%' or c.cname like '%"+cas+"%')";
         }
         sql += "\nGROUP BY r.asset_id";
         Query query=entityManager.createNativeQuery(sql);

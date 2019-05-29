@@ -48,7 +48,7 @@
             </div>
             <div class="layui-row">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">申领发起日期</label>
+                    <label class="layui-form-label">申领创建日期</label>
                     <div class="layui-input-block">
                         <input type="text" name="applicationTime"  lay-verify="required"  autocomplete="on" class="layui-input" disabled="disabled"/>
                     </div>

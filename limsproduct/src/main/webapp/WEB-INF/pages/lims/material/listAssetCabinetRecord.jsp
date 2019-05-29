@@ -27,7 +27,7 @@
         <blockquote class="layui-elem-quote">
             <div class="searchTable">
                 <div class="layui-inline">
-                    <input class="layui-input" name="cas" id="cas" autocomplete="off" placeholder="请输入cas号">
+                    <input class="layui-input" name="cas" id="cas" autocomplete="off" placeholder="cas号、物资名称或分类">
                 </div>
                 <button class="layui-btn" data-type="reload" id="searchCas">搜索</button>
             </div>

@@ -17,7 +17,7 @@ layui.use(['table','jquery','layer'], function(){
             ,first: false //不显示首页
             ,last: false //不显示尾页
             ,limit: 6
-            ,limits:[5,6,7,8,9,10,20]
+            ,limits:[5,10,20]
         }
         ,cols: [[
             {field:'assetId', title: '序号', fixed: true, type: 'numbers',minwidth: 80}

@@ -61,6 +61,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
             if(data.status!=='3'){
                 $("#reject").hide();
             }
+            if(isNeedReturn===0){
+                $("#return").hide();
+            }
         },
         error:function () {
             if(id!=""){
