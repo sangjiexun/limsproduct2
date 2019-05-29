@@ -99,6 +99,7 @@
 	    <th>实验类型</th>
 	    <th>计划时间</th>
 	    <th>学期</th>
+	    <th>所属课程</th>
 		<th>操作</th>
 	  </tr>
 	  </thead>
@@ -109,6 +110,7 @@
 			<td>${curr.getCDictionaryByLpCategoryApp().getCName()}</td>
 			<td>${curr.getPlanWeek()}</td>
 			<td>${curr.getSchoolTerm().getTermName()}</td>
+            <td>${curr.getSchoolCourseInfo().getCourseName()}</td>
 			<%--<td><a href="${pageContext.request.contextPath}/log/listItemClasses?currpage=1&itemId=${curr.id}">查看实验课次</a></td>--%>
 			<c:if test="${type == 6}">
 				<td><a href="${pageContext.request.contextPath}/log/listItemClasses?currpage=1&itemId=${curr.id}">查看实验课次</a></td>

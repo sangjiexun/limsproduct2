@@ -493,8 +493,8 @@ public class SystemLogServiceImpl implements SystemLogService {
 		int appointmentId = Integer.valueOf(request.getParameter("appointmentId"));
 		OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
 		LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
-		if(operationItem.getSystemSubject12()!=null){
-			laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+		if(operationItem.getSchoolCourseInfo()!=null){
+			laboratoryNoticeVO.setSubject(operationItem.getSchoolCourseInfo().getCourseName());
 		}
 		laboratoryNoticeVO.setItemName(operationItem.getLpName());
 		laboratoryNoticeVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
@@ -721,6 +721,29 @@ public class SystemLogServiceImpl implements SystemLogService {
         laboratoryNoticeVO.setInformationList(InformationList);
         return laboratoryNoticeVO;
     }
+
+    /**
+     * Description  根据实验室id查询实验开出个数
+     * @param openGrade
+     * @param categoryApp
+     * @param labRoomId
+     * @return
+     * @Author Hezhaoyi 2019-5-29
+     */
+	public int listStatisticalTableOfExperiments(Integer openGrade,Integer categoryApp,Integer labRoomId){
+
+        StringBuffer sql = new StringBuffer("SELECT DISTINCT * FROM operation_item oi");
+        sql.append(" LEFT JOIN item_plans ip ON ip.item_id = oi.id");
+        sql.append(" LEFT JOIN timetable_self_course tsc ON ip.self_course_id = tsc.id");
+        sql.append(" LEFT JOIN timetable_appointment ta ON ta.course_code = tsc.course_code");
+        sql.append(" LEFT JOIN timetable_lab_related tlr ON ta.id = tlr.appointment_id");
+        sql.append(" WHERE oi.lp_category_app =" + categoryApp);
+        sql.append(" AND oi.open_grade =" + openGrade);
+        sql.append(" AND tlr.lab_id =" + labRoomId);
+        int NumberOfExperiments = entityManager.createNativeQuery(sql.toString()).getResultList().size();
+
+    	return NumberOfExperiments;
+	}
     /**
      * Description 开放项目相关报表-实验计划表{导出excel}
      * @param request
