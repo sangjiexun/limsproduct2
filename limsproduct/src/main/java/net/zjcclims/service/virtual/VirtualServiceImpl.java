@@ -673,8 +673,6 @@ public class VirtualServiceImpl implements VirtualService {
                 }
                 imageIds = imageIds.substring(0, imageIds.length() - 1);
                 imageIds += ")";
-                StringBuffer hql1 = new StringBuffer("delete from virtual_image_reservation  where virtual_image not in " + imageIds);
-                entityManager.createNativeQuery(hql1.toString()).executeUpdate();
                 StringBuffer hql2 = new StringBuffer("delete from virtual_image  where id not in " + imageIds);
                 entityManager.createNativeQuery(hql2.toString()).executeUpdate();
 
