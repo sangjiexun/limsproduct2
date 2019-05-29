@@ -76,6 +76,12 @@
 							 </c:forEach>
 						 </select>
 					 </li>
+					 <li>实验内容:
+						 <input type="text" id="lpname" name="lpname" value="${selectedLpname}"/>
+					 </li>
+				 	<li>所属课程:
+						 <input type="text" id="lpcourse" name="lpcourse" value="${selectedLpcourse}"/>
+					 </li>
 					 <li>
 						 <input type="submit" value="查询"/>
 						 <input class="cancel-submit" type="button" value="取消" onclick="cancel();"/>
