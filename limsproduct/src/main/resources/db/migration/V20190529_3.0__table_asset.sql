@@ -1,7 +1,7 @@
 -- 修改asset相关表
 -- 吴奇臻 2019-5-18
 Drop table `asset_open_log`;
-Drop TABLE `asset_receive_allocation`
+Drop TABLE `asset_receive_allocation`;
 
 ALTER TABLE `asset_cabinet`
 ADD COLUMN `type`  int(11) NULL COMMENT '物品柜类型(1普通柜，2智能柜）' AFTER `capacity`,
