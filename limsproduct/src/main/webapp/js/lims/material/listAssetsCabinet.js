@@ -150,7 +150,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
             var index = layer.open({
                 type: 2 //此处以iframe举例
                 ,
-                title: '新建物品柜',
+                title: '新建存放地点',
                 area: ['390px', '500px'],
                 shade: 0,
                 maxmin: true  ,

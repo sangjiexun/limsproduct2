@@ -71,10 +71,12 @@ public class AssetCabinetWarehouse implements Serializable {
 
 	/**
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({ @JoinColumn(name = "asset_cabinet_id", referencedColumnName = "id") })
-	@XmlTransient
-	AssetCabinet assetCabinet;
+
+	@Column(name = "asset_cabinet_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer assetCabinetId;
+
 	
 	/**
 	 */
@@ -141,18 +143,14 @@ public class AssetCabinetWarehouse implements Serializable {
 		return this.warehouseName;
 	}
 
-	/**
-	 */
-	public void setAssetCabinet(AssetCabinet assetCabinet) {
-		this.assetCabinet = assetCabinet;
+	public Integer getAssetCabinetId() {
+		return assetCabinetId;
 	}
 
-	/**
-	 */
-	@JsonIgnore
-	public AssetCabinet getAssetCabinet() {
-		return assetCabinet;
+	public void setAssetCabinetId(Integer assetCabinetId) {
+		this.assetCabinetId = assetCabinetId;
 	}
+
 	/**
 	 */
 	public void setAssetReceiveAllocations(Set<AssetReceiveAllocation> assetReceiveAllocations) {
@@ -212,7 +210,7 @@ public class AssetCabinetWarehouse implements Serializable {
 		setId(that.getId());
 		setWarehouseCode(that.getWarehouseCode());
 		setWarehouseName(that.getWarehouseName());
-		setAssetCabinet(that.getAssetCabinet());
+		setAssetCabinetId(that.getAssetCabinetId());
 		setAssetReceiveAllocations(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>(that.getAssetReceiveAllocations()));
 		setAssetOpenLogs(new java.util.LinkedHashSet<net.zjcclims.domain.AssetOpenLog>(that.getAssetOpenLogs()));
 		setAssetCabinetWarehouseAccessRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccessRecord>(that.getAssetCabinetWarehouseAccessRecords()));

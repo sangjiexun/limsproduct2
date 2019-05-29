@@ -24,7 +24,7 @@
 		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
 			<legend>物品柜列表</legend>
 		</fieldset>
-		<button data-method="newAssetsCabinet" class="layui-btn layui-btn-xs layui-btn-normal apply_btn">新建物品柜</button>
+		<button data-method="newAssetsCabinet" class="layui-btn layui-btn-xs layui-btn-normal apply_btn">新建存放地点</button>
 		<table class="layui-hide add_progress" id="assetCabinetList" lay-filter="assetCabinetList"></table>
 		<script type="text/html" id="parentbar">
 			<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>

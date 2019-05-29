@@ -78,6 +78,31 @@ public class AssetCabinet implements Serializable {
 	@XmlElement
 	Integer capacity;
 
+	@Column(name="type")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer type;
+
+	@Column(name = "hardware_ip")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String hardwareIp;
+
+	@Column(name = "hardware_type")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String hardwareType;
+
+	@Column(name="server_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer serverId;
+
+	@Column(name = "location")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String location;
+
 	/**
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -85,9 +110,6 @@ public class AssetCabinet implements Serializable {
 	@XmlTransient
 	LabRoom labRoom;
 
-	@OneToMany(mappedBy = "assetCabinet", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetCabinetWarehouse> assetCabinetWarehouses;
 
 	/**
 	 */
@@ -159,21 +181,47 @@ public class AssetCabinet implements Serializable {
 		this.capacity = capacity;
 	}
 
-	/**
-	 */
-	public void setAssetCabinetWarehouses(Set<AssetCabinetWarehouse> assetCabinetWarehouses) {
-		this.assetCabinetWarehouses = assetCabinetWarehouses;
+	public Integer getType() {
+		return type;
 	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetCabinetWarehouse> getAssetCabinetWarehouses() {
-		if (assetCabinetWarehouses == null) {
-			assetCabinetWarehouses = new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouse>();
-		}
-		return assetCabinetWarehouses;
+	public void setType(Integer type) {
+		this.type = type;
 	}
+
+	public String getHardwareIp() {
+		return hardwareIp;
+	}
+
+	public void setHardwareIp(String hardwareIp) {
+		this.hardwareIp = hardwareIp;
+	}
+
+	public String getHardwareType() {
+		return hardwareType;
+	}
+
+	public void setHardwareType(String hardwareType) {
+		this.hardwareType = hardwareType;
+	}
+
+	public Integer getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(Integer serverId) {
+		this.serverId = serverId;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+
 
 	/**
 	 */
@@ -189,7 +237,6 @@ public class AssetCabinet implements Serializable {
 		setCabinetCode(that.getCabinetCode());
 		setCabinetName(that.getCabinetName());
 		setLabRoom(that.getLabRoom());
-		setAssetCabinetWarehouses(new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouse>(that.getAssetCabinetWarehouses()));
 	}
 
 	/**

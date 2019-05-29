@@ -2,34 +2,29 @@ package net.gvsun.lims.dto.assets;
 import java.io.Serializable;
 
 /************************************************************
- * Descriptions：物品柜
+ * Descriptions：物品柜具体信息
  *
  * @作者：吴奇臻
  * @时间：2019-03-31
  ************************************************************/
-public class AssetsCabinetDTO implements Serializable{
-    //1.ID
+public class AssetsCabinetWareHouseDTO implements Serializable{
+    //1.柜门ID
     private Integer id;
+    //1.柜门编号
+    private String wareHouseCode;
+    //2.柜门名称
+    private String wareHouseName;
     //2.物品柜编号
     private String cabinetCode;
-    //2.物品柜名称
-    private String cabinetName;
+    //2.物品柜id
+    private Integer cabinetId;
     //3.主要物品类别
     private String goodsCategory;
     //4.剩余库存容量
     private String capacity;
     //5.对应物资剩余容量
     private String quantity;
-    //6.物联硬件类型
-    private String hardwareType;
-    //7.物联IP
-    private String hardwareIp;
-    //8.物联服务器id
-    private String serverId;
-    //9.物品柜类型
-    private String type;
-    //10.存放地点
-    private String location;
+
 
 
     public Integer getId() {
@@ -46,14 +41,6 @@ public class AssetsCabinetDTO implements Serializable{
 
     public void setCabinetCode(String cabinetCode) {
         this.cabinetCode = cabinetCode;
-    }
-
-    public String getCabinetName() {
-        return cabinetName;
-    }
-
-    public void setCabinetName(String cabinetName) {
-        this.cabinetName = cabinetName;
     }
 
     public String getGoodsCategory() {
@@ -80,43 +67,27 @@ public class AssetsCabinetDTO implements Serializable{
         this.quantity = quantity;
     }
 
-    public String getHardwareType() {
-        return hardwareType;
+    public String getWareHouseCode() {
+        return wareHouseCode;
     }
 
-    public void setHardwareType(String hardwareType) {
-        this.hardwareType = hardwareType;
+    public void setWareHouseCode(String wareHouseCode) {
+        this.wareHouseCode = wareHouseCode;
     }
 
-    public String getHardwareIp() {
-        return hardwareIp;
+    public String getWareHouseName() {
+        return wareHouseName;
     }
 
-    public void setHardwareIp(String hardwareIp) {
-        this.hardwareIp = hardwareIp;
+    public void setWareHouseName(String wareHouseName) {
+        this.wareHouseName = wareHouseName;
     }
 
-    public String getServerId() {
-        return serverId;
+    public Integer getCabinetId() {
+        return cabinetId;
     }
 
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
+    public void setCabinetId(Integer cabinetId) {
+        this.cabinetId = cabinetId;
     }
 }

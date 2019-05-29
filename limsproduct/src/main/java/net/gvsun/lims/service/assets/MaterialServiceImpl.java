@@ -60,6 +60,8 @@ public class MaterialServiceImpl implements MaterialService {
     private AssetCabinetDAO assetCabinetDAO;
     @Autowired
     private OperationItemDAO operationItemDAO;
+    @Autowired
+    private AssetCabinetWarehouseDAO assetCabinetWarehouseDAO;
 
     /**
      * 物资分类列表
@@ -152,7 +154,25 @@ public class MaterialServiceImpl implements MaterialService {
         }
         return  schoolAcademyList;
     }
+    /**
+     * 获取所有物联服务器
 
+     * * @return SchoolAcademy
+     * @author 吴奇臻 2019-05-29
+     */
+    public List<CommonServer> findAllCommonServerList(){
+        String sql="select id,server_name from common_server";
+        Query query=entityManager.createNativeQuery(sql);
+        List<Object[]> objects=query.getResultList();
+        List<CommonServer> commonServerList=new ArrayList<>();
+        for(Object[] o:objects){
+            CommonServer commonServer=new CommonServer();
+            commonServer.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+            commonServer.setServerName(o[1]!=null?o[1].toString():null);
+            commonServerList.add(commonServer);
+        }
+        return  commonServerList;
+    }
     /**
      * 获取所有中心
 
@@ -723,6 +743,37 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     /**
+     * 智能物品柜具体信息列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * @author 吴奇臻 2019-5-29
+     */
+    public JSONObject findAllCabinetWareHoustList(Integer page, Integer limit,Integer id){
+        List<AssetsCabinetWareHouseDTO> assetsCabinetWareHouseDTOList=new ArrayList<>();
+        String sql="SELECT\n" +
+                "\tacw.id,\n" +
+                "\tacw.warehouse_code,\n" +
+                "\tacw.warehouse_name\n" +
+                "FROM\n" +
+                "\tasset_cabinet_warehouse acw\n" +
+                "where acw.asset_cabinet_id= "+id;
+        int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
+        Query query=entityManager.createNativeQuery(sql);
+        //分页
+        query.setMaxResults(limit);
+        query.setFirstResult((page-1)*limit);
+        List<Object[]> objects=query.getResultList();
+        for(Object[] o:objects){
+            AssetsCabinetWareHouseDTO assetsCabinetWareHouseDTO=new AssetsCabinetWareHouseDTO();
+            assetsCabinetWareHouseDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+            assetsCabinetWareHouseDTO.setWareHouseCode(o[1]!=null?o[1].toString():null);
+            assetsCabinetWareHouseDTO.setWareHouseName(o[2]!=null?o[2].toString():null);
+            assetsCabinetWareHouseDTOList.add(assetsCabinetWareHouseDTO);
+        }
+        JSONObject jsonObject=this.getJSON(assetsCabinetWareHouseDTOList,totalRecords);
+        return jsonObject;
+    }
+    /**
      * 物资出入库记录列表
      * @param page 页当前数
      * @param limit 当前页限制大小
@@ -949,6 +1000,29 @@ public class MaterialServiceImpl implements MaterialService {
         return flag;
     }
 
+    /**
+     * Description 保存智能柜具体信息
+     *
+     * @return 保存成功-true，失败-false
+     * @author 吴奇臻 2019-5-29
+     */
+    public boolean saveCabinetWareHouseDetail(AssetsCabinetWareHouseDTO assetsCabinetWareHouseDTO){
+        boolean flag=true;
+        AssetCabinetWarehouse assetCabinetWarehouse=new AssetCabinetWarehouse();
+        try{
+            if(assetsCabinetWareHouseDTO.getId()!=null&&!assetsCabinetWareHouseDTO.getId().equals("")) {
+                assetCabinetWarehouse.setId(assetCabinetWarehouse.getId());
+            }
+            assetCabinetWarehouse.setAssetCabinetId(assetsCabinetWareHouseDTO.getCabinetId());
+            assetCabinetWarehouse.setWarehouseCode(assetsCabinetWareHouseDTO.getWareHouseCode());
+            assetCabinetWarehouse.setWarehouseName(assetsCabinetWareHouseDTO.getWareHouseName());
+            assetCabinetWarehouseDAO.store(assetCabinetWarehouse);
+        }catch (Exception e){
+            e.printStackTrace();
+            flag=false;
+        }
+        return flag;
+    }
     /**
      * Description 保存物资申领条目
      * @param assetsApplyItemDTO 保存的数据封装DTO
@@ -1320,13 +1394,18 @@ public class MaterialServiceImpl implements MaterialService {
      */
     public AssetsCabinetDTO findAssetsCabinetById(Integer id){
         AssetsCabinetDTO assetsCabinetDTO=new AssetsCabinetDTO();
-        String sql="select id,cabinet_code,cabinet_name from asset_cabinet ac where ac.id="+id;
+        String sql="select id,cabinet_code,cabinet_name,type,location,hardware_ip,hardware_type,server_id from asset_cabinet ac where ac.id="+id;
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> objects=query.getResultList();
         Object[] o=objects.get(0);
         assetsCabinetDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
         assetsCabinetDTO.setCabinetCode(o[1]!=null?o[1].toString():null);
         assetsCabinetDTO.setCabinetName(o[2]!=null?o[2].toString():null);
+        assetsCabinetDTO.setType(o[3]!=null?o[3].toString():null);
+        assetsCabinetDTO.setLocation(o[4]!=null?o[4].toString():null);
+        assetsCabinetDTO.setHardwareIp(o[5]!=null?o[5].toString():null);
+        assetsCabinetDTO.setHardwareType(o[6]!=null?o[6].toString():null);
+        assetsCabinetDTO.setServerId(o[7]!=null?o[7].toString():null);
         return assetsCabinetDTO;
     }
     /**
@@ -2146,6 +2225,13 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinet.setId(assetsCabinetDTO.getId());
             assetCabinet.setCabinetCode(assetsCabinetDTO.getCabinetCode());
             assetCabinet.setCabinetName(assetsCabinetDTO.getCabinetName());
+            assetCabinet.setLocation(assetsCabinetDTO.getLocation());
+            assetCabinet.setType(Integer.parseInt(assetsCabinetDTO.getType()));
+            if(assetsCabinetDTO.getType().equals("2")){
+                assetCabinet.setHardwareIp(assetsCabinetDTO.getHardwareIp());
+                assetCabinet.setHardwareType("685");
+                assetCabinet.setServerId(Integer.parseInt(assetsCabinetDTO.getServerId()));
+            }
             assetCabinetDAO.store(assetCabinet);
         }catch (Exception e){
             e.printStackTrace();

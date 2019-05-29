@@ -190,6 +190,20 @@ public class MaterialController {
         JSONObject jsonObject = materialService.findAllAssetCabinetAccessRecordList(page,limit,id);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
+
+    /**
+     * 智能物品柜柜门列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * * @return json字符串格式的分类列表
+     * @author 吴奇臻 2019-05-29
+     */
+    @RequestMapping("/cabinetWareHouseList")
+    @ResponseBody
+    public String cabinetWareHouseList(@RequestParam Integer page, Integer limit,Integer id){
+        JSONObject jsonObject = materialService.findAllCabinetWareHoustList(page,limit,id);
+        return shareService.htmlEncode(jsonObject.toJSONString());
+    }
     /**
      * Description 保存物资名录
      * @param materialListDTO 参数封装DTO
@@ -231,6 +245,22 @@ public class MaterialController {
     @ResponseBody
     public String saveAddAssetsInStorageDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
         if(materialService.saveAddAssetsInStorageDetail(assetsApplyItemDTO)){
+            return "success";
+        }else{
+            return "fail";
+        }
+    }
+
+    /**
+     * Description 保存物资入库条目
+     *
+     * @return 成功-"success"，失败-"fail"
+     * @author 吴奇臻 2019-3-26
+     */
+    @RequestMapping("/saveCabinetWareHouse")
+    @ResponseBody
+    public String saveCabinetWareHouse(@RequestBody AssetsCabinetWareHouseDTO assetsCabinetWareHouseDTO){
+        if(materialService.saveCabinetWareHouseDetail(assetsCabinetWareHouseDTO)){
             return "success";
         }else{
             return "fail";
@@ -882,6 +912,19 @@ public class MaterialController {
         return assetsCabinetDTOList;
     }
     /**
+     * Description 获取所有物联服务器
+     *
+     * @return json字符串格式的物资分类数据
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/commonServerList")
+    @ResponseBody
+    public List<CommonServer> commonServerList() {
+        List<CommonServer> commonServerList=new ArrayList<>();
+        commonServerList=materialService.findAllCommonServerList();
+        return commonServerList;
+    }
+    /**
      * Description 获取所有物资名录
      *
      * @return json字符串格式的物资分类数据
@@ -1178,6 +1221,19 @@ public class MaterialController {
         ModelAndView mav = new ModelAndView();
         mav.addObject("id",id);
         mav.setViewName("lims/material/assetsCabinetDetail.jsp");
+        return mav;
+    }
+    /**
+     * 查看物资申购详情API
+     * * @return 跳转页面
+     * @author 吴奇臻 2019-3-24
+     */
+    @RequestMapping("/addCabinetWareHouseAPI")
+    public ModelAndView addCabinetWareHouseAPI( String id,String cabinetId){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("id",id);
+        mav.addObject("cabinetId",cabinetId);
+        mav.setViewName("lims/material/addCabinetWareHouse.jsp");
         return mav;
     }
     /**

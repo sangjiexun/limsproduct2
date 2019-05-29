@@ -80,7 +80,7 @@
             </div>
             <div class="layui-row" id="useAndReturn">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">开始使用时间</label>
+                    <label class="layui-form-label">申领使用时间</label>
                     <div class="layui-input-block">
                         <input type="text" id= "beginTime" name="beginTime"   placeholder="请选择开始时间" autocomplete="on" class="layui-input" disabled="disabled"/>
                     </div>
