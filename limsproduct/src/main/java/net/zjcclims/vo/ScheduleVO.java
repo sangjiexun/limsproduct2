@@ -10,6 +10,7 @@ public class ScheduleVO implements Serializable {
     private String item;// 项目
     private String address;// 上课地点
     private String teacher;// 教师
+    private String labRoomNumber;//实验室编号
 
     public String getSection() {
         return section;
@@ -67,5 +68,11 @@ public class ScheduleVO implements Serializable {
         this.teacher = teacher;
     }
 
+    public String getLabRoomNumber() {
+        return labRoomNumber;
+    }
 
+    public void setLabRoomNumber(String labRoomNumber) {
+        this.labRoomNumber = labRoomNumber;
+    }
 }

@@ -21,7 +21,7 @@
                 success:function (data) {
                     // 遍历课程表
                     for(var i=0; i<data.length; i++) {
-                        $("#table_"+data[i].weekday+"_"+data[i].section).html(data[i].course+"<br>"+data[i].item+"<br>"+data[i].address+"<br>"+data[i].weeks);
+                        $("#table_"+data[i].weekday+"_"+data[i].section).html(data[i].course+"<br>"+data[i].item+"<br>"+data[i].address+data[i].labRoomNumber+"<br>"+data[i].weeks);
                     }
                 }
             });
