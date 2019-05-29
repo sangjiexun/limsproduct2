@@ -114,10 +114,10 @@ public class VirtualImageReservation implements Serializable {
 	@XmlTransient
 	User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({ @JoinColumn(name = "virtual_image", referencedColumnName = "id") })
-	@XmlTransient
-	VirtualImage virtualImage;
+	@Column(name = "virtual_image")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String virtualImage;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({ @JoinColumn(name = "teacher", referencedColumnName = "username") })
@@ -188,11 +188,11 @@ public class VirtualImageReservation implements Serializable {
 		this.user = user;
 	}
 
-	public VirtualImage getVirtualImage() {
+	public String getVirtualImage() {
 		return virtualImage;
 	}
 
-	public void setVirtualImage(VirtualImage virtualImage) {
+	public void setVirtualImage(String virtualImage) {
 		this.virtualImage = virtualImage;
 	}
 

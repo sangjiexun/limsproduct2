@@ -4,6 +4,7 @@ import net.zjcclims.domain.LabRoom;
 import net.zjcclims.domain.VirtualImage;
 import net.zjcclims.domain.VirtualImageReservation;
 import net.zjcclims.vo.CourseSchedule;
+import net.zjcclims.vo.virtual.VirtualImageReservationVO;
 import net.zjcclims.web.virtual.StartVirtualImageByCourseSchedules;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface VirtualService {
+    /*************************************************************************************
+     * Description:通过预约记录得到预约的镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/29
+     *************************************************************************************/
+    public VirtualImage getVirtualImageByVirtualImageReservationID(Integer virtualImageReservationID);
     /*************************************************************************************
      * Description:得到所有虚拟实验室
      *
@@ -189,7 +197,7 @@ public interface VirtualService {
      * @date: 2019/1/6
      *************************************************************************************/
 
-    public List<VirtualImageReservation> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit);
+    public List<VirtualImageReservationVO> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit);
 
     /**
      * Description 获取实际审核状态

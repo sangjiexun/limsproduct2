@@ -143,8 +143,8 @@
 							<c:forEach items="${virtualImageReservations}" var="current" varStatus="i">
 
 								<tr>
-									<td>${current.virtualImage.name}</td>
-									<td>${current.user.cname}</td>
+									<td>${current.virtualImageName}</td>
+									<td>${current.userName}</td>
 									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${current.startTime.time}" /></td>
 									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${current.endTime.time}" /></td>
 									<td>${current.remarks}</td>
@@ -219,9 +219,9 @@
 										<jsp:useBean id="now" class="java.util.Date" />
 										<c:if test="${isAudit eq 2 && auditState.get(i.count-1)==-1 and current.startTime.time le now and current.endTime.time ge now}">
 										<a href="javascript:void(0)"
-											   onclick="VirtualLogin('${current.id}')">登录</a>
+											   onclick="VirtualLogin('${current.virtualImageReservationID}')">登录</a>
 										<a href="javascript:void(0)"
-											   onclick="VirtualLoginCitrix('${current.id}')">登录(直连)</a>
+											   onclick="VirtualLoginCitrix('${current.virtualImageReservationID}')">登录(直连)</a>
 										</c:if>
 									</td>
 								</tr>

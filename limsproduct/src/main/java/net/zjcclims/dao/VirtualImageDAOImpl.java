@@ -65,7 +65,7 @@ public class VirtualImageDAOImpl extends AbstractJpaDao<VirtualImage>
 	}
 
 	@Transactional
-	public VirtualImage findVirtualImageByPrimaryKey(Integer id) throws DataAccessException {
+	public VirtualImage findVirtualImageByPrimaryKey(String id) throws DataAccessException {
 
 		return findVirtualImageByPrimaryKey(id, -1, -1);
 	}
@@ -76,7 +76,7 @@ public class VirtualImageDAOImpl extends AbstractJpaDao<VirtualImage>
 	 */
 
 	@Transactional
-	public VirtualImage findVirtualImageByPrimaryKey(Integer id, int startResult, int maxRows) throws DataAccessException {
+	public VirtualImage findVirtualImageByPrimaryKey(String id, int startResult, int maxRows) throws DataAccessException {
 		try {
 			Query query = createNamedQuery("findVirtualImageByPrimaryKey", startResult, maxRows, id);
 			return (net.zjcclims.domain.VirtualImage) query.getSingleResult();

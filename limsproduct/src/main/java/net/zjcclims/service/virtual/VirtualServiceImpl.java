@@ -9,6 +9,7 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomAdminService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.vo.CourseSchedule;
+import net.zjcclims.vo.virtual.VirtualImageReservationVO;
 import net.zjcclims.web.common.PConfig;
 import net.zjcclims.web.virtual.StartVirtualImageByCourseSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,19 @@ public class VirtualServiceImpl implements VirtualService {
     private LabRoomAdminService labRoomAdminService;
     @Value("${virtualCallBackUrl}")
     public String virtualCallBackUrl;
+
+    /*************************************************************************************
+     * Description:通过预约记录得到预约的镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/29
+     *************************************************************************************/
+    public VirtualImage getVirtualImageByVirtualImageReservationID(Integer virtualImageReservationID){
+        String sql = "select v from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and vir.id="+virtualImageReservationID;
+        return virtualImageDAO.executeQuery(sql).size()>0?virtualImageDAO.executeQuery(sql).get(0):null;
+    }
+
+
 
     /*************************************************************************************
      * Description:得到所有虚拟实验室数量
@@ -614,8 +628,7 @@ public class VirtualServiceImpl implements VirtualService {
                         JSONObject b = (JSONObject) jac.get(j);
                         VirtualImage vi = new VirtualImage();
                         // 赋值
-                        vi.setId(Integer.parseInt(b.get("set_id")
-                                .toString()));
+                        vi.setId(b.get("set_id").toString());
                         vi.setName(b.get("set_name").toString());
                         //vi.set(b.get("set_code").toString());
                         vi.setHardwareSet(b.get("hardware_set").toString());
@@ -661,7 +674,7 @@ public class VirtualServiceImpl implements VirtualService {
                     JSONObject b = (JSONObject) jac.get(j);
                     VirtualImage vi = new VirtualImage();
                     // 赋值
-                    vi.setId(Integer.parseInt(b.get("set_id").toString()));
+                    vi.setId(b.get("set_id").toString());
                     vi.setName(b.get("set_name").toString());
                     //vi.setSet_code(b.get("set_code").toString());
                     vi.setHardwareSet(b.get("hardware_set").toString());
@@ -715,12 +728,10 @@ public class VirtualServiceImpl implements VirtualService {
                    VirtualImage vi = new VirtualImage();
                    // 赋值
                    // 临时保存citrix本地存储id
-                   vi.setId(100+i);
+                   vi.setId(jsonObject1.get("id").toString());
                    vi.setName(jsonObject1.get("name").toString());
                    // 临时保存citrix镜像桌面启动url
                    vi.setHardwareSet(jsonObject1.get("launchurl").toString());
-                   // 临时保存citrix镜像桌面id
-                   vi.setImageCode(jsonObject1.get("id").toString());
                    saveVirtualImage(vi);
                }
             }
@@ -917,7 +928,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @date: 2018/12/20
      *************************************************************************************/
     public String saveVirtualImageReservation(HttpServletRequest request) throws ParseException {
-        VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(Integer.parseInt(request.getParameter("VirtualImage")));
+        VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(request.getParameter("VirtualImage"));
         String startTime = request.getParameter("startTime");
         String endTime = request.getParameter("endTime");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -928,7 +939,7 @@ public class VirtualServiceImpl implements VirtualService {
         Calendar calendarEnd = Calendar.getInstance();
         calendarEnd.setTime(date2);
         VirtualImageReservation virtualImageReservation = new VirtualImageReservation();
-        virtualImageReservation.setVirtualImage(virtualImage);
+        virtualImageReservation.setVirtualImage(virtualImage.getId());
         virtualImageReservation.setStartTime(calendarStart);
         virtualImageReservation.setEndTime(calendarEnd);
         virtualImageReservation.setCreateTime(Calendar.getInstance());
@@ -1179,7 +1190,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @date: 2019/05/28
      *************************************************************************************/
     public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException{
-    VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(Integer.parseInt(request.getParameter("VirtualImage")));
+    VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(request.getParameter("VirtualImage"));
         String startTime = request.getParameter("startTime");
         String endTime = request.getParameter("endTime");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1190,7 +1201,7 @@ public class VirtualServiceImpl implements VirtualService {
         Calendar calendarEnd = Calendar.getInstance();
         calendarEnd.setTime(date2);
         VirtualImageReservation virtualImageReservation = new VirtualImageReservation();
-        virtualImageReservation.setVirtualImage(virtualImage);
+        virtualImageReservation.setVirtualImage(virtualImage.getId());
         virtualImageReservation.setStartTime(calendarStart);
         virtualImageReservation.setEndTime(calendarEnd);
         virtualImageReservation.setCreateTime(Calendar.getInstance());
@@ -1208,7 +1219,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @date: 2019/1/6
      *************************************************************************************/
 
-    public List<VirtualImageReservation> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit) {
+    public List<VirtualImageReservationVO> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit) {
         String sql = "select v from VirtualImageReservation v where 1=1 ";
         //暂未加查询
 	/*if(virtualImageReservation.getLabRoom()!= null && labReservation.getLabRoom().getLabRoomName() != null){
@@ -1323,7 +1334,22 @@ public class VirtualServiceImpl implements VirtualService {
             sql += " and v.auditResults=4";
         }
         sql += " order by v.id desc";
-        return virtualImageReservationDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
+        List<VirtualImageReservation> virtualImageReservations = virtualImageReservationDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
+        List<VirtualImageReservationVO> virtualImageReservationVOS =new ArrayList<>();
+        for (VirtualImageReservation v:virtualImageReservations){
+            VirtualImage virtualImage = getVirtualImageByVirtualImageReservationID(v.getId());
+            VirtualImageReservationVO virtualImageReservationVO=new VirtualImageReservationVO();
+            virtualImageReservationVO.setVirtualImageReservationID(v.getId());
+            virtualImageReservationVO.setVirtualImageName(virtualImage!=null?virtualImage.getName():"");
+            virtualImageReservationVO.setStartTime(v.getStartTime());
+            virtualImageReservationVO.setEndTime(v.getEndTime());
+            virtualImageReservationVO.setRemarks(v.getRemarks());
+            virtualImageReservationVO.setUserName(v.getUser().getCname());
+            virtualImageReservationVO.setAuditStage(v.getAuditStage());
+            virtualImageReservationVOS.add(virtualImageReservationVO);
+        }
+
+        return virtualImageReservationVOS;
 
     }
 
@@ -1474,10 +1500,10 @@ public class VirtualServiceImpl implements VirtualService {
             String post2 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt", params, headers);
             String post3 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/Resources/List", null, headers);
             VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
-            String icaString=virtualImageReservation.getVirtualImage().getHardwareSet();
+            String icaString=getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getHardwareSet();
             Map<String, String> paramsGet = new HashMap<>();
             //下载ica所需参数
-            paramsGet.put("launchId", virtualImageReservation.getVirtualImage().getImageCode());
+            paramsGet.put("launchId",getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getId());
             paramsGet.put("displayNameDesktopTitle", "Desktop");
             String json = HttpClientUtil.getWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/"+icaString, paramsGet, headers);
             //写入ica文件
@@ -1555,7 +1581,7 @@ public class VirtualServiceImpl implements VirtualService {
             //开始时间减少10分钟用于判断冲突
             startCalendar.add(Calendar.MINUTE, -10);
             String startTenTime = sdf.format(startCalendar.getTime());
-            String sql = "select v from VirtualImageReservation v where v.virtualImage.id=" + request.getParameter("VirtualImage");
+            String sql = "select v from VirtualImageReservation v where v.virtualImage='" + request.getParameter("VirtualImage")+"'";
             sql += " and ((v.startTime >='" + startTenTime + "' and v.startTime <='" + endTime + "')";
             //sql+=" or (v.endTime >='"+ startTime+"' and v.endTime <='"+endTime+"')";
             sql += " or (v.startTime <='" + startTenTime + "' and v.endTime >='" + startTenTime + "'))";

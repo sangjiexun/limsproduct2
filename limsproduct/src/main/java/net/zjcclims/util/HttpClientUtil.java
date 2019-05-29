@@ -293,21 +293,6 @@ public class HttpClientUtil {
         String result = EntityUtils.toString(response.getEntity(),"utf-8");
         System.out.println(result);
         store=client.getCookieStore();
-        /*//循环标志位，判断是否有新的cookie生成，有则写入
-        int j=0;
-        CookieStore storeNew = client.getCookieStore();
-        List<Cookie> cookieListNew = storeNew.getCookies();
-        for (int i=0;i<cookieListNew.size();i++){
-            for(Cookie cookie : cookieList){
-                if (cookie.getName().equals(cookieListNew.get(i).getName())){
-                    j++;
-                }
-            }
-            if (j<cookieList.size()){
-                cookieList.add(cookieListNew.get(i));
-            }
-            j=0;
-        }*/
         return result;
     }
 
@@ -357,7 +342,6 @@ public class HttpClientUtil {
         String result = EntityUtils.toString(response.getEntity(),"utf-8");
         System.out.println(result);
         store=client.getCookieStore();
-
         return result;
     }
 

@@ -14,6 +14,7 @@ import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.vo.CourseSchedule;
+import net.zjcclims.vo.virtual.VirtualImageReservationVO;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -290,7 +291,7 @@ public class VirtualController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUserDetail();
         int pageSize = 15;
-        List<VirtualImageReservation> virtualImageReservations = virtualService.findAllVirtualImageReservation(virtualImageReservation, page, pageSize, tage, isaudit);
+        List<VirtualImageReservationVO> virtualImageReservations = virtualService.findAllVirtualImageReservation(virtualImageReservation, page, pageSize, tage, isaudit);
         int totalRecords = virtualService.findAllVirtualImageReservation(virtualImageReservation, 0, 0, tage, isaudit).size();
         List<Integer> auditState = new ArrayList<>();
         List<String> auditShow = new ArrayList<>();
@@ -423,7 +424,6 @@ public class VirtualController<JsonResult> {
         Map<String, Integer> pageModel = shareService.getPage(page, pageSize,
                 totalRecords);
         mav.addObject("virtualImageReservations", virtualImageReservations);
-
         mav.addObject("auditState", auditState);
         mav.addObject("pageModel", pageModel);
         mav.addObject("totalRecords", totalRecords);
@@ -449,7 +449,7 @@ public class VirtualController<JsonResult> {
                                                   @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
-        VirtualImage virtualImage = virtualImageReservation.getVirtualImage();
+        VirtualImage virtualImage = virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId());
 //        state = labRoomService.getAuditNumber(labRoom, state);
         mav.addObject("state", state);
         mav.addObject("virtualImageReservation", virtualImageReservation);
@@ -539,7 +539,7 @@ public class VirtualController<JsonResult> {
                 isAuditUsers.addAll(shareService.findUsersByQuery("CFO",virtualImageReservation.getUser().getSchoolAcademy().getAcademyNumber()));
                 break;
             case "LABMANAGER":
-                isAuditUsers.addAll(labRoomDeviceService.findAdminByLrid(virtualImageReservation.getVirtualImage().getLabRoom().getId()));
+                isAuditUsers.addAll(labRoomDeviceService.findAdminByLrid(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getLabRoom().getId()));
                 break;
             case "EXCENTERDIRECTOR":
                 isAuditUsers.add(user1);
@@ -552,7 +552,7 @@ public class VirtualController<JsonResult> {
         if(state == curStage){//在此审核人审核阶段
             if (("ROLE_" + authName).equals(request.getSession().getAttribute("selected_role"))
                     && ((!"TEACHER".equals(authName) || virtualImageReservation.getTeacher().getUsername().equals(user.getUsername()))
-                    && (!"LABMANAGER".equals(authName) || labRoomDeviceService.getLabRoomAdmin(virtualImageReservation.getVirtualImage().getLabRoom().getId(), user.getUsername()))
+                    && (!"LABMANAGER".equals(authName) || labRoomDeviceService.getLabRoomAdmin(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getLabRoom().getId(), user.getUsername()))
                     && (!"CFO".equals(authName) || user.getSchoolAcademy().getAcademyNumber().equals(virtualImageReservation.getUser().getSchoolAcademy().getAcademyNumber()))
                     && (!"EXCENTERDIRECTOR".equals(authName) || user1.getUsername().equals(user.getUsername()))
             )) {//是审核人
@@ -618,7 +618,7 @@ public class VirtualController<JsonResult> {
             }
 
             // 实际审核状态
-            Integer auditNumber = virtualService.getAuditNumber(virtualImageReservation.getVirtualImage(), state);
+            Integer auditNumber = virtualService.getAuditNumber(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()), state);
 
             Map<String, String> params = new HashMap<>();
             params.put("businessType", pConfig.PROJECT_NAME + businessType);
@@ -706,7 +706,7 @@ public class VirtualController<JsonResult> {
                         String url = "http://10.2.39.41/v1/courseDesk";
                         Map<String, String> map = new HashMap();
                         map.put("num", "1");
-                        map.put("soft_id", virtualImageReservation.getVirtualImage().getId().toString());
+                        map.put("soft_id", virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getId());
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Calendar start= virtualImageReservation.getStartTime();
                         start.add(Calendar.MINUTE, -5);
