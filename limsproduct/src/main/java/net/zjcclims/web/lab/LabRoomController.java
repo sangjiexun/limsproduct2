@@ -1724,7 +1724,7 @@ public class LabRoomController<JsonResult> {
         }else if (pConfig.PROJECT_NAME.equals("zisulims")) {
             //卡号转换
             String cardNo = shareService.getUserDetail().getCardno();
-            return HttpClientUtil.doPost("http://"+ a.getCommonServer().getServerIp()+":80/opendoor?username='"+ cardNo +"'&doorNum=" + a.getDoorindex());
+            return HttpClientUtil.doPost("http://"+ a.getCommonServer().getServerIp()+":85/opendoor?username='"+ cardNo +"'&doorNum=" + a.getDoorindex());
         } else {
             String port = "";// 端口
             String ServIP = "";// 主机
