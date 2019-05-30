@@ -458,7 +458,7 @@ function confirmLabRoom() {
         var labRoomId = tdArr.eq(4).find("#resultsLabRoom_select").val();
         var teacher = tdArr.eq(5).find("#resultsTeacher_select").val();
         var tutor = tdArr.eq(6).find("#resultsTutor_select").val();
-        if($("#resultsLabRoom_select").val()==''||$("#resultsTeacher_select").val()==''){
+        if(tdArr.eq(4).find("#resultsLabRoom_select").val()==''||tdArr.eq(5).find("#resultsTeacher_select").val()==''){
             alert("请填写必填项!")
             flag = 1;
         }
