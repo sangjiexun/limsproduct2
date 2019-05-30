@@ -10,6 +10,7 @@ import net.zjcclims.domain.RemoteOpenDoor;
 import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomLendingService;
+import net.zjcclims.service.lab.LabRoomReservationService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
@@ -52,6 +53,8 @@ public class wxAPIController {
     private RemoteOpenDoorDAO remoteOpenDoorDAO;
     @Autowired
     private PConfig pConfig;
+    @Autowired
+    private LabRoomReservationService labRoomReservationService;
 
     /**
      * Description 实验室预约判冲接口
@@ -260,9 +263,7 @@ public class wxAPIController {
         }
 
         //可预约工位数
-        if (l.getLabRoomWorker()!=null && l.getLabRoomWorker()>0) {
-            sNum = l.getLabRoomWorker();
-        }
+        sNum = labRoomReservationService.findRestReservationStations(l.getId(), lendingTime, startTime, endTime);
 
         //返回
         String jsonItems = "[{\"flag\":\"" + res + "\",\"teac\":\"" + teac + "\",\"sNum\":\"" + sNum +"\"}]";
