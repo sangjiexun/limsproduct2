@@ -212,9 +212,14 @@ $(document).ready(function () {
                 data.field.sections = classs;
                 data.field.weeks = weekss;
                 data.field.termId = $("#term").val();
-                // data.field.courseNo = "225151-17-10061363";
-                data.field.courseNo = $("#courseNo").val();
                 data.field.weekdays = weekdayss;
+                if($("#timetableStyle").val() == 5){
+                    data.field.selfId = $("#selfId").val();
+                }else{
+                    // data.field.courseNo = "225151-17-10061363";
+                    data.field.courseNo = $("#courseNo").val();
+                }
+                data.field.timetableStyle = $("#timetableStyle").val();
                 data1 = JSON.stringify(data.field);
                 if(data.field.sections == "" || data.field.weeks == "" || data.field.weekdays==""){
                     alert("请选择周次/节次/星期!")
@@ -421,8 +426,12 @@ function chooseLabRoom() {
 }
 function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
     var JudgeConflictTimeTableVO = new Object();
-    // JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
-    JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
+    if($("#timetableStyle").val() == 5){
+        JudgeConflictTimeTableVO.selfId = $("#selfId").val();;
+    }else{
+        // JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
+        JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
+    }
     JudgeConflictTimeTableVO.weeks = weeks;
     JudgeConflictTimeTableVO.weekday = weekday;
     JudgeConflictTimeTableVO.classes = classes;

@@ -420,6 +420,25 @@ $(document).ready(function () {
         }
     })
 
+
+    /*
+     *学生判冲模式
+     */
+    $("#judgeTimetable").on('click', function () {
+        $('#submitButton').hide();
+        $('#selfReTimetableCourse').hide();
+        $('#selfReTimetable').show();
+        $('#judgeTimetable').hide();
+        $('#judgeTimetableCourse').show();
+    });
+    $("#selfReTimetable").on('click', function () {
+        $('#judgeTimetableCourse').hide();
+        $('#selfReTimetable').hide();
+        $('#judgeTimetable').show();
+        $('#selfReTimetableCourse').show();
+        $('#submitButton').show();
+    });
+
     $("#form_lab").validate();
 
     $("#labRoom_id").change(function () {
