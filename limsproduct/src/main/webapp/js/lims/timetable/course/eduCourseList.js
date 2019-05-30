@@ -468,7 +468,7 @@ function getTimetablePlanView() {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReNoGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>不分批排</span></a>&nbsp;";
                         if(eduNoBatch)
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>分批排课</span></a>&nbsp;";
-                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
+                        // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
                         result += "</td></tr></table>";
                     }
                 } else if (row.timetableStatus == 2) {
