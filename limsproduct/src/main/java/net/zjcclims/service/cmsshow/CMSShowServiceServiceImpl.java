@@ -21,6 +21,7 @@ import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 
 import net.zjcclims.util.HttpClientUtil;
+import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +55,8 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	private LabRoomAgentDAO labRoomAgentDAO;
 	@PersistenceContext
 	EntityManager entityManager;
-
+	@Autowired
+	private PConfig pConfig;
 	
 	
 	/*************************************************************************************
@@ -417,12 +419,15 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 
 		if(ip!=null&&!ip.equals("")){
-			sql+=" and c.hardwareid='"+ip+"' ";
+			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+				sql += " and c.doorindex = '"+ ip +"'";
+			}else {
+				sql+=" and c.hardwareid='"+ip+"' ";
+			}
 		}
 
 		if (commonHdwlog.getCardname()!=null&&!commonHdwlog.getCardname().equals("")) {
 			sql+=" and c.cardname like '%"+commonHdwlog.getCardname()+"%' ";
-
 		}
 		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
 			sql+=" and c.username like '%"+commonHdwlog.getUsername()+"%' ";
@@ -477,6 +482,24 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 				}
 			}
 			labAttendance.setStatus(commonHdwlog2.getStatus());
+			//浙外临时方法----------start--------------------
+			User user = null;
+			for (User us : userDAO.findUserByCardno(commonHdwlog2.getCardnumber())) {
+				user = us;
+				break;
+			}
+			if (user!=null) {
+				//姓名
+				labAttendance.setCname(user.getCname());
+				labAttendance.setUsername(user.getUsername());
+				if (user.getSchoolAcademy()!=null && user.getSchoolAcademy().getAcademyName()!=null) {
+					labAttendance.setAcademyName(user.getSchoolAcademy().getAcademyName());
+				}
+				if (user.getSchoolClasses()!=null && user.getSchoolClasses().getClassName()!=null) {
+					labAttendance.setClassName(user.getSchoolClasses().getClassName());
+				}
+			}
+			//浙外临时方法------------end--------------------
 			labAttendanceList.add(labAttendance);
 
 		}
@@ -495,10 +518,13 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 		
 		if(ip!=null&&!ip.equals("")){
-			sql+=" and c.hardwareid='"+ip+"' ";
+			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+				sql += " and c.doorindex = '"+ ip +"'";
+			}else {
+				sql+=" and c.hardwareid='"+ip+"' ";
+			}
 		}
-		
-		
+
 		if (commonHdwlog.getCardname()!=null&&!commonHdwlog.getCardname().equals("")) {
 			sql+=" and c.cardname like '%"+commonHdwlog.getCardname()+"%' ";
 			

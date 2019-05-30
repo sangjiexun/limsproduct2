@@ -858,8 +858,12 @@ public class LabReservationController<JsonResult> {
 			videoAgentId = lev.getLabRoomAgentByVideoId().getId();
 		}
 		mav.addObject("videoAgentId",videoAgentId);
-		String ip=agent.getHardwareIp();
-		String port=agent.getManufactor();
+		String ip = agent.getHardwareIp();
+		//浙外临时方法
+		if (pConfig.PROJECT_NAME.equals("zisulims")) {
+			ip = agent.getDoorindex().toString();
+		}
+		String port = agent.getManufactor();
 		// 设置分页变量并赋值为20
 		//int pageSize = CommonConstantInterface.INT_PAGESIZE;
 		int pageSize = 30;
