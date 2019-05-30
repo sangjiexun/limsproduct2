@@ -349,19 +349,20 @@ public class SystemLogController {
             String Asset = "";
             if(itemAssets.size()!=0){
                 for(ItemAssets itemAsset : itemAssets){
-                    Asset = Asset + itemAsset.getAsset().getChName();
+                    Asset = Asset + itemAsset.getAsset().getChName() + "、";
                 }
             }
+			Asset = Asset.substring(0, Asset.length()-1);
             experimentalScheduleVO.setItemAssets(Asset);
             //器材-实验设备
-            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
-            String device = "";
-            if(operationItemDevices.size()!=0){
-                for(OperationItemDevice operationItemDevice : operationItemDevices){
-                    device = device + operationItemDevice.getSchoolDevice().getDeviceName();
-                }
-            }
-            experimentalScheduleVO.setItemDecvices(device);
+//            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+//            String device = "";
+//            if(operationItemDevices.size()!=0){
+//                for(OperationItemDevice operationItemDevice : operationItemDevices){
+//                    device = device + operationItemDevice.getSchoolDevice().getDeviceName()+ "、";
+//                }
+//            }
+//            experimentalScheduleVO.setItemDecvices(device);
             //实验类型
             if(operationItem.getCDictionaryByLpCategoryApp()!=null){
                 experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
@@ -758,7 +759,7 @@ public class SystemLogController {
 			mav.addObject("selectedLpname", selectedLpname);
 		}
 
-        //实验内容条件筛选
+        //所属课程条件选
         if(request.getParameter("lpcourse") != null && !request.getParameter("lpcourse").equals("")){
             String selectedLpcourse = request.getParameter("lpcourse");
 

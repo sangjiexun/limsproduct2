@@ -556,8 +556,6 @@ public class SystemLogServiceImpl implements SystemLogService {
 				object[1] = asset.getSpecifications();
 				//单位
 				object[2] = asset.getUnit();
-				//数量
-                object[3] = itemAssets.getAmount();
 
 				StringBuffer sql = new StringBuffer("SELECT a FROM AssetReceive a WHERE a.operationItem.id="+ operationItem.getId());
 				List<AssetReceive> assetReceiveList = entityManager.createQuery(sql.toString()).getResultList();
@@ -567,6 +565,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 					for(AssetReceiveRecord assetReceiveRecord :assetReceive.getAssetReceiveRecords()){
 						object[3] = assetReceiveRecord.getQuantity();
 						if(assetReceiveRecord.getReturnQuantity()!=null){
+						    //归还数量
 							object[4] = assetReceiveRecord.getReturnQuantity();
 						}
 					}
@@ -781,34 +780,39 @@ public class SystemLogServiceImpl implements SystemLogService {
             String Asset = "";
             if(itemAssets.size()!=0){
                 for(ItemAssets itemAsset : itemAssets){
-                    Asset = Asset +" "+ itemAsset.getAsset().getChName();
+                    Asset = Asset +" "+ itemAsset.getAsset().getChName() + "、";
                 }
             }
+            Asset = Asset.substring(0, Asset.length()-1);
             map.put("itemAssets", Asset);//实验物资
-            //器材-实验设备
-            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
-            String device = "";
-            if(operationItemDevices.size()!=0){
-                for(OperationItemDevice operationItemDevice : operationItemDevices){
-                    device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
-                }
-            }
-            map.put("itemDecvices", device);//实验设备
+//            //器材-实验设备
+//            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+//            String device = "";
+//            if(operationItemDevices.size()!=0){
+//                for(OperationItemDevice operationItemDevice : operationItemDevices){
+//                    device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
+//                }
+//            }
+//            map.put("itemDecvices", device);//实验设备
             if(operationItem.getCDictionaryByLpCategoryApp()!=null){
                 map.put("itemCategory", operationItem.getCDictionaryByLpCategoryApp().getCName());//实验类型
             }
             if(operationItem.getPlanWeek()!=null){
                 map.put("planTime", operationItem.getPlanWeek());//计划时间
             }
+            //学期
+            if(operationItem.getSchoolTerm()!=null){
+                map.put("termName", operationItem.getSchoolTerm().getTermName()); // 学期
+            }
             list.add(map);
         }
 		//实验室遍历
 		SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
 		String title = schoolTerm.getTermName()+"实验计划表";
-		String[] hearders = new String[]{"序号", "实验内容", "实验物资", "实验设备",
-				"实验类型", "计划时间", "备注"};//表头数组
-		String[] fields = new String[]{"serial number", "itemName", "itemAssets", "itemDecvices", "itemCategory",
-				"planTime", "notes"};
+		String[] hearders = new String[]{"序号", "实验内容", "实验物资", /*"实验设备",*/
+				"实验类型", "计划时间", "学期","备注"};//表头数组
+		String[] fields = new String[]{"serial number", "itemName", "itemAssets", /*"itemDecvices", */"itemCategory",
+				"planTime","termName", "notes"};
 		TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
 		JsGridReportBase report = new JsGridReportBase(request, response);
 		report.exportExcel(title, shareService.getUserDetail().getCname(), schoolTerm.getTermName(), td);
@@ -893,7 +897,8 @@ public class SystemLogServiceImpl implements SystemLogService {
             term = Integer.parseInt(request.getParameter("term"));
         }
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 8 order by arr.id asc");
+        sql.append(" WHERE (arr.assetReceive.status = 4 OR arr.assetReceive.status = 5)");
+        sql.append(" AND arr.asset.category = 8 order by arr.id asc");
         Query query = entityManager.createQuery(sql.toString());
         // 当前页打印条件
         if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
@@ -1012,7 +1017,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 
         StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr ,AssetReceive ar");
         sql.append(" where ar.id = arr.assetReceive.id");
-        sql.append(" and ar.status = 4 and arr.asset.id = "+ assetId);
+        sql.append(" and (arr.assetReceive.status = 4 or arr.assetReceive.status = 5) and arr.asset.id = "+ assetId);
         sql.append(" order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
