@@ -1,5 +1,6 @@
 package net.gvsun.lims.api.wxAPI;
 
+import com.alibaba.fastjson.JSON;
 import net.zjcclims.dao.LabRoomAgentDAO;
 import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.dao.RemoteOpenDoorDAO;
@@ -10,6 +11,7 @@ import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomLendingService;
 import net.zjcclims.service.lab.LabRoomService;
+import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +29,9 @@ import java.net.SocketAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller("wxAPIController")
 @RequestMapping("/wxAPI")
@@ -194,6 +198,77 @@ public class wxAPIController {
     @RequestMapping("/openAgent")
     public String openAgent(@RequestParam Integer flag, String insUid) throws IOException {
         return labRoomService.syncSmartAgent(flag,insUid);
+    }
+
+    /**
+     * Description 工位预约判冲接口
+     * @param labRoomId 实验室id
+     * @param lendingTimeStr 使用日期
+     * @param startTimeStr 使用开始时间
+     * @param endTimeStr 使用结束时间
+     * @return flag=1可预约，teac=1需要教师审核，sNum可预约工位数
+     */
+    @ResponseBody
+    @RequestMapping("/judgeConflictForStation")
+    public String judgeConflictForStation(@RequestParam Integer labRoomId, @RequestParam String lendingTimeStr,
+                                          @RequestParam String startTimeStr, @RequestParam String endTimeStr) {
+        //是否可预约参数
+        int res = 0;
+        //是否导师审核参数
+        int teac = 0;
+        //可预约工位数
+        int sNum = 0;
+        //时间判冲-{判断是否可预约}
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+        Calendar lendingTime = Calendar.getInstance();
+        Calendar startTime = Calendar.getInstance();
+        Calendar endTime = Calendar.getInstance();
+        try {
+            lendingTime.setTime(sdfDate.parse(lendingTimeStr));
+            startTime.setTime(sdfTime.parse(startTimeStr));
+            endTime.setTime(sdfTime.parse(endTimeStr));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "[{\"res\":\"" + res + "\",\"teac\":\"" + teac + "\",\"sNum\":\"" + sNum +"\"}]";
+        }
+        LabRoom l = labRoomDAO.findLabRoomById(labRoomId);
+        String acno = l.getLabCenter().getSchoolAcademy().getAcademyNumber();
+        res = labRoomLendingService.findLendingEnableOrNot(labRoomId, lendingTime, startTime, endTime, acno);
+
+        //是否需要导师审核
+        boolean flag = false;
+        String[] RSWITCH = {"on", "off"};
+        String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
+        Map<String, String> params = new HashMap<>();
+        params.put("businessUid", "-1");
+        params.put("businessType",pConfig.PROJECT_NAME + "StationReservation");
+        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
+        Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
+        if (auditConfigs != null && auditConfigs.size() != 0) {
+            for (int i = 0; i < auditConfigs.size(); i++) {
+                String[] text = ((String) auditConfigs.get(i + 1)).split(":");
+                if (text[0].equals(auditLevelName[0])) {
+                    flag = text[1].equals(RSWITCH[0]);
+                    break;
+                }
+            }
+        }
+        if (flag) {
+            teac = 1;
+        }
+
+        //可预约工位数
+        if (l.getLabRoomWorker()!=null && l.getLabRoomWorker()>0) {
+            sNum = l.getLabRoomWorker();
+        }
+
+        //返回
+        String jsonItems = "[{\"flag\":\"" + res + "\",\"teac\":\"" + teac + "\",\"sNum\":\"" + sNum +"\"}]";
+        System.out.println(jsonItems);
+
+        return jsonItems;
     }
 
 }
