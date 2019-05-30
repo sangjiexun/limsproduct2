@@ -291,7 +291,7 @@ public class LabRoomController<JsonResult> {
         mav.setViewName("lab/lab_room/listLabRoomOpenDoor.jsp");
 
         mav.addObject("labRoom", labRoom);
-        mav.addObject("7",shareService.getPage(currpage, pageSize, totalRecords));
+        mav.addObject("pageModel",shareService.getPage(currpage, pageSize, totalRecords));
 
         mav.addObject("page",currpage);
 

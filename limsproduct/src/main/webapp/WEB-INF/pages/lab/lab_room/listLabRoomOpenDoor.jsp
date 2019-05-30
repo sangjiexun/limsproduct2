@@ -84,24 +84,10 @@
 </head>
 
 <body>
-<script type="text/javascript">
-    //门禁
-    function opendoor(agentId){
-        $.post('${pageContext.request.contextPath}/labRoom/openDoorPython?agentId='+agentId+'',function(data){  //serialize()序列化
-            if(data=="sucess"){
-                alert("门禁已经打开");
-            }else{
-                alert("开门失败，请检查当网络连接或者再试一次。");
-            }
-
-        });
-    }
-</script>
 <div class="navigation">
 	<div id="navigation">
 		<ul>
-			<li><a href="javascript:void(0)"><spring:message code="all.trainingInfo.management" /></a></li>
-			<li class="end"><a href="javascript:void(0)"><spring:message code="left.training.management"/></a></li>
+			<li class="end"><a href="javascript:void(0)">实验室远程开门</a></li>
 		</ul>
 	</div>
 </div>
@@ -198,17 +184,17 @@
 					<!-- 分页[s] -->
 					<div class="page" >
 						${pageModel.totalRecords}条记录,共${pageModel.totalPage}页
-						<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=1&orderBy=${orderBy }&type=1')" target="_self">首页</a>
-						<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=${pageModel.previousPage}&orderBy=${orderBy }&type=1')" target="_self">上一页</a>
+						<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoomOpenDoor?currpage=1')" target="_self">首页</a>
+						<a href="javascript:void(0)" onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoomOpenDoor?currpage=${pageModel.previousPage}')" target="_self">上一页</a>
 						第<select onchange="targetUrl(this.options[this.selectedIndex].value)">
-						<option value="${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=${pageModel.currpage}&orderBy=${orderBy }&type=1">${pageModel.currpage}</option>
+						<option value="${pageContext.request.contextPath}/labRoom/listLabRoomOpenDoor?currpage=${pageModel.currpage}">${pageModel.currpage}</option>
 						<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">
 							<c:if test="${j.index!=pageModel.currpage}">
-								<option value="${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=${j.index}&orderBy=${orderBy }&type=1">${j.index}</option>
+								<option value="${pageContext.request.contextPath}/labRoom/listLabRoomOpenDoor?currpage=${j.index}">${j.index}</option>
 							</c:if>
 						</c:forEach></select>页
-						<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=${pageModel.nextPage}&orderBy=${orderBy }&type=1')" target="_self">下一页</a>
-						<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoom?currpage=${pageModel.lastPage}&orderBy=${orderBy }&type=1')" target="_self">末页</a>
+						<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoomOpenDoor?currpage=${pageModel.nextPage}')" target="_self">下一页</a>
+						<a href="javascript:void(0)"  onclick="targetUrl('${pageContext.request.contextPath}/labRoom/listLabRoomOpenDoor?currpage=${pageModel.lastPage}')" target="_self">末页</a>
 					</div>
 					<!-- 分页[e] -->
                     <!-- 下拉框的js -->
@@ -232,24 +218,5 @@
 		</div>
 	</div>
 </div>
-
-<script type="text/javascript">
-    $("#labright").click(function() { //向右删除下拉框的值   向左增加下拉框的值 的点击事件
-        $("#labone option:selected").appendTo("#labtwo");
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $("#lableft").click(function() { //向左删除下拉框的值   向右增加下拉框的值  的点击事件
-        $("#labtwo option:selected").appendTo("#labone");
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $("#peopleright").click(function() { //向右删除下拉框的值   向左增加下拉框的值 的点击事件
-        $("#peopleone option:selected").appendTo("#peopletwo");
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $("#peopleleft").click(function() { //向左删除下拉框的值   向右增加下拉框的值  的点击事件
-        $("#peopletwo option:selected").appendTo("#peopleone");
-        $('.selectpicker').selectpicker('refresh');
-    });
-</script>
 </body>
 </html>
