@@ -391,6 +391,34 @@ public class LabRoomServiceImpl implements LabRoomService {
 		}
 		return labRoomDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
 	}
+	/**
+	 * 获取可开门实验室数据
+	 * @author 刘博越
+	 * 2019.5.29
+	 */
+	@Override
+	public List<LabRoom> findLabRoomOpenDoorByLabCenter(Integer currpage, Integer pageSize, LabRoom labRoom, String username, HttpServletRequest request, String acno) {
+//		String sql = "select l from LabRoom l,l.labRoomAdmins ld, l.labRoomAgents la where ld.user.username = '"+username+"'"+
+//				" and la.CDictionary.CName='门禁'";
+//		if(labRoom.getLabRoomName()!=null){
+//			sql += " and l.labRoomName like "+labRoom.getLabRoomName();
+//		}
+//		sql += " order by l.id asc";
+//		Query query= entityManager.createQuery(sql);
+//		List<LabRoom> courses = query.getResultList();
+//		return courses;
+
+		StringBuffer hql = new StringBuffer("select distinct l from LabRoom l");
+		hql.append(" join l.labRoomAdmins d join l.labRoomAgents a");
+		hql.append(" where 1=1 and d.user.username = '"+username+"' and a.CDictionary.CName ='门禁'");
+		if(labRoom.getLabRoomName()!=null&&!labRoom.getLabRoomName().equals("")){
+			hql.append(" and l.labRoomName like '%"+labRoom.getLabRoomName()+"%'");
+		}
+		hql.append(" order by l.id asc");
+		List<LabRoom> labRooms = labRoomDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
+		return labRooms;
+
+	}
 
 	/**
 	 * 根据是否可以开门进行排序

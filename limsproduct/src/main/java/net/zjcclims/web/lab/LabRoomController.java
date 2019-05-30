@@ -213,9 +213,7 @@ public class LabRoomController<JsonResult> {
         int totalRecords=0;
         if(type==ConstantInterface.LAB_FOR_ROOM) {// 实验室
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 1, labRoom,9, request, acno).size();
-            List<LabRoom> listLabRoom = labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno);
-            mav.addObject("listLabRoom", labRoomService.sortLabRoomByAgent(listLabRoom,shareService.getUserDetail().getUsername()));
-            //mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
+            mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
             // 本学院所有可用实验室-批量添加管理员
             List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
             mav.addObject("labRoomList", labRoomList);
@@ -268,6 +266,34 @@ public class LabRoomController<JsonResult> {
 //        }
         // 当前用户
         mav.addObject("username", shareService.getUserDetail().getUsername());
+
+        return mav;
+    }
+    /************************************************************
+     * @功能：实验室可开门列表页面
+     * @作者：刘博越
+     * @时间：2019.5.29
+     ************************************************************/
+    @RequestMapping("/listLabRoomOpenDoor")
+    public ModelAndView listLabRoomOpenDoor(@RequestParam int currpage,
+                                    @ModelAttribute LabRoom labRoom,
+                                    @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+        int pageSize = CommonConstantInterface.INT_PAGESIZE;
+        int totalRecords=0;
+        // 当前用户
+        String username = shareService.getUserDetail().getUsername();
+        mav.addObject("username", username);
+
+        totalRecords = labRoomService.findLabRoomOpenDoorByLabCenter(1, -1, labRoom,username, request, acno).size();
+        List<LabRoom> listLabRoom = labRoomService.findLabRoomOpenDoorByLabCenter(1, -1, labRoom,username, request, acno);
+        mav.addObject("listLabRoom", listLabRoom);
+        mav.setViewName("lab/lab_room/listLabRoomOpenDoor.jsp");
+
+        mav.addObject("labRoom", labRoom);
+        mav.addObject("7",shareService.getPage(currpage, pageSize, totalRecords));
+
+        mav.addObject("page",currpage);
 
         return mav;
     }
