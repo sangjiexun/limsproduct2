@@ -304,10 +304,10 @@ function getTimetablePlanView() {
                 var rt = "";
                 var timetableDTOs = row.timetableDTOs;
                 if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                    rt += '<table id="tb'+index+'" border="1"><tr><td width="13%">批/组</td><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="18%">实验室</td><td width="15%">授课教师</td><td width="18%">实验项目</td><td width="7%">名单</td></tr>';
+                    rt += '<table id="tb'+index+'" border="1"><tr><td width="13%">批/组</td><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="18%">实验室</td><td width="15%">授课教师</td><td width="7%">名单</td></tr>';
                 }
                 if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                    rt += '<table border="1"><tr><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="32%">实验室</td><td width="15%">授课教师</td><td width="32%">实验项目</td></tr>';
+                    rt += '<table border="1"><tr><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="32%">实验室</td><td width="15%">授课教师</td></tr>';
                 }
                 var count = Number(0);
                 for (var i = 0, len = timetableDTOs.length; i < len; i++) {
@@ -315,11 +315,11 @@ function getTimetablePlanView() {
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.selfId + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + result + "</td></tr>";
                         rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td></tr>";
                     }
                 }
                 if (timetableDTOs.length > 0) {
@@ -328,6 +328,11 @@ function getTimetablePlanView() {
                 return rt;
             }
         }, {
+            title: "上课班级",
+            field: "classInfo",
+            width: "10%",
+            sortable: true
+        },{
             title: "上课教师",
             field: "cname",
             width: "6%",
