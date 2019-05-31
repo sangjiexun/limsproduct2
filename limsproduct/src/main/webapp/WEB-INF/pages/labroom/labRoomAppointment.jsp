@@ -329,54 +329,8 @@
         }
     </script>
     <style type="text/css">
-        /*#labRoom_chzn, #usingObj_chzn {*/
-            /*width: 200px !important;*/
-        /*}*/
-
         #formid table tr td, th {
             text-align: left;
-        }
-
-        .btn_reser {
-            text-align: center;
-            border: none !important;
-            padding: 10px 0 !important;
-            background: #eee;
-            border-bottom: 1px solid #eee !important;
-            position: relative;
-        }
-
-        .btn_reser:hover {
-            opacity: 0.9;
-        }
-
-        .btn_reser:after {
-            content: "";
-            height: 100%;
-            width: 6px;
-            padding: 0 0 2px 0;
-            background: #fff;
-            position: absolute;
-            right: 0;
-            top: -1px;
-        }
-
-        .br_top {
-            position: absolute;
-            left: -1px;
-            top: -1px;
-            width: 100%;
-            height: 4px;
-            background: #fff;
-        }
-
-        .br_btm {
-            position: absolute;
-            left: -1px;
-            bottom: -1px;
-            width: 100%;
-            height: 4px;
-            background: #fff;
         }
 
         .btn_reser a {
@@ -390,22 +344,8 @@
             padding: 0 9px !important;
         }
 
-        .br_selected {
-            background: #77bace;
-            border-bottom: 1px solid #77bace !important;
-        }
-
         .br_selected a {
             color: #fff;
-        }
-
-        .cf:after {
-            display: block;
-            content: "gvsun";
-            height: 0;
-            clear: both;
-            overflow: hidden;
-            visibility: hidden;
         }
 
         .tool-box input {
@@ -496,10 +436,6 @@
             white-space: nowrap;
         }
 
-        .datebox,
-        .spinner {
-            margin: 0 12px 0 0;
-        }
     </style>
 </head>
 <body>
@@ -538,22 +474,9 @@
         <div class="TabbedPanelsTabGroup-box">
             <div class="TabbedPanelsContentGroup">
                 <div class="TabbedPanelsContent">
-                    <div>
-                        <%--<ul class="btn_reser cf">
-                            <li ><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a></li>
-                            <li class="selected"><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1">实训室预约</a></li>
-                        </ul>
-                    --%></div>
                     <form id="formid" method="POST" autocomplete="off">
                         <table class="tab_lab">
                             <tr>
-                                <%--实验室预约/工位预约分拆--%>
-                                <%--<td rowspan="3" class="btn_reser">
-                                    <c:if test="${jobReservation eq 'true'}">
-                                        <div class="br_btm"></div>
-                                        <a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a>
-                                    </c:if>
-                                </td>--%>
                                 <th><spring:message code="all.trainingRoom.labroom"/>名称</th>
                                 <td>
                                     <select class="chzn-select" id="labRoom" onchange="selectLabRoom();onChangeDate();">
@@ -564,13 +487,6 @@
                                             <option id="selectChoose" value="请选择" selected="selected">--请选择--</option>
                                         </c:if>
                                         <c:forEach items="${labRooms}" var="lab">
-                                            <%--<c:if test="${selectedRoomId==labRoom.id }">--%>
-                                            <%--<option value="${labRoom.id}"--%>
-                                            <%--selected="selected" onselect="selectLabRoom(${labRoom.id})">${labRoom.labRoomName }</option>--%>
-                                            <%--</c:if>--%>
-                                            <%--<c:if test="${selectedRoomId!=labRoom.id }">--%>
-                                            <%--<option value="${labRoom.id}">${labRoom.labRoomName }</option>--%>
-                                            <%--</c:if>--%>
                                             <option value="${lab.id}">${lab.labRoomName }(${lab.labRoomNumber})</option>
                                         </c:forEach>
                                     </select>
@@ -581,15 +497,6 @@
                                            value="<fmt:formatDate value="${labReservation.lendingTime.time}" pattern="yyyy-MM-dd"/>"
                                            onclick="WdatePicker({minDate:'%y-%M-{%d}',dateFmt:'yyyy-MM-dd',onpicked:function(){onChangeDate();}})" />
                                     <font class="space"></font>
-                                    <%--预约开始时间&nbsp;:--%>
-                                    <%--<input class="easyui-timespinner" id="starttime" name="starttime" type="text"--%>
-                                           <%--style="width:80px;" required="required"--%>
-                                           <%--value="<fmt:formatDate value="${labReservation.startTime.time}" pattern="HH:SS"/>"/>--%>
-                                    <%--<font class="space"></font>--%>
-                                    <%--预约结束时间&nbsp;:--%>
-                                    <%--<input class="easyui-timespinner" id="endtime" name="endtime" type="text"--%>
-                                           <%--style="width:80px;" required="required"--%>
-                                           <%--value="<fmt:formatDate value="${labReservation.endTime.time}" pattern="HH:SS"/>"/>--%>
                                     预约时间&nbsp;:
                                     <select class="chzn-select" name="reservationTime" id="reservationTime" style="" multiple>
 
@@ -637,12 +544,6 @@
                                             </c:if>
                                         </c:forEach>
                                     </select>
-                                    <!-- <select class="chzn-select" id="usingObj">
-                                            <option>学生</option>
-                                            <option>教师</option>
-                                    </select> -->
-                                    <%--<input id="lendingUnit" name="lendingUnit" required="true"--%>
-                                    <%--value="${labReservation.lendingUnit }" type="text"/>--%>
                                 </td>
                                 <th>使用人数<span style="color:red;">*</span></th>
                                 <td>
@@ -656,18 +557,9 @@
                                 </td>
                             </tr>
                             <tr>
-                                <%--<sec:authorize ifNotGranted="ROLE_STUDENT">--%>
                                 <c:if test="${!fn:contains('zjcclims',PROJECT_NAME)
 							or sessionScope.selected_role ne 'ROLE_STUDENT'}">
-                                    <%--实验室预约/工位预约分拆--%>
-                                    <%--<td rowspan="2" class="btn_reser br_selected btn_labr"
-                                        style="background:#77bace;border-bottom:1px solid #77bace;vertical-align: middle;">
-                                        <div class="br_top"></div>
-                                        <a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1"><spring:message
-                                                code="all.trainingRoom.labroom"/>预约</a>
-                                    </td>--%>
                                 </c:if>
-                                <%--</sec:authorize>--%>
                                 <th>预约原因<span style="color:red;">*</span></th>
                                 <td colspan="5">
                                     <textarea id="reason" type="text" placeholder="请填写相关事项、议题或内容、主要参加人员等信息"
@@ -747,7 +639,6 @@
                                             <td>${s.labRoomWorker}</td>
                                         </c:if>
                                         <td>
-                                                <%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXCENTERDIRECTOR,ROLE_TEACHER,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_ASSISTANT">--%>
                                             <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN'
 									|| sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR'
 									|| sessionScope.selected_role eq 'ROLE_TEACHER'
@@ -761,10 +652,8 @@
                                                     <a href="javascript:void(0)"
                                                        onclick="viewLabRoomTrainingRest(${s.id})">预约培训</a>
                                                 </c:if>
-                                                <%--<a onclick="judgeAccess(${s.id})">预约</a>--%>
-                                                <a onclick="judgeAccess(${s.id})">预约</a>
-                                                <%--<a href="${pageContext.request.contextPath}/labRoomLending/labRoomLendingInfoList?idKey=${s.id}&flag=1&step=0">查看</a>
-                                                <%--&ndash;%&gt;</sec:authorize>--%>
+<%--                                                <a onclick="judgeAccess(${s.id})">预约</a>--%>
+                                                <%--<a href="${pageContext.request.contextPath}/labRoomLending/labRoomLendingInfoList?idKey=${s.id}&flag=1&step=0">查看</a>--%>
                                             </c:if>
                                         </td>
                                     </tr>
@@ -856,6 +745,7 @@
 
                         //保存实训室借用
                         function saveLabRoomLending() {
+                            // layer.msg('正在提交请稍候...', {icon: 16});
                             if ($("#labRoom").val() == "请选择") {
                                 alert("请选择实验室");
                                 return false;
@@ -901,7 +791,6 @@
                                 return false;
                             }
 
-                            alert("您的预约正在提交，请勿重复操作");
                             var labRoomId = $("#labRoom").val();
                             var myData = {
                                 'lendingTime': $("input[name='lendingTime']").val(),
@@ -919,25 +808,25 @@
                             };
                             $.ajax({
                                 type: "POST",
-                                url: "${pageContext.request.contextPath}/labRoomLending/saveLabRoomLending?labRoomId=" + labRoomId,
+                                url: "${pageContext.request.contextPath}/LabRoomReservation/saveLabReservation?labRoomId=" + labRoomId,
                                 data: myData,
                                 dataType: 'text',
                                 success: function (data) {
-                                    console.log(data);
-                                    if (data == "reserved") {
-                                        alert("借用失败，您选的时间段已经被预约！");
-                                    } else if (data == "lent") {
-                                        alert("借用失败，您选的时间段已经被借用！");
-                                    } else if (data == "noDean") {
-                                        alert("借用失败，未找到您所属学院的系主任！");
-                                    } else if (data == "error") {
-                                        alert("您还未通过培训,请先预约培训!");
+                                    layer.msg("删除成功", {icon: 1});
+                                    console.log("输出："+data+"{fail:保存,noSerial:创建流水单,noStatus:创建审核单,noTeacher:无需教师审核更新,noAudit:无需审核}");
+                                    if (data == "fail") {
+                                        layer.msg('预约失败,发生未知错误!', {icon: 5});
+                                    }else if (data == "noSerial") {
+                                        layer.msg('预约失败,操作流水单出错!', {icon: 5});
+                                    }else if (data == "noStatus") {
+                                        layer.msg('预约失败,创建审核单出错!', {icon: 5});
+                                    }else if (data == "noTeacher") {
+                                        layer.msg('预约失败,发生未知错误!', {icon: 5});
+                                    }else if (data == "noAudit") {
+                                        layer.msg("预约无需审核，欢迎使用!", {icon: 1});
                                         window.location.reload();
-                                    } else if (data == "errorType2") {
-                                        alert("您还未通过单独培训!");
-                                        window.location.reload();
-                                    } else {
-                                        alert("操作成功，请等待审核！");
+                                    }else {
+                                        layer.msg("预约成功，请等待审核!", {icon: 1});
                                         window.location.href = "${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1"
                                     }
                                 },

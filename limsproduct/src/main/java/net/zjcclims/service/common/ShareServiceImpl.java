@@ -29,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -2890,11 +2891,6 @@ System.out.println("二维码路径："+url);
 	 */
 	@Override
 	public boolean getAuditOrNot(String businessType) {
-//		StringBuffer hql = new StringBuffer("select * from audit_setting c where c.type='"+ businessType +"'");
-//		Query query = entityManager.createNativeQuery(hql.toString());
-//		List<Object[]> queryHQLs = new ArrayList<Object[]>(query.getResultList());
-//		Object[] obj = queryHQLs.get(0);
-//		if(obj[3].equals(true)) {
 		String status = "";
 		Map<String, String> params = new HashMap<>();
 		params.put("projectName", pConfig.PROJECT_NAME);
@@ -3025,4 +3021,56 @@ System.out.println("二维码路径："+url);
 			return false;
 		}
 	}
+
+	/**
+	 * Description 保存业务流水单
+	 * @param businessAppUid
+	 * @param businessType
+	 * @return
+	 * @throws Exception
+	 * @author 陈乐为 2019年5月27日
+	 */
+	@Override
+	public String saveAuditSerialNumbers(@RequestParam String businessAppUid, String businessType) {
+		String uuid = UUID.randomUUID().toString();
+		Query query = entityManager.createNativeQuery("call proc_audit_serial_number('"+uuid+"','"+businessAppUid+"','"+businessType+"',true)");
+		// 获取list对象
+		List<Object> list = query.getResultList();
+		String str = "noSerial";
+		for (Object obj : list) {
+			str = obj.toString();
+			break;
+		}
+		return str;
+	}
+
+	/**
+	 * Description 查询业务的当前流水单
+	 * @param businessAppUid
+	 * @param businessType
+	 * @return
+	 * @author 陈乐为 2019年5月27日
+	 */
+	public String getSerialNumber(@RequestParam String businessAppUid, String businessType) {
+		String sql = "select uuid from audit_serial_number where business_id='"+businessAppUid+"' and business_type='"+businessType+"' and enable=1";
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> list = query.getResultList();
+		String str = "fail";
+		for (Object obj : list) {
+			str = obj.toString();
+			break;
+		}
+		return str;
+	}
+
+	/**
+	 * Description 删除流水单
+	 * @param uuid
+	 * @author 陈乐为 2019年5月28日
+	 */
+	public void deleteSerialNumber(@RequestParam String uuid) {
+		StringBuffer hql1 = new StringBuffer("delete from audit_serial_number where uuid='"+uuid+"'");
+		entityManager.createNativeQuery(hql1.toString()).executeUpdate();
+	}
+
 }

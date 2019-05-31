@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import excelTools.People;
 import net.zjcclims.domain.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -773,4 +774,30 @@ public interface ShareService {
 	 * @author 黄保钱 2019-5-11
 	 */
 	boolean getExtendItem(String businessType);
+
+	/**
+	 * Description 保存业务流水单
+	 * @param businessAppUid
+	 * @param businessType
+	 * @return
+	 * @throws Exception
+	 * @author 陈乐为 2019年5月27日
+	 */
+	public String saveAuditSerialNumbers(@RequestParam String businessAppUid, String businessType);
+
+	/**
+	 * Description 查询业务的当前流水单
+	 * @param businessAppUid
+	 * @param businessType
+	 * @return
+	 * @author 陈乐为 2019年5月27日
+	 */
+	public String getSerialNumber(@RequestParam String businessAppUid, String businessType);
+
+	/**
+	 * Description 删除流水单
+	 * @param uuid
+	 * @author 陈乐为 2019年5月28日
+	 */
+	public void deleteSerialNumber(@RequestParam String uuid);
 }
