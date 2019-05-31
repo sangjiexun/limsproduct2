@@ -1541,7 +1541,6 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		String searchflg = request.getParameter("searchflg");
 		if(searchflg != null && searchflg != ""){
 			if(worker != null && worker != ""){
-
 				if(searchflg.equals("1")){
 					hql+=" and l.labRoomWorker = " + worker;
 				}else if(searchflg.equals("2")){

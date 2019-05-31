@@ -259,9 +259,9 @@
                                 <th>开放范围</th>
                                 <td colspan="3">
                                     <select class="chzn-select" multiple id="selectedSchoolAcademy">
-                                        <c:if test="${isAll ne 1}">
+                                        <%--<c:if test="${isAll ne 1}">
                                             <option value="-1">全校</option>
-                                        </c:if>
+                                        </c:if>--%>
                                         <c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
                                             <option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
                                         </c:forEach>

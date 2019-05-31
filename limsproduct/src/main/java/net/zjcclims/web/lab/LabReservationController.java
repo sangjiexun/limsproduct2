@@ -348,28 +348,28 @@ public class LabReservationController<JsonResult> {
 
 		int pageSize = 30;
 
-		List<LabRoom> finList = labReservationService.findLabRoompage(labRoom, page, pageSize);
-		List<Map> list = new ArrayList<Map>();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		for (LabRoom f : finList) {
-			Map map = new HashMap();
-			map.put("operationoutlineName", f.getLabRoomName());
-			if (f.getUser() != null) {
-				map.put("user", f.getUser().getCname());
-			} else {
-				map.put("user", "");
-			}
-			map.put("classno", f.getLabRoomNumber());
-			map.put("classname", f.getLabRoomAddress());
-
-			list.add(map);
-		}
-		String title = "项目列表";
-		String[] hearders = new String[] { "实验室名称", "创建者", "实验室编号", "实验室地址" };// 表头数组
-		String[] fields = new String[] { "operationoutlineName", "user", "classno", "classname" };// Financialresources对象属性数组
-		TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
-		JsGridReportBase report = new JsGridReportBase(request, response);
-		report.exportToExcel(title, shareService.getUser().getCname(), td);
+//		List<LabRoom> finList = labReservationService.findLabRoompage(labRoom, page, pageSize);
+//		List<Map> list = new ArrayList<Map>();
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//		for (LabRoom f : finList) {
+//			Map map = new HashMap();
+//			map.put("operationoutlineName", f.getLabRoomName());
+//			if (f.getUser() != null) {
+//				map.put("user", f.getUser().getCname());
+//			} else {
+//				map.put("user", "");
+//			}
+//			map.put("classno", f.getLabRoomNumber());
+//			map.put("classname", f.getLabRoomAddress());
+//
+//			list.add(map);
+//		}
+//		String title = "项目列表";
+//		String[] hearders = new String[] { "实验室名称", "创建者", "实验室编号", "实验室地址" };// 表头数组
+//		String[] fields = new String[] { "operationoutlineName", "user", "classno", "classname" };// Financialresources对象属性数组
+//		TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
+//		JsGridReportBase report = new JsGridReportBase(request, response);
+//		report.exportToExcel(title, shareService.getUser().getCname(), td);
 
 	}
 
