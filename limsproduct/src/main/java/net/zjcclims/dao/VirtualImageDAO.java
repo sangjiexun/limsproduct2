@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public interface VirtualImageDAO extends
 		JpaDao<VirtualImage> {
-	public VirtualImage findVirtualImageByPrimaryKey(Integer id) throws DataAccessException;
+	public VirtualImage findVirtualImageByPrimaryKey(String id) throws DataAccessException;
 
-	public VirtualImage findVirtualImageByPrimaryKey(Integer id, int startResult, int maxRows) throws DataAccessException;
+	public VirtualImage findVirtualImageByPrimaryKey(String id, int startResult, int maxRows) throws DataAccessException;
 }

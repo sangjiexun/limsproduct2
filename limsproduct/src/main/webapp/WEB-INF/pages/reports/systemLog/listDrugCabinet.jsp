@@ -73,7 +73,7 @@
 	  <tr>
 	    <th>药品柜编号</th>
 	    <th>药品柜名称</th>
-	    <th>实验室名称</th>
+	    <%--<th>实验室名称</th>--%>
 		<th>操作</th>
 	  </tr>
 	  </thead>
@@ -82,7 +82,7 @@
 	  <tr>
 	    <td>${curr.cabinetCode}</td>
 	    <td>${curr.cabinetName}</td>
-	    <td>${curr.getLabRoom().getLabRoomName()}</td>
+	    <%--<td>${curr.getLabRoom().getLabRoomName()}</td>--%>
 	    <td><a href="${pageContext.request.contextPath}/log/listDrugDepotRegistrationForm?currpage=1&cabinetId=${curr.id}">查看出库登记表</a></td>
 	  </tr>
 	  </c:forEach>

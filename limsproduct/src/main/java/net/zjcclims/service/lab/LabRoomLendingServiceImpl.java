@@ -503,7 +503,11 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                 calendar.set(Calendar.MINUTE,0);
                 calendar.set(Calendar.HOUR_OF_DAY,0);
                 if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
-                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                    if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+                        HttpClientUtil.doGet("http://10.50.20.100:85/setplan");
+                    }else {
+                        labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                    }
                 }
                 TimetableAppointment timetableAppointment = new TimetableAppointment();
                 timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);

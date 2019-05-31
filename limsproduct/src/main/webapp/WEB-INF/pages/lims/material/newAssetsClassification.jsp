@@ -298,7 +298,7 @@
             </div>
             <div class="layui-row">
                 <div class="layui-col-lg12">
-                    <label class="layui-form-label">是否归还</label>
+                    <label class="layui-form-label">是否走借用流程</label>
                     <div class="layui-input-block">
                         <input type="checkbox" name="isReturn" id="isNeedReturn" lay-skin="switch">
                     </div>

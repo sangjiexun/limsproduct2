@@ -62,6 +62,7 @@
 			 <ul>
 				 <li>学期:
 					 <select id="term" name="term" class="chzn-select" style="width:160px;">
+						 <option value="">请选择</option>
 						 <c:forEach items="${schoolTermList}" var="curr">
 							 <c:if test="${curr.id eq selectedTermId}">
 								 <option value="${curr.id }" selected="selected">${curr.termName}</option>
@@ -88,7 +89,7 @@
 	    <th>序号</th>
 	    <th>实验内容</th>
 	    <th>实验物资</th>
-	    <th>仪器设备</th>
+	    <%--<th>仪器设备</th>--%>
 	    <th>实验类型</th>
 	    <th>计划时间</th>
 	    <th>学期</th>
@@ -101,7 +102,7 @@
 	    <td>${status.index + 1}</td>
 	    <td>${curr.itemName}</td>
 	    <td>${curr.itemAssets}</td>
-	    <td>${curr.itemDecvices}</td>
+	    <%--<td>${curr.itemDecvices}</td>--%>
 	    <td>${curr.itemCategory}</td>
 	    <td>${curr.planTime}</td>
 	    <td>${curr.termName}</td>

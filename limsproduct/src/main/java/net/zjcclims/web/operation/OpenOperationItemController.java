@@ -1070,6 +1070,7 @@ public class OpenOperationItemController<JsonResult> {
 					assetsReceiveDTO.setEndTime(endStr);
 
 					assetsReceiveDTO.setDepartment(operationItem.getLabCenter().getId().toString());
+					assetsReceiveDTO.setItemId(operationItem.getId());
 					assetsReceiveDTO.setGoodsCategory(operationItem.getItemAssets().iterator().next().getAsset().getCategory().toString());
 					Integer assetsReceiveId = materialService.saveAssetsReceiveDetail(assetsReceiveDTO);
 
@@ -1079,14 +1080,24 @@ public class OpenOperationItemController<JsonResult> {
 						assetsApplyItemDTO.setAppId(assetsReceiveId.toString());
 						assetsApplyItemDTO.setAssetsId(itemAssets.getAsset().getId().toString());
 						Integer quantity = 0;
-						if(timetableSelfCourse.getItemPlans().iterator().next().getType() == 1){
-							List<TimetableBatch> batches = timetableBatchDAO.executeQuery("select tb from TimetableBatch tb where tb.selfId = " + selfId);
-							for(TimetableBatch tb: batches){
-								for (TimetableGroup tg: tb.getTimetableGroups()){
-									quantity += tg.getNumbers();
-								}
-							}
-						}
+						if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {
+						    quantity = 1;
+                        }else {
+                            if (timetableSelfCourse.getItemPlans().iterator().next().getType() == 1 || timetableSelfCourse.getItemPlans().iterator().next().getType() == 3) {//分批自选、分批直排
+                                for (TimetableGroup group : ta.getTimetableGroups()) {
+                                    quantity += group.getNumbers();
+                                }
+//							List<TimetableBatch> batches = timetableBatchDAO.executeQuery("select tb from TimetableBatch tb where tb.selfId = " + selfId);
+//							for(TimetableBatch tb: batches){
+//								for (TimetableGroup tg: tb.getTimetableGroups()){
+//									quantity += tg.getNumbers();
+//								}
+//							}
+                            } else {
+                                quantity = timetableSelfCourse.getTimetableCourseStudents().size();
+                            }
+                        }
+						quantity = quantity*itemAssets.getAmount();//每组实验用量*学生数
 						assetsApplyItemDTO.setQuantity(quantity);
 						// 物品柜
 						String cabinetId = materialService.allocateCabinetFromAssets(itemAssets.getAsset().getId(),quantity,0,assetsReceiveId);

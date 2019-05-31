@@ -28,108 +28,7 @@
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/My97DatePicker/WdatePicker.js"></script>
-
-
-
-    <script type="text/javascript">
-
-        //分页跳转
-        function targetUrl(url) {
-            document.form.action = url;
-            document.form.submit();
-        }
-        function saveReservation(){
-            //判断预约时间是否为当前时间的十分钟后
-            var now=new Date();
-            var start=new Date($("#startTime").val());
-            var num = (start.getTime()-now.getTime())/(1000*60);
-            if(num<10){
-                alert("预约时间需为当前时间的十分钟后");
-                return false;
-            }
-            //判断预约时长是否超过两小时
-            var end=new Date($("#endTime").val());
-            var long = (end.getTime()-start.getTime())/(1000*60*60);
-            if(long<0){
-                alert("结束时间需大于开始时间");
-                return false;
-            }
-            if(long>2){
-                alert("预约时长不可超过两小时");
-                return false;
-            }
-            //判断当前时间段是否可用
-            $.ajax({
-                type: "POST",
-                url: "${pageContext.request.contextPath}/virtual/checkImage",
-                data:{'VirtualImage': $("#VirtualImage").val(),'startTime': $("#startTime").val(),'endTime': $("#endTime").val(),'remarks':$("#remarks").val()},
-                dataType: 'text',
-                success: function (data) {
-                    if(data=="success") {
-                        //保存预约记录
-                        $.ajax({
-                            type: "POST",
-                            url: "${pageContext.request.contextPath}/virtual/saveVirtualImageReservation",
-                            data:{'VirtualImage': $("#VirtualImage").val(),'startTime': $("#startTime").val(),'endTime': $("#endTime").val(),'remarks':$("#remarks").val()},
-                            dataType: 'text',
-                            success: function (data) {
-                                if(data=="success"){
-                                    alert("预约成功");
-                                    window.location.href = "${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1"
-                                }else if(data=="interfaceSuccess"){
-                                    alert("接口错误");
-                                    window.location.href = "${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1"
-                                }else if(data=="dataSuccess"){
-                                    alert("该镜像桌面已被占用");
-                                    window.location.href = "${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1"
-                                }else if(data=="idSuccess"){
-                                    alert("未知错误");
-                                    window.location.href = "${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1"
-                                }else{
-                                    alert("其他错误");
-                                    window.location.href = "${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1"
-                                }
-                            }
-                        });
-                    }else if (data=="used") {
-                        alert("预约的镜像已被占用");
-                    }else if(data=="booked"){
-                        alert("您在该时间段已预约有镜像");
-                    }else if(data=="fail"){
-                        alert("预约出错");
-                    }else{
-                        alert("预约失败")
-                    }
-                }
-            });
-
-        }
-
-        function VirtualLogin(id) {
-            url="${pageContext.request.contextPath}/virtual/virtualLogin?virtualImageReservationid="+id;
-            window.open(url);
-            /*$.ajax({
-                type: "POST",
-                url: "${pageContext.request.contextPath}/virtual/virtualLogin",
-                data:{"virtualImageReservationid":id},
-                dataType: 'text',
-                success: function (data) {
-                    if(data="success"){
-                        alert("下载成功");
-                    }else if(data=="fileError") {
-                        alert("创建本地文件错误");
-                    }else if(data=="runError"){
-                        alert("运行错误");
-                    }else{
-                        alert("其他错误");
-                    }
-                }
-            });*/
-        }
-    </script>
-    <script type="text/javascript">
-
-    </script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/virtual/virtualImageAppointment.js"></script>
 
     <style type="text/css">
         /*#labRoom_chzn, #usingObj_chzn {*/
@@ -320,7 +219,9 @@
     <ul class="TabbedPanelsTabGroup" style="margin-bottom:10px;">
           <li class="TabbedPanelsTab selected" id="s1">
               <a href="${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1">虚拟镜像预约</a></li>
-          <li class="TabbedPanelsTab" id="s2"><a
+        <li class="TabbedPanelsTab" id="s4">
+            <a href="${pageContext.request.contextPath}/virtual/virtualImageReservationCitrix?currpage=1">虚拟镜像预约(直连)</a></li>
+        <li class="TabbedPanelsTab" id="s2"><a
                   href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=0&page=1&isaudit=2">我的虚拟镜像申请</a>
           </li>
           <sec:authorize ifNotGranted="ROLE_STUDENT">
@@ -328,19 +229,14 @@
                       href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=0&page=1&isaudit=1">我的虚拟镜像审核</a>
               </li>
           </sec:authorize>
-      </ul>
+
+    </ul>
 </div>
 <div class="right-content">
     <div id="TabbedPanels1" class="TabbedPanels">
         <div class="TabbedPanelsTabGroup-box">
             <div class="TabbedPanelsContentGroup">
                 <div class="TabbedPanelsContent">
-                    <div>
-                        <%--<ul class="btn_reser cf">
-                            <li ><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a></li>
-                            <li class="selected"><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1">实训室预约</a></li>
-                        </ul>
-                    --%></div>
                     <form id="formid" method="POST">
                         <table class="tab_lab">
                             <tr>
@@ -376,6 +272,9 @@
                             </tr>
                             <tr>
                                 <td colspan="6" style="text-align:right;">
+<%--
+                                    <input type="button" value="登录测试" class="btn btn-new" onclick="testLogin()">
+--%>
                                     <input type="button" value="提交" class="btn btn-new" onclick="saveReservation()">
                                 </td>
                             </tr>
@@ -384,24 +283,6 @@
                     </form>
 
                     <div class="right-content">
-                        <div class="content-box">
-                            <div class="tool-box">
-                                <ul>
-                                    <form:form name="form"
-                                               action="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1"
-                                               method="post" modelAttribute="labRoom">
-                                        <%-- <li><spring:message code="all.trainingRoom.labroom"/>名称：</li>
-                                         <li><form:input path="labRoomName"/></li>
-                                         <li><input type="submit" value="搜索"/></li>
-                                         &lt;%&ndash;<li><input type="button" value="打印" id="print"></li>&ndash;%&gt;
-                                         &lt;%&ndash;<li>
-                                           <input type="button" value="导出" onclick="exportAll('${pageContext.request.contextPath}/lab/labAnnexListexportall?page=${currpage}');">
-                                         </li>&ndash;%&gt;
-                                         <li><input type="button" onclick="cancel()" value="取消"></li>--%>
-                                     </form:form>
-                                </ul>
-                            </div>
-                        </div>
                         <div class="content-box">
                             <table>
                                 <thead>
@@ -425,30 +306,6 @@
                                         <td>${curr.setNote}</td>
                                     </tr>
                                 </c:forEach>
-                                <%--<tr>
-                                    <th>镜像名称</th>
-                                    <th>预约人</th>
-                                    <th>开始时间</th>
-                                    <th>结束时间</th>
-                                    <th>预约理由</th>
-                                    <th>操作</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <c:forEach items="${listVirtualImage}" var="s" varStatus="i">
-                                    <tr>
-                                        <td>${s.virtualImage.name}</td>
-                                        <td>${s.user.cname}</td>
-                                        <td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${s.startTime.time}" /></td>
-                                        <td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${s.endTime.time}" /></td>
-                                        <td>${s.remarks}</td>
-                                        <td>
-                                            <a href="javascript:void(0)"
-                                               onclick="VirtualLogin('${s.id}')">登陆</a>
-
-                                        </td>
-                                    </tr>
-                                </c:forEach>--%>
                                 </tbody>
                             </table>
 

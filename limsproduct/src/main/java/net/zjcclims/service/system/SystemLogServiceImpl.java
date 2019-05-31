@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.Now;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 @Service("SystemLogService")
 public class SystemLogServiceImpl implements SystemLogService {
@@ -483,7 +484,7 @@ public class SystemLogServiceImpl implements SystemLogService {
      * 2019-5-20
      */
 	public LaboratoryNoticeVO listLaboratoryNotice(HttpServletRequest request){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		int itemId = Integer.valueOf(request.getParameter("itemId"));
 		int week = Integer.valueOf(request.getParameter("week"));
@@ -492,8 +493,8 @@ public class SystemLogServiceImpl implements SystemLogService {
 		int appointmentId = Integer.valueOf(request.getParameter("appointmentId"));
 		OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
 		LaboratoryNoticeVO laboratoryNoticeVO = new LaboratoryNoticeVO();
-		if(operationItem.getSystemSubject12()!=null){
-			laboratoryNoticeVO.setSubject(operationItem.getSystemSubject12().getSName());
+		if(operationItem.getSchoolCourseInfo()!=null){
+			laboratoryNoticeVO.setSubject(operationItem.getSchoolCourseInfo().getCourseName());
 		}
 		laboratoryNoticeVO.setItemName(operationItem.getLpName());
 		laboratoryNoticeVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
@@ -503,6 +504,25 @@ public class SystemLogServiceImpl implements SystemLogService {
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
 		SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday,termId);
 		laboratoryNoticeVO.setItemTime(sdf.format(schoolWeek.getDate().getTime())+"第"+section+"节");
+		//实验班级
+        TimetableAppointment timetableAppointment = timetableAppointmentDAO.findTimetableAppointmentById(appointmentId);
+        StringBuffer sql1 = new StringBuffer("select tcs from TimetableCourseStudent tcs where tcs.timetableSelfCourse.id="+timetableAppointment.getTimetableSelfCourse().getId());
+        List<TimetableCourseStudent> timetableCourseStudentList = entityManager.createQuery(sql1.toString()).getResultList();
+        //学生数
+        int studentNum = timetableCourseStudentList.size();
+        laboratoryNoticeVO.setStudentNum(studentNum);
+        String classesAll = "";
+        for(TimetableCourseStudent timetableCourseStudent :timetableCourseStudentList){
+            classesAll = classesAll + timetableCourseStudent.getUser().getSchoolClasses().getClassName() +",";
+        }
+        //去重
+        StringBuffer sb = new StringBuffer(classesAll);
+        String rs = sb.reverse().toString().replaceAll("(.)(?=.*\\1)", "");
+        StringBuffer Class = new StringBuffer(rs);
+        String classes = Class.reverse().toString();
+		classes = classes.substring(0, classes.length()-1);
+        laboratoryNoticeVO.setClasses(classes);
+
 		//授课教师
         Set<TimetableTeacherRelated> timetableTeacherRelatedList = timetableTeacherRelatedDAO.findTimetableTeacherRelatedByAppointmentId(appointmentId);
         String teacher = "";
@@ -536,8 +556,6 @@ public class SystemLogServiceImpl implements SystemLogService {
 				object[1] = asset.getSpecifications();
 				//单位
 				object[2] = asset.getUnit();
-				//数量
-                object[3] = itemAssets.getAmount();
 
 				StringBuffer sql = new StringBuffer("SELECT a FROM AssetReceive a WHERE a.operationItem.id="+ operationItem.getId());
 				List<AssetReceive> assetReceiveList = entityManager.createQuery(sql.toString()).getResultList();
@@ -547,6 +565,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 					for(AssetReceiveRecord assetReceiveRecord :assetReceive.getAssetReceiveRecords()){
 						object[3] = assetReceiveRecord.getQuantity();
 						if(assetReceiveRecord.getReturnQuantity()!=null){
+						    //归还数量
 							object[4] = assetReceiveRecord.getReturnQuantity();
 						}
 					}
@@ -565,7 +584,7 @@ public class SystemLogServiceImpl implements SystemLogService {
      * @Author Hezhaoyi 2019-5-10
      */
     public LaboratoryNoticeVO listTeachingRecordSheet(HttpServletRequest request){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         int itemId = Integer.valueOf(request.getParameter("itemId"));
         OperationItem operationItem = operationItemDAO.findOperationItemById(itemId);
@@ -601,73 +620,70 @@ public class SystemLogServiceImpl implements SystemLogService {
         int startClass = 0;
         int endClass = 0;
         int weekday = 0;
-        List<Object[]> sectionList = new ArrayList();
+        List<String> sectionList = new ArrayList();
+        String section = "";
         StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
         List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
-        if(itemPlanList.size()!=0){
-            ItemPlan itemPlan = itemPlanList.get(0);
-            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
-            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
-            //根据TimetableAppointment获取起止周次节次星期
-            for(TimetableAppointment timetableAppointment:timetableAppointments){
-                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
-                for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
-                    startWeek = timetableAppointmentSameNumber.getStartWeek();
-                    endWeek = timetableAppointmentSameNumber.getEndWeek();
-                    startClass = timetableAppointmentSameNumber.getStartClass();
-                    endClass = timetableAppointmentSameNumber.getEndClass();
-                    weekday = timetableAppointment.getWeekday();
+        for(ItemPlan itemPlan:itemPlanList){
+			TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+			//根据TimetableAppointment获取起止周次节次星期
+			for(TimetableAppointment timetableAppointment:timetableAppointments){
+				Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+				for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+					startWeek = timetableAppointmentSameNumber.getStartWeek();
+					endWeek = timetableAppointmentSameNumber.getEndWeek();
+					startClass = timetableAppointmentSameNumber.getStartClass();
+					endClass = timetableAppointmentSameNumber.getEndClass();
+					weekday = timetableAppointment.getWeekday();
 
-                    if(startWeek!=0){
-                        if(startWeek<endWeek){
-                            if(startClass<endClass){
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = startClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                                startClass++;
-                            }else {
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = endClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                            }
-                            startWeek++;
-                        }else {
-                            if(startClass<endClass){
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = startClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                                startClass++;
-                            }else {
-                                Object[] object = new Object[4];
-                                object[0]= startWeek;
-                                object[1] = weekday;
-                                object[2] = endClass;
-                                object[3] = timetableAppointment.getId();
-                                sectionList.add(object);
-                            }
-                        }
-                    }
-                }
-            }
+					if(startWeek!=0){
+						if(startWeek<endWeek){
+							if(startClass<endClass){
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(startClass)+"-"+timetableAppointment.getId();
+								sectionList.add(section);
+								startClass++;
+							}else {
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(endClass)+"-"+timetableAppointment.getId();
+                                sectionList.add(section);
+							}
+							startWeek++;
+						}else {
+							if(startClass<endClass){
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(startClass)+"-"+timetableAppointment.getId();
+								sectionList.add(section);
+								startClass++;
+							}else {
+                                section = String.valueOf(startWeek)+"-"+String.valueOf(weekday)+"-"+String.valueOf(endClass)+"-"+timetableAppointment.getId();
+								sectionList.add(section);
+							}
+						}
+					}
+				}
+			}
+		}
+		//排序
+        Collections.sort(sectionList);
+        List<Object[]> sectionSortList = new ArrayList<>();
+        for(int i=0;i<sectionList.size();i++){
+            String[] sectionSort = sectionList.get(i).split("-");
+            Object[] object = new Object[4];
+            object[0] = Integer.valueOf(sectionSort[0]);
+            object[1] = Integer.valueOf(sectionSort[1]);
+            object[2] = Integer.valueOf(sectionSort[2]);
+            object[3] = Integer.valueOf(sectionSort[3]);
+            sectionSortList.add(object);
         }
+
 
         List<Object[]> InformationList = new ArrayList<>();
         if(sectionList.size()!=0){
-            for(Object[] object :sectionList){
+            for(Object[] object :sectionSortList){
                 int week = (Integer) object[0];
                 int weekday1 = (Integer)object[1];
                 //实验时间
                 //当前学期
-                Object[] objectInfo = new Object[3];
+                Object[] objectInfo = new Object[4];
                 int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
                 SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByWeekAndWeekdayAndTerm(week,weekday1,termId);
                 //时间
@@ -682,12 +698,51 @@ public class SystemLogServiceImpl implements SystemLogService {
                     teacher = teacher + " " + timetableTeacherRelated.getUser().getCname();
                 }
                 objectInfo[2] = teacher;
+                //实验班级
+                TimetableAppointment timetableAppointment = timetableAppointmentDAO.findTimetableAppointmentById(appointmentId);
+                StringBuffer sql1 = new StringBuffer("select tcs from TimetableCourseStudent tcs where tcs.timetableSelfCourse.id="+timetableAppointment.getTimetableSelfCourse().getId());
+                List<TimetableCourseStudent> timetableCourseStudentList = entityManager.createQuery(sql1.toString()).getResultList();
+                String classesAll = "";
+                for(TimetableCourseStudent timetableCourseStudent :timetableCourseStudentList){
+                    classesAll = classesAll + timetableCourseStudent.getUser().getSchoolClasses().getClassName() +",";
+                }
+                //去重
+                StringBuffer sb = new StringBuffer(classesAll);
+                String rs = sb.reverse().toString().replaceAll("(.)(?=.*\\1)", "");
+                StringBuffer Class = new StringBuffer(rs);
+                String classes = Class.reverse().toString();
+                classes = classes.substring(0, classes.length()-1);
+                objectInfo[3]=classes;
+
                 InformationList.add(objectInfo);
             }
         }
         laboratoryNoticeVO.setInformationList(InformationList);
         return laboratoryNoticeVO;
     }
+
+    /**
+     * Description  根据实验室id查询实验开出个数
+     * @param openGrade
+     * @param categoryApp
+     * @param labRoomId
+     * @return
+     * @Author Hezhaoyi 2019-5-29
+     */
+	public int listStatisticalTableOfExperiments(Integer openGrade,Integer categoryApp,Integer labRoomId){
+
+        StringBuffer sql = new StringBuffer("SELECT DISTINCT * FROM operation_item oi");
+        sql.append(" LEFT JOIN item_plans ip ON ip.item_id = oi.id");
+        sql.append(" LEFT JOIN timetable_self_course tsc ON ip.self_course_id = tsc.id");
+        sql.append(" LEFT JOIN timetable_appointment ta ON ta.course_code = tsc.course_code");
+        sql.append(" LEFT JOIN timetable_lab_related tlr ON ta.id = tlr.appointment_id");
+        sql.append(" WHERE oi.lp_category_app =" + categoryApp);
+        sql.append(" AND oi.open_grade =" + openGrade);
+        sql.append(" AND tlr.lab_id =" + labRoomId);
+        int NumberOfExperiments = entityManager.createNativeQuery(sql.toString()).getResultList().size();
+
+    	return NumberOfExperiments;
+	}
     /**
      * Description 开放项目相关报表-实验计划表{导出excel}
      * @param request
@@ -725,34 +780,39 @@ public class SystemLogServiceImpl implements SystemLogService {
             String Asset = "";
             if(itemAssets.size()!=0){
                 for(ItemAssets itemAsset : itemAssets){
-                    Asset = Asset +" "+ itemAsset.getAsset().getChName();
+                    Asset = Asset +" "+ itemAsset.getAsset().getChName() + "、";
                 }
             }
+            Asset = Asset.substring(0, Asset.length()-1);
             map.put("itemAssets", Asset);//实验物资
-            //器材-实验设备
-            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
-            String device = "";
-            if(operationItemDevices.size()!=0){
-                for(OperationItemDevice operationItemDevice : operationItemDevices){
-                    device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
-                }
-            }
-            map.put("itemDecvices", device);//实验设备
+//            //器材-实验设备
+//            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+//            String device = "";
+//            if(operationItemDevices.size()!=0){
+//                for(OperationItemDevice operationItemDevice : operationItemDevices){
+//                    device = device +" "+ operationItemDevice.getSchoolDevice().getDeviceName();
+//                }
+//            }
+//            map.put("itemDecvices", device);//实验设备
             if(operationItem.getCDictionaryByLpCategoryApp()!=null){
                 map.put("itemCategory", operationItem.getCDictionaryByLpCategoryApp().getCName());//实验类型
             }
             if(operationItem.getPlanWeek()!=null){
                 map.put("planTime", operationItem.getPlanWeek());//计划时间
             }
+            //学期
+            if(operationItem.getSchoolTerm()!=null){
+                map.put("termName", operationItem.getSchoolTerm().getTermName()); // 学期
+            }
             list.add(map);
         }
 		//实验室遍历
 		SchoolTerm schoolTerm = schoolTermDAO.findSchoolTermById(term);
 		String title = schoolTerm.getTermName()+"实验计划表";
-		String[] hearders = new String[]{"序号", "实验内容", "实验物资", "实验设备",
-				"实验类型", "计划时间", "备注"};//表头数组
-		String[] fields = new String[]{"serial number", "itemName", "itemAssets", "itemDecvices", "itemCategory",
-				"planTime", "notes"};
+		String[] hearders = new String[]{"序号", "实验内容", "实验物资", /*"实验设备",*/
+				"实验类型", "计划时间", "学期","备注"};//表头数组
+		String[] fields = new String[]{"serial number", "itemName", "itemAssets", /*"itemDecvices", */"itemCategory",
+				"planTime","termName", "notes"};
 		TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
 		JsGridReportBase report = new JsGridReportBase(request, response);
 		report.exportExcel(title, shareService.getUserDetail().getCname(), schoolTerm.getTermName(), td);
@@ -837,7 +897,8 @@ public class SystemLogServiceImpl implements SystemLogService {
             term = Integer.parseInt(request.getParameter("term"));
         }
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 8 order by arr.id asc");
+        sql.append(" WHERE (arr.assetReceive.status = 4 OR arr.assetReceive.status = 5)");
+        sql.append(" AND arr.asset.category = 8 order by arr.id asc");
         Query query = entityManager.createQuery(sql.toString());
         // 当前页打印条件
         if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
@@ -956,7 +1017,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 
         StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr ,AssetReceive ar");
         sql.append(" where ar.id = arr.assetReceive.id");
-        sql.append(" and ar.status = 4 and arr.asset.id = "+ assetId);
+        sql.append(" and (arr.assetReceive.status = 4 or arr.assetReceive.status = 5) and arr.asset.id = "+ assetId);
         sql.append(" order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());

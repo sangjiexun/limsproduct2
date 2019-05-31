@@ -44,10 +44,10 @@
 		<intercept-url pattern="/cms/device/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/cms/tcoursesite/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/admin/images/systemBack/*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<intercept-url pattern="servlet/zjcclims" access="IS_AUTHENTICATED_ANONYMOUSLY"/> 
-		<intercept-url pattern="/personal/message/mySelfTimetableApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/> 
+		<intercept-url pattern="servlet/zjcclims" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<intercept-url pattern="/personal/message/mySelfTimetableApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/labRoom/listLabRoomApp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<intercept-url pattern="/admin/logRes" access="IS_AUTHENTICATED_ANONYMOUSLY"/>  
+		<intercept-url pattern="/admin/logRes" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/admin/logManage" access="IS_AUTHENTICATED_ANONYMOUSLY"/>  
 		<intercept-url pattern="/admin/logDevMag" access="IS_AUTHENTICATED_ANONYMOUSLY"/>  
 		<intercept-url pattern="/admin/logDevRes" access="IS_AUTHENTICATED_ANONYMOUSLY"/>  
@@ -63,9 +63,10 @@
 		<intercept-url pattern="/lims/api/open/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/picture/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<intercept-url pattern="/classBrand/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-<intercept-url pattern="/cmsReport/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/cmsReport/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/wxAPI/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-<intercept-url pattern="/activeMq/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/activeMq/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/openOperationItem/saveAssetApp" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<!-- courseSite.jsp页面未登录可以访问 -->
 		<intercept-url pattern="/jquery/locale/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/jquery/treeTable/treeTable/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />

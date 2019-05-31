@@ -390,6 +390,7 @@ $(document).ready(function () {
             arr.classes = $("#classes").val();
             arr.labRoomIds = $("#labRoom_id").val();
             arr.tearchs = $("#teacherRelated").val();
+            arr.term = $("#term").val();
             arr.items = $("#items").val();
             arr.tutors = $("#tutorRelated").val();
             arr.virtualId = $("#virtualId").val();
@@ -418,6 +419,25 @@ $(document).ready(function () {
             alert("请验证输入！");
         }
     })
+
+
+    /*
+     *学生判冲模式
+     */
+    $("#judgeTimetable").on('click', function () {
+        $('#submitButton').hide();
+        $('#selfReTimetableCourse').hide();
+        $('#selfReTimetable').show();
+        $('#judgeTimetable').hide();
+        $('#judgeTimetableCourse').show();
+    });
+    $("#selfReTimetable").on('click', function () {
+        $('#judgeTimetableCourse').hide();
+        $('#selfReTimetable').hide();
+        $('#judgeTimetable').show();
+        $('#selfReTimetableCourse').show();
+        $('#submitButton').show();
+    });
 
     $("#form_lab").validate();
 

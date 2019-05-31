@@ -9,7 +9,7 @@ $(function () {
         async: false,
         success: function (data) {
             $.each(data.receiveItemList, function (index, item) {
-                var tr = $(['<tr >', '<td >' + item.name + '</td>', '<td>' + item.type + '</td>','<td>' + item.factory + '</td>', '<td>' + item.unit + '</td>',  '<td>' + item.amount + '</td>', '<td>' + item.price + '</td>', '<td>' + item.totalPrice + '</td>','<td>' + item.info + '</td>', '</tr>'].join(''));
+                var tr = $(['<tr >', '<td >' + item.name + '</td>', '<td>' +item.factory  + '</td>','<td>' +  item.type+ '</td>', '<td>' + item.unit + '</td>',  '<td>' + item.amount + '</td>', '<td>' + item.price + '</td>', '<td>' + item.totalPrice + '</td>','<td>' + item.info + '</td>', '</tr>'].join(''));
                 $("#itemList").append(tr);
             });
             var trSum=$(['<tr >', '<td ></td>', '<td></td>','<td></td>', '<td></td>',  '<td></td>', '<td></td>', '<td>共' + data.totalPrice + '</td>','<td></td>', '</tr>'].join(''));

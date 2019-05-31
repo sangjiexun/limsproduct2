@@ -391,6 +391,83 @@ public class LabRoomServiceImpl implements LabRoomService {
 		}
 		return labRoomDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
 	}
+	/**
+	 * 获取可开门实验室数据
+	 * @author 刘博越
+	 * 2019.5.29
+	 */
+	@Override
+	public List<LabRoom> findLabRoomOpenDoorByLabCenter(Integer currpage, Integer pageSize, LabRoom labRoom, String username, HttpServletRequest request, String acno) {
+//		String sql = "select l from LabRoom l,l.labRoomAdmins ld, l.labRoomAgents la where ld.user.username = '"+username+"'"+
+//				" and la.CDictionary.CName='门禁'";
+//		if(labRoom.getLabRoomName()!=null){
+//			sql += " and l.labRoomName like "+labRoom.getLabRoomName();
+//		}
+//		sql += " order by l.id asc";
+//		Query query= entityManager.createQuery(sql);
+//		List<LabRoom> courses = query.getResultList();
+//		return courses;
+
+		StringBuffer hql = new StringBuffer("select distinct l from LabRoom l");
+		hql.append(" join l.labRoomAdmins d join l.labRoomAgents a");
+		hql.append(" where 1=1 and d.user.username = '"+username+"' and a.CDictionary.CName ='门禁'");
+		if(labRoom.getLabRoomName()!=null&&!labRoom.getLabRoomName().equals("")){
+			hql.append(" and l.labRoomName like '%"+labRoom.getLabRoomName()+"%'");
+		}
+		hql.append(" order by l.id asc");
+		List<LabRoom> labRooms = labRoomDAO.executeQuery(hql.toString(), (currpage - 1) * pageSize, pageSize);
+		return labRooms;
+
+	}
+
+	/**
+	 * 根据是否可以开门进行排序
+	 * @author 刘博越
+	 * 2019.05.27
+	 */
+	@Override
+	public List<LabRoom> sortLabRoomByAgent(List<LabRoom> labRooms, String username) {
+		//存放有开门权限的实验室
+		List<LabRoom> labRoomsWithDoorindex = new ArrayList<LabRoom>();
+		//存放剩余无开门权限实验室
+		List<LabRoom> labRoomsLeft = new ArrayList<LabRoom>();
+/*		//记录开门权限实验室在原列表中位子
+		List<Integer> count = new ArrayList<Integer>();*/
+		String sql="select distinct lg.lab_room_id from lab_room_agent lg left join lab_room_admin ld" +
+				" on lg.lab_room_id=ld.lab_room_id where lg.doorindex is not null and ld.username="+username+" order by lg.lab_room_id asc";
+		Query query=entityManager.createNativeQuery(sql);
+		List<Integer> objects=query.getResultList();
+		if(objects.size()!=0){
+			for(Integer o :objects){
+				for (LabRoom labRoom:labRooms){
+					if(o.intValue()==labRoom.getId().intValue()){
+						labRoomsWithDoorindex.add(labRoom);
+						break;
+					}
+				}
+			}
+			if(labRoomsWithDoorindex.size()!=0){//若符合条件实验室不为空，则要进一步拼接剩下的实验室
+				for(LabRoom labRoom:labRooms){
+					int flag =  1;
+					for(Integer o:objects){
+						if(labRoom.getId().intValue()==o.intValue()){
+							flag=0;
+						}
+					}
+					if(flag==1){
+						labRoomsLeft.add(labRoom);
+					}
+				}
+				//拼接两个list，生成排序后的list
+				labRoomsWithDoorindex.addAll(labRoomsLeft);
+				return labRoomsWithDoorindex;
+			}else{//若无符合条件实验室，则直接返回原list
+				return labRooms;
+			}
+		}else{//无开门权限实验室，直接返回原list
+			return labRooms;
+		}
+	}
 
 	/**
 	 * 保存实验室数据

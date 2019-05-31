@@ -383,10 +383,10 @@ function getTimetablePlanView() {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newSelfReNoGroupCourse(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-plus'>排课</span></a>&nbsp;";
                         if (PROJECT_NAME=="ndyzlims") {
                             if (selected_role != 'ROLE_TEACHER') {
-                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完12成</span></a></div></td></tr>&nbsp;";
+                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
                             }
                         }else {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完123成</span></a></div></td></tr>&nbsp;";
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
                         }
                     }
                     else
@@ -394,10 +394,10 @@ function getTimetablePlanView() {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newSelfReGroupCourse(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-plus'>排课</span></a>&nbsp;";
                         if (PROJECT_NAME=="ndyzlims") {
                             if (selected_role != 'ROLE_TEACHER') {
-                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完23成</span></a></div></td></tr>&nbsp;";
+                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
                             }
                         }else {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完234成</span></a></div></td></tr>&nbsp;";
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',3,1)\" ><span class='glyphicon glyphicon-check'>完成</span></a></div></td></tr>&nbsp;";
                         }
                     }
                     result += "</td></tr></table>";

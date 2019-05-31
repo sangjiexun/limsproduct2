@@ -131,16 +131,6 @@
                 }
             });
         }
-        // 远程开门
-		function openDoorNew(agentId, doorIndex) {
-			$.post('${pageContext.request.contextPath}/labRoom/openDoorNew?agentId='+agentId+'&doorIndex='+doorIndex,function(data){  //serialize()序列化
-				if(data=="success"){
-					alert("门禁已经打开");
-				}else{
-					alert("开门失败，请检查当网络连接或者再试一次。");
-				}
-			});
-		}
 	</script>
 	<style>
 		.btn {
@@ -413,24 +403,7 @@
 										</c:if>
 										<%--<a href="javascript:void(0);" onclick="showRegulations(${curr.id})">规章制度</a>--%>
 									</c:if><br>
-											<!-- 判断是否是改实验室的管理员或物联管理员 -->
-									<c:forEach items="${curr.labRoomAdmins}" var="admins">
-										<c:if test="${admins.typeId==1 || admins.typeId==2}">
-											<c:if test="${admins.user.username eq username}">
-												<!-- 遍历门禁设备 -->
-												<c:forEach items="${curr.labRoomAgents}" var="agent">
-													<c:if test="${agent.CDictionary.CNumber=='2' && agent.CDictionary.CCategory=='c_agent_type'}">
-														<c:if test="${agent.doorindex ne null}">
-															<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">远程开${agent.doorindex}号门</a>
-														</c:if>
-														<c:if test="${agent.doorindex eq null}">
-															<a href="javascript:void(0)" onclick="openDoorNew(${agent.id},${agent.doorindex});">远程开门</a>
-														</c:if>
-													</c:if>
-												</c:forEach>
-											</c:if>
-										</c:if>
-									</c:forEach>
+
 								</td>
 							</tr>
 						</c:forEach>

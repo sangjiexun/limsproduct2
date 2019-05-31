@@ -9,9 +9,11 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomAdminService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.vo.CourseSchedule;
+import net.zjcclims.vo.virtual.VirtualImageReservationVO;
 import net.zjcclims.web.common.PConfig;
 import net.zjcclims.web.virtual.StartVirtualImageByCourseSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,21 @@ public class VirtualServiceImpl implements VirtualService {
     private MessageDAO messageDAO;
     @Autowired
     private LabRoomAdminService labRoomAdminService;
+    @Value("${virtualCallBackUrl}")
+    public String virtualCallBackUrl;
+
+    /*************************************************************************************
+     * Description:通过预约记录得到预约的镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/29
+     *************************************************************************************/
+    public VirtualImage getVirtualImageByVirtualImageReservationID(Integer virtualImageReservationID){
+        String sql = "select v from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and vir.id="+virtualImageReservationID;
+        return virtualImageDAO.executeQuery(sql).size()>0?virtualImageDAO.executeQuery(sql).get(0):null;
+    }
+
+
 
     /*************************************************************************************
      * Description:得到所有虚拟实验室数量
@@ -611,8 +628,7 @@ public class VirtualServiceImpl implements VirtualService {
                         JSONObject b = (JSONObject) jac.get(j);
                         VirtualImage vi = new VirtualImage();
                         // 赋值
-                        vi.setId(Integer.parseInt(b.get("set_id")
-                                .toString()));
+                        vi.setId(b.get("set_id").toString());
                         vi.setName(b.get("set_name").toString());
                         //vi.set(b.get("set_code").toString());
                         vi.setHardwareSet(b.get("hardware_set").toString());
@@ -658,7 +674,7 @@ public class VirtualServiceImpl implements VirtualService {
                     JSONObject b = (JSONObject) jac.get(j);
                     VirtualImage vi = new VirtualImage();
                     // 赋值
-                    vi.setId(Integer.parseInt(b.get("set_id").toString()));
+                    vi.setId(b.get("set_id").toString());
                     vi.setName(b.get("set_name").toString());
                     //vi.setSet_code(b.get("set_code").toString());
                     vi.setHardwareSet(b.get("hardware_set").toString());
@@ -670,8 +686,6 @@ public class VirtualServiceImpl implements VirtualService {
                 }
                 imageIds = imageIds.substring(0, imageIds.length() - 1);
                 imageIds += ")";
-                StringBuffer hql1 = new StringBuffer("delete from virtual_image_reservation  where virtual_image not in " + imageIds);
-                entityManager.createNativeQuery(hql1.toString()).executeUpdate();
                 StringBuffer hql2 = new StringBuffer("delete from virtual_image  where id not in " + imageIds);
                 entityManager.createNativeQuery(hql2.toString()).executeUpdate();
 
@@ -680,6 +694,55 @@ public class VirtualServiceImpl implements VirtualService {
             e.printStackTrace();
         }
     }
+
+    /*************************************************************************************
+     * Description:直连Citrix更新虚拟镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String updateImageCitrix(HttpServletRequest request){
+        Map<String,String> headers=new HashMap<>();
+        headers.put("Content-Type","application/x-www-form-urlencoded");
+        headers.put("X-Citrix-IsUsingHTTPS","No");
+        try {
+            //登录前接口获取cookie、csrftoken
+            String post = HttpClientUtil.postWithoutCookie("http://10.2.39.50/Citrix/GVSUNWeb/Authentication/GetAuthMethods", null, headers);
+            String post1 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/Login", null, headers);
+            //登录接口调用
+            Map<String,String> params=new HashMap<>();
+            //学生域账号，user.getDomainAccount，临时用固定账号测试
+            params.put("username","cmop\\user1");
+            params.put("password","abc@123");
+            params.put("saveCredentials","false");
+            params.put("loginBtn","登录");
+            params.put("StateContext","");
+            String post2 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt", params, headers);
+            String post3 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/Resources/List", null, headers);
+            System.out.println(post3);
+            JSONObject jsonObject = JSONObject.fromObject(post3);
+            JSONArray jac = jsonObject.getJSONArray("resources");
+            for (int i=0;i<jac.size();i++){
+               JSONObject jsonObject1= (JSONObject)jac.get(i);
+               if (jsonObject1.has("isdesktop")&&"true".equals(jsonObject1.getString("isdesktop"))){
+                   VirtualImage vi = new VirtualImage();
+                   // 赋值
+                   // 临时保存citrix本地存储id
+                   vi.setId(jsonObject1.get("id").toString());
+                   vi.setName(jsonObject1.get("name").toString());
+                   // 临时保存citrix镜像桌面启动url
+                   vi.setHardwareSet(jsonObject1.get("launchurl").toString());
+                   saveVirtualImage(vi);
+               }
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
+        //String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+        return "success";
+    }
+
 
     /*************************************************************************************
      * Description:查看虚拟实验室下的镜像-调用查看实验室接口
@@ -865,7 +928,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @date: 2018/12/20
      *************************************************************************************/
     public String saveVirtualImageReservation(HttpServletRequest request) throws ParseException {
-        VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(Integer.parseInt(request.getParameter("VirtualImage")));
+        VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(request.getParameter("VirtualImage"));
         String startTime = request.getParameter("startTime");
         String endTime = request.getParameter("endTime");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -876,7 +939,7 @@ public class VirtualServiceImpl implements VirtualService {
         Calendar calendarEnd = Calendar.getInstance();
         calendarEnd.setTime(date2);
         VirtualImageReservation virtualImageReservation = new VirtualImageReservation();
-        virtualImageReservation.setVirtualImage(virtualImage);
+        virtualImageReservation.setVirtualImage(virtualImage.getId());
         virtualImageReservation.setStartTime(calendarStart);
         virtualImageReservation.setEndTime(calendarEnd);
         virtualImageReservation.setCreateTime(Calendar.getInstance());
@@ -1121,13 +1184,42 @@ public class VirtualServiceImpl implements VirtualService {
     }
 
     /*************************************************************************************
+     * Description:保存虚拟镜像预约-Citrix直连
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException{
+    VirtualImage virtualImage = virtualImageDAO.findVirtualImageByPrimaryKey(request.getParameter("VirtualImage"));
+        String startTime = request.getParameter("startTime");
+        String endTime = request.getParameter("endTime");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date1 = sdf.parse(startTime);
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.setTime(date1);
+        Date date2 = sdf.parse(endTime);
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(date2);
+        VirtualImageReservation virtualImageReservation = new VirtualImageReservation();
+        virtualImageReservation.setVirtualImage(virtualImage.getId());
+        virtualImageReservation.setStartTime(calendarStart);
+        virtualImageReservation.setEndTime(calendarEnd);
+        virtualImageReservation.setCreateTime(Calendar.getInstance());
+        virtualImageReservation.setUser(shareService.getUserDetail());
+        virtualImageReservation.setRemarks(request.getParameter("remarks"));
+        virtualImageReservation.setAuditStage(6);
+        virtualImageReservationDAO.store(virtualImageReservation);
+        return "success";
+    }
+
+    /*************************************************************************************
      * Description:预约审核方法
      *
      * @author: 杨新蔚
      * @date: 2019/1/6
      *************************************************************************************/
 
-    public List<VirtualImageReservation> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit) {
+    public List<VirtualImageReservationVO> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit) {
         String sql = "select v from VirtualImageReservation v where 1=1 ";
         //暂未加查询
 	/*if(virtualImageReservation.getLabRoom()!= null && labReservation.getLabRoom().getLabRoomName() != null){
@@ -1242,7 +1334,22 @@ public class VirtualServiceImpl implements VirtualService {
             sql += " and v.auditResults=4";
         }
         sql += " order by v.id desc";
-        return virtualImageReservationDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
+        List<VirtualImageReservation> virtualImageReservations = virtualImageReservationDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
+        List<VirtualImageReservationVO> virtualImageReservationVOS =new ArrayList<>();
+        for (VirtualImageReservation v:virtualImageReservations){
+            VirtualImage virtualImage = getVirtualImageByVirtualImageReservationID(v.getId());
+            VirtualImageReservationVO virtualImageReservationVO=new VirtualImageReservationVO();
+            virtualImageReservationVO.setVirtualImageReservationID(v.getId());
+            virtualImageReservationVO.setVirtualImageName(virtualImage!=null?virtualImage.getName():"");
+            virtualImageReservationVO.setStartTime(v.getStartTime());
+            virtualImageReservationVO.setEndTime(v.getEndTime());
+            virtualImageReservationVO.setRemarks(v.getRemarks());
+            virtualImageReservationVO.setUserName(v.getUser().getCname());
+            virtualImageReservationVO.setAuditStage(v.getAuditStage());
+            virtualImageReservationVOS.add(virtualImageReservationVO);
+        }
+
+        return virtualImageReservationVOS;
 
     }
 
@@ -1369,6 +1476,53 @@ public class VirtualServiceImpl implements VirtualService {
     }
 
     /*************************************************************************************
+     * Description:调用登录接口（直连）-下载ica文件
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String virtualLoginCitrix(Integer id, HttpServletRequest request, HttpServletResponse response) {
+        Map<String,String> headers=new HashMap<>();
+        headers.put("Content-Type","application/x-www-form-urlencoded");
+        headers.put("X-Citrix-IsUsingHTTPS","No");
+        try {
+            //登录前接口获取cookie、csrftoken
+            String post = HttpClientUtil.postWithoutCookie("http://10.2.39.50/Citrix/GVSUNWeb/Authentication/GetAuthMethods", null, headers);
+            String post1 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/Login", null, headers);
+            //登录接口调用
+            Map<String, String> params = new HashMap<>();
+            //学生域账号，user.getDomainAccount，临时用固定账号测试
+            params.put("username","cmop\\user1");
+            params.put("password", "abc@123");
+            params.put("saveCredentials", "false");
+            params.put("loginBtn", "login");
+            params.put("StateContext", "");
+            String post2 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt", params, headers);
+            String post3 = HttpClientUtil.postWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/Resources/List", null, headers);
+            VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
+            String icaString=getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getHardwareSet();
+            Map<String, String> paramsGet = new HashMap<>();
+            //下载ica所需参数
+            paramsGet.put("launchId",getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getId());
+            paramsGet.put("displayNameDesktopTitle", "Desktop");
+            String json = HttpClientUtil.getWithCookie("http://10.2.39.50/Citrix/GVSUNWeb/"+icaString, paramsGet, headers);
+            //写入ica文件
+            String filename = "";
+            long timestamp = System.currentTimeMillis();
+            creatTxtFile(timestamp + "", request);
+            filename = writeTxtFile(json);
+            download(filename, response);
+            delFile(filename);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
+		return "success";
+    }
+
+
+
+    /*************************************************************************************
      * Description:查看虚拟镜像报表
      *
      * @author: 杨新蔚
@@ -1427,7 +1581,7 @@ public class VirtualServiceImpl implements VirtualService {
             //开始时间减少10分钟用于判断冲突
             startCalendar.add(Calendar.MINUTE, -10);
             String startTenTime = sdf.format(startCalendar.getTime());
-            String sql = "select v from VirtualImageReservation v where v.virtualImage.id=" + request.getParameter("VirtualImage");
+            String sql = "select v from VirtualImageReservation v where v.virtualImage='" + request.getParameter("VirtualImage")+"'";
             sql += " and ((v.startTime >='" + startTenTime + "' and v.startTime <='" + endTime + "')";
             //sql+=" or (v.endTime >='"+ startTime+"' and v.endTime <='"+endTime+"')";
             sql += " or (v.startTime <='" + startTenTime + "' and v.endTime >='" + startTenTime + "'))";
@@ -1558,7 +1712,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @author 陈敬2019年3月13日
      ************************************************************************************/
     public String generateCallbackRUL() {
-        String callbackURL = "http://10.2.47.48:80/shufelims/virtual/reserveVirtualImageCallback";
+        String callbackURL = virtualCallBackUrl;
         //String realURL = getUrl(callbackURL);
         //realURL += "&virtualImageID=" + virtualImageID + "&courseStartTime=" + stringCourseStartTime + "&courseEndTime=" + stringCourseEndTime;
         return callbackURL;

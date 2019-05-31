@@ -20,6 +20,17 @@ public class AssetsCabinetDTO implements Serializable{
     private String capacity;
     //5.对应物资剩余容量
     private String quantity;
+    //6.物联硬件类型
+    private String hardwareType;
+    //7.物联IP
+    private String hardwareIp;
+    //8.物联服务器id
+    private String serverId;
+    //9.物品柜类型
+    private String type;
+    //10.存放地点
+    private String location;
+
 
     public Integer getId() {
         return id;
@@ -67,5 +78,45 @@ public class AssetsCabinetDTO implements Serializable{
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public String getHardwareType() {
+        return hardwareType;
+    }
+
+    public void setHardwareType(String hardwareType) {
+        this.hardwareType = hardwareType;
+    }
+
+    public String getHardwareIp() {
+        return hardwareIp;
+    }
+
+    public void setHardwareIp(String hardwareIp) {
+        this.hardwareIp = hardwareIp;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

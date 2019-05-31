@@ -45,7 +45,7 @@ public class StartVirtualImageByCourseSchedules extends Thread {
                 }
             }
         };
-       /* try {
+       /*try {
             String stringToday = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             Date today = new SimpleDateFormat("yyyy-MM-dd").parse(stringToday);
             //明天凌晨1点
@@ -55,7 +55,7 @@ public class StartVirtualImageByCourseSchedules extends Thread {
         } catch (ParseException e) {
             e.printStackTrace();
         }*/
-        timer.schedule(timerTask, 0, 24 * 60 * 60 * 1000);
+        //timer.schedule(timerTask, 0, 24 * 60 * 60 * 1000);
         //timer.schedule(timerTask, 0, 10 * 1000);
     }
 }

@@ -315,10 +315,31 @@ public class SystemLogController {
         query.setMaxResults(pagesize);
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
-        List<OperationItem> operationItemList = query.getResultList();
+        List<OperationItem> operationItemListNew = query.getResultList();
         List<ExperimentalScheduleVO> experimentalScheduleVOs = new ArrayList<ExperimentalScheduleVO>();
         int i = 1;
-        for(OperationItem operationItem :operationItemList){
+        List<OperationItem> operationItemList = new ArrayList<>();
+        for(OperationItem operationItem :operationItemListNew){
+            boolean flag = false;
+            StringBuffer sql1 = new StringBuffer("select distinct m from ItemPlan m where m.operationItem.id=" + operationItem.getId());
+            Query query1 = entityManager.createQuery(sql1.toString());
+            List<ItemPlan> itemPlanList = query1.getResultList();
+            for(ItemPlan itemPlan:itemPlanList){
+                TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+                StringBuffer sql2 = new StringBuffer("select distinct t from TimetableAppointment t where t.timetableSelfCourse.id=" + timetableSelfCourse.getId());
+                Query query2 = entityManager.createQuery(sql2.toString());
+                List<TimetableAppointment> timetableAppointmentList = query2.getResultList();
+                for(TimetableAppointment timetableAppointment :timetableAppointmentList){
+                    if(flag == false){
+                        if(timetableAppointment.getStatus()!=null && timetableAppointment.getStatus()==1){
+                            operationItemList.add(operationItem);
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
+        for(OperationItem operationItem:operationItemList){
             ExperimentalScheduleVO experimentalScheduleVO = new ExperimentalScheduleVO();
             experimentalScheduleVO.setId(i);
             //实验名称
@@ -328,19 +349,20 @@ public class SystemLogController {
             String Asset = "";
             if(itemAssets.size()!=0){
                 for(ItemAssets itemAsset : itemAssets){
-                    Asset = Asset + itemAsset.getAsset().getChName();
+                    Asset = Asset + itemAsset.getAsset().getChName() + "、";
                 }
             }
+			Asset = Asset.substring(0, Asset.length()-1);
             experimentalScheduleVO.setItemAssets(Asset);
             //器材-实验设备
-            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
-            String device = "";
-            if(operationItemDevices.size()!=0){
-                for(OperationItemDevice operationItemDevice : operationItemDevices){
-                    device = device + operationItemDevice.getSchoolDevice().getDeviceName();
-                }
-            }
-            experimentalScheduleVO.setItemDecvices(device);
+//            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
+//            String device = "";
+//            if(operationItemDevices.size()!=0){
+//                for(OperationItemDevice operationItemDevice : operationItemDevices){
+//                    device = device + operationItemDevice.getSchoolDevice().getDeviceName()+ "、";
+//                }
+//            }
+//            experimentalScheduleVO.setItemDecvices(device);
             //实验类型
             if(operationItem.getCDictionaryByLpCategoryApp()!=null){
                 experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
@@ -350,7 +372,9 @@ public class SystemLogController {
                 experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
             }
             //学期
-            experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
+            if(operationItem.getSchoolTerm()!=null){
+                experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
+            }
             experimentalScheduleVOs.add(experimentalScheduleVO);
             i++;
         }
@@ -386,7 +410,13 @@ public class SystemLogController {
         //页面标记-1仪器借出一级页面2实验开出情况一级页面
         String type = request.getParameter("type");
 
-        StringBuffer sql = new StringBuffer("select distinct l from LabRoom l order by l.id asc");
+        StringBuffer sql = new StringBuffer("select distinct l from LabRoom l where 1=1");
+        if(request.getParameter("labname") != null && !request.getParameter("labname").equals("")){
+            String selectedLabname = request.getParameter("labname");
+            sql.append(" and l.labRoomName like'%" + selectedLabname + "%'");
+            mav.addObject("selectedLabname", selectedLabname);
+        }
+        sql.append(" order by l.id asc");
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -472,8 +502,9 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 8 order by arr.id asc");
+        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr");
+        sql.append(" WHERE (arr.assetReceive.status = 4 OR arr.assetReceive.status = 5)");
+        sql.append(" AND arr.asset.category = 8 order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
@@ -604,8 +635,13 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("select distinct o from Asset o");
-
+        StringBuffer sql = new StringBuffer("select distinct o from Asset o where 1=1");
+        //物资名称筛选
+        if(request.getParameter("assetName") != null && !request.getParameter("assetName").equals("")){
+            String assetName = request.getParameter("assetName");
+            sql.append(" and o.chName like'%" + assetName + "%'");
+            mav.addObject("assetName", assetName);
+        }
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -641,9 +677,8 @@ public class SystemLogController {
         //物资
         Asset asset = assetDAO.findAssetByPrimaryKey(Integer.valueOf(assetId));
 
-        StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr ,AssetReceive ar");
-        sql.append(" where ar.id = arr.assetReceive.id");
-        sql.append(" and ar.status = 4 and arr.asset.id = "+ assetId);
+        StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr");
+        sql.append(" where (arr.assetReceive.status = 4 or arr.assetReceive.status = 5) and arr.asset.id = "+ assetId);
         sql.append(" order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
@@ -698,7 +733,8 @@ public class SystemLogController {
         String type = request.getParameter("type");
 
 
-        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o where 1=1");
+        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o,SchoolCourseInfo s");
+        sql.append(" where o.schoolCourseInfo.courseNumber = s.courseNumber");
 
         //实验通知单演示性实验查询条件
         if(Integer.valueOf(type) == 6){
@@ -710,11 +746,27 @@ public class SystemLogController {
         }
 
         //学期条件筛选
-        if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
-            int selectedTermId = Integer.valueOf(request.getParameter("term"));
-            sql.append(" and o.schoolTerm.id =" + selectedTermId);
-            mav.addObject("selectedTermId", selectedTermId);
+		if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
+			int selectedTermId = Integer.valueOf(request.getParameter("term"));
+			sql.append(" and o.schoolTerm.id =" + selectedTermId);
+			mav.addObject("selectedTermId", selectedTermId);
+		}
+
+		//实验内容条件筛选
+		if(request.getParameter("lpname") != null && !request.getParameter("lpname").equals("")){
+			String selectedLpname = request.getParameter("lpname");
+			sql.append(" and o.lpName like '%" + selectedLpname + "%' ");
+			mav.addObject("selectedLpname", selectedLpname);
+		}
+
+        //所属课程条件选
+        if(request.getParameter("lpcourse") != null && !request.getParameter("lpcourse").equals("")){
+            String selectedLpcourse = request.getParameter("lpcourse");
+
+            sql.append(" and s.courseName like '%" + selectedLpcourse + "%' " );
+            mav.addObject("selectedLpcourse", selectedLpcourse);
         }
+
         sql.append(" order by o.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
@@ -722,7 +774,28 @@ public class SystemLogController {
         query.setMaxResults(pagesize);
         int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
         query.setFirstResult(firstResult);
-        List<OperationItem> operationItemList = query.getResultList();
+        List<OperationItem> operationItemListNew = query.getResultList();
+        List<OperationItem> operationItemList = new ArrayList<>();
+        for(OperationItem operationItem :operationItemListNew){
+            StringBuffer sql1 = new StringBuffer("select distinct m from ItemPlan m where m.operationItem.id=" + operationItem.getId());
+            Query query1 = entityManager.createQuery(sql1.toString());
+            List<ItemPlan> itemPlanList = query1.getResultList();
+            boolean flag = false;
+            for(ItemPlan itemPlan:itemPlanList){
+                TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+                StringBuffer sql2 = new StringBuffer("select distinct t from TimetableAppointment t where t.timetableSelfCourse.id=" + timetableSelfCourse.getId());
+                Query query2 = entityManager.createQuery(sql2.toString());
+                List<TimetableAppointment> timetableAppointmentList = query2.getResultList();
+                for(TimetableAppointment timetableAppointment :timetableAppointmentList) {
+                    if(flag == false){
+                        if (timetableAppointment.getStatus() != null && timetableAppointment.getStatus() == 1) {
+                            operationItemList.add(operationItem);
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
         mav.addObject("operationItemList",operationItemList);
 
         //学期
@@ -763,67 +836,66 @@ public class SystemLogController {
         List<Object> sectionList = new ArrayList();
         StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
         List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
-        if(itemPlanList.size()!=0){
-            ItemPlan itemPlan = itemPlanList.get(0);
-            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
-            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
-            //根据TimetableAppointment获取起止周次节次星期
-            for(TimetableAppointment timetableAppointment:timetableAppointments){
-                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
-                if(timetableAppSameNumbers.size()!=0){
-                    for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
-                        startWeek = timetableAppointmentSameNumber.getStartWeek();
-                        endWeek = timetableAppointmentSameNumber.getEndWeek();
-                        startClass = timetableAppointmentSameNumber.getStartClass();
-                        endClass = timetableAppointmentSameNumber.getEndClass();
-                        weekday = timetableAppointment.getWeekday();
+		for(ItemPlan itemPlan:itemPlanList){
+			TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+			//根据TimetableAppointment获取起止周次节次星期
+			for(TimetableAppointment timetableAppointment:timetableAppointments){
+				Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+				if(timetableAppSameNumbers.size()!=0){
+					for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+						startWeek = timetableAppointmentSameNumber.getStartWeek();
+						endWeek = timetableAppointmentSameNumber.getEndWeek();
+						startClass = timetableAppointmentSameNumber.getStartClass();
+						endClass = timetableAppointmentSameNumber.getEndClass();
+						weekday = timetableAppointment.getWeekday();
 
-                        if(startWeek!=0){
-                            if(startWeek<endWeek){
-                                if(startClass<endClass){
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1] = startWeek;
-                                    object[2] = weekday;
-                                    object[3] = startClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                    startClass++;
-                                }else {
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1] = startWeek;
-                                    object[2] = weekday;
-                                    object[3] = endClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                }
-                                startWeek++;
-                            }else {
-                                if(startClass<endClass){
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1] = startWeek;
-                                    object[2] = weekday;
-                                    object[3] = startClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                    startClass++;
-                                }else {
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1]= startWeek;
-                                    object[2] = weekday;
-                                    object[3] = endClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+						if(startWeek!=0){
+							if(startWeek<endWeek){
+								if(startClass<endClass){
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1] = startWeek;
+									object[2] = weekday;
+									object[3] = startClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+									startClass++;
+								}else {
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1] = startWeek;
+									object[2] = weekday;
+									object[3] = endClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+								}
+								startWeek++;
+							}else {
+								if(startClass<endClass){
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1] = startWeek;
+									object[2] = weekday;
+									object[3] = startClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+									startClass++;
+								}else {
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1]= startWeek;
+									object[2] = weekday;
+									object[3] = endClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
         mav.addObject("sectionList",sectionList);
         int totalRecords = sectionList.size();
 		Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
@@ -894,7 +966,8 @@ public class SystemLogController {
         //高一年级
         Object[] objectOne = new Object[7];
         //演示实验
-        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int oneCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int oneCategory1 = systemLogService.listStatisticalTableOfExperiments(779,776,labRoomId);
         objectOne[0] = "高一年级";
         objectOne[1] = oneCategory1;
         objectOne[2] = oneCategory1;
@@ -905,7 +978,8 @@ public class SystemLogController {
             objectOne[3] = 0;
         }
         //分组实验
-        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int oneCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+779+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int oneCategory2 = systemLogService.listStatisticalTableOfExperiments(779,777,labRoomId);
         objectOne[4] = oneCategory2;
         objectOne[5] = oneCategory2;
         if(oneCategory2!=0){
@@ -918,7 +992,8 @@ public class SystemLogController {
         //高二年级
         Object[] objectTwo = new Object[7];
         //演示实验
-        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int TwoCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int TwoCategory1 = systemLogService.listStatisticalTableOfExperiments(780,776,labRoomId);
         objectTwo[0] = "高二年级";
         objectTwo[1] = TwoCategory1;
         objectTwo[2] = TwoCategory1;
@@ -929,7 +1004,8 @@ public class SystemLogController {
             objectTwo[3] = 0;
         }
         //分组实验
-        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int TwoCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+780+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int TwoCategory2 = systemLogService.listStatisticalTableOfExperiments(780,777,labRoomId);
         objectTwo[4] = TwoCategory2;
         objectTwo[5] = TwoCategory2;
         if(TwoCategory2!=0){
@@ -942,7 +1018,8 @@ public class SystemLogController {
         //高三年级
         Object[] objectThree = new Object[7];
         //演示实验
-        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int threeCategory1 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 776 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int threeCategory1 = systemLogService.listStatisticalTableOfExperiments(781,776,labRoomId);
         objectThree[0] = "高三年级";
         objectThree[1] = threeCategory1;
         objectThree[2] = threeCategory1;
@@ -953,7 +1030,8 @@ public class SystemLogController {
             objectThree[3] = 0;
         }
         //分组实验
-        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+//        int threeCategory2 = entityManager.createQuery("select l from OperationItem l where l.CDictionaryByOpenGrade.id = "+781+" and l.CDictionaryByLpCategoryApp.id = " + 777 +" and l.labRoom.id =" +labRoomId).getResultList().size();
+        int threeCategory2 = systemLogService.listStatisticalTableOfExperiments(781,777,labRoomId);
         objectThree[4] = threeCategory2;
         objectThree[5] = threeCategory2;
         if(threeCategory2!=0){

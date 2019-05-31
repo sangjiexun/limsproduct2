@@ -78,7 +78,7 @@
             </div>
             <div class="layui-row">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">是否归还</label>
+                    <label class="layui-form-label">是否走借用流程</label>
                     <div class="layui-input-block">
                         <input type="text" name="isNeedReturn"  lay-verify="required"  autocomplete="on" class="layui-input" disabled="disabled"/>
                     </div>

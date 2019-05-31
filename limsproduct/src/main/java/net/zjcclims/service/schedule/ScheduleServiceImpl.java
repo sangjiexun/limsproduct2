@@ -54,13 +54,17 @@ public class ScheduleServiceImpl implements ScheduleService {
             if(obj[3]!=null) {
                 scheduleVO.setItem(obj[3].toString());// 项目
             }else {
-                scheduleVO.setItem("无项目");
+                //scheduleVO.setItem("无项目");
+                scheduleVO.setItem("");//未排到项目，课表上不显示
             }
             scheduleVO.setAddress(obj[13].toString());// 上课地点
             if(obj[9]!=null && obj[11]!=null && !obj[11].equals("")) {
                 scheduleVO.setTeacher(obj[9].toString() + " " + obj[11].toString());// 教师
             }else if(obj[9]!=null){
                 scheduleVO.setTeacher(obj[9].toString());// 教师
+            }
+            if(obj[19]!=null){
+                scheduleVO.setLabRoomNumber("["+obj[19].toString()+"]");//实验室编号
             }
             scheduleVOS.add(scheduleVO);
         }

@@ -4,6 +4,7 @@ import net.zjcclims.domain.LabRoom;
 import net.zjcclims.domain.VirtualImage;
 import net.zjcclims.domain.VirtualImageReservation;
 import net.zjcclims.vo.CourseSchedule;
+import net.zjcclims.vo.virtual.VirtualImageReservationVO;
 import net.zjcclims.web.virtual.StartVirtualImageByCourseSchedules;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface VirtualService {
+    /*************************************************************************************
+     * Description:通过预约记录得到预约的镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/29
+     *************************************************************************************/
+    public VirtualImage getVirtualImageByVirtualImageReservationID(Integer virtualImageReservationID);
     /*************************************************************************************
      * Description:得到所有虚拟实验室
      *
@@ -103,6 +111,14 @@ public interface VirtualService {
     public void updateVirtualImage();
 
     /*************************************************************************************
+     * Description:直连Citrix更新虚拟镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String updateImageCitrix(HttpServletRequest request);
+
+    /*************************************************************************************
      * Description:调用接口查看虚拟实验室下的镜像
      *
      * @author: 贺照易
@@ -167,13 +183,21 @@ public interface VirtualService {
     public String saveVirtualImageReservation(HttpServletRequest request) throws ParseException;
 
     /*************************************************************************************
+     * Description:保存虚拟镜像预约-Citrix直连
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException;
+
+    /*************************************************************************************
      * Description:预约审核方法
      *
      * @author: 杨新蔚
      * @date: 2019/1/6
      *************************************************************************************/
 
-    public List<VirtualImageReservation> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit);
+    public List<VirtualImageReservationVO> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit);
 
     /**
      * Description 获取实际审核状态
@@ -192,6 +216,14 @@ public interface VirtualService {
      * @date: 2018/12/20
      *************************************************************************************/
     public String virtualLogin(Integer id, HttpServletRequest request, HttpServletResponse response);
+
+    /*************************************************************************************
+     * Description:调用登录接口(直连)-下载ica文件
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    public String virtualLoginCitrix(Integer id, HttpServletRequest request, HttpServletResponse response);
 
     /*************************************************************************************
      * Description:查看虚拟镜像报表

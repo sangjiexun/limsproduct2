@@ -41,6 +41,24 @@
             <input id="id" name="id" type="hidden" value="${id}"/>
             <div class="layui-row">
                 <div class="layui-col-lg6">
+                    <label class="layui-form-label">物品柜类型※</label>
+                    <div class="layui-input-block">
+                        <select name="type" id="type" lay-verify="required" lay-filter="type">
+                            <option value=""></option>
+                            <option value="1">普通物品柜</option>
+                            <option value="2">智能物品柜</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">存放地点</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="location" id="location" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-lg6">
                     <label class="layui-form-label">物品柜编号</label>
                     <div class="layui-input-block">
                         <input type="text" name="cabinetCode" id="cabinetCode" placeholder="请输入" autocomplete="off" class="layui-input" >
@@ -53,6 +71,22 @@
                     </div>
                 </div>
             </div>
+            <div class="layui-row" id="hardware">
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">所属物联服务器</label>
+                    <div class="layui-input-block">
+                        <select name="serverId" id="serverId" lay-filter="type">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">物联IP</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="hardwareIp" id="hardwareIp" placeholder="请输入" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+            </div>
             <div class="layui-form-item">
                 <div class="layui-input-block">
                         <button class="layui-btn" lay-submit lay-filter="saveAssetCabinet">保存</button>
@@ -60,6 +94,14 @@
                 </div>
             </div>
         </form>
+        <div id="item">
+            <button data-method="addCabinetWareHouse" class="layui-btn layui-btn-xs layui-btn-normal add_btn">新增智能柜门信息</button>
+            <table class="layui-hide add_progress" id="cabinetWareHouseList" lay-filter="cabinetWareHouseList"></table>
+            <script type="text/html" id="parentbar">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+        </div>
     </div>
 </div>
 <script type="text/javascript" src="${pageContext.request.contextPath}/layui/layui.js"></script>

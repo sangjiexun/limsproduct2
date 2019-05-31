@@ -95,6 +95,8 @@
 		<ul class="TabbedPanelsTabGroup">
 			<li class="TabbedPanelsTab selected" id="s1">
 				<a href="${pageContext.request.contextPath}/virtual/virtualImageReservation?currpage=1">虚拟镜像预约</a></li>
+			<li class="TabbedPanelsTab" id="s4">
+				<a href="${pageContext.request.contextPath}/virtual/virtualImageReservationCitrix?currpage=1">虚拟镜像预约(直连)</a></li>
 			<li class="TabbedPanelsTab" id="s2"><a
 					href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=0&page=1&isaudit=2">我的虚拟镜像申请</a>
 			</li>
@@ -103,7 +105,7 @@
 						href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=0&page=1&isaudit=1">我的虚拟镜像审核</a>
 				</li>
 			</sec:authorize>
-		</ul>
+			</ul>
 		<div class="TabbedPanelsTabGroup-box">
 			<div class="TabbedPanelsContentGroup">
 				<div class="TabbedPanelsContent">
@@ -141,8 +143,8 @@
 							<c:forEach items="${virtualImageReservations}" var="current" varStatus="i">
 
 								<tr>
-									<td>${current.virtualImage.name}</td>
-									<td>${current.user.cname}</td>
+									<td>${current.virtualImageName}</td>
+									<td>${current.userName}</td>
 									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${current.startTime.time}" /></td>
 									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${current.endTime.time}" /></td>
 									<td>${current.remarks}</td>
@@ -217,7 +219,9 @@
 										<jsp:useBean id="now" class="java.util.Date" />
 										<c:if test="${isAudit eq 2 && auditState.get(i.count-1)==-1 and current.startTime.time le now and current.endTime.time ge now}">
 										<a href="javascript:void(0)"
-											   onclick="VirtualLogin('${current.id}')">登录</a>
+											   onclick="VirtualLogin('${current.virtualImageReservationID}')">登录</a>
+										<a href="javascript:void(0)"
+											   onclick="VirtualLoginCitrix('${current.virtualImageReservationID}')">登录(直连)</a>
 										</c:if>
 									</td>
 								</tr>
@@ -266,6 +270,11 @@
 
     function VirtualLogin(id) {
         url="${pageContext.request.contextPath}/virtual/virtualLogin?virtualImageReservationid="+id;
+        window.open(url);
+	}
+
+	function VirtualLoginCitrix(id) {
+        url="${pageContext.request.contextPath}/virtual/virtualLoginCitrix?virtualImageReservationid="+id;
         window.open(url);
 	}
 

@@ -28,18 +28,18 @@
 		<button data-method="newAssetsApply" class="layui-btn layui-btn-xs layui-btn-normal apply_btn">新建物资申购</button>
 		<blockquote class="layui-elem-quote">
 				<div class="layui-inline">
-					<input class="layui-input" id="keywords" autocomplete="off" placeholder="请输入物品名称"/>
+					<input class="layui-input" id="keywords" autocomplete="off" placeholder="cas号、物资名称或分类"/>
 				</div>
 			<button class="layui-btn search_btn" data-method="search">搜索</button>
 			<button class="layui-btn layui-btn-primary reload_btn" data-method="reload">取消</button>
-			<div class="layui-form" style="display:inline-block">
-				<label class="layui-form-label">物资类别</label>
-				<div class="layui-input-block">
-					<select name="kind" id="kind"  lay-filter="kind">
-						<option value=""></option>
-					</select>
-				</div>
-			</div>
+			<%--<div class="layui-form" style="display:inline-block">--%>
+				<%--<label class="layui-form-label">物资类别</label>--%>
+				<%--<div class="layui-input-block">--%>
+					<%--<select name="kind" id="kind"  lay-filter="kind">--%>
+						<%--<option value=""></option>--%>
+					<%--</select>--%>
+				<%--</div>--%>
+			<%--</div>--%>
 		</blockquote>
 		<table class="layui-hide add_progress" id="assetsList" lay-filter="assetsList"></table>
 		<script type="text/html" id="parentbar">

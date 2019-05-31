@@ -710,9 +710,13 @@
                                     <th><spring:message code="all.trainingRoom.labroom"/>编号</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>名称</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>地址</th>
-                                    <th><spring:message code="all.trainingRoom.labroom"/>等级</th>
+                                    <c:if test="${PROJECT_NAME eq 'zjcclims'}">
+                                        <th><spring:message code="all.trainingRoom.labroom"/>等级</th>
+                                    </c:if>
                                     <th><spring:message code="all.trainingRoom.labroom"/>容量</th>
-                                    <th>可预约工位数</th>
+                                    <c:if test="${jobReservation eq 'true'}">
+                                        <th>可预约工位数</th>
+                                    </c:if>
                                     <th><%-- <fmt:message key="navigation.operate" /> --%>操作
                                     </th>
                                 </tr>
@@ -724,20 +728,24 @@
                                         <td>${s.labRoomNumber}</td>
                                         <td>${s.labRoomName}</td>
                                         <td>${s.systemRoom.roomName}</td>
-                                        <c:if test="${s.labRoomLevel eq 0}">
-                                            <td>特级</td>
-                                        </c:if>
-                                        <c:if test="${s.labRoomLevel eq 1}">
-                                            <td>一级</td>
-                                        </c:if>
-                                        <c:if test="${s.labRoomLevel eq 2}">
-                                            <td>二级</td>
-                                        </c:if>
-                                        <c:if test="${empty s.labRoomLevel}">
-                                            <td>未设置</td>
+                                        <c:if test="${PROJECT_NAME eq 'zjcclims'}">
+                                            <c:if test="${s.labRoomLevel eq 0}">
+                                                <td>特级</td>
+                                            </c:if>
+                                            <c:if test="${s.labRoomLevel eq 1}">
+                                                <td>一级</td>
+                                            </c:if>
+                                            <c:if test="${s.labRoomLevel eq 2}">
+                                                <td>二级</td>
+                                            </c:if>
+                                            <c:if test="${empty s.labRoomLevel}">
+                                                <td>未设置</td>
+                                            </c:if>
                                         </c:if>
                                         <td>${s.labRoomCapacity}</td>
-                                        <td>${s.labRoomWorker}</td>
+                                        <c:if test="${jobReservation eq 'true'}">
+                                            <td>${s.labRoomWorker}</td>
+                                        </c:if>
                                         <td>
                                                 <%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXCENTERDIRECTOR,ROLE_TEACHER,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_ASSISTANT">--%>
                                             <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN'

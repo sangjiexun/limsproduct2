@@ -24,9 +24,11 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
     var laydate2 = layui.laydate;//日期
     laydate.render({
         elem: '#beginTime'
+        ,type: 'datetime'
     });
     laydate2.render({
         elem: '#endTime'
+        ,type: 'datetime'
     });
     $.ajax({
         url: contextPath + '/lims/api/material/editAssetsReceive?id='+id,
@@ -53,6 +55,9 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
             if(id===''){
                 $("#item").hide();
                 $("#price").hide();
+            }
+            if(isNeedReturn===0){
+                $("#return").hide();
             }
         },
         error:function () {

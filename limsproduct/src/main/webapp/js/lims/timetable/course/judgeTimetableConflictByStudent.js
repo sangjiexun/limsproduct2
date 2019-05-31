@@ -2,6 +2,7 @@ var contextPath = $("meta[name='contextPath']").attr("content");
 // var zuulUrl ="";
 var zuulUrl = $("#zuulServerUrl").val() + contextPath + "/timetable/";
 var studentTimetableUrl = zuulUrl + "api/school/judgeTimetableConflictByStudent";
+var msgindex;
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     layui.use(['layer', 'form', 'element', 'jquery', 'layer'], function () {
@@ -15,12 +16,14 @@ $(document).ready(function () {
         getWeeks1();
         function getWeekday1(){
             var term = $('#term').val();
+            var timetableStyle = $('#timetableStyle').val();
+            var courseNo = $('#courseNo').val();
             // var data1 = JSON.stringify({
             //     "term": $('#term').val(),
             //     "type": 2,
             // });
             $.ajax({
-                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=2&termId="+term,
+                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=2&termId="+term+"&timetableStyle="+timetableStyle+"&courseNo="+courseNo,
                 type: "GET",
                 // data: data1,
                 headers: {Authorization: getJWTAuthority()},
@@ -51,12 +54,14 @@ $(document).ready(function () {
 
         function getClasses1() {
             var term = $('#term').val();
+            var timetableStyle = $('#timetableStyle').val();
+            var courseNo = $('#courseNo').val();
             // var data1 = JSON.stringify({
             //     "term": $('#term').val(),
             //     "type": 2,
             // });
             $.ajax({
-                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=3&termId="+term,
+                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=3&termId="+term+"&timetableStyle="+timetableStyle+"&courseNo="+courseNo,
                 type: "GET",
                 // data: data1,
                 headers: {Authorization: getJWTAuthority()},
@@ -86,13 +91,15 @@ $(document).ready(function () {
 
         function getWeeks1() {
             var term = $('#term').val();
+            var timetableStyle = $('#timetableStyle').val();
+            var courseNo = $('#courseNo').val();
             // var data1 = JSON.stringify({
             //     "term": $('#term').val(),
             //     "type": 2,
             // });
             $.ajax({
                 // url: weekUrl + "?term=16&weekday=-1",
-                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=1&termId="+term,
+                url: zuulUrl + "api/timetable/common/apiDateListJudgeConflictByStu?type=1&termId="+term+"&timetableStyle="+timetableStyle+"&courseNo="+courseNo,
                 headers: {Authorization: getJWTAuthority()},
                 // data: data1,
                 // async: false,
@@ -157,16 +164,16 @@ $(document).ready(function () {
             console.log(data.othis); //得到美化后的DOM对象
             getWeeks1();
         });
-        $("#weekday").change(function () {
-            $(this).valid();
-            getClasses1();
-            getWeeks1();
-        });
-        $("#labRoom_id").change(function () {
-            $(this).valid();
-            getClasses1();
-            getWeeks1();
-        });
+        // $("#weekday").change(function () {
+        //     $(this).valid();
+        //     getClasses1();
+        //     getWeeks1();
+        // });
+        // $("#labRoom_id").change(function () {
+        //     $(this).valid();
+        //     getClasses1();
+        //     getWeeks1();
+        // });
         form.on('submit(timetableSubmit)', function(data){
             var data1;
                 var classs = "";
@@ -205,19 +212,33 @@ $(document).ready(function () {
                 data.field.sections = classs;
                 data.field.weeks = weekss;
                 data.field.termId = $("#term").val();
-                data.field.courseNo = "225151-17-10061363";
-                // data.field.courseNo = $("#courseNo").val();
                 data.field.weekdays = weekdayss;
+                if($("#timetableStyle").val() == 5){
+                    data.field.selfId = $("#selfId").val();
+                }else{
+                    // data.field.courseNo = "225151-17-10061363";
+                    data.field.courseNo = $("#courseNo").val();
+                }
+                data.field.timetableStyle = $("#timetableStyle").val();
                 data1 = JSON.stringify(data.field);
+                if(data.field.sections == "" || data.field.weeks == "" || data.field.weekdays==""){
+                    alert("请选择周次/节次/星期!")
+                    return false;
+                }
                 $.ajax({
                     url: zuulUrl + "api/school/judgeTimetableConflictByStudent",
                     headers: {Authorization: getJWTAuthority()},
                     data: data1,
-                    async: false,
+                    // async: false,
                     type: "POST",
                     contentType: "application/json;charset=UTF-8",
+                    beforeSend: function () {
+                        loading("数据提交中，请稍后......");
+                    },
                     success: function (result) {
-                        $("#table_student").html("");
+                        // var index = layer.msg("上传成功")
+                        layer.close(msgindex);
+                        $("#table_student1").html("");
                         console.log(result);
                         var section = result.data[0].sections;
                         var week = result.data[0].weeks;
@@ -229,6 +250,10 @@ $(document).ready(function () {
                         var str = "";
                         str+="<table class='tab_stu' id='tab_stu' border='1' align='center'><caption>";
                         str+="学生判冲";
+                        str+="<span>(可拖动鼠标多选)</span>";
+                        str+="<div style='float: right;'>";
+                        str+="<button class='layui-btn' onclick='chooseLabRoom()'>选择实验室</button>";
+                        str+="</div>";
                         str+="</caption>";
                         str+="<thead>";
                         str+="<tr>";
@@ -239,23 +264,24 @@ $(document).ready(function () {
                         }
                         str+="</tr>";
                         str+="</thead>";
-                        str+="<tbody>";
+                        // str+="<tbody id='select_box'>";
                         var haved
                         for(var i=0;i<weekdayss.length;i++){
+                            str+="<tbody data-album='"+ weekdayss[i] +"'>";
                             for(var j=0;j<sectionss.length;j++){
-                                str+="<tr>"
+                                str+="<tr class='check_box'>"
                                 if(haved!=i){
-                                    str+="<td rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
+                                    str+="<td class='not_check' data='"+ weekdayss[i] +"' rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
                                     haved = i;
                                 }
-                                str+="<td>第"+sectionss[j]+"节</td>";
+                                str+="<td class='not_check'>第"+sectionss[j]+"节</td>";
                                 for(var y=0;y<weekss.length;y++){
                                     for(var x=1;x<result.data.length;x++){
                                         // console.log(result.data[x]);
                                         if(result.data[x].week == weekss[y]){
                                             if(result.data[x].weekday == weekdayss[i]){
                                                 if(result.data[x].section == sectionss[j]){
-                                                    str+="<td><span>"+ result.data[x].conflictRate +"%</span></td>";
+                                                    str+="<td data='"+ result.data[x].tag +"'><span data='"+ result.data[x].tag +"'>"+ result.data[x].conflictRate +"%</span></td>";
                                                 }
                                             }
                                         }
@@ -263,92 +289,208 @@ $(document).ready(function () {
                                 }
                                 str+="</tr>"
                             }
+                            str+="</tbody>";
                         }
                         str+="</tbody>";
                         str+="</table>";
-                        $("#table_student").append(str);
 
-                        var key = 0;
-                        var arrPos = new Array();
-                        $("#tab_stu").mousemove(function(e){
-                            var x = e.clientX, y = e.clientY;
-                            if (arrPos.length > 0) {
-                                if (y <= arrPos[0][1]+10 &&y >= arrPos[0][1]-10 &&1==key && e.target.tagName =="td")
-                                {
-                                    $(e.target).css("background","#666").addClass("selected");
-                                }
+                        $("#table_student1").append(str);
+                        // $("#tab_stu").selectable({ filter: "td" });
+                        $("[data-album]").selectable({ filter: "td",
+                            start: function() {
+                                $( "#tab_stu td" ).each(function() {
+                                    if($(this).hasClass('ui-selected')){
+                                        $(this).removeClass("ui-selected");
+                                    }
+                                });
                             }
                         });
-                        $("#tab_stu").mousedown(function(e){
-                            var x = e.clientX, y = e.clientY;
-                            arrPos.push(Array(x,y));
-                            $("#result").html("X:"+x+";Y:"+y)
-                            key=1;
-                        });
-                        $("#tab_stu").mouseup(function(e){
-                            arrPos=new Array();
-                            key=0;
-                        });
-
-                        // $("#tab_stu tbody td").mousedown(function () {
-                        //     //每次先清除一下上次选中的单元格的背景色
-                        //     $("#tab_stu tbody td").css('background-color', '');
-                        //
-                        //     $("#tab_stu tbody td").mousemove(onMousemove);
-                        //     $("#tab_stu tbody td").mouseup(onMouseup);
-                        // });
-                        //
-                        // function onMousemove() {
-                        //     $(this).css('background-color', '#aaa');
-                        // }
-                        //
-                        // var cellVal = parseFloat(0,10);
-                        // var cellIndex = 0;
-                        // var re = /(^[\-0-9][0-9]*(.[0-9]+)?)$/; //判断字符串是否为数字
-                        // function onMouseup() {
-                        //     $("#tab_stu tbody").find("td").each(function () {
-                        //
-                        //         if($(this).attr('style')=="background-color: rgb(170, 170, 170);"){
-                        //             var nubmer = $(this).context.innerText;
-                        //             if (!re.test(nubmer)) {
-                        //                 nubmer = 0;
-                        //             }
-                        //
-                        //             cellVal += parseFloat(nubmer,10);//cellIndex
-                        //             cellIndex = $(this).context.cellIndex;//选中数据所在第几列
-                        //         }
-                        //     });
-                        //     var html = "";
-                        //     for(var i=0;i<cellIndex;i++){
-                        //         html+="<td></td>"
-                        //     }
-                        //
-                        //     html+="<td>"+cellVal.toFixed(2)+"</td>";
-                        //
-                        //     //共有多少列
-                        //     var totalTh = $("#tab_stu th").size();
-                        //
-                        //     for(var i=0;i<totalTh - (cellIndex+1);i++){
-                        //         html+="<td></td>"
-                        //     }
-                        //
-                        //     $("tfoot").html(html);
-                        //     cellVal = 0;
-                        //     cellIndex = 0;
-                        //     $("#tab_stu tbody td").unbind('mousemove', onMousemove);
-                        // }
                     }
                 });
             // var index = parent.layer.getFrameIndex(window.name);
             // parent.layer.close(index);//关闭当前页
+
             return false;
         });
 
-
+        function loading(msg){
+            msgindex = layer.msg(msg, {
+                icon:16,
+                shade:[0.1, '#fff'],
+                time:false  //不自动关闭
+            })
+        }
     })
 
 });
-
+function chooseLabRoom() {
+    var timetableClass = [];
+    $( ".ui-selected" ).each(function() {
+        if(!$(this).hasClass('not_check')){
+            var index = $(this).attr( 'data');
+            timetableClass.push(index)
+        }
+    });
+    // alert(timetableClass)
+    var data1 = JSON.stringify({
+        "tag": timetableClass,
+        "term": $("#term").val()
+    });
+    console.log(data1);
+    if(timetableClass.length==0){
+        alert("请至少选择一个!");
+        return false;
+    }
+    $.ajax({
+        url: zuulUrl + "/api/school/apiGetUsableList",
+        headers: {Authorization: getJWTAuthority()},
+        data: data1,
+        async: false,
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        // beforeSend: function () {
+        //     loading("数据提交中，请稍后......");
+        // },
+        success: function (result) {
+            // layer.close(msgindex);
+            $('#lab_stu').remove();
+            // for(var i =0;i<timetableClass.length;i++){
+            //     var timetab=timetableClass[i].split("-");
+            // }
+            var str = "";
+            str+="<table class='lab_stu' id='lab_stu' border='1' align='center'>"
+            str+="<caption>";
+            str+="选择实验室";
+            str+="<div style='float: right;'>";
+            str+="<button class='layui-btn' onclick='confirmLabRoom()'>排课</button>";
+            str+="</div>";
+            str+="</caption>";
+            str+="<thead>"
+            str+="<tr>"
+            str+="<th>周次</th><th>星期</th><th>节次</th><th>项目</th><th>实验室<font color='red'> *</font></th><th>教师<font color='red'> *</font></th><th>助教</th><th>操作</th>"
+            str+="</tr>"
+            str+="</thead>"
+            str+="<tbody>"
+            for(var i=0;i<result.length;i++){
+                str+="<tr>"
+                str+="<td>"+ result[i].weeks +"</td>"
+                str+="<td>"+ result[i].weekdays +"</td>"
+                str+="<td>"+ result[i].sections +"</td>"
+                str+="<td><select id='resultsOperationItem_select' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var x=0;x<result[i].resultsOperationItem.length;x++){
+                    str+="<option value='"+ result[i].resultsOperationItem[x].id +"'>"+ result[i].resultsOperationItem[x].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><select id='resultsLabRoom_select' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var j=0;j<result[i].resultsLabRoom.length;j++){
+                    str+="<option value='"+ result[i].resultsLabRoom[j].id +"'>"+ result[i].resultsLabRoom[j].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><select id='resultsTeacher_select' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var y=0;y<result[i].resultsTeacher.length;y++){
+                    str+="<option value='"+ result[i].resultsTeacher[y].id +"'>"+ result[i].resultsTeacher[y].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><select id='resultsTutor_select' class='cho_lab chzn-select'>"
+                str+="<option value=''>请选择</option>"
+                for(var z=0;z<result[i].resultsTeacher.length;z++){
+                    str+="<option value='"+ result[i].resultsTeacher[z].id +"'>"+ result[i].resultsTeacher[z].text +"</option>"
+                }
+                str+="</select></td>"
+                str+="<td><a onclick='deleteTime(this)'>删除</a></td>"
+                str+="</tr>"
+            }
+            str+="</tbody>"
+            str+="</table>"
+            // $(".cho_lab").trigger("chosen:updated");
+            $(".cho_lab").trigger("liszt:updated");
+            $('.cho_lab').chosen();
+            $('.cho_lab').searchableSelect();
+            $("#table_student2").append(str);
+            console.log(result);
+            var config = {
+                '.chzn-select': {search_contains : true},
+                '.chzn-select-deselect'  : {allow_single_deselect:true},
+                '.chzn-select-no-single' : {disable_search_threshold:10},
+                '.chzn-select-no-results': {no_results_text:'选项, 没有发现!'},
+                '.chzn-select-width'     : {width:"95%"}
+            };
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        }
+    });
+}
+function choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor) {
+    var JudgeConflictTimeTableVO = new Object();
+    if($("#timetableStyle").val() == 5){
+        JudgeConflictTimeTableVO.selfId = $("#selfId").val();;
+    }else{
+        // JudgeConflictTimeTableVO.courseNo = "225151-17-10061363";
+        JudgeConflictTimeTableVO.courseNo = $("#courseNo").val();;
+    }
+    JudgeConflictTimeTableVO.weeks = weeks;
+    JudgeConflictTimeTableVO.weekday = weekday;
+    JudgeConflictTimeTableVO.classes = classes;
+    JudgeConflictTimeTableVO.labRoomId = labRoomId;
+    JudgeConflictTimeTableVO.item = item;
+    JudgeConflictTimeTableVO.teacher = teacher;
+    JudgeConflictTimeTableVO.tutor = tutor;
+    JudgeConflictTimeTableVO.timetableStyle = $('#timetableStyle').val();
+    JudgeConflictTimeTableVO.status = $('#status').val();
+    JudgeConflictTimeTableVO.term = $("#term").val();
+    return JudgeConflictTimeTableVO;
+}
+function confirmLabRoom() {
+    var flag;
+    console.log('确定');
+    var JudgeConflictTimeTableVOs = [];
+    $('#lab_stu tbody tr').each(function(i){
+        var tdArr = $(this).children();
+        var JudgeConflictTimeTableVO;
+        var weeks = tdArr.eq(0).text();
+        var weekday = tdArr.eq(1).text();
+        var classes = tdArr.eq(2).text();
+        var item = tdArr.eq(3).find("#resultsOperationItem_select").val();
+        var labRoomId = tdArr.eq(4).find("#resultsLabRoom_select").val();
+        var teacher = tdArr.eq(5).find("#resultsTeacher_select").val();
+        var tutor = tdArr.eq(6).find("#resultsTutor_select").val();
+        if(tdArr.eq(4).find("#resultsLabRoom_select").val()==''||tdArr.eq(5).find("#resultsTeacher_select").val()==''){
+            alert("请填写必填项!")
+            flag = 1;
+        }
+        JudgeConflictTimeTableVO = choLabroom(weeks,weekday,classes,labRoomId,item,teacher,tutor);
+        JudgeConflictTimeTableVOs.push(JudgeConflictTimeTableVO);
+    });
+    console.log(JSON.stringify(JudgeConflictTimeTableVOs))
+    if(flag == 1){
+        return false;
+    }else{
+        $.ajax({
+            url: zuulUrl + "/api/school/apiSaveTimetableAppointmentByJudgeConflict",
+            headers: {Authorization: getJWTAuthority()},
+            type:'post',
+            data:JSON.stringify(JudgeConflictTimeTableVOs),
+            async:false,  // 设置同步方式
+            // cache:false,
+            contentType:"application/json;charset=utf-8",
+            success:function(data){
+                if(data){
+                    window.location.reload();
+                }else{
+                    alert("排课失败!")
+                }
+            }
+        });
+    }
+}
+function deleteTime(obj) {
+    console.log("delete");
+    $(obj).parent().parent().parent()[0].removeChild($(obj).parent().parent()[0]);
+}
 function validform() {
     return $("#form_lab").validate();
 }

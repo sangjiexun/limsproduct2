@@ -1,24 +1,32 @@
 package net.zjcclims.util;
 
+import com.google.inject.internal.Lists;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +38,7 @@ import java.util.Map;
  * @date:2017/12/7 0007
  **************************************************************************/
 public class HttpClientUtil {
+    private static CookieStore store;
     static HttpClient httpClient1 = new DefaultHttpClient();
 
     /**************************************************************************
@@ -55,7 +64,6 @@ public class HttpClientUtil {
 
         // 创建Httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
-
         String resultString = "";
         CloseableHttpResponse response = null;
         try {
@@ -214,4 +222,129 @@ public class HttpClientUtil {
 
         return resultString;
     }
+
+    /*************************************************************************************
+     * Description:post请求自定义header、param
+     *
+     * @author: 杨新蔚
+     * @date: 2019/5/28
+     *************************************************************************************/
+    public static String postWithoutCookie(String url,Map<String,String> params,Map<String,String> headers) throws URISyntaxException, IOException, ClassNotFoundException {
+        // 创建Http Post请求
+        HttpPost httpPost = new HttpPost(url);
+        // 创建参数列表
+        if (headers != null) {
+            for(Map.Entry<String,String> en:headers.entrySet()){
+                httpPost.addHeader(new BasicHeader(en.getKey(), en.getValue()));
+            }
+        }
+        DefaultHttpClient client = new DefaultHttpClient();
+        HttpResponse response = client.execute(httpPost);
+        String result = EntityUtils.toString(response.getEntity(),"utf-8");
+        System.out.println(result);
+
+        //获取cookies信息
+        store = client.getCookieStore();
+        List<Cookie> cookieList = store.getCookies();
+        for (Cookie cookie : cookieList){
+            String name =cookie.getName();
+            String value = cookie.getValue();
+            System.out.println("访问接口成功，cookie name = "+name+", cookie value = "+value);
+        }
+        return result;
+    }
+
+    /*************************************************************************************
+     * Description:post请求自定义header、param(用于citrix虚拟化接口)
+     *
+     * @author: 杨新蔚
+     * @date: 2019/5/28
+     *************************************************************************************/
+    public static String postWithCookie(String url,Map<String,String> params,Map<String,String> headers) throws URISyntaxException, IOException, ClassNotFoundException {
+        // 创建Http Post请求
+        HttpPost httpPost = new HttpPost(url);
+        // 创建header中的参数
+        if (headers != null) {
+            for(Map.Entry<String,String> en:headers.entrySet()){
+                httpPost.addHeader(new BasicHeader(en.getKey(), en.getValue()));
+            }
+        }
+        //获取cookies信息
+        List<Cookie> cookieList = store.getCookies();
+        for (Cookie cookie : cookieList){
+            if ("CsrfToken".equals(cookie.getName())){
+                httpPost.addHeader(new BasicHeader("Csrf-Token", cookie.getValue()));
+            }
+        }
+        //创建body中的参数
+        if (params != null) {
+            List<NameValuePair> paramList = new ArrayList<>();
+            for (String key : params.keySet()) {
+                paramList.add(new BasicNameValuePair(key, params.get(key)));
+            }
+            // 模拟表单
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(paramList,"utf-8");
+            httpPost.setEntity(entity);
+        }
+        DefaultHttpClient client = new DefaultHttpClient();
+        //设置cookies信息
+        client.setCookieStore(store);
+        HttpResponse response = client.execute(httpPost);
+        String result = EntityUtils.toString(response.getEntity(),"utf-8");
+        System.out.println(result);
+        store=client.getCookieStore();
+        return result;
+    }
+
+    /*************************************************************************************
+     * Description:get请求自定义header、param(用于citrix虚拟化接口)
+     *
+     * @author: 杨新蔚
+     * @date: 2019/5/28
+     *************************************************************************************/
+    public static String getWithCookie(String url,Map<String,String> params,Map<String,String> headers) throws URISyntaxException, IOException, ClassNotFoundException {
+        StringBuffer  stringBuffer= new StringBuffer("?");
+        //获取cookies信息
+        List<Cookie> cookieList = store.getCookies();
+        for (Cookie cookie : cookieList){
+            if ("CsrfToken".equals(cookie.getName())){
+                stringBuffer.append("CsrfToken=").append(cookie.getValue()).append("&");
+            }
+        }
+        if (params != null) {
+            for (String key : params.keySet()) {
+                stringBuffer.append(key).append("=").append(URLEncoder.encode(params.get(key))).append("&");
+            }
+            stringBuffer.deleteCharAt(stringBuffer.length()-1);
+        }
+
+        // 创建Http Get请求
+        HttpGet httpGet = new HttpGet(url+stringBuffer);
+        // 创建header中的参数
+        if (headers != null) {
+            for(Map.Entry<String,String> en:headers.entrySet()){
+                httpGet.addHeader(new BasicHeader(en.getKey(), en.getValue()));
+            }
+        }
+        //获取cookies信息
+        for (Cookie cookie : cookieList){
+            if ("CsrfToken".equals(cookie.getName())){
+                httpGet.addHeader(new BasicHeader("Csrf-Token", cookie.getValue()));
+            }
+        }
+
+        //创建body中的参数
+
+        DefaultHttpClient client = new DefaultHttpClient();
+        //设置cookies信息
+        client.setCookieStore(store);
+        HttpResponse response = client.execute(httpGet);
+        String result = EntityUtils.toString(response.getEntity(),"utf-8");
+        System.out.println(result);
+        store=client.getCookieStore();
+        return result;
+    }
+
+
+
 }

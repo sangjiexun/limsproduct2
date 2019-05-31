@@ -223,9 +223,7 @@ public class AssetReceive implements Serializable {
 	String rejectReason;
 	/**
 	 */
-	@OneToMany(mappedBy = "assetReceive", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAudit> assetReceiveAudits;
+
 	/**
 	 */
 	@OneToMany(mappedBy = "assetReceive", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
@@ -518,21 +516,9 @@ public class AssetReceive implements Serializable {
 		return user;
 	}
 
-	/**
-	 */
-	public void setAssetReceiveAudits(Set<AssetReceiveAudit> assetReceiveAudits) {
-		this.assetReceiveAudits = assetReceiveAudits;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAudit> getAssetReceiveAudits() {
-		if (assetReceiveAudits == null) {
-			assetReceiveAudits = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAudit>();
-		}
-		return assetReceiveAudits;
-	}
+
+
 	/**
 	 */
 	public void setAssetReceiveRecords(Set<AssetReceiveRecord> assetReceiveRecords) {
@@ -573,7 +559,6 @@ public class AssetReceive implements Serializable {
 		setMem(that.getMem());
 		setUser(that.getUser());
 		setOperationItem(that.getOperationItem());
-		setAssetReceiveAudits(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAudit>(that.getAssetReceiveAudits()));
 		setAssetReceiveRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveRecord>(that.getAssetReceiveRecords()));
 	}
 

@@ -441,6 +441,24 @@ $(document).ready(function () {
         }
     })
 
+    /*
+     *学生判冲模式
+     */
+    $("#judgeTimetable").on('click', function () {
+        $('#submitButton').hide();
+        $('#eduAdiustCourse').hide();
+        $('#eduAdiust').show();
+        $('#judgeTimetable').hide();
+        $('#judgeTimetableCourse').show();
+    });
+    $("#eduAdiust").on('click', function () {
+        $('#judgeTimetableCourse').hide();
+        $('#eduAdiust').hide();
+        $('#judgeTimetable').show();
+        $('#eduAdiustCourse').show();
+        $('#submitButton').show();
+    });
+
     $("#form_lab").validate();
 
     $("#labRoom_id").change(function () {
@@ -465,6 +483,10 @@ $(document).ready(function () {
 
 //得到查询的参数
 function queryParams(params) {
+    var arr = new Object();
+    arr.sort = params.sort;
+    arr.order = params.order;
+    arr.courseNo = $("#courseNo").val();
     var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
         // limit: params.limit,   //页面大小
 

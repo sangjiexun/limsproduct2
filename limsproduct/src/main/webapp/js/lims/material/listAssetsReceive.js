@@ -47,11 +47,17 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
                 // totalRowText: '项目预算合计：'
             }, {
                 field: 'applicationTime',
-                title: '申领日期',
+                title: '申领发起日期',
                 minWidth: 100,
                 align: 'center',
                 sort: true,
-            }, {
+            },  {
+                field: 'beginTime',
+                title: '申领使用日期',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            },{
                 field: 'username',
                 title: '申领人',
                 minWidth: 100,

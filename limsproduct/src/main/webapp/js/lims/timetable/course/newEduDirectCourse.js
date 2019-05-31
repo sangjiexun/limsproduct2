@@ -183,6 +183,7 @@ $(document).ready(function () {
             arr.tearchs = $("#teacherRelated").val();
             arr.tutors = $("#tutorRelated").val();
             arr.status = 2;
+            arr.timetableStyle = 1;
             arr.virtualId = $("#virtualId").val();
             /*arr.push(courseNo);
             arr.push(labRoomDTO);

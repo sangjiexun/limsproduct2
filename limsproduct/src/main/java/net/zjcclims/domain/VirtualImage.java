@@ -29,7 +29,7 @@ public class VirtualImage implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@Id
 	@XmlElement
-	Integer id;
+	String id;
 	/**
 	 */
 
@@ -71,11 +71,11 @@ public class VirtualImage implements Serializable {
 	@XmlTransient
 	LabRoom labRoom;
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

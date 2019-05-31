@@ -14,6 +14,7 @@ import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.vo.CourseSchedule;
+import net.zjcclims.vo.virtual.VirtualImageReservationVO;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -153,6 +154,7 @@ public class VirtualController<JsonResult> {
         mav.setViewName("redirect:/virtual/listVirtualImage?currpage=1");
         return mav;
     }
+
     /*************************************************************************************
      * Description:查看虚拟实验室下的镜像
      *
@@ -230,6 +232,41 @@ public class VirtualController<JsonResult> {
         mav.setViewName("/virtual/virtualImageAppointment.jsp");
         return mav;
     }
+
+    /*************************************************************************************
+     * Description:镜像预约直连模块
+     *
+     * @author: 杨新蔚
+     * @date: 2018/12/17
+     *************************************************************************************/
+    @RequestMapping("/virtualImageReservationCitrix")
+    public ModelAndView virtualImageReservationCitrix(@ModelAttribute VirtualImageReservation virtualImageReservation, @RequestParam int currpage) {
+        ModelAndView mav = new ModelAndView();
+        int pageSize = 10;
+        // 获取可预约虚拟镜像(可以不关联的实验室)
+        int totalRecords = virtualService.getAllVirtualImageCount(null);
+        List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null,1,-1);
+        Map<String, Integer> pageModel = shareService.getPage(currpage,pageSize, totalRecords);
+        mav.addObject("pageModel", pageModel);
+        mav.addObject("page", currpage);
+        mav.addObject("totalRecords", totalRecords);
+        mav.addObject("VirtualImages", virtualImageList);
+        mav.setViewName("/virtual/virtualImageAppointmentCitrix.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
+     * Description:更新镜像
+     *
+     * @author: 杨新蔚
+     * @date: 2018/12/17
+     *************************************************************************************/
+    @ResponseBody
+    @RequestMapping(value="/updateImageCitrix",produces = "application/json; charset=utf-8")
+    public String updateImageCitrix(HttpServletRequest request) throws ParseException {
+        return virtualService.updateImageCitrix(request);
+    }
+
     /*************************************************************************************
      * Description:镜像预约检查
      *
@@ -254,7 +291,7 @@ public class VirtualController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUserDetail();
         int pageSize = 15;
-        List<VirtualImageReservation> virtualImageReservations = virtualService.findAllVirtualImageReservation(virtualImageReservation, page, pageSize, tage, isaudit);
+        List<VirtualImageReservationVO> virtualImageReservations = virtualService.findAllVirtualImageReservation(virtualImageReservation, page, pageSize, tage, isaudit);
         int totalRecords = virtualService.findAllVirtualImageReservation(virtualImageReservation, 0, 0, tage, isaudit).size();
         List<Integer> auditState = new ArrayList<>();
         List<String> auditShow = new ArrayList<>();
@@ -387,7 +424,6 @@ public class VirtualController<JsonResult> {
         Map<String, Integer> pageModel = shareService.getPage(page, pageSize,
                 totalRecords);
         mav.addObject("virtualImageReservations", virtualImageReservations);
-
         mav.addObject("auditState", auditState);
         mav.addObject("pageModel", pageModel);
         mav.addObject("totalRecords", totalRecords);
@@ -413,7 +449,7 @@ public class VirtualController<JsonResult> {
                                                   @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
-        VirtualImage virtualImage = virtualImageReservation.getVirtualImage();
+        VirtualImage virtualImage = virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId());
 //        state = labRoomService.getAuditNumber(labRoom, state);
         mav.addObject("state", state);
         mav.addObject("virtualImageReservation", virtualImageReservation);
@@ -503,7 +539,7 @@ public class VirtualController<JsonResult> {
                 isAuditUsers.addAll(shareService.findUsersByQuery("CFO",virtualImageReservation.getUser().getSchoolAcademy().getAcademyNumber()));
                 break;
             case "LABMANAGER":
-                isAuditUsers.addAll(labRoomDeviceService.findAdminByLrid(virtualImageReservation.getVirtualImage().getLabRoom().getId()));
+                isAuditUsers.addAll(labRoomDeviceService.findAdminByLrid(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getLabRoom().getId()));
                 break;
             case "EXCENTERDIRECTOR":
                 isAuditUsers.add(user1);
@@ -516,7 +552,7 @@ public class VirtualController<JsonResult> {
         if(state == curStage){//在此审核人审核阶段
             if (("ROLE_" + authName).equals(request.getSession().getAttribute("selected_role"))
                     && ((!"TEACHER".equals(authName) || virtualImageReservation.getTeacher().getUsername().equals(user.getUsername()))
-                    && (!"LABMANAGER".equals(authName) || labRoomDeviceService.getLabRoomAdmin(virtualImageReservation.getVirtualImage().getLabRoom().getId(), user.getUsername()))
+                    && (!"LABMANAGER".equals(authName) || labRoomDeviceService.getLabRoomAdmin(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getLabRoom().getId(), user.getUsername()))
                     && (!"CFO".equals(authName) || user.getSchoolAcademy().getAcademyNumber().equals(virtualImageReservation.getUser().getSchoolAcademy().getAcademyNumber()))
                     && (!"EXCENTERDIRECTOR".equals(authName) || user1.getUsername().equals(user.getUsername()))
             )) {//是审核人
@@ -582,7 +618,7 @@ public class VirtualController<JsonResult> {
             }
 
             // 实际审核状态
-            Integer auditNumber = virtualService.getAuditNumber(virtualImageReservation.getVirtualImage(), state);
+            Integer auditNumber = virtualService.getAuditNumber(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()), state);
 
             Map<String, String> params = new HashMap<>();
             params.put("businessType", pConfig.PROJECT_NAME + businessType);
@@ -670,7 +706,7 @@ public class VirtualController<JsonResult> {
                         String url = "http://10.2.39.41/v1/courseDesk";
                         Map<String, String> map = new HashMap();
                         map.put("num", "1");
-                        map.put("soft_id", virtualImageReservation.getVirtualImage().getId().toString());
+                        map.put("soft_id", virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()).getId());
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Calendar start= virtualImageReservation.getStartTime();
                         start.add(Calendar.MINUTE, -5);
@@ -734,6 +770,19 @@ public class VirtualController<JsonResult> {
     }
 
     /*************************************************************************************
+     * Description:镜像预约保存(直连Citrix)
+     *
+     * @author: 杨新蔚
+     * @date: 2018/12/17
+     *************************************************************************************/
+    @ResponseBody
+    @RequestMapping(value="/saveVirtualImageReservationCitrix",produces = "application/json; charset=utf-8")
+    public String saveVirtualImageReservationCitrix(HttpServletRequest request) throws ParseException {
+        return virtualService.saveVirtualImageReservationCitrix(request);
+    }
+
+
+    /*************************************************************************************
      * Description:citrix登陆
      *
      * @author: 杨新蔚
@@ -743,6 +792,19 @@ public class VirtualController<JsonResult> {
     public void virtualLogin(Integer virtualImageReservationid,HttpServletRequest request,HttpServletResponse response) {
         virtualService.virtualLogin(virtualImageReservationid,request,response);
     }
+
+    /*************************************************************************************
+     * Description:citrix登陆(直连)
+     *
+     * @author: 杨新蔚
+     * @date: 2019/05/28
+     *************************************************************************************/
+    @RequestMapping(value="/virtualLoginCitrix",produces = "application/json; charset=utf-8")
+    public void virtualLoginCitrix(Integer virtualImageReservationid,HttpServletRequest request,HttpServletResponse response) {
+        virtualService.virtualLoginCitrix(virtualImageReservationid,request,response);
+    }
+
+
 
     /*************************************************************************************
      * Description: 学生登陆前查询没有被使用的虚拟桌面ID，用该ID登陆

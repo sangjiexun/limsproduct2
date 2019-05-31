@@ -39,7 +39,14 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
                     type: 'numbers',
                     align: 'center',
                     width: 50
-                }, {
+                },{
+                fixed: 'left',
+                field: 'cas',
+                title: 'cas号',
+                minWidth: 130,
+                align: 'center',
+                sort: true,
+            }, {
                 fixed: 'left',
                 field: 'kind',
                 title: '物资类别',

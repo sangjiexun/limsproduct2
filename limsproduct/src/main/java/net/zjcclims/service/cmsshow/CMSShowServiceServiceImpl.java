@@ -21,6 +21,7 @@ import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 
 import net.zjcclims.util.HttpClientUtil;
+import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +55,8 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	private LabRoomAgentDAO labRoomAgentDAO;
 	@PersistenceContext
 	EntityManager entityManager;
-
+	@Autowired
+	private PConfig pConfig;
 	
 	
 	/*************************************************************************************
@@ -410,68 +412,97 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	@Override
 	public List<LabAttendance> findLabRoomAccessByIp(CommonHdwlog commonHdwlog,String ip,String port, Integer page,
 			int pageSize,HttpServletRequest request) {
-		String starttime= request.getParameter("starttime");
-		String endtime=	request.getParameter("endtime");
-		//将查出来的日志数据导入labAttendanceList中
-		List<LabAttendance> labAttendanceList=new ArrayList<LabAttendance>();
-		Map<String,String> jsonMap = new HashMap<>();
-		//正常到：获取考勤开始到考勤结束时间之间的数据
-		//GET请求获取考勤机数据，返回JSON格式进行解析
-		String url = "http://www.gvsun.net:1180/iot/devname/"+ip+"/readlog/"+starttime+"/"+endtime+"";
-		String  result = HttpClientUtil.doGet(url,jsonMap);
-		if (result!=null && result!=""){
-			JSONObject jsonData = JSONObject.fromObject(result);
-			JSONArray results = (JSONArray) jsonData.get("result");
-			for(int i=0;i<results.size();i++){
-				JSONObject job = results.getJSONObject(i);// 遍历 jsonarray 数组，把每一个对象转成 json 对象
-				//插入timetable_attendance表
-				if (job.getString("username")!=null && job.getString("username")!=""){
-					LabAttendance labAttendance=new LabAttendance();
-					//姓名
-					labAttendance.setCname(job.getString("cardname"));
-					//考勤时间
-					labAttendance.setAttendanceTime(job.getString("datetime"));
-					//default数据
-					labAttendance.setClassName("暂无数据");
-					labAttendance.setMajor("暂无数据");
-					labAttendance.setAcademyName("暂无数据");
-					//所属学院
-//					if (commonHdwlog2.getAcademyNumber()!=null&&!commonHdwlog2.getAcademyNumber().equals("")) {
-//						String academyName="";
-//						SchoolAcademy schoolAcademy=schoolAcademyDAO.findSchoolAcademyByAcademyNumber(commonHdwlog2.getAcademyNumber());
-//						if (schoolAcademy!=null&&!schoolAcademy.getAcademyName().equals("")) {
-//							academyName=schoolAcademy.getAcademyName();
-//							labAttendance.setAcademyName(academyName);
-//						}
-//
-//					}
-					//学号
-					String username=job.getString("username");
-					if (!username.equals("")) {
-						labAttendance.setUsername(username);
-						User user=userDAO.findUserByPrimaryKey(username);
-						//班级
-						String className="";
-						if (user.getSchoolClasses()!=null&&user.getSchoolClasses().getClassNumber()!=null
-								&&!user.getSchoolClasses().getClassNumber().equals("")
-								&&!user.getSchoolClasses().getClassName().equals("")) {
-							className=user.getSchoolClasses().getClassName();
-							labAttendance.setClassName(className);
-						}
-						//所属专业方向
-						String major="";//暂无专业外键，暂删除
-				/*if (user.getSchoolMajor()!=null&&!user.getSchoolMajor().getMajorName().equals("")) {
-					major=user.getSchoolMajor().getMajorName();
-					labAttendance.setMajor(major);
-				}*/
+		String sql="select c from CommonHdwlog c where 1=1";
 
-					}
-					labAttendance.setStatus(job.getString("status"));
-					labAttendanceList.add(labAttendance);
-				}
+		if(port!=null&&!port.equals("")){
+			sql+=" and c.deviceno='"+port+"' ";
+		}
+
+		if(ip!=null&&!ip.equals("")){
+			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+				sql += " and c.doorindex = '"+ ip +"'";
+			}else {
+				sql+=" and c.hardwareid='"+ip+"' ";
 			}
 		}
 
+		if (commonHdwlog.getCardname()!=null&&!commonHdwlog.getCardname().equals("")) {
+			sql+=" and c.cardname like '%"+commonHdwlog.getCardname()+"%' ";
+		}
+		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
+			sql+=" and c.username like '%"+commonHdwlog.getUsername()+"%' ";
+
+		}
+		String starttime= request.getParameter("starttime");
+		String endtime=	request.getParameter("endtime");
+
+		if(starttime!=null && starttime.length()>0 && endtime!=null&& endtime.length()>0){
+			sql += " and c.datetime between '"+starttime +"' and '"+endtime+"' ";
+		}
+
+		sql+=" order by c.id desc";
+		List<CommonHdwlog> commonHdwlogs=commonHdwlogDAO.executeQuery(sql, (page-1)*pageSize,pageSize);
+		//将查出来的日志数据导入labAttendanceList中
+		List<LabAttendance> labAttendanceList=new ArrayList<LabAttendance>();
+		for (CommonHdwlog commonHdwlog2 : commonHdwlogs) {
+			LabAttendance labAttendance=new LabAttendance();
+			//姓名
+			labAttendance.setCname(commonHdwlog2.getCardname());
+			//考勤时间
+			String attendanceTime=commonHdwlog2.getDatetime();
+			labAttendance.setAttendanceTime(attendanceTime.substring(0, attendanceTime.length()-2));
+			//default数据
+			labAttendance.setClassName("暂无数据");
+			labAttendance.setMajor("暂无数据");
+			labAttendance.setAcademyName("暂无数据");
+			//所属学院
+			if (commonHdwlog2.getAcademyNumber()!=null&&!commonHdwlog2.getAcademyNumber().equals("")) {
+				String academyName="";
+				SchoolAcademy schoolAcademy=schoolAcademyDAO.findSchoolAcademyByAcademyNumber(commonHdwlog2.getAcademyNumber());
+				if (schoolAcademy!=null&&!schoolAcademy.getAcademyName().equals("")) {
+					academyName=schoolAcademy.getAcademyName();
+					labAttendance.setAcademyName(academyName);
+				}
+			}
+			//学号
+			String username="";
+			if (commonHdwlog2.getUsername()!=null&&!commonHdwlog2.getUsername().equals("")) {
+				username=commonHdwlog2.getUsername();
+			}
+			if (!username.equals("")) {
+				labAttendance.setUsername(username);
+				User user=userDAO.findUserByPrimaryKey(username);
+				//班级
+				String className="";
+				if (user.getSchoolClasses()!=null&&user.getSchoolClasses().getClassNumber()!=null
+						&&!user.getSchoolClasses().getClassNumber().equals("")
+						&&!user.getSchoolClasses().getClassName().equals("")) {
+					className=user.getSchoolClasses().getClassName();
+					labAttendance.setClassName(className);
+				}
+			}
+			labAttendance.setStatus(commonHdwlog2.getStatus());
+			//浙外临时方法----------start--------------------
+			User user = null;
+			for (User us : userDAO.findUserByCardno(commonHdwlog2.getCardnumber())) {
+				user = us;
+				break;
+			}
+			if (user!=null) {
+				//姓名
+				labAttendance.setCname(user.getCname());
+				labAttendance.setUsername(user.getUsername());
+				if (user.getSchoolAcademy()!=null && user.getSchoolAcademy().getAcademyName()!=null) {
+					labAttendance.setAcademyName(user.getSchoolAcademy().getAcademyName());
+				}
+				if (user.getSchoolClasses()!=null && user.getSchoolClasses().getClassName()!=null) {
+					labAttendance.setClassName(user.getSchoolClasses().getClassName());
+				}
+			}
+			//浙外临时方法------------end--------------------
+			labAttendanceList.add(labAttendance);
+
+		}
 		return labAttendanceList;
 	}
 	/*************************************************************************************
@@ -487,10 +518,13 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 		
 		if(ip!=null&&!ip.equals("")){
-			sql+=" and c.hardwareid='"+ip+"' ";
+			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+				sql += " and c.doorindex = '"+ ip +"'";
+			}else {
+				sql+=" and c.hardwareid='"+ip+"' ";
+			}
 		}
-		
-		
+
 		if (commonHdwlog.getCardname()!=null&&!commonHdwlog.getCardname().equals("")) {
 			sql+=" and c.cardname like '%"+commonHdwlog.getCardname()+"%' ";
 			

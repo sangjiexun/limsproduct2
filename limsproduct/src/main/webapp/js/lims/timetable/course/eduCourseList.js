@@ -101,6 +101,28 @@ function doAdjustTimetable(term, courseNo) {
     });
     layer.full(index);
 }
+/*
+ *学生判冲弹出窗口
+ */
+function studentTimetable(term, courseNo) {
+    $("#courseNo").val(courseNo);
+    var index = layer.open({
+        type: 2,
+        title: '学生判冲',
+        maxmin: true,
+        shadeClose: true,
+        area: ['1100px', '500px'],
+        content: contextPath + '/lims/timetable/course/judgeTimetableConflictByStudent?courseNo=' + courseNo
+        + '&term=' + term,
+        end: function () {
+            refreshBootstrapTable();
+        }
+    });
+    layer.full(index);
+    /*$('#form_lab').attr(
+     "action",——
+     contextPath +"/timetable/doDirectTimetable?courseCode=" + courseCode+"&currpage=1");*/
+}
 
 /*
 *直接排课弹出窗口
@@ -446,6 +468,7 @@ function getTimetablePlanView() {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReNoGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>不分批排</span></a>&nbsp;";
                         if(eduNoBatch)
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>分批排课</span></a>&nbsp;";
+                        // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
                         result += "</td></tr></table>";
                     }
                 } else if (row.timetableStatus == 2) {
@@ -480,6 +503,7 @@ function getTimetablePlanView() {
                                 result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable(1,'" + row.courseNo + "',3)\" ><span class='glyphicon glyphicon-check'>排课完成</span></a></td></tr>&nbsp;";
                             }
                             result += "<tr><td height=\"25px\"><div style=\"height:20px;\"><a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"deleteTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-remove'>删除排课</span></a></div>&nbsp;";
+                            // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
                         }
                         result += "</td></tr></table>";
                     }

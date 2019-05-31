@@ -414,6 +414,12 @@ function newLabRoomDevice() {
     });
     layer.full(index);
 }
+function roomChange(){
+    var roomId = document.getElementById("labRoom_id").value;
+    //alert(roomId);
+    var url = "${pageContext.request.contextPath}/device/listLabRoomDeviceNew?roomId="+roomId+"&page=1";
+    window.location.href=url;
+}
 </script>
 
 <script>
@@ -538,9 +544,9 @@ function importLabRoomDevice(){
             <form:form name="queryForm" action="${pageContext.request.contextPath}/device/listLabRoomDeviceNew?roomId=${roomId }&page=1" method="post" modelAttribute="labRoomDevice">
 				<table class="tab_fix">
 					<tr>
-						<th><spring:message code="all.trainingRoom.labroom" />：</th>
+						<th>切换<spring:message code="all.trainingRoom.labroom" />：</th>
 							<td>
-								<form:select class="chzn-select" path="labRoom.id" id="labRoom_id">
+								<form:select class="chzn-select" path="labRoom.id" id="labRoom_id" onchange="roomChange()">
 								<form:option value="">请选择</form:option>
 								<form:options items="${rooms}" itemLabel="labRoomName" itemValue="id"/>
 								</form:select>		    				    				            

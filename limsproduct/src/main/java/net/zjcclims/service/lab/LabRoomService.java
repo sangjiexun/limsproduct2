@@ -39,6 +39,18 @@ public interface LabRoomService {
 	 */
  	public List<LabRoom> findLabRoomByLabCenter(Integer currpage, Integer pageSize,int type, LabRoom labRoom,int orderBy,HttpServletRequest request,String acno);
 	/**
+	 * 获取可开门实验室数据
+	 * @author 刘博越
+	 * 2019.5.29
+	 */
+	public List<LabRoom> findLabRoomOpenDoorByLabCenter(Integer currpage, Integer pageSize, LabRoom labRoom,String username,HttpServletRequest request,String acno);
+ 	/**
+	 * 根据是否可以开门进行排序
+	 * @author 刘博越
+	 * 2019.05.27
+	 */
+	public List<LabRoom> sortLabRoomByAgent(List<LabRoom> labRooms,String username);
+	/**
 	 * 保存实验室数据
 	 * @author hly
 	 * 2015.07.28

@@ -214,7 +214,7 @@ public class LabRoomController<JsonResult> {
         if(type==ConstantInterface.LAB_FOR_ROOM) {// 实验室
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 1, labRoom,9, request, acno).size();
             mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
-            // 本学院所有可用实验室
+            // 本学院所有可用实验室-批量添加管理员
             List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
             mav.addObject("labRoomList", labRoomList);
             mav.setViewName("lab/lab_room/listLabRoom.jsp");
@@ -266,6 +266,34 @@ public class LabRoomController<JsonResult> {
 //        }
         // 当前用户
         mav.addObject("username", shareService.getUserDetail().getUsername());
+
+        return mav;
+    }
+    /************************************************************
+     * @功能：实验室可开门列表页面
+     * @作者：刘博越
+     * @时间：2019.5.29
+     ************************************************************/
+    @RequestMapping("/listLabRoomOpenDoor")
+    public ModelAndView listLabRoomOpenDoor(@RequestParam int currpage,
+                                    @ModelAttribute LabRoom labRoom,
+                                    @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+        int pageSize = CommonConstantInterface.INT_PAGESIZE;
+        int totalRecords=0;
+        // 当前用户
+        String username = shareService.getUserDetail().getUsername();
+        mav.addObject("username", username);
+
+        totalRecords = labRoomService.findLabRoomOpenDoorByLabCenter(1, -1, labRoom,username, request, acno).size();
+        List<LabRoom> listLabRoom = labRoomService.findLabRoomOpenDoorByLabCenter(1, -1, labRoom,username, request, acno);
+        mav.addObject("listLabRoom", listLabRoom);
+        mav.setViewName("lab/lab_room/listLabRoomOpenDoor.jsp");
+
+        mav.addObject("labRoom", labRoom);
+        mav.addObject("pageModel",shareService.getPage(currpage, pageSize, totalRecords));
+
+        mav.addObject("page",currpage);
 
         return mav;
     }
@@ -810,8 +838,7 @@ public class LabRoomController<JsonResult> {
         mav.addObject("admin", new LabRoomAdmin());
         // 物联硬件
         mav.addObject("agent", new LabRoomAgent());
-        List<LabRoomAgent> agentList = labRoomService
-                .findLabRoomAgentByRoomId(id);
+        List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentByRoomId(id);
         mav.addObject("agentList", agentList);
         // 判断中控是否已经添加
         for(LabRoomAgent agent : agentList) {
@@ -1720,7 +1747,11 @@ public class LabRoomController<JsonResult> {
             proc.waitFor();
 
             return "success";
-        }else {
+        }else if (pConfig.PROJECT_NAME.equals("zisulims")) {
+            //卡号转换
+            String cardNo = shareService.getUserDetail().getCardno();
+            return HttpClientUtil.doPost("http://"+ a.getCommonServer().getServerIp()+":85/opendoor?username='"+ cardNo +"'&doorNum=" + a.getDoorindex());
+        } else {
             String port = "";// 端口
             String ServIP = "";// 主机
             String getURL = "";
@@ -2542,18 +2573,18 @@ public class LabRoomController<JsonResult> {
         }
         if ("success".equals(data)) {
             //demo
-            boolean flag = true;
+            boolean flag = false;
             String[] RSWITCH = {"on", "off"};
             String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", labRoom.getId().toString());
             params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
-                params.put("businessType",grade + "StationReservation");
+                params.put("businessUid", "-1");
+                params.put("businessType",pConfig.PROJECT_NAME + grade + "StationReservation");
             }
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
-            String status = jsonObject.getString("status");
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
             if (auditConfigs != null && auditConfigs.size() != 0) {
                 for (int i = 0; i < auditConfigs.size(); i++) {

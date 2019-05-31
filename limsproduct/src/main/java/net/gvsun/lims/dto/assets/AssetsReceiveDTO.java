@@ -52,6 +52,9 @@ public class AssetsReceiveDTO {
     private Integer appFlag;
     //15.拒绝原因
     private String rejectReason;
+    //项目
+    private Integer itemId;
+
     public String getId() {
         return id;
     }
@@ -242,5 +245,13 @@ public class AssetsReceiveDTO {
 
     public void setRejectReason(String rejectReason) {
         this.rejectReason = rejectReason;
+    }
+
+    public Integer getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Integer itemId) {
+        this.itemId = itemId;
     }
 }

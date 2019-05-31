@@ -40,6 +40,13 @@ public interface MaterialService {
      * @author 吴奇臻 2019-03-27
      */
     List<SchoolAcademy> findAllSchoolAcademyList();
+    /**
+     * 获取所有物联服务器
+
+     * * @return SchoolAcademy
+     * @author 吴奇臻 2019-05-29
+     */
+    List<CommonServer> findAllCommonServerList();
 
     /**
      * 获取所有中心
@@ -125,6 +132,15 @@ public interface MaterialService {
      */
     JSONObject findAllAssetReceiveItemList(Integer page, Integer limit,Integer id);
 
+
+    /**
+     * 智能物品柜具体信息列表
+     * @param page 页当前数
+     * @param limit 当前页限制大小
+     * @author 吴奇臻 2019-5-29
+     */
+    JSONObject findAllCabinetWareHoustList(Integer page, Integer limit,Integer id);
+
     /**
      * 物资出入库记录列表
      * @param page 页当前数
@@ -169,6 +185,14 @@ public interface MaterialService {
      * @author 吴奇臻 2019-3-6
      */
     boolean saveAddAssetsInStorageDetail(AssetsApplyItemDTO assetsApplyItemDTO);
+
+    /**
+     * Description 保存智能柜具体信息
+     *
+     * @return 保存成功-true，失败-false
+     * @author 吴奇臻 2019-5-29
+     */
+    boolean saveCabinetWareHouseDetail(AssetsCabinetWareHouseDTO assetsCabinetWareHouseDTO);
 
     /**
      * Description 保存物资入库条目
