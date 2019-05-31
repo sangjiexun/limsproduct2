@@ -281,7 +281,7 @@ $(document).ready(function () {
                                         if(result.data[x].week == weekss[y]){
                                             if(result.data[x].weekday == weekdayss[i]){
                                                 if(result.data[x].section == sectionss[j]){
-                                                    str+="<td data='"+ result.data[x].tag +"'><span data='"+ result.data[x].tag +"'>"+ result.data[x].conflictRate +"%</span></td>";
+                                                    str+="<td data='"+ result.data[x].tag +"'><span data='"+ result.data[x].tag +"'>"+ result.data[x].conflictRate +"</span></td>";
                                                 }
                                             }
                                         }
