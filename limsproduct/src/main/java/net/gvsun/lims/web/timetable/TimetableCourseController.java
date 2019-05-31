@@ -554,42 +554,53 @@ public class TimetableCourseController<JsonResult> {
     public ModelAndView auditTimetable(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 审核微服务传参
-        String businessAppUid = request.getParameter("businessAppUid");
+        String courseNo = request.getParameter("businessAppUid");
         String businessType = request.getParameter("businessType");
         String businessUid = request.getParameter("businessUid");
-        // 取流水号
-        AuditSerialNumber asn = new AuditSerialNumber();
-        if(businessType.equals("AdjustTimetableAudit") || businessType.equals("CloseTimetableAudit")){
-            SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(businessAppUid);
-            try {
-                TimetableSelfCourse course = timetableSelfCourseDAO.findTimetableSelfCourseById(Integer.valueOf(businessAppUid));
-                mav.addObject("termId", course.getSchoolTerm().getId());
-                mav.addObject("timetableStyle", 5);
-            }catch (NumberFormatException ignored){}
-            if (schoolCourse != null) {
-                mav.addObject("termId", schoolCourse.getSchoolTerm().getId());
+        /**
+         * @description 业务主键转流水单号
+         */
+        String serialNumber = shareService.getSerialNumber(courseNo, businessType);
+        if (serialNumber.equals("fail")) {// 取流水号失败后返回
+            mav.addObject("error", "disabled");
+            mav.setViewName("lims/timetable/course/auditTimetable.jsp");
+            return mav;
+        }
+        /**
+         * @description 调停课-{页面传参}
+         * @description timetableStyle在这里用于前端操作入口的判断
+         */
+        if(businessType.equals("AdjustTimetableAudit") || businessType.equals("CloseTimetableAudit")) {
+            SchoolCourse sCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(courseNo);
+            if (sCourse != null) {
+                mav.addObject("termId", sCourse.getSchoolTerm().getId());
                 mav.addObject("timetableStyle", 1);
+            }else {
+                try {
+                    TimetableSelfCourse course = timetableSelfCourseDAO.findTimetableSelfCourseById(Integer.valueOf(courseNo));
+                    mav.addObject("termId", course.getSchoolTerm().getId());
+                    mav.addObject("timetableStyle", 5);
+                } catch (NumberFormatException ignored) {
+                }
             }
-
-            try {
-                String hql = "select asn from AuditSerialNumber asn where 1=1 and businessId='" + businessAppUid + "' and businessType ='" + businessType + "' and enable=1";
-                asn = (AuditSerialNumber) auditSerialNumberDAO.executeQuerySingleResult(hql);
-                businessAppUid = asn.getUuid();
-            } catch (NoResultException e) {
-                mav.addObject("error", "disabled");
-                mav.setViewName("lims/timetable/course/auditTimetable.jsp");
-                return mav;
-            }
+        }else if(businessType.equals("TimetableAudit")) {//默认教务排课，type=1
+            SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(courseNo);
+            mav.addObject("termId", schoolCourse.getSchoolTerm().getId());
+        }else if(businessType.equals("SelfTimetableAudit")){//自主排课，type=2
+            TimetableSelfCourse course = timetableSelfCourseDAO.findTimetableSelfCourseById(Integer.valueOf(courseNo));
+            mav.addObject("termId", course.getSchoolTerm().getId());
         }
         mav.addObject("businessType", businessType);
         mav.addObject("businessUid", businessUid);
-        // 获取审核状态
+        /**
+         * @description 获取审核状态
+         */
         Integer curStage = -2;
         String curAuthName = "";
         Map<String, String> params = new HashMap<>();
         params.put("businessType", pConfig.PROJECT_NAME + businessType);
         params.put("businessUid", businessUid);
-        params.put("businessAppUid", businessAppUid);
+        params.put("businessAppUid", serialNumber);
         String currStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
         JSONObject currJSONObject = JSONObject.parseObject(currStr);
         if ("success".equals(currJSONObject.getString("status"))) {
@@ -601,7 +612,9 @@ public class TimetableCourseController<JsonResult> {
             }
         }
 
-        // 获取审核配置
+        /**
+         * @description 获取审核配置
+         */
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         List<Object[]> auditItems = new ArrayList<>();
@@ -614,30 +627,19 @@ public class TimetableCourseController<JsonResult> {
                     os[0] = shareService.getAuthorityByName(o.getString("authName")).getCname();
                     os[1] = o.getIntValue("level");
                     os[2] = o.getString("authName");
-                    os[3] = businessAppUid;
+                    os[3] = serialNumber;
                     os[4] = curStage;
                     os[5] = curAuthName;
                     auditItems.add(os);
                 }
-                mav.addObject("count", jsonArray.size());
+//                mav.addObject("count", jsonArray.size());
             }
         }
         mav.addObject("auditConfigs", auditItems);
         // 页面传参
-        if(asn.getUuid() != null){
-            businessAppUid = asn.getBusinessId();
-        }
-        mav.addObject("courseNo", businessAppUid);
-        mav.addObject("businessAppUid", businessAppUid);
-        mav.addObject("type", businessType);
-        //默认教务排课，type=1
-        if(businessType.equals("TimetableAudit")) {
-            SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(businessAppUid);
-            mav.addObject("termId", schoolCourse.getSchoolTerm().getId());
-        }else if(businessType.equals("SelfTimetableAudit")){//自主排课，type=2
-            TimetableSelfCourse course = timetableSelfCourseDAO.findTimetableSelfCourseById(Integer.valueOf(businessAppUid));
-            mav.addObject("termId", course.getSchoolTerm().getId());
-        }
+        mav.addObject("courseNo", courseNo);
+        mav.addObject("businessAppUid", serialNumber);
+
         mav.setViewName("lims/timetable/course/auditTimetable.jsp");
         return mav;
     }
@@ -659,20 +661,7 @@ public class TimetableCourseController<JsonResult> {
         String authName = request.getParameter("authName");
         String businessType = request.getParameter("businessType");
         String businessUid = request.getParameter("businessUid");
-        String businessAppUid = request.getParameter("businessAppUid");
-        // 取流水号
-        AuditSerialNumber asn = new AuditSerialNumber();
-        if(businessType.equals("AdjustTimetableAudit") || businessType.equals("CloseTimetableAudit")){
-            try {
-                String hql = "select asn from AuditSerialNumber asn where 1=1 and businessId='" + businessAppUid + "' and businessType ='" + businessType + "' and enable=1";
-                asn = (AuditSerialNumber) auditSerialNumberDAO.executeQuerySingleResult(hql);
-                businessAppUid = asn.getUuid();
-            }catch (NoResultException e){
-                mav.addObject("error", "disabled");
-                mav.setViewName("lims/timetable/course/auditTimetableList.jsp");
-                return mav;
-            }
-        }
+        String businessAppUid = request.getParameter("businessAppUid");// 流水单号
 
         mav.addObject("state", state);
         mav.addObject("curStage", curStage);
@@ -710,12 +699,11 @@ public class TimetableCourseController<JsonResult> {
                 }
             }
         } else {
-            if(asn.getUuid() != null){
-                businessAppUid = asn.getBusinessId();
-            }
+            // 流水单号转业务主键
+            String courseNo = auditSerialNumberDAO.findAuditSerialNumberByUuid(businessAppUid).getBusinessId();
             Set<User> isAuditUser = new HashSet<>();
             // 获取下一级审核人
-            Query queryNextAudit = entityManager.createNativeQuery("call proc_timetable_next_auditor('" + authName + "','" + businessType + "','" + businessAppUid + "')");
+            Query queryNextAudit = entityManager.createNativeQuery("call proc_timetable_next_auditor('" + authName + "','" + businessType + "','" + courseNo + "')");
             List nextAuditList = queryNextAudit.getResultList();
             for(Object name: nextAuditList){
                 isAuditUser.add(shareService.findUserByUsername((String) name));

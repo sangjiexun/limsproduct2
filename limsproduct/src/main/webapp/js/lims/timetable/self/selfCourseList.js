@@ -378,18 +378,16 @@ function getTimetablePlanView() {
                         result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newSelfReGroupCourse(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-plus'>分批排课</span></a>&nbsp;";
                         result += "</td></tr></table>";
                     }
-                } else if (row.timetableStatus == 2) {
+                } else if (row.timetableStatus == 2 || row.timetableStatus == 5) {
                     // 此时审核服务表中已经有记录，删除排课无法同时删除审核设置，暂时隐藏
                     // if (row.baseActionAuthDTO.publicActionAuth) {
                     //     result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"deleteTimetable(" + row.termId + ",'" + row.selfId + "')\" ><span class='glyphicon glyphicon-remove'>删除排课</span></a>&nbsp;";
                     // }
-                    result += "待审核";
+                    result += row.auditors;
                 }else if(row.timetableStatus == 3) {
                     result += "待发布";
                 }else if(row.timetableStatus == 4) {
                     result += "审核未通过";
-                }else if(row.timetableStatus == 5) {
-                    result += "审核中";
                 } else if (row.timetableStatus == 10) {
                     if (row.baseActionAuthDTO.addActionAuth) {
                         if (row.timetableStyle == 5) {
@@ -582,7 +580,7 @@ function getTimetableMangerView() {
                         }
                     }else {// 设置不需要审核
                         if (row.baseActionAuthDTO.publicActionAuth) {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"publicTimetable(1,'" + row.courseNo + "',1)\" ><span class='glyphicon glyphicon-ok'>发布排课</span></a>&nbsp;";
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"publicTimetable('" + row.timetableStyle + "','" + row.selfId + "',1)\" ><span class='glyphicon glyphicon-ok'>发布排课</span></a>&nbsp;";
                         }
                     }
                 }else if(row.timetableStatus == 3){

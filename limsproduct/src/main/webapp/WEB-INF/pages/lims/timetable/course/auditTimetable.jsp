@@ -73,7 +73,7 @@
                             <input type="button" onclick="window.history.go(-1)" value="返回">
                             <input type="hidden" id="courseNo" value="${courseNo}" />
                             <input type="hidden" id="termId" value="${termId}" />
-                            <input type="hidden" id="type" value="${type}" />
+                            <input type="hidden" id="type" value="${businessType}" />
                             <input type="hidden" id="timetableStyle" value="${timetableStyle}" />
                             <input type="hidden" id="error" value="${error}" />
                         </form:form>
