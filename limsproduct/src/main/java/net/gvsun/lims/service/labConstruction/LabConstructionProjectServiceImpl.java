@@ -89,19 +89,18 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      */
     @Override
     public JSONObject getParentProjects(HttpServletRequest request,String projectName, String createDate, Integer page, Integer limit) {
-        StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c where 1=1");
+        StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c, User us, SchoolAcademy sa where us.username=c.createUser and sa.academyNumber=us.schoolAcademy.academyNumber");
         User user = shareService.getUserDetail();
         // 权限等级
         String authName = request.getSession().getAttribute("selected_role").toString();
         int type = shareService.getLevelByAuthName(authName);
-        if (type == 5) {// 院级可操作权限
-            hql = new StringBuffer("select c.labConstructionParentProject from LabConstructionSonProject c inner join c.schoolAcademies cs where 1=1");
-            hql.append(" and cs.academyNumber='"+user.getSchoolAcademy().getAcademyNumber()+"'");
+        if (type == 5) {// 中心级可操作权限
+            hql.append(" and sa.academyNumber='"+user.getSchoolAcademy().getAcademyNumber()+"'");
         }
         // 查询条件
         // 项目名称/创建人/创建人所属学院
         if (projectName!=null && !projectName.equals("")) {
-            hql.append(" and (c.projectName like '%"+ projectName +"%')");
+            hql.append(" and (c.projectName like '%"+ projectName +"%' or us.cname like '%"+ projectName +"%' or sa.academyName like '%"+ projectName +"%')");
         }
         // 起止时间
         if (createDate!=null && !createDate.equals("")) {
@@ -116,9 +115,9 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         }
         // 排序-倒序
         hql.append(" order by c.createTime desc");
-
         List<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.executeQuery(hql.toString(),(page-1)*limit, limit);
-//        Set<LabConstructionParentProject> projectSet = labConstructionParentProjectDAO.findAllLabConstructionParentProjects((page-1)*limit, limit);
+
+        // 遍历封装DTO
         List<ParentProjectDTO> parents = new ArrayList<>();
         int totalRecords = labConstructionParentProjectDAO.executeQuery(hql.toString(),0, -1).size();
         for (LabConstructionParentProject p: parentProjects) {
@@ -460,8 +459,8 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @param limit 当前页最大数据量
      * @return 子项目json格式数据
      */
-    public JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit, String projectName, String implementTime, String balanceTime){
-        StringBuffer hql = new StringBuffer("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId);
+    public JSONObject getSonProjects(HttpServletRequest request, Integer parentProjectId, Integer page, Integer limit, String projectName, String implementTime, String balanceTime){
+        StringBuffer hql = new StringBuffer("select son from LabConstructionSonProject son inner join son.schoolAcademies cs where son.labConstructionParentProject.id=" + parentProjectId);
         // 前端查询条件
         if (projectName!=null && !projectName.equals("") && !projectName.equals(",")) {
             hql.append(" and son.projectName like '%"+ projectName +"%'");
@@ -485,6 +484,15 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
             }else if (time[1]!=null && !time[1].equals("")) {
                 hql.append(" and c.balanceTime <= '"+time[1]+"'");
             }
+        }
+        User user = shareService.getUserDetail();
+        // 权限等级
+        String authName = request.getSession().getAttribute("selected_role").toString();
+        int type = shareService.getLevelByAuthName(authName);
+        if (type == 5) {// 中心级可操作权限
+            hql.append(" and cs.academyNumber='"+user.getSchoolAcademy().getAcademyNumber()+"'");
+        }else {
+            hql.append(" group by son.id");
         }
         // 按照创建时间倒序
         hql.append(" order by son.createTime desc");
@@ -552,8 +560,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         }
         sqlCondition += " order by grandson.createTime desc";
         sqlSearch += sqlCondition;
-        List<LabConstructionGrandsonProject> grandsonProjectList = labConstructionGrandsonProjectDAO
-                .executeQuery(sqlSearch, (page-1)*limit, limit);
+        List<LabConstructionGrandsonProject> grandsonProjectList = labConstructionGrandsonProjectDAO.executeQuery(sqlSearch, (page-1)*limit, limit);
 
         String sqlCount = "select count(grandson) from LabConstructionGrandsonProject grandson where 1=1 ";
         sqlCount += sqlCondition;

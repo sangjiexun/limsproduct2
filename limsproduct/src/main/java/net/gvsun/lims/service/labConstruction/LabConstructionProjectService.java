@@ -64,7 +64,7 @@ public interface LabConstructionProjectService {
      * @param limit 当前页最大数据量
      * @return 子项目json格式数据
      */
-    JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit, String projectName, String implementTime, String balanceTime);
+    JSONObject getSonProjects(HttpServletRequest request, Integer parentProjectId, Integer page, Integer limit, String projectName, String implementTime, String balanceTime);
 
     /**
      * Description 通过子项目id获取该子项目的孙项目json格式数据

@@ -4,6 +4,7 @@ import net.gvsun.lims.dto.labConstruction.GrandSonProjectDTO;
 import net.gvsun.lims.dto.labConstruction.ParentProjectDTO;
 import net.gvsun.lims.dto.labConstruction.SonProjectDTO;
 import net.gvsun.lims.service.labConstruction.LabConstructionProjectService;
+import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,6 +65,9 @@ public class LabConstructionController {
 
     @RequestMapping("/parentProject")
     public ModelAndView parentProject(ModelAndView mav) {
+        User user = shareService.getUserDetail();
+        mav.addObject("username", user.getUsername());
+
         mav.setViewName(this.CONSTRUCTION_URL + "parentProject.jsp");
         return mav;
     }
@@ -105,6 +109,7 @@ public class LabConstructionController {
         mav.addObject("projectName", projectName);
         mav.addObject("implementTime", implementTime);
         mav.addObject("balanceTime", balanceTime);
+        mav.addObject("username", shareService.getUserDetail().getUsername());
 
         mav.setViewName(this.CONSTRUCTION_URL + "sonProject.jsp");
         return mav;
@@ -159,6 +164,7 @@ public class LabConstructionController {
         // 页面传参
         mav.addObject("projectName", projectName);
         mav.addObject("createTime", createTime);
+        mav.addObject("username", shareService.getUserDetail().getUsername());
 
         mav.setViewName(this.CONSTRUCTION_URL + "grandSonProject.jsp");
         return mav;

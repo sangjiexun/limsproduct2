@@ -50,8 +50,8 @@ public class ApiLabConstructionController {
      */
     @RequestMapping("/getSonProjects")
     @ResponseBody
-    public String getSonProjects(Integer id, String projectName, String projectImplementTime, String budgetBalanceTime, Integer page, Integer limit){
-        JSONObject jsonObject = labConstructionProjectService.getSonProjects(id, page, limit, projectName, projectImplementTime, budgetBalanceTime);
+    public String getSonProjects(HttpServletRequest request, Integer id, String projectName, String projectImplementTime, String budgetBalanceTime, Integer page, Integer limit){
+        JSONObject jsonObject = labConstructionProjectService.getSonProjects(request, id, page, limit, projectName, projectImplementTime, budgetBalanceTime);
 
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
