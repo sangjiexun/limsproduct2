@@ -88,7 +88,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @param limit 当前的最大数据大小
      */
     @Override
-    public JSONObject getParentProjects(HttpServletRequest request, ParentProjectDTO parentProjectDTO, Integer page, Integer limit) {
+    public JSONObject getParentProjects(HttpServletRequest request,String projectName, String createDate, Integer page, Integer limit) {
         StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c where 1=1");
         User user = shareService.getUserDetail();
         // 权限等级
@@ -100,12 +100,12 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         }
         // 查询条件
         // 项目名称/创建人/创建人所属学院
-        if (parentProjectDTO.getProjectName()!=null) {
-            hql.append(" and (c.projectName like '%"+ parentProjectDTO.getProjectName() +"%')");
+        if (projectName!=null && !projectName.equals("")) {
+            hql.append(" and (c.projectName like '%"+ projectName +"%')");
         }
         // 起止时间
-        if (parentProjectDTO.getCreateTime()!=null) {
-            String[] time = parentProjectDTO.getCreateTime().split("~");
+        if (createDate!=null && !createDate.equals("")) {
+            String[] time = createDate.split("~");
             if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
                 hql.append(" and c.createTime between '"+time[0]+"' and '"+time[1]+"'");
             }else if (time[0]!=null && !time[0].equals("")) {
@@ -118,7 +118,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         hql.append(" order by c.createTime desc");
 
         List<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.executeQuery(hql.toString(),(page-1)*limit, limit);
-        Set<LabConstructionParentProject> projectSet = labConstructionParentProjectDAO.findAllLabConstructionParentProjects((page-1)*limit, limit);
+//        Set<LabConstructionParentProject> projectSet = labConstructionParentProjectDAO.findAllLabConstructionParentProjects((page-1)*limit, limit);
         List<ParentProjectDTO> parents = new ArrayList<>();
         int totalRecords = labConstructionParentProjectDAO.executeQuery(hql.toString(),0, -1).size();
         for (LabConstructionParentProject p: parentProjects) {
@@ -176,7 +176,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         for(SchoolAcademy sa: sonProject.getSchoolAcademies()) {
             academyNumber += sa.getAcademyNumber() + ",";
         }
-        sonProjectDTO.setAcademyName(academyNumber.length() > 0 ? academyNumber.substring(0, academyNumber.length() - 1) : "");
+        sonProjectDTO.setAcademyNumber(academyNumber.length() > 0 ? academyNumber.substring(0, academyNumber.length() - 1) : "");
         // 项目预算
         sonProjectDTO.setBudget(sonProject.getBudget());
 
@@ -328,10 +328,44 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @author 黄保钱 2019-2-24
      */
     @Override
-    public List<ParentProjectDTO> getParentProjectsForSonProject() {
-        Set<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.findAllLabConstructionParentProjects(0, -1);
+    public List<ParentProjectDTO> getParentProjectsForSonProject(String projectName, String implementTime, String balanceTime) {
+        StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c left join c.labConstructionSonProjects cs where 1=1");
+        // 查询条件
+        // 项目名称/创建人/创建人所属学院
+        if (projectName!=null && !projectName.equals("")) {
+            hql.append(" and (cs.projectName like '%"+ projectName +"%')");
+        }
+        // 项目实施时间
+        if (implementTime!=null && !implementTime.equals("")) {
+            String[] time = implementTime.split("~");
+            if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
+                hql.append(" and cs.implementTime between '"+time[0]+"' and '"+time[1]+"'");
+            }else if (time[0]!=null && !time[0].equals("")) {
+                hql.append(" and cs.implementTime >= '"+time[0]+"'");
+            }else if (time[1]!=null && !time[1].equals("")) {
+                hql.append(" and cs.implementTime <= '"+time[1]+"'");
+            }
+        }
+        // 项目预算结算时间
+        if (balanceTime!=null && !balanceTime.equals("")) {
+            String[] time = balanceTime.split("~");
+            if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
+                hql.append(" and cs.balanceTime between '"+time[0]+"' and '"+time[1]+"'");
+            }else if (time[0]!=null && !time[0].equals("")) {
+                hql.append(" and cs.balanceTime >= '"+time[0]+"'");
+            }else if (time[1]!=null && !time[1].equals("")) {
+                hql.append(" and cs.balanceTime <= '"+time[1]+"'");
+            }
+        }
+        //
+        hql.append(" group by c.id");
+        // 排序-倒序
+        hql.append(" order by c.createTime desc");
+
+        List<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.executeQuery(hql.toString(),0,-1);
+
         List<ParentProjectDTO> parents = new ArrayList<>();
-        int totalRecords = labConstructionParentProjectDAO.findAllLabConstructionParentProjects(0, -1).size();
+//        int totalRecords = labConstructionParentProjectDAO.findAllLabConstructionParentProjects(0, -1).size();
         for (LabConstructionParentProject parentProject: parentProjects) {
             ParentProjectDTO parentProjectDTO = new ParentProjectDTO();
             // 项目id
@@ -352,10 +386,31 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @author 黄保钱 2019-2-24
      */
     @Override
-    public List<ParentProjectDTO> getParentProjectsForGrandSonProject() {
-        Set<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.findAllLabConstructionParentProjects(0, -1);
+    public List<ParentProjectDTO> getParentProjectsForGrandSonProject(String projectName, String createTime) {
+        StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c where 1=1");
+        User user = shareService.getUserDetail();
+        // 查询条件
+        // 项目名称/创建人/创建人所属学院
+        if (projectName!=null && !projectName.equals("")) {
+            hql.append(" and (c.projectName like '%"+ projectName +"%')");
+        }
+        // 起止时间
+        if (createTime!=null && !createTime.equals("")) {
+            String[] time = createTime.split("~");
+            if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.createTime between '"+time[0]+"' and '"+time[1]+"'");
+            }else if (time[0]!=null && !time[0].equals("")) {
+                hql.append(" and c.createTime >= '"+time[0]+"'");
+            }else if (time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.createTime <= '"+time[1]+"'");
+            }
+        }
+        // 排序-倒序
+        hql.append(" order by c.createTime desc");
+
+        List<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.executeQuery(hql.toString(),0,-1);
+
         List<ParentProjectDTO> parents = new ArrayList<>();
-        int totalRecords = labConstructionParentProjectDAO.findAllLabConstructionParentProjects(0, -1).size();;
         for (LabConstructionParentProject parentProject: parentProjects) {
             ParentProjectDTO parentProjectDTO = new ParentProjectDTO();
             // 项目id
@@ -405,12 +460,38 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @param limit 当前页最大数据量
      * @return 子项目json格式数据
      */
-    public JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit){
-        List<LabConstructionSonProject> sonProjectSet = labConstructionSonProjectDAO
-                .executeQuery("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId +" order by son.createTime desc", (page-1)*limit, limit);
+    public JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit, String projectName, String implementTime, String balanceTime){
+        StringBuffer hql = new StringBuffer("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId);
+        // 前端查询条件
+        if (projectName!=null && !projectName.equals("") && !projectName.equals(",")) {
+            hql.append(" and son.projectName like '%"+ projectName +"%'");
+        }
+        if (implementTime!=null && !implementTime.equals("")) {
+            String[] time = implementTime.split("~");
+            if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.implementTime between '"+time[0]+"' and '"+time[1]+"'");
+            }else if (time[0]!=null && !time[0].equals("")) {
+                hql.append(" and c.implementTime >= '"+time[0]+"'");
+            }else if (time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.implementTime <= '"+time[1]+"'");
+            }
+        }
+        if (balanceTime!=null && !balanceTime.equals("")) {
+            String[] time = balanceTime.split("~");
+            if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.balanceTime between '"+time[0]+"' and '"+time[1]+"'");
+            }else if (time[0]!=null && !time[0].equals("")) {
+                hql.append(" and c.balanceTime >= '"+time[0]+"'");
+            }else if (time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.balanceTime <= '"+time[1]+"'");
+            }
+        }
+        // 按照创建时间倒序
+        hql.append(" order by son.createTime desc");
+
+        List<LabConstructionSonProject> sonProjectSet = labConstructionSonProjectDAO.executeQuery(hql.toString(), (page-1)*limit, limit);
         List<SonProjectDTO> sonProjects = new ArrayList<>();
-        int totalRecords = labConstructionSonProjectDAO
-                .executeQuery("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId).size();
+        int totalRecords = labConstructionSonProjectDAO.executeQuery(hql.toString(), 0, -1).size();
 
         for (LabConstructionSonProject sonProject: sonProjectSet) {
             SonProjectDTO sonProjectDTO = new SonProjectDTO();
@@ -575,7 +656,15 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         LabConstructionParentProject parentProject = labConstructionParentProjectDAO.findLabConstructionParentProjectById(sonProjectDTO.getParentProjectId());
         BigDecimal budget = new BigDecimal(0);
         for (LabConstructionSonProject sProject : parentProject.getLabConstructionSonProjects()) {// 遍历所有子项目，计算预算总额
-            budget = budget.add(sProject.getBudget());
+            // 当前编辑的子项目不参与计算{integer转int比较大小}
+            int s = sProject.getId();
+            int d = 0;
+            if (sonProjectDTO.getId()!=null && sonProjectDTO.getId() > 0) {
+                d = sonProjectDTO.getId();
+            }
+            if (s != d) {
+                budget = budget.add(sProject.getBudget());
+            }
         }
         budget = budget.add(sonProjectDTO.getBudget());
         if (budget.compareTo(parentProject.getBudget()) == 1) {// 超预算
@@ -641,7 +730,15 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         LabConstructionSonProject sonProject = labConstructionSonProjectDAO.findLabConstructionSonProjectById(grandSonProjectDTO.getSonProjectId());
         BigDecimal budget = new BigDecimal(0);
         for (LabConstructionGrandsonProject gProject : sonProject.getLabConstructionGrandsonProjects()) {// 遍历所有孙项目，计算预算总额
-            budget = budget.add(gProject.getBudget());
+            // 当前编辑的孙项目不参与计算{integer转int比较大小}
+            int s = gProject.getId();
+            int d = 0;
+            if (grandSonProjectDTO.getId()!=null && grandSonProjectDTO.getId() > 0) {
+                d = grandSonProjectDTO.getId();
+            }
+            if (s != d) {
+                budget = budget.add(gProject.getBudget());
+            }
         }
         budget = budget.add(grandSonProjectDTO.getBudget());
         if (budget.compareTo(sonProject.getBudget()) == 1) {// 超预算
@@ -727,7 +824,15 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         LabConstructionParentProject parentProject = labConstructionParentProjectDAO.findLabConstructionParentProjectById(sonProjectDTO.getParentProjectId());
         BigDecimal budget = new BigDecimal(0);
         for (LabConstructionSonProject sProject : parentProject.getLabConstructionSonProjects()) {// 遍历所有子项目，计算预算总额
-            budget = budget.add(sProject.getBudget());
+            // 当前编辑的子项目不参与计算{integer转int比较大小}
+            int s = sProject.getId();
+            int d = 0;
+            if (sonProjectDTO.getId()!=null && sonProjectDTO.getId() > 0) {
+                d = sonProjectDTO.getId();
+            }
+            if (s != d) {
+                budget = budget.add(sProject.getBudget());
+            }
         }
         budget = budget.add(sonProjectDTO.getBudget());
         if (budget.compareTo(parentProject.getBudget()) == 1) {// 超预算
@@ -793,7 +898,15 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         LabConstructionSonProject sonProject = labConstructionSonProjectDAO.findLabConstructionSonProjectById(grandSonProjectDTO.getSonProjectId());
         BigDecimal budget = new BigDecimal(0);
         for (LabConstructionGrandsonProject gProject : sonProject.getLabConstructionGrandsonProjects()) {// 遍历所有孙项目，计算预算总额
-            budget = budget.add(gProject.getBudget());
+            // 当前编辑的孙项目不参与计算{integer转int比较大小}
+            int s = gProject.getId();
+            int d = 0;
+            if (grandSonProjectDTO.getId()!=null && grandSonProjectDTO.getId() > 0) {
+                d = grandSonProjectDTO.getId();
+            }
+            if (s != d) {
+                budget = budget.add(gProject.getBudget());
+            }
         }
         budget = budget.add(grandSonProjectDTO.getBudget());
         if (budget.compareTo(sonProject.getBudget()) == 1) {// 超预算

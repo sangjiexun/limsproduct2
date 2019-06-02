@@ -109,10 +109,10 @@ layui.use(['form', 'laydate', 'upload'], function() {
             type: "POST",
             contentType: "application/json;charset=UTF-8",
             success:function (res) {
-            	alert(res);
                 console.log(res);
 				if (res == "over") {
 					$.messager.alert('提示','项目总预算超额，请重新填写！');
+					return false;
 				}else {
 					var index=parent.layer.getFrameIndex(window.name);
 					parent.layer.close(index);

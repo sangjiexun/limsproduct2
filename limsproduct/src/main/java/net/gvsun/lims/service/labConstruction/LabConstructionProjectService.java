@@ -25,7 +25,7 @@ public interface LabConstructionProjectService {
      * @param page 当前页数
      * @param limit 每页个数
      */
-    JSONObject getParentProjects(HttpServletRequest request, ParentProjectDTO parentProjectDTO, Integer page, Integer limit);
+    JSONObject getParentProjects(HttpServletRequest request, String projectName, String createDate, Integer page, Integer limit);
 
     /**
      * 通过id获取父项目
@@ -48,14 +48,14 @@ public interface LabConstructionProjectService {
      * @return 父项目显示DTO列表
      * @author 黄保钱 2019-2-24
      */
-    List<ParentProjectDTO> getParentProjectsForSonProject();
+    List<ParentProjectDTO> getParentProjectsForSonProject(String projectName, String implementTime, String balanceTime);
 
     /**
      * 获取父项目列表(孙项目列表用)
      * @return 父项目显示DTO列表
      * @author 黄保钱 2019-2-24
      */
-    List<ParentProjectDTO> getParentProjectsForGrandSonProject();
+    List<ParentProjectDTO> getParentProjectsForGrandSonProject(String projectName, String createTime);
 
     /**
      * Description 通过父项目id获取该父项目的子项目json格式数据
@@ -64,7 +64,7 @@ public interface LabConstructionProjectService {
      * @param limit 当前页最大数据量
      * @return 子项目json格式数据
      */
-    JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit);
+    JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit, String projectName, String implementTime, String balanceTime);
 
     /**
      * Description 通过子项目id获取该子项目的孙项目json格式数据

@@ -35,8 +35,8 @@ public class ApiLabConstructionController {
      */
     @RequestMapping("/getParentProjects")
     @ResponseBody
-    public String getParentProjects(HttpServletRequest request, ParentProjectDTO parentProjectDTO, Integer page, Integer limit){
-        JSONObject jsonObject = labConstructionProjectService.getParentProjects(request, parentProjectDTO, page, limit);
+    public String getParentProjects(HttpServletRequest request, String projectName, String createTime, Integer page, Integer limit){
+        JSONObject jsonObject = labConstructionProjectService.getParentProjects(request, projectName, createTime, page, limit);
 
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
@@ -50,8 +50,8 @@ public class ApiLabConstructionController {
      */
     @RequestMapping("/getSonProjects")
     @ResponseBody
-    public String getSonProjects(Integer id, Integer page, Integer limit){
-        JSONObject jsonObject = labConstructionProjectService.getSonProjects(id, page, limit);
+    public String getSonProjects(Integer id, String projectName, String projectImplementTime, String budgetBalanceTime, Integer page, Integer limit){
+        JSONObject jsonObject = labConstructionProjectService.getSonProjects(id, page, limit, projectName, projectImplementTime, budgetBalanceTime);
 
         return shareService.htmlEncode(jsonObject.toJSONString());
     }

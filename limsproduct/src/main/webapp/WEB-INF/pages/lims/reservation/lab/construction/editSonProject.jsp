@@ -56,6 +56,9 @@
                                 <c:if test="${current.id == parentId}">
                                     <option value="${current.id}" selected="selected">${current.projectName }</option>
                                 </c:if>
+                                <c:if test="${current.id == sonProject.parentProjectId}">
+                                    <option value="${current.id}" selected="selected">${current.projectName }</option>
+                                </c:if>
                                 <option value="${current.id}">${current.projectName}</option>
                             </c:forEach>
                         </select>
@@ -66,10 +69,12 @@
                     <div class="layui-input-block">
                         <select name="academyNumber" id="academyNumber" lay-verify="required" lay-search multiple lay-tools lay-omit>
                             <c:forEach items="${academies}" var="current">
-                                <c:if test="${current.academyNumber == sonProject.academyName}">
+                                <c:if test="${fn:contains(sonProject.academyNumber, current.academyNumber)}">
                                     <option value="${current.academyNumber}" selected="selected">${current.academyName }</option>
                                 </c:if>
-                                <option value="${current.academyNumber}">${current.academyName}</option>
+                                <c:if test="${!fn:contains(sonProject.academyNumber, current.academyNumber)}">
+                                    <option value="${current.academyNumber}">${current.academyName }</option>
+                                </c:if>
                             </c:forEach>
                             <%--<option value=""></option>--%>
                             <%--<option value="5">学院1</option>--%>
