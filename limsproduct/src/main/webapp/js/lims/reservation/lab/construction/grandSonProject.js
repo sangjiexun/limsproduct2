@@ -1,9 +1,48 @@
 var contextPath = $("meta[name='contextPath']").attr("content");
 var sonProjectIds = []
 var grandSonUrl = '/lims/api/labConstruction/getGrandSonProjects';
+var flag;
 layui.config({
 	version: '1545041465480' //为了更新 js 缓存，可忽略
 });
+layui.use(['laydate'], function() {
+    var laydate = layui.laydate;
+    //时间范围
+    laydate.render({
+        elem: '#time-range'
+        , range: '~'
+        ,done: function(value, date, endDate){
+            flag = 2;
+            var keyWord = $('#projectName').val();
+            productsearch(keyWord,value);
+        }
+    });
+    $(document).ready(function () {
+        flag = 1;
+        // zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
+        productsearch("","");
+        $('#projectName').keyup(function () {
+            // 1.获得搜索框的值；
+            // 2.判断如果有值。layer.msg()
+            // 3.定义延时函数，8s后刷新表格，并传递参数；
+            // 4.关闭layer.msg()
+            flag = 2;
+            var keyWord = $('#projectName').val();
+            var createTime = $('#time-range').val();
+            setTimeout(function () {
+                productsearch(keyWord,createTime);
+            }, 100);
+
+        });
+    });
+})
+function productsearch(projectName,createTime) {
+    var url = $("#contextPath").val()+'/lims/construction/lab/grandSonProject?projectName='+projectName+'&createTime='+createTime;
+    if(flag != 1){
+        window.location.href= url;
+    }
+
+}
 showTable('#grandsonproject',grandSonUrl,'sonProjectColl',-1);
 layui.use([ 'element'], function() {
     var element = layui.element //元素操作

@@ -16,6 +16,32 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/construction/expand.css" media="all">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/lims/reservation/lab/jquery-1.11.0.min.js"></script>
+
+    <style type="text/css">
+        .tool-box {
+            /*display: none;*/
+        }
+        /*.layui-table-tool {*/
+            /*background: #f9fafc;*/
+            /*min-height: 33px !important;*/
+            /*margin-bottom: 10px;*/
+            /*!* width: 99%; *!*/
+            /*width: auto;*/
+        /*}*/
+        .layui-table-tool{
+            position: absolute;
+        }
+        .layui-table-tool-temp {
+            display: none;
+        }
+        .layui-table-tool-self{
+            width: auto;
+            padding: 0;
+            position: absolute;
+            right: 24px;
+            top: -43px;
+        }
+    </style>
 </head>
 
 <body>
@@ -98,6 +124,20 @@
                 <%--</div>--%>
             <%--</div>--%>
         <%--</blockquote>--%>
+        <div class="tool-box">
+            <table>
+                <tr>
+                    <td>
+                        <span class="fl">综合查询：</span>
+                        <input id="projectName" name="projectName" type="text"  placeholder="多字段查询" />
+                    </td>
+                    <td>
+                        <span class="fl">创建时间：</span>
+                        <input type="text" class="layui-input" id="time-range" autocomplete="off" placeholder="请选择时间范围">
+                    </td>
+                </tr>
+            </table>
+        </div>
         <table class="layui-hide add_progress" id="parentproject" lay-filter="parenthead"></table>
         <script type="text/html" id="parentbar">
             <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
