@@ -101,9 +101,13 @@
         <table class="layui-hide add_progress" id="parentproject" lay-filter="parenthead"></table>
         <script type="text/html" id="parentbar">
             <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            {{# if(d.submitted==2){ }}
             <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {{# } }}
+            {{# if(d.submitted==1){ }}
             <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="newson">新建子项目</a>
+            {{# } }}
         </script>
     </div>
 </div>

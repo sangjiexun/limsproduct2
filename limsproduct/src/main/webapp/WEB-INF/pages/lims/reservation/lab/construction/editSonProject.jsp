@@ -14,6 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
+    <%--<link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/multiple-select.css" media="all">--%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/construction/expand.css" media="all">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/lims/reservation/lab/jquery-1.11.0.min.js"></script>
     <!--子项目列表专属表头长度-->
@@ -24,6 +25,9 @@
 
         .layui-input-block {
             margin-left: 130px;
+        }
+        .multiSelect{
+            display: none;
         }
     </style>
 </head>
@@ -60,7 +64,7 @@
                 <div class="layui-col-lg4">
                     <label class="layui-form-label">所属学院：</label>
                     <div class="layui-input-block">
-                        <select name="academyNumber" id="academyNumber" lay-verify="required" lay-search>
+                        <select name="academyNumber" id="academyNumber" lay-verify="required" lay-search multiple lay-tools lay-omit>
                             <c:forEach items="${academies}" var="current">
                                 <c:if test="${current.academyNumber == sonProject.academyName}">
                                     <option value="${current.academyNumber}" selected="selected">${current.academyName }</option>

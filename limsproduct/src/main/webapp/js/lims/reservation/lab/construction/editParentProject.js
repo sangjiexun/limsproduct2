@@ -6,7 +6,7 @@ layui.use(['form'], function() {
 	//父项目编辑表单初始赋值
 	form.val('parentproject', {
 		// "ppname": "默认显示当前父项目名称",
-		"budget": "100"
+		// "budget": "100"
 	});
     form.on('submit(submitParentProject)', function(data){
         console.log('提交')

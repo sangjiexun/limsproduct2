@@ -32,7 +32,8 @@ layui.use(['form', 'laydate'], function() {
             success:function (res) {
                 console.log(res);
                 if (res == "over") {
-                    $.messager.alert('提示','项目总预算超额，请重新填写！');
+                    alert('项目总预算超额，请重新填写！');
+                    return false;
                 } else {
                     var index=parent.layer.getFrameIndex(window.name);
                     parent.layer.close(index);
@@ -64,7 +65,8 @@ layui.use(['form', 'laydate'], function() {
             success:function (res) {
                 console.log(res);
                 if (res == "over") {
-                    $.messager.alert('提示','项目总预算超额，请重新填写！');
+                    alert('项目总预算超额，请重新填写！');
+                    return false;
                 } else {
                     var index=parent.layer.getFrameIndex(window.name);
                     parent.layer.close(index);
@@ -81,5 +83,6 @@ layui.use(['form', 'laydate'], function() {
 	//子项目表单表单初始赋值
 	form.val('sonproject', {
 		// "projectName": ""
+		// "budget": "100"
 	});
 });
