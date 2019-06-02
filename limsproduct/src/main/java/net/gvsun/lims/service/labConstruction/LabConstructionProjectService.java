@@ -25,7 +25,7 @@ public interface LabConstructionProjectService {
      * @param page 当前页数
      * @param limit 每页个数
      */
-    JSONObject getParentProjects(HttpServletRequest request, Integer page, Integer limit);
+    JSONObject getParentProjects(HttpServletRequest request, ParentProjectDTO parentProjectDTO, Integer page, Integer limit);
 
     /**
      * 通过id获取父项目

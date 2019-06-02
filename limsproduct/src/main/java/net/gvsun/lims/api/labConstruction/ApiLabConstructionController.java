@@ -35,8 +35,8 @@ public class ApiLabConstructionController {
      */
     @RequestMapping("/getParentProjects")
     @ResponseBody
-    public String getParentProjects(HttpServletRequest request, Integer page, Integer limit){
-        JSONObject jsonObject = labConstructionProjectService.getParentProjects(request, page, limit);
+    public String getParentProjects(HttpServletRequest request, ParentProjectDTO parentProjectDTO, Integer page, Integer limit){
+        JSONObject jsonObject = labConstructionProjectService.getParentProjects(request, parentProjectDTO, page, limit);
 
         return shareService.htmlEncode(jsonObject.toJSONString());
     }

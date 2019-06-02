@@ -88,7 +88,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      * @param limit 当前的最大数据大小
      */
     @Override
-    public JSONObject getParentProjects(HttpServletRequest request, Integer page, Integer limit) {
+    public JSONObject getParentProjects(HttpServletRequest request, ParentProjectDTO parentProjectDTO, Integer page, Integer limit) {
         StringBuffer hql = new StringBuffer("select c from LabConstructionParentProject c where 1=1");
         User user = shareService.getUserDetail();
         // 权限等级
@@ -98,35 +98,54 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
             hql = new StringBuffer("select c.labConstructionParentProject from LabConstructionSonProject c inner join c.schoolAcademies cs where 1=1");
             hql.append(" and cs.academyNumber='"+user.getSchoolAcademy().getAcademyNumber()+"'");
         }
+        // 查询条件
+        // 项目名称/创建人/创建人所属学院
+        if (parentProjectDTO.getProjectName()!=null) {
+            hql.append(" and (c.projectName like '%"+ parentProjectDTO.getProjectName() +"%')");
+        }
+        // 起止时间
+        if (parentProjectDTO.getCreateTime()!=null) {
+            String[] time = parentProjectDTO.getCreateTime().split("~");
+            if (time[0]!=null && !time[0].equals("") && time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.createTime between '"+time[0]+"' and '"+time[1]+"'");
+            }else if (time[0]!=null && !time[0].equals("")) {
+                hql.append(" and c.createTime >= '"+time[0]+"'");
+            }else if (time[1]!=null && !time[1].equals("")) {
+                hql.append(" and c.createTime <= '"+time[1]+"'");
+            }
+        }
+        // 排序-倒序
+        hql.append(" order by c.createTime desc");
+
         List<LabConstructionParentProject> parentProjects = labConstructionParentProjectDAO.executeQuery(hql.toString(),(page-1)*limit, limit);
         Set<LabConstructionParentProject> projectSet = labConstructionParentProjectDAO.findAllLabConstructionParentProjects((page-1)*limit, limit);
         List<ParentProjectDTO> parents = new ArrayList<>();
         int totalRecords = labConstructionParentProjectDAO.executeQuery(hql.toString(),0, -1).size();
         for (LabConstructionParentProject p: parentProjects) {
-            ParentProjectDTO parentProjectDTO = new ParentProjectDTO();
+            ParentProjectDTO newParentProjectDTO = new ParentProjectDTO();
             // 项目id
-            parentProjectDTO.setId(p.getId());
+            newParentProjectDTO.setId(p.getId());
             // 项目名称
-            parentProjectDTO.setProjectName(p.getProjectName());
+            newParentProjectDTO.setProjectName(p.getProjectName());
             // 项目预算
-            parentProjectDTO.setBudget(p.getBudget());
+            newParentProjectDTO.setBudget(p.getBudget());
 
             // 创建人
             User createUser = shareService.findUserByUsername(p.getCreateUser());
             // 创建人姓名
-            parentProjectDTO.setCreateUser(createUser.getCname());
+            newParentProjectDTO.setCreateUser(createUser.getCname());
             // 创建人所属部门
-            parentProjectDTO.setUnitName(createUser.getSchoolAcademy().getAcademyName());
+            newParentProjectDTO.setUnitName(createUser.getSchoolAcademy().getAcademyName());
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             // 创建时间
             Calendar createTime = p.getCreateTime();
-            parentProjectDTO.setCreateTime(sdf.format(createTime.getTime()));
+            newParentProjectDTO.setCreateTime(sdf.format(createTime.getTime()));
 
             // 提交状态
-            parentProjectDTO.setSubmitted(p.getSubmitted() ? 1 : 2);
+            newParentProjectDTO.setSubmitted(p.getSubmitted() ? 1 : 2);
 
-            parents.add(parentProjectDTO);
+            parents.add(newParentProjectDTO);
         }
         return getProjectJSON(parents, totalRecords);
     }
@@ -159,7 +178,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         }
         sonProjectDTO.setAcademyName(academyNumber.length() > 0 ? academyNumber.substring(0, academyNumber.length() - 1) : "");
         // 项目预算
-        sonProjectDTO.setBudget(new BigDecimal(10));
+        sonProjectDTO.setBudget(sonProject.getBudget());
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         // 创建时间
@@ -388,10 +407,11 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      */
     public JSONObject getSonProjects(Integer parentProjectId, Integer page, Integer limit){
         List<LabConstructionSonProject> sonProjectSet = labConstructionSonProjectDAO
-                .executeQuery("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId, (page-1)*limit, limit);
+                .executeQuery("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId +" order by son.createTime desc", (page-1)*limit, limit);
         List<SonProjectDTO> sonProjects = new ArrayList<>();
         int totalRecords = labConstructionSonProjectDAO
                 .executeQuery("select son from LabConstructionSonProject son where son.labConstructionParentProject.id=" + parentProjectId).size();
+
         for (LabConstructionSonProject sonProject: sonProjectSet) {
             SonProjectDTO sonProjectDTO = new SonProjectDTO();
             // 项目id
@@ -449,6 +469,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
                 break;
             default:
         }
+        sqlCondition += " order by grandson.createTime desc";
         sqlSearch += sqlCondition;
         List<LabConstructionGrandsonProject> grandsonProjectList = labConstructionGrandsonProjectDAO
                 .executeQuery(sqlSearch, (page-1)*limit, limit);
