@@ -506,10 +506,10 @@ margin-left:3px;
 	</div>
 	--%><div id="TabbedPanels1" class="TabbedPanels">
 	 <ul class="TabbedPanelsTabGroup">
-		<li class="TabbedPanelsTab selected" tabindex="0">
+		<li class="TabbedPanelsTab" tabindex="0">
 		<a href="javascript:void(0);" onclick="openSetupLink(${labRoom.id},${currpage },${type})">参数设置</a>
 		</li>
-		 <li class="TabbedPanelsTab" tabindex="0">
+		 <li class="TabbedPanelsTab selected" tabindex="0">
 			 <a href="javascript:void(0);" onclick="openStationReserSetting(${labRoom.id},${currpage },${type})">工位预约审核设置</a>
 		 </li>
 		 <c:if test="${device.CDictionaryByAllowSecurityAccess.CCategory=='c_active' && device.CDictionaryByAllowSecurityAccess.CNumber=='1' && device.labRoomReservation.toString() == '1'}">

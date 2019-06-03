@@ -66,6 +66,11 @@ public class VirtualImage implements Serializable {
 	@XmlElement
 	String setNote;
 
+	@Column(name = "enable")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer enable;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({@JoinColumn(name="lab_room_id", referencedColumnName="id")})
 	@XmlTransient
@@ -125,5 +130,13 @@ public class VirtualImage implements Serializable {
 
 	public void setLabRoom(LabRoom labRoom) {
 		this.labRoom = labRoom;
+	}
+
+	public Integer getEnable() {
+		return enable;
+	}
+
+	public void setEnable(Integer enable) {
+		this.enable = enable;
 	}
 }

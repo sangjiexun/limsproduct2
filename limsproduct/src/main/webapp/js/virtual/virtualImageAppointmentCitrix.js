@@ -4,7 +4,7 @@ function targetUrl(url) {
     document.form.submit();
 }
 function saveReservation(){
-    //判断预约时间是否为当前时间的十分钟后
+    /*//判断预约时间是否为当前时间的十分钟后
     var now=new Date();
     var start=new Date($("#startTime").val());
     var num = (start.getTime()-now.getTime())/(1000*60);
@@ -22,48 +22,52 @@ function saveReservation(){
     if(long>2){
         alert("预约时长不可超过两小时");
         return false;
-    }
+    }*/
     //判断当前时间段是否可用
     $.ajax({
         type: "POST",
-        url: "../virtual/checkImage",
-        data:{'VirtualImage': $("#VirtualImage").val(),'startTime': $("#startTime").val(),'endTime': $("#endTime").val(),'remarks':$("#remarks").val()},
+        url: "../virtual/checkImageCitrix",
+        data:{'VirtualImage': $("#VirtualImage").val(),'startTime': $("#startTime").val(),'remarks':$("#remarks").val()},
         dataType: 'text',
         success: function (data) {
-            if(data=="success") {
+            if (data == "used") {
+                alert("预约的镜像已无可用账号");
+            } else if (data == "booked") {
+                alert("您在该时间段已预约有镜像");
+            } else if (data == "fail") {
+                alert("预约出错");
+            } else {
                 //保存预约记录
                 $.ajax({
                     type: "POST",
                     url: "../virtual/saveVirtualImageReservationCitrix",
-                    data:{'VirtualImage': $("#VirtualImage").val(),'startTime': $("#startTime").val(),'endTime': $("#endTime").val(),'remarks':$("#remarks").val()},
+                    data: {
+                        'VirtualImage': $("#VirtualImage").val(),
+                        'startTime': $("#startTime").val(),
+                        'endTime': $("#endTime").val(),
+                        'remarks': $("#remarks").val(),
+                        'imageAccount': data,
+                    },
                     dataType: 'text',
-                    success: function (data) {
-                        if(data=="success"){
+                    success: function (data1) {
+                        if (data1 == "success") {
                             alert("预约成功");
                             window.location.href = "../virtual/virtualImageReservation?currpage=1"
-                        }else if(data=="interfaceSuccess"){
+                        } else if (data1 == "interfaceSuccess") {
                             alert("接口错误");
                             window.location.href = "../virtual/virtualImageReservation?currpage=1"
-                        }else if(data=="dataSuccess"){
+                        } else if (data1 == "dataSuccess") {
                             alert("该镜像桌面已被占用");
                             window.location.href = "../virtual/virtualImageReservation?currpage=1"
-                        }else if(data=="idSuccess"){
+                        } else if (data1 == "idSuccess") {
                             alert("未知错误");
                             window.location.href = "../virtual/virtualImageReservation?currpage=1"
-                        }else{
+                        } else {
                             alert("其他错误");
                             window.location.href = "../virtual/virtualImageReservation?currpage=1"
                         }
                     }
                 });
-            }else if (data=="used") {
-                alert("预约的镜像已被占用");
-            }else if(data=="booked"){
-                alert("您在该时间段已预约有镜像");
-            }else if(data=="fail"){
-                alert("预约出错");
-            }else{
-                alert("预约失败")
             }
         }
     });
