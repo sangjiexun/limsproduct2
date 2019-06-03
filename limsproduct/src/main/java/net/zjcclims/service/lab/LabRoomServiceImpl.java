@@ -1099,7 +1099,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * 作者：李小龙
 	 ****************************************************************************/
 	public List<LabRoom> findLabRoomWithDevices(Integer isReservation) {
-		String sql = "select distinct m from LabRoom m, LabRoomDevice ld where 1=1 and m.id=ld.labRoom.id";
+		String sql = "select distinct m from LabRoom m inner join m.labRoomDevices ld where 1=1 ";
 		sql += " and m.isUsed = 1";
 		if (isReservation != null && isReservation == 1) {
 			sql += "and m.labRoomActive = 1";
@@ -3373,7 +3373,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @CreateDate: 2019/4/4 14:01
 	 */
 	public List<LabRoom> findLabRoomWithDevices(Integer isReservation,String acno){
-		StringBuffer sql = new StringBuffer("select distinct m from LabRoom m, LabRoomDevice ld where 1=1 and m.id=ld.labRoom.id");
+		StringBuffer sql = new StringBuffer("select distinct m from LabRoom m inner join m.labRoomDevices ld where 1=1 ");
 		sql.append(" and m.isUsed = 1");
 		if (isReservation != null && isReservation == 1) {
 			sql.append("and m.labRoomActive = 1");
