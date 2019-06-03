@@ -425,6 +425,7 @@ $(document).ready(function () {
      *学生判冲模式
      */
     $("#judgeTimetable").on('click', function () {
+        showJudgeTimetable();
         $('#submitButton').hide();
         $('#selfReTimetableCourse').hide();
         $('#selfReTimetable').show();

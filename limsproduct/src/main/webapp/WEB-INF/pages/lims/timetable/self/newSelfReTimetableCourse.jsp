@@ -150,12 +150,14 @@
             margin-bottom: 50px;
             margin-right: 5%;
             width: 70%;
+            font-size: 15px;
         }
         .lab_stu {
             margin-left: 5%;
             margin-bottom: 50px;
             margin-right: 5%;
             width: 70%;
+            font-size: 15px;
         }
         #table_student1,#table_student2 {
             text-align: center;
@@ -316,29 +318,29 @@
         <br>
         <table border="0" align="center" style="width:100%;">
             <tr>
-                <td align=left width="12%"><h3>选择节次：</h3></td>
+                <td align=left width="12%"><h3>节次：</h3></td>
                 <td colspan="3">
                     <div class="layui-input-block" style="margin: 0">
-                        <div class="layui-form" style="color:red">
-                            <div class="layui-btn layui-btn-sm" id="section_all">全选</div>
-                            <div class="layui-btn layui-btn-sm" id="section_opposite">反选</div>
-                            <div class="layui-btn layui-btn-sm layui-btn-danger" id="section_none">全不选</div>
-                            <%--<b>（注意：请先选择节次，节次确定后再选周次；选择节次过程中，周次选择会被重置！）</b>--%>
-                        </div>
+                        <%--<div class="layui-form" style="color:red">--%>
+                            <%--<div class="layui-btn layui-btn-sm" id="section_all">全选</div>--%>
+                            <%--<div class="layui-btn layui-btn-sm" id="section_opposite">反选</div>--%>
+                            <%--<div class="layui-btn layui-btn-sm layui-btn-danger" id="section_none">全不选</div>--%>
+                            <%--&lt;%&ndash;<b>（注意：请先选择节次，节次确定后再选周次；选择节次过程中，周次选择会被重置！）</b>&ndash;%&gt;--%>
+                        <%--</div>--%>
                         <div id="section_box" class="layui-form" style="margin:10px auto 0">
                         </div>
                     </div>
                 </td>
             </tr>
             <tr>
-                <td align=left width="12%"><h3>选择周次：</h3></td>
+                <td align=left width="12%"><h3>周次：</h3></td>
                 <td colspan="3">
                     <div class="layui-input-block" style="margin: 0">
-                        <div class="layui-form">
-                            <div class="layui-btn layui-btn-sm" id="week_all">全选</div>
-                            <div class="layui-btn layui-btn-sm" id="week_opposite">反选</div>
-                            <div class="layui-btn layui-btn-sm layui-btn-danger" id="week_none">全不选</div>
-                        </div>
+                        <%--<div class="layui-form">--%>
+                            <%--<div class="layui-btn layui-btn-sm" id="week_all">全选</div>--%>
+                            <%--<div class="layui-btn layui-btn-sm" id="week_opposite">反选</div>--%>
+                            <%--<div class="layui-btn layui-btn-sm layui-btn-danger" id="week_none">全不选</div>--%>
+                        <%--</div>--%>
                         <div id="week_box" class="layui-form" style="margin:10px auto 0">
 
                         </div>
@@ -346,14 +348,14 @@
                 </td>
             </tr>
             <tr>
-                <td align=left width="12%"><h3>选择星期：</h3></td>
+                <td align=left width="12%"><h3>星期：</h3></td>
                 <td colspan="3">
                     <div class="layui-input-block" style="margin: 0">
-                        <div class="layui-form">
-                            <div class="layui-btn layui-btn-sm" id="weekday_all">全选</div>
-                            <div class="layui-btn layui-btn-sm" id="weekday_opposite">反选</div>
-                            <div class="layui-btn layui-btn-sm layui-btn-danger" id="weekday_none">全不选</div>
-                        </div>
+                        <%--<div class="layui-form">--%>
+                            <%--<div class="layui-btn layui-btn-sm" id="weekday_all">全选</div>--%>
+                            <%--<div class="layui-btn layui-btn-sm" id="weekday_opposite">反选</div>--%>
+                            <%--<div class="layui-btn layui-btn-sm layui-btn-danger" id="weekday_none">全不选</div>--%>
+                        <%--</div>--%>
                         <div id="weekday_box" class="layui-form" style="margin:10px auto 0">
 
                         </div>

@@ -164,7 +164,7 @@
     <br>
     <table border="0" align="center" style="width:100%;">
         <tr>
-            <td align=left width="12%"><h3>选择节次：</h3></td>
+            <td align=left width="12%"><h3>节次：</h3></td>
             <td colspan="3">
                 <div class="layui-input-block" style="margin: 0">
                     <div class="layui-form" style="color:red">
@@ -179,7 +179,7 @@
             </td>
         </tr>
         <tr>
-            <td align=left width="12%"><h3>选择周次：</h3></td>
+            <td align=left width="12%"><h3>周次：</h3></td>
             <td colspan="3">
                 <div class="layui-input-block" style="margin: 0">
                     <div class="layui-form">
@@ -194,7 +194,7 @@
             </td>
         </tr>
         <tr>
-            <td align=left width="12%"><h3>选择星期：</h3></td>
+            <td align=left width="12%"><h3>星期：</h3></td>
             <td colspan="3">
                 <div class="layui-input-block" style="margin: 0">
                     <div class="layui-form">
