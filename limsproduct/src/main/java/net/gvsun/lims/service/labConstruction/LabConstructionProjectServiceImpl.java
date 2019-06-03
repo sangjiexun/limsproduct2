@@ -130,6 +130,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
             newParentProjectDTO.setBudget(p.getBudget());
 
             // 创建人
+            newParentProjectDTO.setUsername(p.getCreateUser());
             User createUser = shareService.findUserByUsername(p.getCreateUser());
             // 创建人姓名
             newParentProjectDTO.setCreateUser(createUser.getCname());
@@ -194,6 +195,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         User createUser = shareService.findUserByUsername(sonProject.getCreateUser());
         // 创建人姓名
         sonProjectDTO.setCreateUser(createUser.getCname());
+        sonProjectDTO.setUsername(createUser.getUsername());
         // 创建人所属部门
         sonProjectDTO.setUnitName(createUser.getSchoolAcademy().getAcademyName());
 
@@ -522,7 +524,8 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
             // 项目实施时间
             Calendar projectImplementTime = sonProject.getProjectImplementTime();
             sonProjectDTO.setProjectImplementTime(sdf.format(projectImplementTime.getTime()));
-
+            // 创建人工号
+            sonProjectDTO.setUsername(sonProject.getCreateUser());
             // 提交状态
             sonProjectDTO.setSubmitted(sonProject.getSubmitted() ? 1 : 2);
 
@@ -708,7 +711,7 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         sonProject.setProjectName(sonProjectDTO.getProjectName());
         // 指定学院
         Set<SchoolAcademy> schoolAcademies = new HashSet<>();
-        for(String academyNumber: sonProjectDTO.getAcademyNumber().split(",")) {
+        for(String academyNumber: sonProjectDTO.getAcademyNumbers()) {
             schoolAcademies.add(shareService.findSchoolAcademyByPrimaryKey(academyNumber));
         }
         sonProject.setSchoolAcademies(schoolAcademies);

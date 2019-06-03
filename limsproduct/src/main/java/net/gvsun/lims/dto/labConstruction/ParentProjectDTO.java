@@ -19,6 +19,11 @@ public class ParentProjectDTO {
     private String projectName;
 
     /**
+     * 创建人工号
+     */
+    private String username;
+
+    /**
      * 创建人
      */
     private String createUser;
@@ -110,5 +115,13 @@ public class ParentProjectDTO {
 
     public void setSubmitted(int submitted) {
         this.submitted = submitted;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

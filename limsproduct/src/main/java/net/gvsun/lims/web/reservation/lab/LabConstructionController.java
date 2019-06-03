@@ -67,6 +67,8 @@ public class LabConstructionController {
     public ModelAndView parentProject(ModelAndView mav) {
         User user = shareService.getUserDetail();
         mav.addObject("username", user.getUsername());
+        // 用户名是在这里传的 语音吧
+        
 
         mav.setViewName(this.CONSTRUCTION_URL + "parentProject.jsp");
         return mav;

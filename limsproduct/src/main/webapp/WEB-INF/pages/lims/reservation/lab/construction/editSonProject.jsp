@@ -67,7 +67,7 @@
                 <div class="layui-col-lg4">
                     <label class="layui-form-label">所属学院：</label>
                     <div class="layui-input-block">
-                        <select name="academyNumber" id="academyNumber" lay-verify="required" lay-search multiple lay-tools lay-omit>
+                        <select name="academyNumbers" id="academyNumbers" lay-verify="required" lay-search multiple lay-omit>
                             <c:forEach items="${academies}" var="current">
                                 <c:if test="${fn:contains(sonProject.academyNumber, current.academyNumber)}">
                                     <option value="${current.academyNumber}" selected="selected">${current.academyName }</option>

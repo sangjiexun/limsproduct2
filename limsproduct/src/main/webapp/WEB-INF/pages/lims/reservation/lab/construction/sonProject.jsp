@@ -155,8 +155,10 @@
                         <script type="text/html" id="sonbar">
                             <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
                             {{# if(d.submitted==2){ }}
-                            <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
-                            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                                {{# if(d.username==${username}){ }}
+                                    <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
+                                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                                {{# } }}
                             {{# } }}
                             {{# if(d.submitted==1){ }}
                             <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="newgrandson">新建孙项目</a>
