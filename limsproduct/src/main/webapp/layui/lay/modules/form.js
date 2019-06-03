@@ -579,7 +579,11 @@ layui.define('layer', function(exports){
                     var isSearch = typeof othis.attr('lay-search') === 'string'
                         ,placeholder = optionsFirst ? (
                         optionsFirst.value ? TIPS : (optionsFirst.innerHTML || TIPS)
-                    ) : TIPS,inputValue =  !(typeof $(select).attr("lay-omit") === 'undefined')&&value!=null&&value.length>0 ? '已选择'+value.length+"条" : "";
+                    ): TIPS,inputValue =  !(typeof $(select).attr("lay-omit") === 'undefined')&&value!=null&&value.length>0&&value!="" ? (
+                        value[0]!=""?'已选择'+value.length+'条':'已选择'+(value.length-1)+'条'
+                    ): "";
+                    //'已选择'+value.length-1+'条'
+                    // ) : TIPS,inputValue =  !(typeof $(select).attr("lay-omit") === 'undefined')&&value!=null&&value.length>0 ? '已选择'+value.length+"条" : "";
 
                     if (isMulti) {
                         var reElem = $(['<div class="' + (isMulti ? '' : 'layui-unselect ') + CLASS + (disabled ? ' layui-select-disabled' : '') + '">'

@@ -560,6 +560,14 @@ public class LabRoom implements Serializable {
 	CDictionary CDictionaryByIsAudit;
 
 	/**
+	 * 工位预约是否需要审核
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumns({ @JoinColumn(name = "is_station_audit", referencedColumnName = "id") })
+	@XmlTransient
+	CDictionary CDictionaryByIsStationAudit;
+
+	/**
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({ @JoinColumn(name = "build_number", referencedColumnName = "build_number") })
@@ -643,8 +651,16 @@ public class LabRoom implements Serializable {
 	public CDictionary getCDictionaryByIsAudit() {
 		return CDictionaryByIsAudit;
 	}
-	
-	/**
+
+    public CDictionary getCDictionaryByIsStationAudit() {
+        return CDictionaryByIsStationAudit;
+    }
+
+    public void setCDictionaryByIsStationAudit(CDictionary CDictionaryByIsStationAudit) {
+        this.CDictionaryByIsStationAudit = CDictionaryByIsStationAudit;
+    }
+
+    /**
 	 * 是否需要导师审核
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)

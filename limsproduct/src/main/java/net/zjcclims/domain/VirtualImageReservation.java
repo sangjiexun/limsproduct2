@@ -119,6 +119,22 @@ public class VirtualImageReservation implements Serializable {
 	@XmlElement
 	String virtualImage;
 
+	@Column(name = "virtual_image_name")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String virtualImageName;
+
+	@Column(name = "image_account")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String imageAccount;
+
+	@Column(name = "is_download_ica")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer isDownloadIca;
+
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({ @JoinColumn(name = "teacher", referencedColumnName = "username") })
 	@XmlTransient
@@ -196,6 +212,14 @@ public class VirtualImageReservation implements Serializable {
 		this.virtualImage = virtualImage;
 	}
 
+	public String getVirtualImageName() {
+		return virtualImageName;
+	}
+
+	public void setVirtualImageName(String virtualImageName) {
+		this.virtualImageName = virtualImageName;
+	}
+
 	public CDictionary getCDictionaryByLabReservetYpe() {
 		return CDictionaryByLabReservetYpe;
 	}
@@ -250,5 +274,21 @@ public class VirtualImageReservation implements Serializable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getImageAccount() {
+		return imageAccount;
+	}
+
+	public void setImageAccount(String imageAccount) {
+		this.imageAccount = imageAccount;
+	}
+
+	public Integer getIsDownloadIca() {
+		return isDownloadIca;
+	}
+
+	public void setIsDownloadIca(Integer isDownloadIca) {
+		this.isDownloadIca = isDownloadIca;
 	}
 }

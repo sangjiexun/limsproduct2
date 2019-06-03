@@ -18,12 +18,16 @@ public class VirtualImageReservationVO {
     private String userName;
     //预约开始时间
     private Calendar startTime;
+    //预约开始时间后15分钟（用于显示判断）
+    private Calendar startFifteenTime;
     //预约结束时间
     private Calendar endTime;
     //预约备注
     private String remarks;
     //预约审核层级
     private Integer auditStage;
+    //预约镜像账号
+    private String imageAccount;
 
     public Integer getVirtualImageReservationID() {
         return virtualImageReservationID;
@@ -79,5 +83,21 @@ public class VirtualImageReservationVO {
 
     public void setAuditStage(Integer auditStage) {
         this.auditStage = auditStage;
+    }
+
+    public Calendar getStartFifteenTime() {
+        return startFifteenTime;
+    }
+
+    public void setStartFifteenTime(Calendar startFifteenTime) {
+        this.startFifteenTime = startFifteenTime;
+    }
+
+    public String getImageAccount() {
+        return imageAccount;
+    }
+
+    public void setImageAccount(String imageAccount) {
+        this.imageAccount = imageAccount;
     }
 }

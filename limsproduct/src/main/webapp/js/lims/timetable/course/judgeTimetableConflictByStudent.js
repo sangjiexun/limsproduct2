@@ -1,10 +1,14 @@
 var contextPath = $("meta[name='contextPath']").attr("content");
 // var zuulUrl ="";
 var zuulUrl = $("#zuulServerUrl").val() + contextPath + "/timetable/";
-var studentTimetableUrl = zuulUrl + "api/school/judgeTimetableConflictByStudent";
+// var studentTimetableUrl = zuulUrl + "api/school/judgeTimetableConflictByStudent";
 var msgindex;
 $(document).ready(function () {
-    zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
+    // zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
+
+
+});
+function showJudgeTimetable() {
     layui.use(['layer', 'form', 'element', 'jquery', 'layer'], function () {
         var layer = layui.layer
             , form = layui.form
@@ -32,10 +36,10 @@ $(document).ready(function () {
                 success: function (result) {
                     var list = result.results;    //返回的数据
                     //add_role_name给select定义的id
-                    for (var i = 0; i < list.length; i++) {
+                    for (var j = 0; j < list.length; j++) {
                         // listclass += list[i].id+",";
                         // $("#section_box").append(" <input type=\"checkbox\" name=\"classes\" id='classes" + list[i].id + "' title='" + list[i].text + "' value='" + list[i].id + "' lay-filter=\"classes_choose\" >");
-                        var x = "<div lay-filter='classes_choose' name='weekdays' value=" + list[i].id + " class=\"layui-unselect layui-form-checkbox\"><span>"+ list[i].text+"</span><i class='layui-icon layui-icon-ok'></i></div>"
+                        var x = "<div lay-filter='classes_choose' name='weekdays' value=" + list[j].id + " class=\"layui-unselect layui-form-checkbox\"><span>"+ list[j].text+"</span><i class='layui-icon layui-icon-ok'></i></div>"
                         $("#weekday_box").append(x);
                         form.render("checkbox");
                     }
@@ -70,12 +74,12 @@ $(document).ready(function () {
                 success: function (result) {
                     var list = result.results;    //返回的数据
                     //add_role_name给select定义的id
-                    for (var i = 0; i < list.length; i++) {
+                    for (var j = 0; j < list.length; j++) {
                         // listclass += list[i].id+",";
-                            // $("#section_box").append(" <input type=\"checkbox\" name=\"classes\" id='classes" + list[i].id + "' title='" + list[i].text + "' value='" + list[i].id + "' lay-filter=\"classes_choose\" >");
-                            var x = "<div lay-filter='classes_choose' name='classes' value=" + list[i].id + " class=\"layui-unselect layui-form-checkbox\"><span>"+ list[i].text+"</span><i class='layui-icon layui-icon-ok'></i></div>"
-                            $("#section_box").append(x);
-                            form.render("checkbox");
+                        // $("#section_box").append(" <input type=\"checkbox\" name=\"classes\" id='classes" + list[i].id + "' title='" + list[i].text + "' value='" + list[i].id + "' lay-filter=\"classes_choose\" >");
+                        var x = "<div lay-filter='classes_choose' name='classes' value=" + list[j].id + " class=\"layui-unselect layui-form-checkbox\"><span>"+ list[j].text+"</span><i class='layui-icon layui-icon-ok'></i></div>"
+                        $("#section_box").append(x);
+                        form.render("checkbox");
                     }
                     // var x = "<div lay-filter='classes_choose' name='classes' value='111' class=\"layui-unselect layui-form-checkbox\"><span>1111</span><i class='layui-icon layui-icon-ok'></i></div>"
                     // $("#section_box").append(x);
@@ -107,11 +111,11 @@ $(document).ready(function () {
                 contentType: "application/json;charset=UTF-8",
                 success: function (result) {
                     var list = result.results;    //返回的数据
-                    for (var i = 0; i < list.length; i++) {
-                            // $("#week_box").append(" <input type=\"checkbox\" name=\"week\" title='第" + list[i].text + "周' value='" + list[i].id + "' lay-filter=\"allChoose_1\">");
-                            var x = "<div lay-filter='allChoose_1' name='week' id='week"+ list[i].id +"' value=" + list[i].id + " class=\"layui-unselect layui-form-checkbox\"><span>第"+ list[i].id+"周</span><i class='layui-icon layui-icon-ok'></i></div>"
-                            $("#week_box").append(x);
-                            form.render("checkbox");
+                    for (var j = 0; j < list.length; j++) {
+                        // $("#week_box").append(" <input type=\"checkbox\" name=\"week\" title='第" + list[i].text + "周' value='" + list[i].id + "' lay-filter=\"allChoose_1\">");
+                        var x = "<div lay-filter='allChoose_1' name='week' id='week"+ list[j].id +"' value=" + list[j].id + " class=\"layui-unselect layui-form-checkbox\"><span>第"+ list[j].id+"周</span><i class='layui-icon layui-icon-ok'></i></div>"
+                        $("#week_box").append(x);
+                        form.render("checkbox");
                     }
                     allRule('week_all', 'week_box');
                     oppositeRule('week_opposite', 'week_box');
@@ -122,191 +126,149 @@ $(document).ready(function () {
                 }
             });
         }
-        function showWeeks(section){
-            $("#"+section+" .layui-form-checkbox").each(function(i,j){
-                j.onclick=function(){
-                    this.classList.toggle('layui-form-checked');
-                    // oldChecked toggle
-                    if(this.getAttribute('oldChecked')==null){
-                        this.setAttribute('oldChecked','');
-                    }else{
-                        this.removeAttribute('oldChecked');
-                    }
-                    getWeeks1();
-                }
-            });
-        }
-        function showClasses(section){
-            $("#"+section+" .layui-form-checkbox").each(function(i,j){
-                j.onclick=function(){
-                    this.classList.toggle('layui-form-checked');
-                    // oldChecked toggle
-                    if(this.getAttribute('oldChecked')==null){
-                        this.setAttribute('oldChecked','');
-                    }else{
-                        this.removeAttribute('oldChecked');
-                    }
-                    getClasses1();
-                }
-            });
-        }
-        form.on('checkbox(allChoose_1)', function(data){
-            console.log(data.elem); //得到checkbox原始DOM对象
-            console.log(data.elem.checked); //是否被选中，true或者false
-            console.log(data.value); //复选框value值，也可以通过data.elem.value得到
-            console.log(data.othis); //得到美化后的DOM对象
-            getClasses1();
-        });
-        form.on('checkbox(classes_choose)', function(data){
-            console.log(data.elem); //得到checkbox原始DOM对象
-            console.log(data.elem.checked); //是否被选中，true或者false
-            console.log(data.value); //复选框value值，也可以通过data.elem.value得到
-            console.log(data.othis); //得到美化后的DOM对象
-            getWeeks1();
-        });
-        // $("#weekday").change(function () {
-        //     $(this).valid();
-        //     getClasses1();
-        //     getWeeks1();
-        // });
-        // $("#labRoom_id").change(function () {
-        //     $(this).valid();
-        //     getClasses1();
-        //     getWeeks1();
-        // });
+
+
+    });
+    layui.use(['layer', 'form', 'element', 'jquery', 'layer'], function () {
+        var layer = layui.layer
+            , form = layui.form
+            , element = layui.element
+            , $ = layui.$
+            , layer = layui.layer;
+
         form.on('submit(timetableSubmit)', function(data){
             var data1;
-                var classs = "";
-                // $("input:checkbox[name='classes']:checked").each(function() { // 遍历name=standard的多选框
-                //     classs += $(this).val()+",";
-                // });
-                $("#section_box >div").each(function(){
-                    // alert($(this).attr("id"));  //打印子div的ID
-                    if($(this).hasClass('layui-form-checked')){
-                        classs += $(this).attr("value")+",";
-                    }
-                });
-                // classs = classs.slice(0,classs.length-1);
-                var weekss = "";
-                // $("input:checkbox[name='week']:checked").each(function() {
-                //     weekss += $(this).val()+",";
-                // });
-                $("#week_box >div").each(function(){
-                    // alert($(this).attr("id"));  //打印子div的ID
-                    if($(this).hasClass('layui-form-checked')){
-                        weekss += $(this).attr("value")+",";
-                    }
-                });
-                // weekss = weekss.slice(0,weekss.length-1);
-                var weekdayss = "";
-                // $("input:checkbox[name='week']:checked").each(function() {
-                //     weekss += $(this).val()+",";
-                // });
-                $("#weekday_box >div").each(function(){
-                    // alert($(this).attr("id"));  //打印子div的ID
-                    if($(this).hasClass('layui-form-checked')){
-                        weekdayss += $(this).attr("value")+",";
-                    }
-                });
-                // weekdayss = weekdayss.slice(0,weekdayss.length-1);
-                data.field.sections = classs;
-                data.field.weeks = weekss;
-                data.field.termId = $("#term").val();
-                data.field.weekdays = weekdayss;
-                if($("#timetableStyle").val() == 5){
-                    data.field.selfId = $("#selfId").val();
-                }else{
-                    // data.field.courseNo = "225151-17-10061363";
-                    data.field.courseNo = $("#courseNo").val();
+            var classs = "";
+            // $("input:checkbox[name='classes']:checked").each(function() { // 遍历name=standard的多选框
+            //     classs += $(this).val()+",";
+            // });
+            $("#section_box >div").each(function(){
+                // alert($(this).attr("id"));  //打印子div的ID
+                if($(this).hasClass('layui-form-checked')){
+                    classs += $(this).attr("value")+",";
                 }
-                data.field.timetableStyle = $("#timetableStyle").val();
-                data1 = JSON.stringify(data.field);
-                if(data.field.sections == "" || data.field.weeks == "" || data.field.weekdays==""){
-                    alert("请选择周次/节次/星期!")
-                    return false;
+            });
+            // classs = classs.slice(0,classs.length-1);
+            var weekss = "";
+            // $("input:checkbox[name='week']:checked").each(function() {
+            //     weekss += $(this).val()+",";
+            // });
+            $("#week_box >div").each(function(){
+                // alert($(this).attr("id"));  //打印子div的ID
+                if($(this).hasClass('layui-form-checked')){
+                    weekss += $(this).attr("value")+",";
                 }
-                $.ajax({
-                    url: zuulUrl + "api/school/judgeTimetableConflictByStudent",
-                    headers: {Authorization: getJWTAuthority()},
-                    data: data1,
-                    // async: false,
-                    type: "POST",
-                    contentType: "application/json;charset=UTF-8",
-                    beforeSend: function () {
-                        loading("数据提交中，请稍后......");
-                    },
-                    success: function (result) {
-                        // var index = layer.msg("上传成功")
-                        layer.close(msgindex);
-                        $("#table_student1").html("");
-                        console.log(result);
-                        var section = result.data[0].sections;
-                        var week = result.data[0].weeks;
-                        var weekday = result.data[0].weekdays;
-                        var sectionss=section.slice(0,section.length-1).split(",");
-                        var weekss=week.slice(0,week.length-1).split(",");
-                        var weekdayss=weekday.slice(0,weekday.length-1).split(",");
+            });
+            // weekss = weekss.slice(0,weekss.length-1);
+            var weekdayss = "";
+            // $("input:checkbox[name='week']:checked").each(function() {
+            //     weekss += $(this).val()+",";
+            // });
+            $("#weekday_box >div").each(function(){
+                // alert($(this).attr("id"));  //打印子div的ID
+                if($(this).hasClass('layui-form-checked')){
+                    weekdayss += $(this).attr("value")+",";
+                }
+            });
+            // weekdayss = weekdayss.slice(0,weekdayss.length-1);
+            data.field.sections = classs;
+            data.field.weeks = weekss;
+            data.field.termId = $("#term").val();
+            data.field.weekdays = weekdayss;
+            if($("#timetableStyle").val() == 5){
+                data.field.selfId = $("#selfId").val();
+            }else{
+                // data.field.courseNo = "225151-17-10061363";
+                data.field.courseNo = $("#courseNo").val();
+            }
+            data.field.timetableStyle = $("#timetableStyle").val();
+            data1 = JSON.stringify(data.field);
+            if(data.field.sections == "" || data.field.weeks == "" || data.field.weekdays==""){
+                alert("请选择周次/节次/星期!")
+                return false;
+            }
+            $.ajax({
+                url: zuulUrl + "api/school/judgeTimetableConflictByStudent",
+                headers: {Authorization: getJWTAuthority()},
+                data: data1,
+                // async: false,
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                beforeSend: function () {
+                    loading("数据提交中，请稍后......");
+                },
+                success: function (result) {
+                    // var index = layer.msg("上传成功")
+                    layer.close(msgindex);
+                    $("#table_student1").html("");
+                    console.log(result);
+                    var section = result.data[0].sections;
+                    var week = result.data[0].weeks;
+                    var weekday = result.data[0].weekdays;
+                    var sectionss=section.slice(0,section.length-1).split(",");
+                    var weekss=week.slice(0,week.length-1).split(",");
+                    var weekdayss=weekday.slice(0,weekday.length-1).split(",");
 
-                        var str = "";
-                        str+="<table class='tab_stu' id='tab_stu' border='1' align='center'><caption>";
-                        str+="学生判冲";
-                        str+="<span>(可拖动鼠标多选)</span>";
-                        str+="<div style='float: right;'>";
-                        str+="<button class='layui-btn' onclick='chooseLabRoom()'>选择实验室</button>";
-                        str+="</div>";
-                        str+="</caption>";
-                        str+="<thead>";
-                        str+="<tr>";
-                        str+="<th>星期</th>";
-                        str+="<th>节次</th>";
-                        for(var i=0;i<weekss.length;i++){
-                            str+="<th>第"+weekss[i]+"周</th>";
-                        }
-                        str+="</tr>";
-                        str+="</thead>";
-                        // str+="<tbody id='select_box'>";
-                        var haved
-                        for(var i=0;i<weekdayss.length;i++){
-                            str+="<tbody data-album='"+ weekdayss[i] +"'>";
-                            for(var j=0;j<sectionss.length;j++){
-                                str+="<tr class='check_box'>"
-                                if(haved!=i){
-                                    str+="<td class='not_check' data='"+ weekdayss[i] +"' rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
-                                    haved = i;
-                                }
-                                str+="<td class='not_check'>第"+sectionss[j]+"节</td>";
-                                for(var y=0;y<weekss.length;y++){
-                                    for(var x=1;x<result.data.length;x++){
-                                        // console.log(result.data[x]);
-                                        if(result.data[x].week == weekss[y]){
-                                            if(result.data[x].weekday == weekdayss[i]){
-                                                if(result.data[x].section == sectionss[j]){
-                                                    str+="<td data='"+ result.data[x].tag +"'><span data='"+ result.data[x].tag +"'>"+ result.data[x].conflictRate +"</span></td>";
-                                                }
+                    var str = "";
+                    str+="<table class='tab_stu' id='tab_stu' border='1' align='center'><caption>";
+                    str+="学生判冲";
+                    str+="<span>(可拖动鼠标多选)</span>";
+                    str+="<div style='float: right;'>";
+                    str+="<button class='layui-btn' onclick='chooseLabRoom()'>选择实验室</button>";
+                    str+="</div>";
+                    str+="</caption>";
+                    str+="<thead>";
+                    str+="<tr>";
+                    str+="<th>星期</th>";
+                    str+="<th>节次</th>";
+                    for(var i=0;i<weekss.length;i++){
+                        str+="<th>第"+weekss[i]+"周</th>";
+                    }
+                    str+="</tr>";
+                    str+="</thead>";
+                    // str+="<tbody id='select_box'>";
+                    var haved
+                    for(var i=0;i<weekdayss.length;i++){
+                        str+="<tbody data-album='"+ weekdayss[i] +"'>";
+                        for(var j=0;j<sectionss.length;j++){
+                            str+="<tr class='check_box'>"
+                            if(haved!=i){
+                                str+="<td class='not_check' data='"+ weekdayss[i] +"' rowspan='"+ sectionss.length +"'>星期"+weekdayss[i]+"</td>";
+                                haved = i;
+                            }
+                            str+="<td class='not_check'>第"+sectionss[j]+"节</td>";
+                            for(var y=0;y<weekss.length;y++){
+                                for(var x=1;x<result.data.length;x++){
+                                    // console.log(result.data[x]);
+                                    if(result.data[x].week == weekss[y]){
+                                        if(result.data[x].weekday == weekdayss[i]){
+                                            if(result.data[x].section == sectionss[j]){
+                                                str+="<td data='"+ result.data[x].tag +"'><span data='"+ result.data[x].tag +"'>"+ result.data[x].conflictRate +"</span></td>";
                                             }
                                         }
                                     }
                                 }
-                                str+="</tr>"
                             }
-                            str+="</tbody>";
+                            str+="</tr>"
                         }
                         str+="</tbody>";
-                        str+="</table>";
-
-                        $("#table_student1").append(str);
-                        // $("#tab_stu").selectable({ filter: "td" });
-                        $("[data-album]").selectable({ filter: "td",
-                            start: function() {
-                                $( "#tab_stu td" ).each(function() {
-                                    if($(this).hasClass('ui-selected')){
-                                        $(this).removeClass("ui-selected");
-                                    }
-                                });
-                            }
-                        });
                     }
-                });
+                    str+="</tbody>";
+                    str+="</table>";
+
+                    $("#table_student1").append(str);
+                    // $("#tab_stu").selectable({ filter: "td" });
+                    $("[data-album]").selectable({ filter: "td",
+                        start: function() {
+                            $( "#tab_stu td" ).each(function() {
+                                if($(this).hasClass('ui-selected')){
+                                    $(this).removeClass("ui-selected");
+                                }
+                            });
+                        }
+                    });
+                }
+            });
             // var index = parent.layer.getFrameIndex(window.name);
             // parent.layer.close(index);//关闭当前页
 
@@ -321,8 +283,8 @@ $(document).ready(function () {
             })
         }
     })
+}
 
-});
 function chooseLabRoom() {
     var timetableClass = [];
     $( ".ui-selected" ).each(function() {

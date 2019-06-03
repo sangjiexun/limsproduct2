@@ -29,6 +29,13 @@ function openSetupLink(labRoomId,currpage,type){//将labRoomId page传递到后�
 	//alert(url);
 	window.location.href=url;
 }
+//工位预约审核设置
+function openStationReserSetting(labRoomId,currpage,type){//将labRoomId page传递到后台
+	var labRoomId = $("#labRoomId").val();
+	var url =$("#pageContext").val()+"/device/editLabRoomStationReserSetting/"+labRoomId+"/"+currpage+"/"+type;
+	//alert(url);
+	window.location.href=url;
+}
 //准入管理
 function editLabRoomSecurityAccess(labRoomId){//将labRoomId传递到后台
     var labRoomId = $("#labRoomId").val();
