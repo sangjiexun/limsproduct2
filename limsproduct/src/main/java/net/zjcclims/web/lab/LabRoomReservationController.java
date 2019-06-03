@@ -7,6 +7,8 @@
 
 package net.zjcclims.web.lab;
 
+import api.net.gvsunlims.constant.ConstantInterface;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.LabRoomStationReservationAuditDTO;
@@ -14,24 +16,19 @@ import net.gvsun.lims.dto.common.BaseDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
-import net.zjcclims.service.cmsshow.CMSShowService;
 import net.zjcclims.service.common.CommonDocumentService;
 import net.zjcclims.service.common.CommonVideoService;
-import net.zjcclims.service.common.LabRoomLogService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.credit.CreditOptionService;
 import net.zjcclims.service.device.LabRoomDeviceReservationService;
 import net.zjcclims.service.device.LabRoomDeviceService;
-import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.service.lab.*;
-import net.zjcclims.service.message.MessageService;
 import net.zjcclims.service.report.TeachingReportService;
 import net.zjcclims.service.software.SoftwareService;
 import net.zjcclims.service.system.SchoolWeekService;
 import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.audit.AuditController;
 import net.zjcclims.web.common.PConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,32 +64,13 @@ public class LabRoomReservationController<JsonResult> {
     @Autowired
     ShareService shareService;
     @Autowired
-    private SchoolDeviceService schoolDeviceService;
-    @Autowired
-    private LabRoomLogService labRoomLogService;
-    @Autowired
-    private CMSShowService cmsShowService;
-    @Autowired
-    private LabAnnexService labAnnexService;
-    @Autowired
     private SchoolTermDAO schoolTermDAO;
     @Autowired
     private LabReservationDAO labReservationDAO;
     @Autowired
     private UserDAO userDAO;
     @Autowired
-    private TimetableSelfCourseDAO timetableSelfCourseDAO;
-    @Autowired
-    private LabCenterDAO labCenterDAO;
-    @Autowired
-    private LabRoomAgentDAO labRoomAgentDAO;
-    @Autowired
-    private MessageDAO messageDAO;
-    @Autowired
-    private LabRoomPermitUserDAO labRoomPermitUserDAO;
-    @Autowired
-    private MessageService messageService;
-
+    private LabReservationTimeTableDAO labReservationTimeTableDAO;
     @Autowired
     private LabRoomService labRoomService;
     @Autowired
@@ -107,19 +85,11 @@ public class LabRoomReservationController<JsonResult> {
     @Autowired
     private LabRoomReservationService labRoomReservationService;
     @Autowired
-    private LabRoomReservationCreditDAO labRoomReservationCreditDAO;
-    @Autowired
-    private LabRoomTrainingDAO labRoomTrainingDAO;
-    @Autowired
-    private LabRoomTrainingPeopleDAO labRoomTrainingPeopleDAO;
-    @Autowired
     private LabRoomStationReservationDAO labRoomStationReservationDAO;
     @Autowired
     private LabRoomDeviceService labRoomDeviceService;
     @Autowired
     private SoftwareService softwareService;
-    @Autowired
-    private LabRoomStationReservationStudentDAO labRoomStationReservationStudentDAO;
     @Autowired
     private LabRoomStationReservationCreditDAO labRoomStationReservationCreditDAO;
     @Autowired
@@ -153,11 +123,17 @@ public class LabRoomReservationController<JsonResult> {
     @Autowired
     private LabRoomAdminService labRoomAdminService;
     @Autowired
-    private LabCenterService labCenterService;
-    @Autowired
     private AuthorityDAO authorityDAO;
     @Autowired
     private LabRoomDeviceReservationService labRoomDeviceReservationService;
+    @Autowired
+    private LabRoomLendingService labRoomLendingService;
+    @Autowired
+    private TimetableAppointmentSameNumberDAO timetableAppointmentSameNumberDAO;
+    @Autowired
+    private TimetableTeacherRelatedDAO timetableTeacherRelatedDAO;
+    @Autowired
+    private TimetableAppointmentDAO timetableAppointmentDAO;
 
     @InitBinder
     public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register
@@ -2750,5 +2726,392 @@ public class LabRoomReservationController<JsonResult> {
         baseDTO.setTotal(auditDTOS.size());
         return baseDTO;
     }
+
+    /**
+     * Description 保存实验室预约
+     * @param request
+     * @param labRoomId
+     * @param acno
+     * @return
+     * @throws ParseException
+     * @throws NoSuchAlgorithmException
+     * @throws InterruptedException
+     * @author 陈乐为 2019年5月27日
+     */
+    @ResponseBody
+    @RequestMapping("/LabRoomReservation/saveLabReservation")
+    public String saveLabReservation(HttpServletRequest request, @RequestParam Integer labRoomId, @ModelAttribute("selected_academy") String acno) throws ParseException {
+        //使用时间段
+        String[] reservationTimes = request.getParameterValues("reservationTime[]");
+        String successOrNotResult = "success";
+        //使用日期
+        String lendingTimeS = request.getParameter("lendingTime");
+        //使用原因
+        String reason = request.getParameter("reason");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date lendingTimeDate = sdf.parse(lendingTimeS);
+        Calendar lendingTime = Calendar.getInstance();
+        lendingTime.setTime(lendingTimeDate);
+        //审核教师
+        String teacherName = request.getParameter("teacher");
+        User teacher = userDAO.findUserByUsername(teacherName);
+        //当前登录人
+        User user = shareService.getUser();
+        //预约的实验室
+        LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
+        Integer auditNumber = 1;
+        if(request.getParameter("labRid") != null){
+            LabReservation labReservation = labReservationDAO.findLabReservationById(Integer.parseInt(request.getParameter("labRid")));
+            for(LabReservationTimeTable lrtt: labReservation.getLabReservationTimeTables()){
+                labReservationTimeTableDAO.remove(lrtt);
+            }
+            labReservation.setLabReservationTimeTables(null);
+            labReservationDAO.store(labReservation);
+            labReservationDAO.flush();
+        }
+        //保存实验室预约信息
+        int id = labRoomLendingService.saveLabRoomLending(labRoomId, lendingTime, reservationTimes, reason, request, auditNumber);
+        if (id == 0) {
+            return "fail";
+        }else if(request.getParameter("labRid") != null){
+            return "editSuccess";
+        }
+        LabReservation labReservation = labReservationDAO.findLabReservationById(id);
+        //消息
+        Message message = new Message();
+        message.setSendUser(user.getCname());
+        message.setSendCparty(user.getSchoolAcademy().getAcademyName());
+        message.setCond(0);
+        message.setTitle("实验室预约审核");
+        String content = "<a onclick='changeMessage(this)' href='../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>审核</a>";
+        message.setContent(content);
+        message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+        message.setCreateTime(Calendar.getInstance());
+        message.setTage(2);
+        //判断该实验室预约是否需要审核
+        if (labRoom.getCDictionaryByIsAudit().getCNumber().equals("1")) {
+            //创建业务的审核基础数据
+            String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+            // 业务转流水号，保存并返回流水号
+            String businessAppUid = shareService.saveAuditSerialNumbers(labReservation.getId().toString(), businessType);
+            if (businessAppUid.equals("noSerial")) {
+                return "noSerial";
+            }
+            //创建审核业务单
+            Map<String, String> params = new HashMap<>();
+            params.put("businessUid", labRoom.getId().toString());
+            params.put("businessType", businessType);
+            params.put("businessAppUid", businessAppUid);
+            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+            JSONObject jsonObject = JSON.parseObject(s);
+            String status = jsonObject.getString("status");
+            //保存成功-发送消息给审核人
+            if (!"success".equals(status)) {
+                return "noStatus";
+            }else {
+                //获取当前审核级别/审核权限
+                //判断是否需要教师审核{当前为第一级审核+非学生权限+第一级审核权限为教师}
+                Map<String, String> params2 = new HashMap<>();
+                params2.put("businessType", businessType);
+                params2.put("businessAppUid", businessAppUid);
+                String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+                JSONObject jsonObject2 = JSON.parseObject(s2);
+                JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                auditNumber = jsonObject3.getIntValue("level");
+                String firstAuthName = jsonObject3.getString("result");
+                //不需要教师审核的部分，创建一条审核数据，更新审核等级
+                if (auditNumber == 1 && !request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT") && "TEACHER".equals(firstAuthName)) {
+                    Map<String, String> params3 = new HashMap<>();
+                    params3.put("businessType", businessType);
+                    params3.put("businessAppUid", businessAppUid);
+                    params3.put("businessUid", labRoom.getId().toString());
+                    params3.put("result", "pass");
+                    params3.put("info", "不是学生不需要导师审核");
+                    params3.put("username", "username");
+                    String s3 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params3);
+                    JSONObject jsonObject4 = JSON.parseObject(s3);
+                    String status3 = jsonObject4.getString("status");
+                    if (status3.equals("fail")) {
+                        return "noTeacher";
+                    }
+                }
+            }
+            /**
+             * 1.再次获取当前审核阶段
+             * 2.判断审核是否完成{这里只有是/否，是：代表审核通过，否：审核中}
+             * 3.是，下发物联名单&写入排课表
+             */
+            Map<String, String> params4 = new HashMap<>();
+            params4.put("businessType", businessType);
+            params4.put("businessAppUid", businessAppUid);
+            String s4 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params4);
+            JSONObject jsonObject5 = JSON.parseObject(s4);
+            JSONArray jsonArray4 = jsonObject5.getJSONArray("data");
+            JSONObject jsonObject6 = jsonArray4.getJSONObject(0);
+            auditNumber = jsonObject6.getIntValue("level");
+            String firstAuthName = jsonObject6.getString("result");
+            // 审核通过推数据
+            if(auditNumber == -1){
+                Calendar calendar = Calendar.getInstance();
+                // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
+                calendar.set(Calendar.MILLISECOND,0);
+                calendar.set(Calendar.SECOND,0);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.HOUR_OF_DAY,0);
+                // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+                if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
+                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                }
+                TimetableAppointment timetableAppointment = new TimetableAppointment();
+                timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);
+                timetableAppointment.setCreatedDate(Calendar.getInstance());
+                timetableAppointment.setUpdatedDate(Calendar.getInstance());
+                timetableAppointment.setSchoolClasses(labReservation.getSchoolClasses());
+                timetableAppointment.setCreatedBy(labReservation.getUser().getUsername());
+                timetableAppointment.setStatus(ConstantInterface.TIMETABLE_STATUS_PUBLIC);
+                timetableAppointment.setEnabled(true);
+                timetableAppointment.setWeekday(labReservation.getLabReservationTimeTables().iterator().next().getSchoolWeekday().getId());
+                timetableAppointment.setGroups(-1);
+                // 预约人数类型变动，人数范围拆分
+                String number = labReservation.getNumber();
+                int stu_num = 0;
+                if(number != null) {
+                    String[] stunum = number.split("-");
+                    if(stunum.length > 1) {
+                        stu_num = Integer.valueOf(stunum[1]);
+                    }else {
+                        stu_num = Integer.valueOf(number);
+                    }
+                }
+                timetableAppointment.setGroupCount(stu_num);
+                timetableAppointment.setLabhours(-1);
+                timetableAppointment.setConsumablesCosts(new BigDecimal(-1));
+                timetableAppointment.setDeviceOrLab(2);
+                timetableAppointment.setSchoolTerm(labReservation.getLabReservationTimeTables().iterator().next().getSchoolTerm());
+                timetableAppointment = timetableAppointmentDAO.store(timetableAppointment);
+                TimetableLabRelated tlr = new TimetableLabRelated();
+                tlr.setLabRoom(labRoom);
+                tlr.setTimetableAppointment(timetableAppointment);
+                tlr = timetableLabRelatedDAO.store(tlr);
+                Set<TimetableLabRelated> timetableLabRelateds = new HashSet<>();
+                timetableLabRelateds.add(tlr);
+                Set<TimetableAppointmentSameNumber> timetableAppointmentSameNumbers = new HashSet<>();
+                Integer week = 0;
+                List<Integer> sections = new ArrayList<>();
+                List<List<Integer>> results = new ArrayList<>();
+                for(LabReservationTimeTable lrtt: labReservation.getLabReservationTimeTables()){
+                    week = Integer.parseInt(lrtt.getCDictionary().getCNumber());
+                    Integer section = labRoomLendingService.getSystemTimeByStartAndEnd(lrtt.getStartTime(), lrtt.getEndTime()).getSection();
+                    sections.add(section);
+                }
+                Collections.sort(sections);
+                List<Integer> temp = new ArrayList<>();
+                boolean flag = false;
+                if(sections.size() == 1){
+                    temp.add(sections.get(0));
+                    results.add(temp);
+                }else {
+                    for (int i = 0; i < sections.size() - 1; i++) {
+                        if (flag) {
+                            results.add(temp);
+                            temp = new ArrayList<>();
+                            flag = false;
+                        }
+                        temp.add(sections.get(i));
+                        if(sections.get(i+1) - sections.get(i) != 1){
+                            flag = true;
+                        }
+                    }
+                    if (flag) {
+                        results.add(temp);
+                        temp = new ArrayList<>();
+                        temp.add(sections.get(sections.size() - 1));
+                        results.add(temp);
+                    }else{
+                        temp.add(sections.get(sections.size() - 1));
+                        results.add(temp);
+                    }
+                }
+                for(List<Integer> integerList: results){
+                    TimetableAppointmentSameNumber tasn = new TimetableAppointmentSameNumber();
+                    tasn.setStartWeek(week);
+                    tasn.setEndWeek(week);
+                    tasn.setStartClass(integerList.get(0));
+                    tasn.setEndClass(integerList.get(integerList.size() - 1));
+                    tasn.setTimetableAppointment(timetableAppointment);
+                    tasn = timetableAppointmentSameNumberDAO.store(tasn);
+                    timetableAppointmentSameNumberDAO.flush();
+                    timetableAppointmentSameNumbers.add(tasn);
+                }
+                Set<TimetableTeacherRelated> timetableTeacherRelateds = new HashSet<>();
+                TimetableTeacherRelated timetableTeacherRelated = new TimetableTeacherRelated();
+                timetableTeacherRelated.setTimetableAppointment(timetableAppointment);
+                timetableTeacherRelated.setUser(labReservation.getUser());
+                timetableTeacherRelated = timetableTeacherRelatedDAO.store(timetableTeacherRelated);
+                timetableTeacherRelateds.add(timetableTeacherRelated);
+                timetableAppointment.setTimetableTeacherRelateds(timetableTeacherRelateds);
+                timetableAppointment.setTimetableAppointmentSameNumbers(timetableAppointmentSameNumbers);
+                timetableAppointment.setTimetableLabRelateds(timetableLabRelateds);
+                timetableAppointmentDAO.flush();
+                //更新预约状态
+//                    labReservation.setAuditStage(6);//审核通过
+                labReservation.setTimetableAppointment(timetableAppointment);
+                labReservationDAO.store(labReservation);
+            }
+            //给审核人发送消息
+            //第一级审核人
+            switch (firstAuthName) {
+                case "TEACHER":
+                    labReservation.setTeacher(teacher);
+                    shareService.sendMsg(teacher, message);
+                    break;
+                case "CFO":
+                    List<User> deans = shareService.findDeansByAcademyNumber(user.getSchoolAcademy());
+                    for (User user2 : deans) {
+                        shareService.sendMsg(user2, message);
+                    }
+                    break;
+                case "LABMANAGER":
+                    List<LabRoomAdmin> labRoomAdmins = labRoomAdminService.findAllLabRoomAdminsByLabRoomId(labRoomId);
+                    for (LabRoomAdmin labRoomAdmin : labRoomAdmins) {
+                        User user2 = labRoomAdmin.getUser();
+                        shareService.sendMsg(user2, message);
+                    }
+                    break;
+                case "EXCENTERDIRECTOR":
+                    shareService.sendMsg(labRoom.getLabCenter().getUserByCenterManager(), message);
+                    break;
+                case "PREEXTEACHING":
+                    List<User> labRoomMasters = shareService.findUsersByAuthorityName("PREEXTEACHING");
+                    for (User user2 : labRoomMasters) {
+                        shareService.sendMsg(user2, message);
+                    }
+                    break;
+                case "pass":
+                    labReservation.setAuditStage(6);
+                    break;
+                case "fail":
+                    labReservation.setAuditStage(0);
+                    break;
+                default:
+                    List<User> auditUsers = shareService.findUsersByAuthorityName(firstAuthName);
+                    for (User user2: auditUsers){
+                        shareService.sendMsg(user2, message);
+                    }
+            }
+        }else {
+            //推送排课表&下发物联名单
+            Calendar calendar = Calendar.getInstance();
+            // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
+            calendar.set(Calendar.MILLISECOND,0);
+            calendar.set(Calendar.SECOND,0);
+            calendar.set(Calendar.MINUTE,0);
+            calendar.set(Calendar.HOUR_OF_DAY,0);
+            // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+            if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
+                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+            }
+            TimetableAppointment timetableAppointment = new TimetableAppointment();
+            timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);
+            timetableAppointment.setCreatedDate(Calendar.getInstance());
+            timetableAppointment.setUpdatedDate(Calendar.getInstance());
+            timetableAppointment.setSchoolClasses(labReservation.getSchoolClasses());
+            timetableAppointment.setCreatedBy(labReservation.getUser().getUsername());
+            timetableAppointment.setStatus(ConstantInterface.TIMETABLE_STATUS_PUBLIC);
+            timetableAppointment.setEnabled(true);
+            timetableAppointment.setWeekday(labReservation.getLabReservationTimeTables().iterator().next().getSchoolWeekday().getId());
+            timetableAppointment.setGroups(-1);
+            // 预约人数类型变动，人数范围拆分
+            String number = labReservation.getNumber();
+            int stu_num = 0;
+            if(number != null) {
+                String[] stunum = number.split("-");
+                if(stunum.length > 1) {
+                    stu_num = Integer.valueOf(stunum[1]);
+                }else {
+                    stu_num = Integer.valueOf(number);
+                }
+            }
+            timetableAppointment.setGroupCount(stu_num);
+            timetableAppointment.setLabhours(-1);
+            timetableAppointment.setConsumablesCosts(new BigDecimal(-1));
+            timetableAppointment.setDeviceOrLab(2);
+            timetableAppointment.setSchoolTerm(labReservation.getLabReservationTimeTables().iterator().next().getSchoolTerm());
+            timetableAppointment = timetableAppointmentDAO.store(timetableAppointment);
+            TimetableLabRelated tlr = new TimetableLabRelated();
+            tlr.setLabRoom(labRoom);
+            tlr.setTimetableAppointment(timetableAppointment);
+            tlr = timetableLabRelatedDAO.store(tlr);
+            Set<TimetableLabRelated> timetableLabRelateds = new HashSet<>();
+            timetableLabRelateds.add(tlr);
+            Set<TimetableAppointmentSameNumber> timetableAppointmentSameNumbers = new HashSet<>();
+            Integer week = 0;
+            List<Integer> sections = new ArrayList<>();
+            List<List<Integer>> results = new ArrayList<>();
+            for(LabReservationTimeTable lrtt: labReservation.getLabReservationTimeTables()){
+                week = Integer.parseInt(lrtt.getCDictionary().getCNumber());
+                Integer section = labRoomLendingService.getSystemTimeByStartAndEnd(lrtt.getStartTime(), lrtt.getEndTime()).getSection();
+                sections.add(section);
+            }
+            Collections.sort(sections);
+            List<Integer> temp = new ArrayList<>();
+            boolean flag = false;
+            if(sections.size() == 1){
+                temp.add(sections.get(0));
+                results.add(temp);
+            }else {
+                for (int i = 0; i < sections.size() - 1; i++) {
+                    if (flag) {
+                        results.add(temp);
+                        temp = new ArrayList<>();
+                        flag = false;
+                    }
+                    temp.add(sections.get(i));
+                    if(sections.get(i+1) - sections.get(i) != 1){
+                        flag = true;
+                    }
+                }
+                if (flag) {
+                    results.add(temp);
+                    temp = new ArrayList<>();
+                    temp.add(sections.get(sections.size() - 1));
+                    results.add(temp);
+                }else{
+                    temp.add(sections.get(sections.size() - 1));
+                    results.add(temp);
+                }
+            }
+            for(List<Integer> integerList: results){
+                TimetableAppointmentSameNumber tasn = new TimetableAppointmentSameNumber();
+                tasn.setStartWeek(week);
+                tasn.setEndWeek(week);
+                tasn.setStartClass(integerList.get(0));
+                tasn.setEndClass(integerList.get(integerList.size() - 1));
+                tasn.setTimetableAppointment(timetableAppointment);
+                tasn = timetableAppointmentSameNumberDAO.store(tasn);
+                timetableAppointmentSameNumberDAO.flush();
+                timetableAppointmentSameNumbers.add(tasn);
+            }
+            Set<TimetableTeacherRelated> timetableTeacherRelateds = new HashSet<>();
+            TimetableTeacherRelated timetableTeacherRelated = new TimetableTeacherRelated();
+            timetableTeacherRelated.setTimetableAppointment(timetableAppointment);
+            timetableTeacherRelated.setUser(labReservation.getUser());
+            timetableTeacherRelated = timetableTeacherRelatedDAO.store(timetableTeacherRelated);
+            timetableTeacherRelateds.add(timetableTeacherRelated);
+            timetableAppointment.setTimetableTeacherRelateds(timetableTeacherRelateds);
+            timetableAppointment.setTimetableAppointmentSameNumbers(timetableAppointmentSameNumbers);
+            timetableAppointment.setTimetableLabRelateds(timetableLabRelateds);
+            timetableAppointmentDAO.flush();
+            //更新预约状态
+            labReservation.setAuditStage(6);//审核通过
+            labReservation.setTimetableAppointment(timetableAppointment);
+            labReservationDAO.store(labReservation);
+            return "noAudit";
+        }
+        successOrNotResult = "success";
+        return successOrNotResult;
+    }
+
 
 }

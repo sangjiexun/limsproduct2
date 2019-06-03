@@ -14,6 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
+    <%--<link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/multiple-select.css" media="all">--%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/construction/expand.css" media="all">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/lims/reservation/lab/jquery-1.11.0.min.js"></script>
     <!--子项目列表专属表头长度-->
@@ -24,6 +25,9 @@
 
         .layui-input-block {
             margin-left: 130px;
+        }
+        .multiSelect{
+            display: none;
         }
     </style>
 </head>
@@ -52,6 +56,9 @@
                                 <c:if test="${current.id == parentId}">
                                     <option value="${current.id}" selected="selected">${current.projectName }</option>
                                 </c:if>
+                                <c:if test="${current.id == sonProject.parentProjectId}">
+                                    <option value="${current.id}" selected="selected">${current.projectName }</option>
+                                </c:if>
                                 <option value="${current.id}">${current.projectName}</option>
                             </c:forEach>
                         </select>
@@ -60,12 +67,14 @@
                 <div class="layui-col-lg4">
                     <label class="layui-form-label">所属学院：</label>
                     <div class="layui-input-block">
-                        <select name="academyNumber" id="academyNumber" lay-verify="required" lay-search>
+                        <select name="academyNumbers" id="academyNumbers" lay-verify="required" lay-search multiple lay-omit>
                             <c:forEach items="${academies}" var="current">
-                                <c:if test="${current.academyNumber == sonProject.academyName}">
+                                <c:if test="${fn:contains(sonProject.academyNumber, current.academyNumber)}">
                                     <option value="${current.academyNumber}" selected="selected">${current.academyName }</option>
                                 </c:if>
-                                <option value="${current.academyNumber}">${current.academyName}</option>
+                                <c:if test="${!fn:contains(sonProject.academyNumber, current.academyNumber)}">
+                                    <option value="${current.academyNumber}">${current.academyName }</option>
+                                </c:if>
                             </c:forEach>
                             <%--<option value=""></option>--%>
                             <%--<option value="5">学院1</option>--%>

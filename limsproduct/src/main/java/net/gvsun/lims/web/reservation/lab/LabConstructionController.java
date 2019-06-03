@@ -4,6 +4,7 @@ import net.gvsun.lims.dto.labConstruction.GrandSonProjectDTO;
 import net.gvsun.lims.dto.labConstruction.ParentProjectDTO;
 import net.gvsun.lims.dto.labConstruction.SonProjectDTO;
 import net.gvsun.lims.service.labConstruction.LabConstructionProjectService;
+import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,6 +65,11 @@ public class LabConstructionController {
 
     @RequestMapping("/parentProject")
     public ModelAndView parentProject(ModelAndView mav) {
+        User user = shareService.getUserDetail();
+        mav.addObject("username", user.getUsername());
+        // 用户名是在这里传的 语音吧
+        
+
         mav.setViewName(this.CONSTRUCTION_URL + "parentProject.jsp");
         return mav;
     }
@@ -97,9 +103,15 @@ public class LabConstructionController {
      **/
 
     @RequestMapping("/sonProject")
-    public ModelAndView sonProject(ModelAndView mav) {
-        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForSonProject();
+    public ModelAndView sonProject(ModelAndView mav, String projectName, String implementTime, String balanceTime) {
+        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForSonProject(projectName, implementTime, balanceTime);
         mav.addObject("parentProjects", parentProjectDTOS);
+
+        // 页面传参
+        mav.addObject("projectName", projectName);
+        mav.addObject("implementTime", implementTime);
+        mav.addObject("balanceTime", balanceTime);
+        mav.addObject("username", shareService.getUserDetail().getUsername());
 
         mav.setViewName(this.CONSTRUCTION_URL + "sonProject.jsp");
         return mav;
@@ -117,7 +129,7 @@ public class LabConstructionController {
             Integer parentId = Integer.valueOf(request.getParameter("parentId"));
             mav.addObject("parentId", parentId);
         }
-        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForSonProject();
+        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForSonProject(null, null, null);
         mav.addObject("parentProjects", parentProjectDTOS);
         mav.addObject("academies", shareService.findAllSchoolAcademys());
 
@@ -140,8 +152,8 @@ public class LabConstructionController {
      **/
 
     @RequestMapping("/grandSonProject")
-    public ModelAndView grandSonProject(ModelAndView mav) {
-        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForGrandSonProject();
+    public ModelAndView grandSonProject(ModelAndView mav, String projectName, String createTime) {
+        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForGrandSonProject(projectName, createTime);
         mav.addObject("parentProjects", parentProjectDTOS);
 
         // 未审核
@@ -150,6 +162,11 @@ public class LabConstructionController {
         mav.addObject("auditing", labConstructionProjectService.getGrandSonProjectsCount(1));
         // 已经审核
         mav.addObject("audited", labConstructionProjectService.getGrandSonProjectsCount(2));
+
+        // 页面传参
+        mav.addObject("projectName", projectName);
+        mav.addObject("createTime", createTime);
+        mav.addObject("username", shareService.getUserDetail().getUsername());
 
         mav.setViewName(this.CONSTRUCTION_URL + "grandSonProject.jsp");
         return mav;
@@ -181,7 +198,7 @@ public class LabConstructionController {
             SonProjectDTO sonProjectDTO = labConstructionProjectService.getSonProjectById(sonId);
             mav.addObject("parentId", sonProjectDTO.getParentProjectId());
         }
-        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForGrandSonProject();
+        List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForGrandSonProject(null, null);
         mav.addObject("parentProjects", parentProjectDTOS);
 
 

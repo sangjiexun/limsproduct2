@@ -56,6 +56,11 @@ public class GrandSonProjectDTO {
     private Integer progressState;
 
     /**
+     * 所属学院编号
+     */
+    private String username;
+
+    /**
      * 创建人
      */
     private String createUser;
@@ -348,5 +353,13 @@ public class GrandSonProjectDTO {
 
     public void setSubmitted(int submitted) {
         this.submitted = submitted;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

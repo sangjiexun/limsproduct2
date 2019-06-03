@@ -747,32 +747,60 @@
                             };
                             $.ajax({
                                 type: "POST",
-                                url: "${pageContext.request.contextPath}/labRoomLending/saveLabRoomLending?labRoomId=" + labRoomId,
+                                url: "${pageContext.request.contextPath}/LabRoomReservation/saveLabReservation?labRoomId=" + labRoomId,
                                 data: myData,
                                 dataType: 'text',
                                 success: function (data) {
-                                    console.log(data);
-                                    if (data == "reserved") {
-                                        alert("借用失败，您选的时间段已经被预约！");
-                                    } else if (data == "lent") {
-                                        alert("借用失败，您选的时间段已经被借用！");
-                                    } else if (data == "noDean") {
-                                        alert("借用失败，未找到您所属学院的系主任！");
-                                    } else if (data == "error") {
-                                        alert("您还未通过培训,请先预约培训!");
+                                    layer.msg("删除成功", {icon: 1});
+                                    console.log("输出："+data+"{fail:保存,noSerial:创建流水单,noStatus:创建审核单,noTeacher:无需教师审核更新,noAudit:无需审核}");
+                                    if (data == "fail") {
+                                        layer.msg('预约失败,发生未知错误!', {icon: 5});
+                                    }else if (data == "noSerial") {
+                                        layer.msg('预约失败,操作流水单出错!', {icon: 5});
+                                    }else if (data == "noStatus") {
+                                        layer.msg('预约失败,创建审核单出错!', {icon: 5});
+                                    }else if (data == "noTeacher") {
+                                        layer.msg('预约失败,发生未知错误!', {icon: 5});
+                                    }else if (data == "noAudit") {
+                                        layer.msg("预约无需审核，欢迎使用!", {icon: 1});
                                         window.location.reload();
-                                    } else if (data == "errorType2") {
-                                        alert("您还未通过单独培训!");
-                                        window.location.reload();
-                                    } else {
-                                        alert("操作成功，请等待审核！");
-                                        window.location.href = "${pageContext.request.contextPath}/labRoomLending/labReservationList?tage=0&page=1&isaudit=2"
+                                    }else {
+                                        layer.msg("预约成功，请等待审核!", {icon: 1});
+                                        window.location.href = "${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1"
                                     }
                                 },
                                 error:function(error){
                                     alert("请求错误");
                                 }
                             })
+                            <%--$.ajax({--%>
+                            <%--    type: "POST",--%>
+                            <%--    url: "${pageContext.request.contextPath}/labRoomLending/saveLabRoomLending?labRoomId=" + labRoomId,--%>
+                            <%--    data: myData,--%>
+                            <%--    dataType: 'text',--%>
+                            <%--    success: function (data) {--%>
+                            <%--        console.log(data);--%>
+                            <%--        if (data == "reserved") {--%>
+                            <%--            alert("借用失败，您选的时间段已经被预约！");--%>
+                            <%--        } else if (data == "lent") {--%>
+                            <%--            alert("借用失败，您选的时间段已经被借用！");--%>
+                            <%--        } else if (data == "noDean") {--%>
+                            <%--            alert("借用失败，未找到您所属学院的系主任！");--%>
+                            <%--        } else if (data == "error") {--%>
+                            <%--            alert("您还未通过培训,请先预约培训!");--%>
+                            <%--            window.location.reload();--%>
+                            <%--        } else if (data == "errorType2") {--%>
+                            <%--            alert("您还未通过单独培训!");--%>
+                            <%--            window.location.reload();--%>
+                            <%--        } else {--%>
+                            <%--            alert("操作成功，请等待审核！");--%>
+                            <%--            window.location.href = "${pageContext.request.contextPath}/labRoomLending/labReservationList?tage=0&page=1&isaudit=2"--%>
+                            <%--        }--%>
+                            <%--    },--%>
+                            <%--    error:function(error){--%>
+                            <%--        alert("请求错误");--%>
+                            <%--    }--%>
+                            <%--})--%>
                         }
 
                         function selectLabRoom() {

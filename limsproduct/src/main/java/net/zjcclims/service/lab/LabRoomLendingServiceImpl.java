@@ -127,9 +127,11 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         Iterator<LabReservation> it = labReservations.iterator();
         while (it.hasNext()) {
             LabReservation l = it.next();
-            String businessType = "LabRoomReservation" + l.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
-            params.put("businessAppUid", l.getId().toString());
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + l.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            //流水单号转换
+            String businessAppUid = shareService.getSerialNumber(l.getId().toString(), businessType);
+            params.put("businessAppUid", businessAppUid);
+            params.put("businessType", businessType);
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
             JSONObject jsonObject = JSON.parseObject(s);
             String status = jsonObject.getString("status");
@@ -202,7 +204,6 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         LabRoom labRoom = labRoomDAO.findLabRoomById(labRoomId);
 
         //保存实训室借用
-        LabRoomLending labRoomLending = new LabRoomLending();
         LabReservation labReservation = new LabReservation();
         if (request.getParameter("labRid") != null) {
             //当前软件申请记录
@@ -457,10 +458,13 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         Integer auditResult = Integer.parseInt(sAuditResult1);
         User user = shareService.getUserDetail();
 
-        String businessType = "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        // 业务转流水号，保存并返回流水号
+        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
+
         Map<String, String> params2 = new HashMap<>();
-        params2.put("businessType", pConfig.PROJECT_NAME + businessType);
-        params2.put("businessAppUid", labReservation.getId().toString());
+        params2.put("businessType", businessType);
+        params2.put("businessAppUid", businessAppUid);
         String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
         JSONObject jsonObject2 = JSONObject.parseObject(s2);
         if (!"success".equals(jsonObject2.getString("status"))) {
@@ -478,18 +482,17 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         Integer auditNumber = labRoomService.getAuditNumber(labRoom, state);
 
         Map<String, String> params = new HashMap<>();
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
-        params.put("businessAppUid", labReservation.getId().toString());
+        params.put("businessType", businessType);
+        params.put("businessAppUid", businessAppUid);
         params.put("businessUid", labRoom.getId().toString());
         params.put("result", auditResult == 1 ? "pass" : "fail");
         params.put("info", remark);
         params.put("username", user.getUsername());
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
-        JSONObject jsonObject = JSON.parseObject(s);
-        String status = jsonObject.getString("status");
+
         Map<String, String> params4 = new HashMap<>();
-        params4.put("businessType", pConfig.PROJECT_NAME + businessType);
-        params4.put("businessAppUid", labReservation.getId().toString());
+        params4.put("businessType", businessType);
+        params4.put("businessAppUid", businessAppUid);
         String s4 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params4);
         JSONObject jsonObject5 = JSON.parseObject(s4);
         JSONArray jsonArrayCurStage = jsonObject5.getJSONArray("data");
@@ -579,7 +582,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         String[] RSWITCH = {"on", "off"};
         Map<String, String> params1 = new HashMap<>();
         params1.put("businessUid", labRoom.getId().toString());
-        params1.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params1.put("businessType", businessType);
         String s1 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params1);
         com.alibaba.fastjson.JSONObject jsonObject1 = JSON.parseObject(s1);
         String status1 = jsonObject1.getString("status");
@@ -666,371 +669,6 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         message.setContent(content);
         message.setTage(1);
         shareService.sendMsg(labReservation.getUser(), message);
-//
-//        if (auditNumber == 1) {//导师审核结果保存
-//            if (auditResult == 0) {//不通过
-//                labReservation.setAuditResults(4);
-//                labReservation.setAuditStage(6);
-//                labReservation.setRemarks(user.getCname() + "审核拒绝，");
-//                message.setTitle("实验室预约审核不通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">查看</a>");//消息内容
-//                message.setTage(3);
-//            } else {//通过
-//                labReservation.setAuditResults(2);
-//                labReservation.setRemarks(user.getCname() + "审核通过，");
-//
-//                //审核通过后判断下一级的审核状态
-//                if (auditArray[1]) {
-//                    labReservation.setAuditStage(2);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    List<User> deans = shareService.findDeansByAcademyNumber(user.getSchoolAcademy());
-//                    for (User dean : deans) {
-//                        message.setTitle("实验室预约");
-//                        message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                        message.setUsername(dean.getUsername());
-//                        message.setTage(2);
-//                        if (dean.getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(dean.getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else if (auditArray[2]) {
-//                    labReservation.setAuditStage(3);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    message.setTitle("实验室预约");
-//                    message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                    message.setTage(2);
-//                    for (LabRoomAdmin labRoomAdmin : labRoom.getLabRoomAdmins()) {
-//                        message.setUsername(labRoomAdmin.getUser().getUsername());
-//                        if (labRoomAdmin.getUser().getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(labRoomAdmin.getUser().getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else if (auditArray[3]) {
-//                    labReservation.setAuditStage(4);
-//                    //给下一级预约人产生消息
-//                    if (labRoom.getLabCenter().getUserByCenterManager() != null) {
-//                        //消息内容
-//                        message.setTitle("实验室预约");
-//                        message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                        message.setUsername(labRoom.getLabCenter().getUserByCenterManager().getUsername());
-//                        message.setTage(2);
-//                        if (labRoom.getLabCenter().getUserByCenterManager().getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(labRoom.getLabCenter().getUserByCenterManager().getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else if (auditArray[4]) {
-//                    labReservation.setAuditStage(5);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    message.setTitle("实验室预约");
-//                    message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                    message.setTage(2);
-//                    for (User trainingDepartmentDirrector : shareService.findUsersByAuthorityName("PREEXTEACHING")) {
-//                        message.setUsername(trainingDepartmentDirrector.getUsername());
-//                        if (trainingDepartmentDirrector.getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(trainingDepartmentDirrector.getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else {
-//                    labReservation.setAuditStage(6);
-//                    labReservation.setAuditResults(1);
-//                }
-//
-//                //给预约人发消息
-//                message.setTitle("实验室预约导师审核通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">查看</a>");//消息内容
-//                message.setTage(1);
-//                message.setUsername(labReservation.getUser().getUsername());
-//            }
-//            //给预约人发信息
-//            if (labReservation.getUser().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(labReservation.getUser().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-//            messageDAO.store(message);
-//            messageDAO.flush();
-//        } else if (auditNumber == 2) {//系主任审核结果保存
-//            if (auditResult == 0) {//不通过
-//                labReservation.setAuditResults(4);
-//                labReservation.setAuditStage(6);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核拒绝，");
-//                message.setTitle("实验室预约审核不通过");
-//                message.setContent("<a onclick='changeMessage(this)' onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>点击查看</a>");//消息内容
-//                message.setTage(3);
-//            } else {//通过
-//                labReservation.setAuditResults(2);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核通过，");
-//
-//                //审核通过后判断下一级的审核状态
-//                if (auditArray[2]) {
-//                    labReservation.setAuditStage(3);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                    message.setTage(2);
-//                    for (LabRoomAdmin labRoomAdmin : labRoom.getLabRoomAdmins()) {
-//                        message.setUsername(labRoomAdmin.getUser().getUsername());
-//                        if (labRoomAdmin.getUser().getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(labRoomAdmin.getUser().getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else if (auditArray[3]) {
-//                    labReservation.setAuditStage(4);
-//                    //给下一级预约人产生消息
-//                    if (labRoom.getLabCenter().getUserByCenterManager() != null) {
-//                        //消息内容
-//                        message.setTitle("实验室预约");
-//                        message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                        message.setUsername(labRoom.getLabCenter().getUserByCenterManager().getUsername());
-//                        message.setTage(2);
-//                        if (labRoom.getLabCenter().getUserByCenterManager().getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(labRoom.getLabCenter().getUserByCenterManager().getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else if (auditArray[4]) {
-//                    labReservation.setAuditStage(5);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    message.setTitle("实验室预约");
-//                    message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                    message.setTage(2);
-//                    for (User trainingDepartmentDirrector : shareService.findUsersByAuthorityName("PREEXTEACHING")) {
-//                        message.setUsername(trainingDepartmentDirrector.getUsername());
-//                        if (trainingDepartmentDirrector.getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(trainingDepartmentDirrector.getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else {
-//                    labReservation.setAuditStage(6);
-//                    labReservation.setAuditResults(1);
-//                }
-//
-//                //给预约人发消息
-//                message.setTitle("实验室预约系主任审核通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">查看</a>");//消息内容
-//                message.setTage(1);
-//                message.setUsername(labReservation.getUser().getUsername());
-//            }
-//            if (labReservation.getUser().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(labReservation.getUser().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-//            messageDAO.store(message);
-//            messageDAO.flush();
-//        } else if (auditNumber == 3) {//实训室管理员审核结果保存
-//            if (auditResult == 0) {//不通过
-//                labReservation.setAuditResults(4);
-//                labReservation.setAuditStage(6);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核拒绝，");
-//                message.setTitle("实验室预约审核不通过");
-//                message.setContent("<a onclick='changeMessage(this)' onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>点击查看</a>");//消息内容
-//                message.setTage(3);
-//            } else {//通过
-//                labReservation.setAuditResults(2);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核通过，");
-//                //审核通过后判断下一级的审核状态
-//                if (auditArray[3]) {
-//                    labReservation.setAuditStage(4);
-//                    //给下一级预约人产生消息
-//                    if (labRoom.getLabCenter().getUserByCenterManager() != null) {
-//                        //消息内容
-//                        message.setTitle("实验室预约");
-//                        message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                        message.setUsername(labRoom.getLabCenter().getUserByCenterManager().getUsername());
-//                        message.setTage(2);
-//                        if (labRoom.getLabCenter().getUserByCenterManager().getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(labRoom.getLabCenter().getUserByCenterManager().getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else if (auditArray[4]) {
-//                    labReservation.setAuditStage(5);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    message.setTitle("实验室预约");
-//                    message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                    message.setTage(2);
-//                    for (User trainingDepartmentDirrector : shareService.findUsersByAuthorityName("PREEXTEACHING")) {
-//                        message.setUsername(trainingDepartmentDirrector.getUsername());
-//                        if (trainingDepartmentDirrector.getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(trainingDepartmentDirrector.getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else {
-//                    labReservation.setAuditStage(6);
-//                    labReservation.setAuditResults(1);
-//                }
-//
-//                //给预约人发消息
-//                message.setTitle("实验室预约实验室管理员审核通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">查看</a>");//消息内容
-//                message.setTage(1);
-//                message.setUsername(labReservation.getUser().getUsername());
-//            }
-//            if (labReservation.getUser().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(labReservation.getUser().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-//            messageDAO.store(message);
-//            messageDAO.flush();
-//        } else if (auditNumber == 4) {//实训室中心主任审核结果保存
-//            if (auditResult == 0) {//不通过
-//                labReservation.setAuditResults(4);
-//                labReservation.setAuditStage(6);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核拒绝，");
-//                message.setTitle("实验室预约审核不通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>点击查看</a>");//消息内容
-//                message.setTage(3);
-//            } else {//通过
-//                labReservation.setAuditResults(2);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核通过，");
-//                //审核通过后判断下一级的审核状态
-//                if (auditArray[4]) {
-//                    labReservation.setAuditStage(5);
-//                    //给下一级预约人产生消息
-//                    //消息内容
-//                    message.setTitle("实验室预约");
-//                    message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">审核</a>");
-//                    message.setTage(2);
-//                    for (User trainingDepartmentDirrector : shareService.findUsersByAuthorityName("PREEXTEACHING")) {
-//                        message.setUsername(trainingDepartmentDirrector.getUsername());
-//                        if (trainingDepartmentDirrector.getTelephone() != null) {
-//                            try {
-//                                String result = shareService.sendMessage(trainingDepartmentDirrector.getTelephone(), message.getTitle());
-//                            } catch (InterruptedException e) {
-//                                // TODO Auto-generated catch block
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        messageDAO.store(message);
-//                        messageDAO.flush();
-//                    }
-//                } else {
-//                    labReservation.setAuditStage(6);
-//                    labReservation.setAuditResults(1);
-//                }
-//
-//                //给预约人发消息
-//                message.setTitle("实验室预约实训中心主任审核通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">查看</a>");//消息内容
-//                message.setTage(1);
-//                message.setUsername(labReservation.getUser().getUsername());
-//            }
-//            if (labReservation.getUser().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(labReservation.getUser().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-//            messageDAO.store(message);
-//            messageDAO.flush();
-//        } else if (auditNumber == 5) {//实训室部主任审核结果保存
-//            if (auditResult == 0) {//不通过
-//                labReservation.setAuditResults(4);
-//                labReservation.setAuditStage(6);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核拒绝，");
-//                message.setTitle("实验室预约审核不通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1'>点击查看</a>");//消息内容
-//                message.setTage(3);
-//            } else {//通过
-//                labReservation.setAuditResults(1);
-//                labReservation.setRemarks(labReservation.getRemarks() + user.getCname() + "审核通过，");
-//                labReservation.setAuditStage(6);
-//                //给预约人发消息
-//                message.setTitle("实验室预约实训部主任审核通过");
-//                message.setContent("<a onclick='changeMessage(this)' href=\"../labRoomLending/checkButton?id=" + labReservation.getId() + "&tage=0&state=" + auditNumber + "&page=1\">查看</a>");//消息内容
-//                message.setTage(1);
-//                message.setUsername(labReservation.getUser().getUsername());
-//            }
-//            if (labReservation.getUser().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(labReservation.getUser().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-//            messageDAO.store(message);
-//            messageDAO.flush();
-//        }
 
         labReservation = labReservationDAO.store(labReservation);
         labReservationDAO.flush();

@@ -16,6 +16,15 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/construction/expand.css" media="all">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/lims/reservation/lab/jquery-1.11.0.min.js"></script>
+
+    <style type="text/css">
+        .tool-box {
+            /*display: none;*/
+        }
+        .layui-table-tool-temp {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -111,6 +120,24 @@
                 <%--</div>--%>
             <%--</div>--%>
         <%--</blockquote>--%>
+        <div class="tool-box">
+            <table>
+                <tr>
+                    <td>
+                        <span class="fl">综合查询：</span>
+                        <input id="projectName" name="projectName" type="text" value="${projectName}" placeholder="多字段查询" />
+                    </td>
+                    <td>
+                        <span class="fl">预算结算时间：</span>
+                        <input type="text" class="layui-input" id="budgetBalanceTime" value="${budgetBalanceTime}" autocomplete="off" placeholder="请选择时间范围">
+                    </td>
+                    <td>
+                        <span class="fl">项目实施时间：</span>
+                        <input type="text" class="layui-input" id="projectImplementTime" value="${projectImplementTime}" autocomplete="off" placeholder="请选择时间范围">
+                    </td>
+                </tr>
+            </table>
+        </div>
         <div class="layui-collapse" lay-accordion="" lay-filter="sonProjectColl">
             <c:forEach items="${parentProjects}" var="curr" varStatus="cou">
                 <div class="layui-colla-item">
@@ -127,9 +154,15 @@
                         <table class="layui-hide add_progress" id="sonproject${curr.id}" lay-filter="sonhead"></table>
                         <script type="text/html" id="sonbar">
                             <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
-                            <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
-                            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                            {{# if(d.submitted==2){ }}
+                                {{# if(d.username==${username}){ }}
+                                    <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
+                                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                                {{# } }}
+                            {{# } }}
+                            {{# if(d.submitted==1){ }}
                             <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="newgrandson">新建孙项目</a>
+                            {{# } }}
                         </script>
                     <c:if test="${cou.index != 0}">
                         </div>

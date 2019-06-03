@@ -112,7 +112,7 @@ $(document).ready(function () {
         //     // , range: '~'
         // });
 
-        //时间范围
+        // 时间范围
         // laydate.render({
         //     elem: '#time-range'
         //     , type: 'time'

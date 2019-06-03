@@ -349,11 +349,8 @@ public class UserController {
 	 * 作者：贺子龙
 	 * 时间：2015-09-15 20:13:40
 	 ************************************************************************************/
-	
-	
 	@RequestMapping("/personal/messageList")
 	public ModelAndView messageList(@ModelAttribute Message message,@RequestParam int currpage,int tage,HttpServletRequest request){
-		
 		ModelAndView mav=new ModelAndView();
 		String starttime=request.getParameter("starttime");
 		String endtime=request.getParameter("endtime");

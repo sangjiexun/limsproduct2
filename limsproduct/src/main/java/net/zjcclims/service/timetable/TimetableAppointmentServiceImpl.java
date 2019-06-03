@@ -62,8 +62,6 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 	@Autowired
 	private TimetableAppointmentSameNumberDAO timetableAppointmentSameNumberDAO;
 	@Autowired
-	private LabCenterDAO labCenterDAO;
-	@Autowired
 	private LabRoomDeviceReservationDAO labRoomDeviceReservationDAO;
 	@Autowired
 	private TimetableCourseSchedulingService timetableCourseSchedulingService;
@@ -78,15 +76,11 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 	@Autowired
 	private OuterApplicationServiceImpl outerApplicationServiceImpl;
 	@Autowired
-	private TimetableSelfCourseDAO timetableSelfCourseDAO;
-	@Autowired
 	private SchoolTermActiveDAO schoolTermActiveDAO;
 	@Autowired
 	private TimetableAppointmentChangeDAO timetableAppointmentChangeDAO;
 	@PersistenceContext
     private EntityManager entityManager;
-	@Autowired
-	private LabroomTimetableRegisterDAO labroomTimetableRegisterDAO;
 	@Autowired
 	private LabRoomAdminDAO labRoomAdminDAO;
 	@Autowired
@@ -101,7 +95,6 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 	private SchoolCourseDetailService schoolCourseDetailService;
 	@Autowired
 	private SchoolCourseDAO schoolCourseDAO;
-	private PConfig pConfig;
 	@Autowired
 	private EvaluationService evaluationService;
 	@Autowired
@@ -4513,4 +4506,5 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 		List<Object[]> list =new ArrayList<Object[]>(query.getResultList());
 		return list;
 	}
+
 }

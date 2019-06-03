@@ -416,6 +416,19 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                             placeholder="请输入大于零的数"
                                 />
                             </fieldset>
+                            <fieldset>
+                                <label>计划周次*：</label>
+                                <form:input path="planWeek" id="planWeek" required="true" />
+                            </fieldset>
+<%--                            <fieldset>--%>
+<%--                                <label>计划周次：</label>--%>
+<%--                                <form:select path="planWeek" id="planWeek">--%>
+<%--                                    <option value="">- - - -请选择- - - -</option>--%>
+<%--                                <c:forEach  var="i" begin="1" end="30" varStatus="status">--%>
+<%--                                    <option value="第${status.index}周">第${status.index}周</option>--%>
+<%--                                </c:forEach>--%>
+<%--                                </form:select>--%>
+<%--                            </fieldset>--%>
                             <!-- 实验项目基本信息提交后出现的东西 -->
                             <c:if test="${itemId eq -1}">
                                 <label style="padding: 2%; float: right;">
@@ -538,7 +551,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                         <td>
 <%--                                            <input name="id" id="id" type="hidden" value="${itemAssets.id}"/>--%>
                                             <form:hidden path="id" id="itemAssetsId"/>
-                                            <form:select path="asset.id" id="assetId" onChange="getSpec(this)" class="chzn-select">
+                                            <form:select path="asset.id" id="assetId" class="chzn-select">
                                                 <form:option value="" label="请选择"/>
                                                 <c:forEach items="${assets}" var="curr">
                                                     <form:option value="${curr.id}">${curr.chName}[${curr.specifications}]</form:option>
@@ -547,7 +560,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>数量</td><td><form:input path="amount" id="amount" /><label id="unit"></label></td>
+                                        <td>数量</td><td><form:input path="amount" id="amount" /></td>
                                     </tr>
                                 </table>
                                 <div class="moudle_footer">

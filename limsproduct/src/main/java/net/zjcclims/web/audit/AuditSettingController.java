@@ -226,22 +226,46 @@ public class AuditSettingController<JsonResult> {
         String range = request.getParameter("range");
         String[] rangeSplit = range.split(",");
         for (String aRangeSplit : rangeSplit) {
-            Map<String, String> params = new HashMap<>();
-            params.put("auditLevelConfig", auditLevelConfig);
-            params.put("businessType", type + aRangeSplit);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
-            if("1".equals(allType)) {
-                int configNum = auditLevelConfig.split(",").length;
-                StringBuilder config = new StringBuilder();
-                for (int i = 0; i < configNum; i++) {
-                    config.append("on,");
+            // 判断是否为全校‘20190506’，全校则遍历保存
+            if (aRangeSplit.equals("20190506")) {
+                for (SchoolAcademy academy : shareService.findAllSchoolAcademys()) {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("auditLevelConfig", auditLevelConfig);
+                    params.put("businessType", type + academy.getAcademyNumber());
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
+                    if("1".equals(allType)) {
+                        int configNum = auditLevelConfig.split(",").length;
+                        StringBuilder config = new StringBuilder();
+                        for (int i = 0; i < configNum; i++) {
+                            config.append("on,");
+                        }
+                        config = new StringBuilder(config.substring(0, config.length() - 1));
+                        params = new HashMap<>();
+                        params.put("businessUid", "-1");
+                        params.put("config", config.toString());
+                        params.put("businessType", type + aRangeSplit);
+                        HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
+                    }
                 }
-                config = new StringBuilder(config.substring(0, config.length() - 1));
-                params = new HashMap<>();
-                params.put("businessUid", "-1");
-                params.put("config", config.toString());
+                break;
+            }else {
+                Map<String, String> params = new HashMap<>();
+                params.put("auditLevelConfig", auditLevelConfig);
                 params.put("businessType", type + aRangeSplit);
-                HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
+                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
+                if("1".equals(allType)) {
+                    int configNum = auditLevelConfig.split(",").length;
+                    StringBuilder config = new StringBuilder();
+                    for (int i = 0; i < configNum; i++) {
+                        config.append("on,");
+                    }
+                    config = new StringBuilder(config.substring(0, config.length() - 1));
+                    params = new HashMap<>();
+                    params.put("businessUid", "-1");
+                    params.put("config", config.toString());
+                    params.put("businessType", type + aRangeSplit);
+                    HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
+                }
             }
         }
         return "success";

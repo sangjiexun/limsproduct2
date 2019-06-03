@@ -143,6 +143,7 @@
                                             ${operationItem.itemQuestionDocument.documentName} 点击下载
                                     </a>
                                 </c:if></td>
+                                <th>计划周次：</th><td>${operationItem.planWeek}</td>
                             </tr>
                             <c:if test="${operationItem.CDictionaryByLpStatusCheck.id==toCheck.id
                                 && canAudit}"><!-- && operationItem.userByLpCreateUser.username!=currUser.username -->
@@ -187,7 +188,7 @@
                                 <td>${materialKindMap[curr.asset.category]}</td>
                                 <td>${curr.asset.specifications}</td>
                                 <td>${curr.asset.unit}</td>
-                                <td>${curr.amount}<div id="unit${i.count}" style="display: inline">${curr.asset.specifications}</div></td>
+                                <td>${curr.amount}</td>
                                     <%--                                                            <td>${curr.lpmrAmount}</td>--%>
                             </tr>
                         </c:forEach>

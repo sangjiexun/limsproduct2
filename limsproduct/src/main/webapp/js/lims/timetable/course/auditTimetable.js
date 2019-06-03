@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 //得到查询的参数
 function queryParams(params) {
-    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+    var temp = {   //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
         // limit: params.limit,   //页面大小
         termId: termId,
         search: courseNo,

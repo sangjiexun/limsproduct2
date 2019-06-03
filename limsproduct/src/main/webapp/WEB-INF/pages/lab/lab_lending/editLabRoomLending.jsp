@@ -182,7 +182,7 @@
         };
         $.ajax({
             type: "POST",
-            url: "${pageContext.request.contextPath}/labRoomLending/saveLabRoomLending?labRoomId="+labRoomId,
+            url: "${pageContext.request.contextPath}/LabRoomReservation/saveLabReservation?labRoomId="+labRoomId,
             data: myData,
             dataType:'text',
             success:function(data){
@@ -192,7 +192,8 @@
                 }else if(data=="lent") {
                     alert("预约失败，您选的时间段已经被占用！");
                 }else if(data=="editSuccess"){
-                    alert("编辑保存成功！");
+                    // layer.alert("编辑预约成功，请等待审核!", {icon: 6,time:5000});
+                    alert("编辑预约成功，请等待审核!");
                     window.location.href="${pageContext.request.contextPath}/labRoomLending/labReservationList?page=${page}&isaudit=${isaudit}&tage=${tage}"
                 }else{
                     alert("预约成功，请等待审核！");

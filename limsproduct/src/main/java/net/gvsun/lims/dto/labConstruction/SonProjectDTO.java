@@ -35,8 +35,17 @@ public class SonProjectDTO {
     /**
      * 所属学院编号
      */
+    private String[] academyNumbers;
+
+    /**
+     * 所属学院编号
+     */
     private String academyNumber;
 
+    /**
+     * 创建人工号
+     */
+    private String username;
     /**
      * 创建人
      */
@@ -174,5 +183,21 @@ public class SonProjectDTO {
 
     public void setSubmitted(int submitted) {
         this.submitted = submitted;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String[] getAcademyNumbers() {
+        return academyNumbers;
+    }
+
+    public void setAcademyNumbers(String[] academyNumbers) {
+        this.academyNumbers = academyNumbers;
     }
 }

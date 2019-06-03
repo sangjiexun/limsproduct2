@@ -22,6 +22,12 @@
             height: 47px;
             line-height: 47px;
         }
+        .tool-box {
+            /*display: none;*/
+        }
+        .layui-table-tool-temp {
+            display: none;
+        }
     </style>
 </head>
 
@@ -164,6 +170,7 @@
                 <%--</div>--%>
             <%--</div>--%>
         <%--</blockquote>--%>
+
         <div class="layui-tab layui-tab-brief" lay-filter="grandsonprojectTab">
             <ul class="layui-tab-title">
                 <li class="layui-this">全部</li>
@@ -172,6 +179,20 @@
                 <li>待审核<span class="layui-badge">${auditing}</span></li>
                 <li>未审核<span class="layui-badge">${notAudit}</span></li>
             </ul>
+            <div class="tool-box">
+                <table>
+                    <tr>
+                        <td>
+                            <span class="fl">综合查询：</span>
+                            <input id="projectName" name="projectName" value="${projectName}" type="text"  placeholder="多字段查询" />
+                        </td>
+                        <td>
+                            <span class="fl">创建时间：</span>
+                            <input type="text" class="layui-input" id="time-range" value="${createTime}" autocomplete="off" placeholder="请选择时间范围">
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">
                     <div class="layui-collapse" lay-accordion="" lay-filter="parentsProjectColl">

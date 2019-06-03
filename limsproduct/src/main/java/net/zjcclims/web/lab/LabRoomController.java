@@ -1650,7 +1650,7 @@ public class LabRoomController<JsonResult> {
         // 流媒体服务器地址
         String serverIp = agent.getCommonServer().getServerIp();
         // 端口
-        String hardwarePort = agent.getSnNo();
+        String hardwarePort = agent.getCommonServer().getServerSn();
 
         // 摄像头本身ip的 xxx.xxx.xxx.123   最后那个123
         String lastFour = "";
@@ -2679,25 +2679,6 @@ public class LabRoomController<JsonResult> {
             }
         }
         return returnStr;
-    }
-
-    /**********************************************************************
-     * Description:实训室借用申请保存
-     *
-     * @author：邵志峰
-     * @date:2017-06-27
-     *********************************************************************/
-    @RequestMapping("/saveLabRoomLending")
-    public String saveLabRoomLending(
-            @ModelAttribute LabRoomLending labRoomLending) throws Exception {
-
-        int id = shareService.saveLabRoomLending(labRoomLending);// 保存申请单
-        // 发送消息
-        messageService.saveMessages(shareService.getUser().getUsername(),
-                "实验室借用申请",
-                "您申请借用的实验室成功，请等待审核 <a href='softwareReserveInfo?idKey=" + id
-                        + "'>点击查看</a>", 2);
-        return "redirect:/labRoom/labRoomLendList?page=1";
     }
 
     /****************************************************************************
