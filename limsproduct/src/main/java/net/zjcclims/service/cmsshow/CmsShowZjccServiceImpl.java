@@ -69,7 +69,7 @@ public class CmsShowZjccServiceImpl implements  CmsShowZjccService {
 	 *@date：2017-06-22
 	 ****************************************************************************/
 	public List<LabRoom> findLabRoomWithDevices(Integer isReservation){
-		String sql="select distinct m from LabRoom m, LabRoomDevice ld where 1=1 and m.id=ld.labRoom.id";
+		String sql="select distinct m from LabRoom m inner join m.labRoomDevices ld where 1=1 ";
 		sql += " and m.isUsed = 1";
 		if(isReservation != null && isReservation == 1)//isReservation为1时可预约
 		{
@@ -143,7 +143,7 @@ public class CmsShowZjccServiceImpl implements  CmsShowZjccService {
 	 ****************************************************************************/
 	@Override
 	public List<LabRoom> findLabRoomWithDevices(LabRoomDevice device, Integer page, int pageSize, Integer isReservation) {
-		String sql="select distinct m from LabRoom m, LabRoomDevice lr where 1=1 and m.id=lr.labRoom.id";
+		String sql="select distinct m from LabRoom m inner join m.labRoomDevices lr where 1=1 ";
 		//sql+=" and m.labAnnex.labCenter.id="+cid;
 		if(device.getLabRoom()!=null){
 			if(device.getLabRoom().getId()!=null&&!device.getLabRoom().getId().equals("")){
