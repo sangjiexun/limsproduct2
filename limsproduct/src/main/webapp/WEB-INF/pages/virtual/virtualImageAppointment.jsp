@@ -293,6 +293,7 @@
                                     <th>图片编号</th>
                                     <th>供应商</th>
                                     <th>备注</th>
+                                    <th>预约记录</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -304,6 +305,7 @@
                                         <td>${curr.imageCode}</td>
                                         <td>${curr.provider}</td>
                                         <td>${curr.setNote}</td>
+                                        <td><a href='javascript:layerListVirtualImageReservation("${curr.id}")'>查看</a></td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>

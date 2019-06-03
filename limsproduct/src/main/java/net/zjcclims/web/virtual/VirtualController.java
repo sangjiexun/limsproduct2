@@ -156,6 +156,28 @@ public class VirtualController<JsonResult> {
     }
 
     /*************************************************************************************
+     * Description:查看某虚拟镜像的预约记录
+     *
+     * @author: 杨新蔚
+     * @date: 2019/6/3
+     *************************************************************************************/
+    @RequestMapping(value = "/layerListVirtualImageReservation", produces = "application/json; charset=utf-8")
+    public ModelAndView layerListVirtualImageReservation(@RequestParam String imageId,@RequestParam int currpage) throws IOException {
+        ModelAndView mav = new ModelAndView();
+        int pageSize = 10;
+        List<VirtualImageReservationVO> virtualImageReservations=virtualService.getVirtualImageReservationByImageId(imageId,currpage,pageSize);
+        Integer totalRecords = virtualService.getCountVirtualImageReservationByImageId(imageId);
+        Map<String, Integer> pageModel = shareService.getPage(currpage,pageSize, totalRecords);
+        mav.addObject("virtualImageReservations",virtualImageReservations);
+        //分页参数
+        mav.addObject("pageModel", pageModel);
+        mav.addObject("page", currpage);
+        mav.addObject("totalRecords", totalRecords);
+        mav.setViewName("virtual/layerListVirtualImageReservation.jsp");
+        return mav;
+    }
+
+    /*************************************************************************************
      * Description:查看虚拟实验室下的镜像
      *
      * @author: 贺照易
@@ -184,6 +206,7 @@ public class VirtualController<JsonResult> {
         mav.setViewName("virtual/listVirtualLabRoomImageDetail.jsp");
         return mav;
     }
+
 
     /*************************************************************************************
      * Description:添加虚拟镜像至实验室
