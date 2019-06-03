@@ -242,6 +242,14 @@ public interface VirtualService {
     public String checkImage(HttpServletRequest request);
 
     /*************************************************************************************
+     * Description:虚拟镜像预约检查(直连)
+     *
+     * @author: 杨新蔚
+     * @date: 2019/6/3
+     *************************************************************************************/
+    public String checkImageCitrix(HttpServletRequest request);
+
+    /*************************************************************************************
      * Description: 保存该门课程下的所有已经启动的桌面ID（机器ID）
      *
      * @param courseID

@@ -254,14 +254,14 @@
 
                                 <td colspan="3">
                                     <input id="startTime" name="startTime" class="Wdate" type="text"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:160px;" />
-                                    因启动原因，只能预约10分钟后的镜像
+                                    预约镜像后，最多可用3小时
                                 </td>
 
-                                <th>预约结束时间</th>
+                                <%--<th>预约结束时间</th>
 
                                 <td colspan="3">
                                      <input id="endTime" name="endTime" class="Wdate" type="text"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="width:160px;" />
-                                </td>
+                                </td>--%>
                             </tr>
                             <tr>
                                 <th>预约原因<span style="color:red;">*</span></th>

@@ -279,6 +279,18 @@ public class VirtualController<JsonResult> {
         return virtualService.checkImage(request);
     }
 
+    /*************************************************************************************
+     * Description:镜像预约检查(直连)
+     *
+     * @author: 杨新蔚
+     * @date: 2019/06/03
+     *************************************************************************************/
+    @ResponseBody
+    @RequestMapping(value="/checkImageCitrix",produces = "application/json; charset=utf-8")
+    public String checkImageCitrix(HttpServletRequest request) throws ParseException {
+        return virtualService.checkImageCitrix(request);
+    }
+
 
     /****************************************************************************
      * Description：镜像预约申请列表

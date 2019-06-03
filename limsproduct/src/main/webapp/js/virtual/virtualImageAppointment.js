@@ -80,7 +80,7 @@ function testLogin() {
     var x;
    $.ajax({
        type:"POST",
-       url:"https://10.2.39.50/Citrix/GVSUNWeb/Authentication/GetAuthMethods",
+       url:"https://10.2.47.30/Citrix/GVSUNWeb/Authentication/GetAuthMethods",
        /!*beforeSend: function(xhr) {
            xhr.setRequestHeader("X-Citrix-IsUsingHTTPS","No");
        },*!/
@@ -95,7 +95,7 @@ function testLogin() {
            console.log(x);
            $.ajax({
                type:"POST",
-               url:"https://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/Login",
+               url:"https://10.2.47.30/Citrix/GVSUNWeb/ExplicitAuth/Login",
                /!*beforeSend: function(xhr) {
                    xhr.setRequestHeader("X-Citrix-IsUsingHTTPS","No");
                },*!/
@@ -113,7 +113,7 @@ function testLogin() {
            });
            $.ajax({
                type:"POST",
-               url:"https://10.2.39.50/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt",
+               url:"https://10.2.47.30/Citrix/GVSUNWeb/ExplicitAuth/LoginAttempt",
                /!*beforeSend: function(xhr) {
                    xhr.setRequestHeader("X-Citrix-IsUsingHTTPS","No");
                },*!/

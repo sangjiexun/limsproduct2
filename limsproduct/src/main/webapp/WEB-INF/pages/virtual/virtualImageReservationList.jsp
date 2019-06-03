@@ -217,9 +217,12 @@
 									</td>--%>
 									<td>
 										<jsp:useBean id="now" class="java.util.Date" />
-										<c:if test="${isAudit eq 2 && auditState.get(i.count-1)==-1 and current.startTime.time le now and current.endTime.time ge now}">
+										<c:if test="${current.imageAccount eq null and  isAudit eq 2 && auditState.get(i.count-1)==-1 and current.startTime.time le now and current.endTime.time ge now}">
 										<a href="javascript:void(0)"
 											   onclick="VirtualLogin('${current.virtualImageReservationID}')">登录</a>
+											   onclick="VirtualLoginCitrix('${current.virtualImageReservationID}')">登录(直连)</a>
+										</c:if>
+										<c:if test="${current.imageAccount ne null and isAudit eq 2 && auditState.get(i.count-1)==-1 and current.startTime.time le now and current.startFifteenTime.time ge now}">
 										<a href="javascript:void(0)"
 											   onclick="VirtualLoginCitrix('${current.virtualImageReservationID}')">登录(直连)</a>
 										</c:if>
