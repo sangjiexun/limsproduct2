@@ -1,9 +1,10 @@
 <%@ taglib prefix="sec"
            uri="http://www.springframework.org/security/tags"%>
-<%@page language="java" isELIgnored="false"
+<%@ page language="java" isELIgnored="false"
         contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:directive.include file="/WEB-INF/sitemesh-decorators/include.jsp" />
-<fmt:setBundle basename="bundles.lab-resources" />
 <html>
 <head>
         <meta name="decorator" content="iframe"/>
