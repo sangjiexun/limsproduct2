@@ -746,7 +746,7 @@ public class VirtualServiceImpl implements VirtualService {
             //登录接口调用
             Map<String,String> paramsGFT=new HashMap<>();
             //学生域账号，user.getDomainAccount，临时用固定账号测试
-            paramsGFT.put("username","cmop\\gft1");
+            paramsGFT.put("username","cmop\\GFT1");
             paramsGFT.put("password","abc@123");
             paramsGFT.put("saveCredentials","false");
             paramsGFT.put("loginBtn","login");
@@ -1250,7 +1250,9 @@ public class VirtualServiceImpl implements VirtualService {
         virtualImageReservation.setUser(shareService.getUserDetail());
         virtualImageReservation.setRemarks(request.getParameter("remarks"));
         virtualImageReservation.setAuditStage(6);
-        virtualImageReservation.setImageAccount(request.getParameter("imageAccount"));
+        if (!"success".equals(request.getParameter("imageAccount"))){
+            virtualImageReservation.setImageAccount(request.getParameter("imageAccount"));
+        }
         virtualImageReservation.setIsDownloadIca(0);
         virtualImageReservationDAO.store(virtualImageReservation);
         return "success";
@@ -1544,7 +1546,7 @@ public class VirtualServiceImpl implements VirtualService {
             Map<String, String> params = new HashMap<>();
             //学生域账号，user.getDomainAccount，临时用固定账号测试
             if(!EmptyUtil.isStringEmpty(virtualImageReservation.getImageAccount())){
-                params.put("username",virtualImageReservation.getImageAccount());
+                params.put("username","cmop\\"+virtualImageReservation.getImageAccount());
             }else {
                 params.put("username","cmop\\user1");
             }
@@ -1692,7 +1694,7 @@ public class VirtualServiceImpl implements VirtualService {
             }
             //特殊镜像，只有5个账号可同时用
             if ("Controller.Win7 GFT $S8-15".equals(request.getParameter("VirtualImage"))){
-                String[] accounts={"cmop\\gft1","cmop\\gft2","cmop\\gft2","cmop\\gft2","cmop\\gft2"};
+                String[] accounts={"GFT1","GFT2","GFT3","GFT4","GFT5"};
                 for (String account:accounts){
                     String sql = "select v from VirtualImageReservation v where v.virtualImage='" + request.getParameter("VirtualImage")+"'";
                     sql+=" and v.imageAccount ='"+account+"' and ((v.isDownloadIca=1 and v.endTime >='"+startFifteenTime+"')";
