@@ -451,6 +451,7 @@
                         <c:if test="${status eq 3}">
                             <th><input id="check_all" type="checkbox" onclick="checkAll();"/></th>
                         </c:if>
+                        <th>序号</th>
                         <th><a href="javascript:void(0);" onclick="orderByNumber()";>实验编号</a></th>
                         <th><a href="javascript:void(0);" onclick="orderByName()";>实验名称</a></th>
                         <th>学期</th>
@@ -465,11 +466,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${listOperationItem}" var="curr">
+                    <c:forEach items="${listOperationItem}" var="curr" varStatus="i">
                         <tr>
                             <c:if test="${status eq 3}">
                                 <td><input id="check_${curr.id}" name="items" type="checkbox" value="${curr.id}"/></td>
                             </c:if>
+                            <td>${i.count}</td>
                             <td>${curr.lpCodeCustom}</td>
                             <td>${curr.lpName}</td>
                             <td>${curr.schoolTerm.termName}</td>
