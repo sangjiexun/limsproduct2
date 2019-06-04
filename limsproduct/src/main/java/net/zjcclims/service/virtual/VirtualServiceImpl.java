@@ -1299,7 +1299,7 @@ public class VirtualServiceImpl implements VirtualService {
      *************************************************************************************/
 
     public List<VirtualImageReservationVO> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit) {
-        String sql = "select v from VirtualImageReservation v where 1=1 ";
+        String sql = "select v from VirtualImageReservation v where 1=1 and v.user is not null";
         //暂未加查询
 	/*if(virtualImageReservation.getLabRoom()!= null && labReservation.getLabRoom().getLabRoomName() != null){
 			sql +=" and (l.labRoom.labRoomName like '%"+labReservation.getLabRoom().getLabRoomName()+"%'";
