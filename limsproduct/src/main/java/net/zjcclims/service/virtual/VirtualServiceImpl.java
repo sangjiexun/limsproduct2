@@ -82,7 +82,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @date: 2019/6/3
      *************************************************************************************/
     public List<VirtualImageReservationVO> getVirtualImageReservationByImageId(String virtualImageId, int currpage, int pageSize){
-        String sql = "select vir from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and v.id='"+virtualImageId+"'";
+        String sql = "select vir from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and v.id='"+virtualImageId+"' order by vir.endTime desc";
         List<VirtualImageReservation> virtualImageReservations = virtualImageReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
         List<VirtualImageReservationVO> virtualImageReservationVOS =new ArrayList<>();
         for (VirtualImageReservation v:virtualImageReservations){

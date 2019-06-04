@@ -169,6 +169,7 @@ public class VirtualController<JsonResult> {
         Integer totalRecords = virtualService.getCountVirtualImageReservationByImageId(imageId);
         Map<String, Integer> pageModel = shareService.getPage(currpage,pageSize, totalRecords);
         mav.addObject("virtualImageReservations",virtualImageReservations);
+        mav.addObject("imageId",imageId);
         //分页参数
         mav.addObject("pageModel", pageModel);
         mav.addObject("page", currpage);
