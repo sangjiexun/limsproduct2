@@ -682,16 +682,19 @@ function publicTimetable(timetableStyle, selfId, status,relevantEquipment) {
         data: arrs,
         success: function (json) {
             //refreshBootstrapTable();
-            $.ajax({
-                url: contextPath + "/openOperationItem/saveAssetReceive?selfId="+selfId,
-                async: false,
-                dataType: "text",
-                type: "post",
-                success: function (json) {
-                    //refreshBootstrapTable();
+            //发布排课时再生成物资申领记录
+            if(status==1){
+                $.ajax({
+                    url: contextPath + "/openOperationItem/saveAssetReceive?selfId="+selfId,
+                    async: false,
+                    dataType: "text",
+                    type: "post",
+                    success: function (json) {
+                        //refreshBootstrapTable();
 
-                }
-            });
+                    }
+                });
+            }
         }
     });
     refreshBootstrapTable();

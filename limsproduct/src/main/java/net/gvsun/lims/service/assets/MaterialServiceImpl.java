@@ -1291,7 +1291,7 @@ public class MaterialServiceImpl implements MaterialService {
             Calendar calendar = Calendar.getInstance();
             assetReceive.setReceiveDate(calendar);//保存当前日期
             assetReceive.setUser(shareService.getUser());//保存申请人
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             //保存开始日期与结束日期
             Calendar calendarBegin = Calendar.getInstance();
             calendarBegin.setTime(sdf.parse(assetsReceiveDTO.getBeginTime()));
@@ -2001,9 +2001,11 @@ public class MaterialServiceImpl implements MaterialService {
                 }
                 cabinetId = Integer.parseInt(objects.get(max)[0].toString());
             }
-        }else{//只有一个物品柜时
+        }else if(objects.size()==1){//只有一个物品柜时
             amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
+        } else { //没有物品柜，创建一个新柜
+            return "noCabinet";
         }
         if(amount<quantity&&assetReceive.getOperationItem()==null){//总数小于申请数时，无法申请
             return "insufficient";
