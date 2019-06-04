@@ -176,13 +176,18 @@ $(document).ready(function () {
     *直接排课弹出窗口
     */
     $("#submitButton").on('click', function () {
+        // 默认传参状态值为1{即已发布状态}
+        var t_status = 1;
+        if (auditOrNot) {// 如果需要审核
+            t_status = 2;
+        }
         if (validform().form()) {
             var arr = new Object();
             arr.courseNo = $("#courseNo").val();
             arr.labRoomIds = $("#labRoom_id").val();
             arr.tearchs = $("#teacherRelated").val();
             arr.tutors = $("#tutorRelated").val();
-            arr.status = 2;
+            arr.status = t_status;
             arr.timetableStyle = 1;
             arr.virtualId = $("#virtualId").val();
             /*arr.push(courseNo);
