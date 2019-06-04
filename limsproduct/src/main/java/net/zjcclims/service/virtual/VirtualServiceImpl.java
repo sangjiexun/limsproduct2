@@ -1717,14 +1717,6 @@ public class VirtualServiceImpl implements VirtualService {
             endCalendar.add(Calendar.HOUR, 3);
             String startFifteenTime = sdf.format(startCalendar.getTime());
             String endTime = sdf.format(endCalendar.getTime());
-            //判断此人时间内是否有其他预约;
-            String sqll = "select v from VirtualImageReservation v where v.user.username='" + shareService.getUser().getUsername() + "'";
-            sqll += " and ((v.startTime >='" + startTime + "' and v.startTime <='" + endTime + "')";
-            sqll += " or (v.startTime <='" + startTime + "' and v.endTime >='" + startTime + "'))";
-            List<VirtualImageReservation> virtualImageReservationList2 = virtualImageReservationDAO.executeQuery(sqll, 0, -1);
-            if (virtualImageReservationList2 != null && virtualImageReservationList2.size() > 0) {
-                state = "booked";
-            }
             //特殊镜像，只有5个账号可同时用
             if ("Controller.Win7 GFT $S8-15".equals(request.getParameter("VirtualImage"))){
                 String[] accounts={"GFT1","GFT2","GFT3","GFT4","GFT5"};
@@ -1741,6 +1733,14 @@ public class VirtualServiceImpl implements VirtualService {
                         break;
                     }
                 }
+            }
+            //判断此人时间内是否有其他预约;
+            String sqll = "select v from VirtualImageReservation v where v.user.username='" + shareService.getUser().getUsername() + "'";
+            sqll += " and ((v.startTime >='" + startTime + "' and v.startTime <='" + endTime + "')";
+            sqll += " or (v.startTime <='" + startTime + "' and v.endTime >='" + startTime + "'))";
+            List<VirtualImageReservation> virtualImageReservationList2 = virtualImageReservationDAO.executeQuery(sqll, 0, -1);
+            if (virtualImageReservationList2 != null && virtualImageReservationList2.size() > 0) {
+                state = "booked";
             }
         } catch (ParseException e) {
             state = "fail";

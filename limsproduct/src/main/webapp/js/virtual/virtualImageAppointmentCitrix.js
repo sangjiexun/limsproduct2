@@ -52,19 +52,19 @@ function saveReservation(){
                     success: function (data1) {
                         if (data1 == "success") {
                             alert("预约成功");
-                            window.location.href = "../virtual/virtualImageReservation?currpage=1"
+                            window.location.href = "../virtual/virtualImageReservationCitrix?currpage=1"
                         } else if (data1 == "interfaceSuccess") {
                             alert("接口错误");
-                            window.location.href = "../virtual/virtualImageReservation?currpage=1"
+                            window.location.href = "../virtual/virtualImageReservationCitrix?currpage=1"
                         } else if (data1 == "dataSuccess") {
                             alert("该镜像桌面已被占用");
-                            window.location.href = "../virtual/virtualImageReservation?currpage=1"
+                            window.location.href = "../virtual/virtualImageReservationCitrix?currpage=1"
                         } else if (data1 == "idSuccess") {
                             alert("未知错误");
-                            window.location.href = "../virtual/virtualImageReservation?currpage=1"
+                            window.location.href = "../virtual/virtualImageReservationCitrix?currpage=1"
                         } else {
                             alert("其他错误");
-                            window.location.href = "../virtual/virtualImageReservation?currpage=1"
+                            window.location.href = "../virtual/virtualImageReservationCitrix?currpage=1"
                         }
                     }
                 });
