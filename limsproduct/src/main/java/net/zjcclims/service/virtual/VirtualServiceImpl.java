@@ -1712,21 +1712,75 @@ public class VirtualServiceImpl implements VirtualService {
             Calendar endCalendar = Calendar.getInstance();
             startCalendar.setTime(start);
             endCalendar.setTime(end);
-            //开始时间减少10分钟用于判断冲突
-            startCalendar.add(Calendar.MINUTE, -15);
+            //开始时间减少18分钟用于判断冲突（结束时间会因为15分钟的预约至下载间隔导致推后最多15分钟，
+            //同时ica文件有效期为1至2分钟，所以18分钟为预留的误差范围）
+            startCalendar.add(Calendar.MINUTE, -18);
             endCalendar.add(Calendar.HOUR, 3);
-            String startFifteenTime = sdf.format(startCalendar.getTime());
+            String startEighteenTime = sdf.format(startCalendar.getTime());
             String endTime = sdf.format(endCalendar.getTime());
             //特殊镜像，只有5个账号可同时用
             if ("Controller.Win7 GFT $S8-15".equals(request.getParameter("VirtualImage"))){
                 String[] accounts={"GFT1","GFT2","GFT3","GFT4","GFT5"};
+                //判冲逻辑：
+                //1、若已下载ica文件，不可预约时间范围：预约记录结束时间之前
+                //2、若未下载ica文件，则进行判断当前时间是否超过预约记录的15分钟：
+                //2.1、未超过15分钟，不可预约时间范围：预约记录开始时间至预约记录结束时间
+                //2.2、超过15分钟，不可预约时间范围：预约记录开始时间至预约记录开始时间加15分钟
                 for (String account:accounts){
-                    String sql = "select v from VirtualImageReservation v where v.virtualImage='" + request.getParameter("VirtualImage")+"'";
-                    sql+=" and v.imageAccount ='"+account+"' and ((v.isDownloadIca=1 and v.endTime >='"+startFifteenTime+"')";
-                    sql+=" or (v.isDownloadIca=0 and v.startTime >='" + startFifteenTime + "' and v.startTime <='" + endTime + "')";
-                    sql += " or (v.isDownloadIca=0 and v.startTime <='" + startFifteenTime + "' and v.endTime >='" + startFifteenTime + "'))";
-                    List<VirtualImageReservation> virtualImageReservationList1 = virtualImageReservationDAO.executeQuery(sql, 0, -1);
-                    if (virtualImageReservationList1 != null && virtualImageReservationList1.size() > 0) {
+                    String sql1="SELECT\n" +
+                            "    v.id\n" +
+                            "FROM\n" +
+                            "    virtual_image_reservation v\n" +
+                            "WHERE\n" +
+                            "    v.virtual_image = '" +request.getParameter("VirtualImage")+"'"+
+                            "AND v.image_account = '" +account+"'"+
+                            "AND (\n" +
+                            "    (\n" +
+                            "        v.is_download_ica = 1\n" +
+                            "        AND v.end_time >= '" +startEighteenTime+"'"+
+                            "    )\n" +
+                            "    OR (\n" +
+                            "        v.is_download_ica = 0\n" +
+                            "        AND date_add(\n" +
+                            "            v.start_time,\n" +
+                            "            INTERVAL 15 MINUTE\n" +
+                            "        ) > NOW()\n" +
+                            "        AND v.start_time >= '" +startEighteenTime+"'"+
+                            "        AND v.start_time <= '" +endTime+"'"+
+                            "    )\n" +
+                            "    OR (\n" +
+                            "        v.is_download_ica = 0\n" +
+                            "        AND date_add(\n" +
+                            "            v.start_time,\n" +
+                            "            INTERVAL 15 MINUTE\n" +
+                            "        ) > NOW()\n" +
+                            "        AND v.start_time <= '" +startEighteenTime+"'"+
+                            "        AND v.end_time >= '" +startEighteenTime+"'"+
+                            "    )\n" +
+                            "    OR (\n" +
+                            "        v.is_download_ica = 0\n" +
+                            "        AND date_add(\n" +
+                            "            v.start_time,\n" +
+                            "            INTERVAL 15 MINUTE\n" +
+                            "        ) < NOW()\n" +
+                            "        AND v.start_time >= '" +startEighteenTime+"'"+
+                            "        AND v.start_time <= '" +endTime+"'"+
+                            "    )\n" +
+                            "    OR (\n" +
+                            "        v.is_download_ica = 0\n" +
+                            "        AND date_add(\n" +
+                            "            v.start_time,\n" +
+                            "            INTERVAL 15 MINUTE\n" +
+                            "        ) < NOW()\n" +
+                            "        AND v.start_time <= '" +startEighteenTime+"'"+
+                            "        AND date_add(\n" +
+                            "            v.start_time,\n" +
+                            "            INTERVAL 15 MINUTE\n" +
+                            "        ) >= '" +startEighteenTime+"'"+
+                            "))";
+                    Query nativeQuery = entityManager.createNativeQuery(sql1);
+                    List<Object[]> rows = nativeQuery.getResultList();
+                    if (rows != null && rows.size() > 0) {
                         state = "used";
                     }else{
                         state = account;
