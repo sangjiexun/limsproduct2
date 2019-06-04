@@ -237,8 +237,8 @@
 						<!-- 分页模块 -->
 						<div class="page" >
 							${totalRecords}条记录,共${pageModel.totalPage}页
-							<a href="javascript:void(0)"    onclick="first('${pageContext.request.contextPath}/virtual/virtualImageReservationList?page=1&tage=${tage }&isaudit=${isAudit }')" target="_self">首页</a>
-							<a href="javascript:void(0)" onclick="previous('${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=${tage }&isaudit=${isAudit }&page=')" target="_self">上一页</a>
+							<a href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?page=1&tage=${tage }&isaudit=${isAudit }" target="_self">首页</a>
+							<a href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=${tage }&isaudit=${isAudit }&page=${pageModel.previousPage}" target="_self">上一页</a>
 							第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
 							<option value="${pageContext.request.contextPath}/virtual/virtualImageReservationList?page=${page}&tage=${tage }&isaudit=${isAudit }">${page}</option>
 							<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">
@@ -246,8 +246,8 @@
 									<option value="${pageContext.request.contextPath}/virtual/virtualImageReservationList?page=${j.index}&tage=${tage }&isaudit=${isAudit }">${j.index}</option>
 								</c:if>
 							</c:forEach></select>页
-							<a href="javascript:void(0)" onclick="next('${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=${tage }&isaudit=${isAudit }&page=')" target="_self">下一页</a>
-							<a href="javascript:void(0)" onclick="last('${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=${tage }&isaudit=${isAudit }&page=${pageModel.totalPage}')" target="_self">末页</a>
+							<a href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=${tage }&isaudit=${isAudit }&page=${pageModel.nextPage}" target="_self">下一页</a>
+							<a href="${pageContext.request.contextPath}/virtual/virtualImageReservationList?tage=${tage }&isaudit=${isAudit }&page=${pageModel.totalPage}" target="_self">末页</a>
 						</div>
 						<!-- 分页模块 -->
 					</div>

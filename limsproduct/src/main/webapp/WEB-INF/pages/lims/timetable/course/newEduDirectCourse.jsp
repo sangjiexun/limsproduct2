@@ -28,6 +28,9 @@
         p { clear: both; }
         .submit { margin-left: 12em; }
     </style>
+    <script>
+        var auditOrNot = ${auditOrNot};
+    </script>
 </head>
 
 <body>

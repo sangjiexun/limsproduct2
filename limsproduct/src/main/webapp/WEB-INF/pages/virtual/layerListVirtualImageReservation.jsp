@@ -18,7 +18,7 @@
         <link href="${pageContext.request.contextPath}/css/iconFont.css" rel="stylesheet">
 
         <script type="text/javascript">
-            //首页
+        /*    //首页
             function first(url){
                 document.queryForm.action=url;
                 document.queryForm.submit();
@@ -52,7 +52,7 @@
                 //alert("下一页的路径："+page);
                 document.queryForm.action=url+page;
                 document.queryForm.submit();
-            }
+            }*/
         </script>
 
     </head>
@@ -108,17 +108,17 @@
                         <!-- 分页模块 -->
                         <div class="page" >
                             ${totalRecords}条记录,共${pageModel.totalPage}页
-                            <a href="javascript:void(0)"    onclick="first('${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?currpage=1')" target="_self">首页</a>
-                            <a href="javascript:void(0)" onclick="previous('${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?currpage=')" target="_self">上一页</a>
+                            <a href="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?imageId=${imageId}&currpage=1" target="_self">首页</a>
+                            <a href="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?imageId=${imageId}&currpage=${pageModel.previousPage}" target="_self">上一页</a>
                             第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
-                            <option value="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?currpage=${page}">${page}</option>
+                            <option value="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?imageId=${imageId}&currpage=${page}">${page}</option>
                             <c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">
                                 <c:if test="${j.index!=page}">
-                                    <option value="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?currpage=${j.index}">${j.index}</option>
+                                    <option value="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?imageId=${imageId}&currpage=${j.index}">${j.index}</option>
                                 </c:if>
                             </c:forEach></select>页
-                            <a href="javascript:void(0)" onclick="next('${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?currpage=')" target="_self">下一页</a>
-                            <a href="javascript:void(0)" onclick="last('${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?currpage=${pageModel.totalPage}')" target="_self">末页</a>
+                            <a href="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?imageId=${imageId}&currpage=${pageModel.nextPage}" target="_self">下一页</a>
+                            <a href="${pageContext.request.contextPath}/virtual/layerListVirtualImageReservation?imageId=${imageId}&currpage=${pageModel.totalPage}" target="_self">末页</a>
                         </div>
                         <!-- 分页模块 -->
                     </div>

@@ -1221,6 +1221,24 @@ public class LabReservationController<JsonResult> {
 		}
 		if (needAudit1 != -1) {
 			labRoom.setCDictionaryByIsAudit(cDictionaryDAO.findCDictionaryById(needAudit1));
+			//实验室预约设置为不需要审核时将审核服务审核层级关闭
+            if(needAudit1 == 622){
+                String[] RSWITCH = {"on", "off"};
+                String offConfig = "";
+                Map<String, String> params = new HashMap<>();
+                String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                params.put("businessUid", labRoom.getId().toString());
+                for (int i = 0; i < realAllAudits.length; i++) {
+                    offConfig += RSWITCH[1] + ",";
+                }
+                params.put("businessUid", labRoom.getId().toString());
+                params.put("config", offConfig);
+                params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                JSONObject jsonObject = JSON.parseObject(s);
+                status = jsonObject.getString("status");
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+            }
 		}
 		if (needAllowSecurityAccess1 != -1) {
 			labRoom.setCDictionaryByAllowSecurityAccess(cDictionaryDAO.findCDictionaryById(needAllowSecurityAccess1));
@@ -1267,7 +1285,7 @@ public class LabReservationController<JsonResult> {
             String[] RSWITCH = {"on", "off"};
             String rConfig = "";
             Map<String, String> params = new HashMap<>();
-            String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = "StationReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
             params.put("businessUid", labRoom.getId().toString());
             for (int i = 0; i < realAllAudits.length; i++) {
                 rConfig += realAllAudits[i].equals("1") && needAudit1 != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
@@ -1283,7 +1301,6 @@ public class LabReservationController<JsonResult> {
         if (needAudit1 != -1) {
             labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit1));
         }
-
         labRoomDAO.store(labRoom);
         return status;
     }

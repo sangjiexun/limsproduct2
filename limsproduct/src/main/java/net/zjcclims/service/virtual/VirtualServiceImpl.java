@@ -82,7 +82,7 @@ public class VirtualServiceImpl implements VirtualService {
      * @date: 2019/6/3
      *************************************************************************************/
     public List<VirtualImageReservationVO> getVirtualImageReservationByImageId(String virtualImageId, int currpage, int pageSize){
-        String sql = "select vir from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and v.id='"+virtualImageId+"'";
+        String sql = "select vir from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and v.id='"+virtualImageId+"' order by vir.endTime desc";
         List<VirtualImageReservation> virtualImageReservations = virtualImageReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
         List<VirtualImageReservationVO> virtualImageReservationVOS =new ArrayList<>();
         for (VirtualImageReservation v:virtualImageReservations){
@@ -1299,7 +1299,7 @@ public class VirtualServiceImpl implements VirtualService {
      *************************************************************************************/
 
     public List<VirtualImageReservationVO> findAllVirtualImageReservation(VirtualImageReservation virtualImageReservation, Integer page, int pageSize, int tage, int isaudit) {
-        String sql = "select v from VirtualImageReservation v where 1=1 ";
+        String sql = "select v from VirtualImageReservation v where 1=1 and v.user is not null";
         //暂未加查询
 	/*if(virtualImageReservation.getLabRoom()!= null && labReservation.getLabRoom().getLabRoomName() != null){
 			sql +=" and (l.labRoom.labRoomName like '%"+labReservation.getLabRoom().getLabRoomName()+"%'";

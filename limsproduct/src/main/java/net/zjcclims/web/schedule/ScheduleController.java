@@ -1,9 +1,11 @@
 package net.zjcclims.web.schedule;
 
+import net.zjcclims.domain.LabRoom;
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.domain.SchoolWeek;
 import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
+import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.schedule.ScheduleService;
 import net.zjcclims.service.system.SchoolWeekService;
 import net.zjcclims.vo.ScheduleVO;
@@ -40,6 +42,7 @@ public class ScheduleController<JsonResult> {
     /**************************************************************************************/
     @Autowired private ShareService shareService;
     @Autowired private ScheduleService scheduleService;
+    @Autowired private LabRoomService labRoomService;
     @Autowired private PConfig pConfig;
     @Autowired private SchoolWeekService schoolWeekService;
     /**************************************************************************************/
@@ -87,7 +90,40 @@ public class ScheduleController<JsonResult> {
 
         return list;
     }
-
+    /**
+     * Description 综合课表
+     * @return
+     * @author 刘博越
+     */
+    @RequestMapping("/comprehensiveTimetable")
+    public ModelAndView comprehensiveTimetable(HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+        User user = shareService.getUserDetail();
+        mav.addObject("user", user);
+        // 当前学期
+        SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
+        mav.addObject("term", schoolTerm.getTermName());
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        // 周次集合
+        List<SchoolWeek> schoolWeeks = schoolWeekService.findallschoolweekbytermId(schoolTerm.getId());
+        mav.addObject("schoolWeeks", schoolWeeks);
+        //学院下所有实验室
+        List<LabRoom> labRooms = labRoomService.findLabRoomBySchoolAcademy(user.getSchoolAcademy().getAcademyNumber());
+        mav.addObject("labRoomList",labRooms);
+        //返回选择项
+        int week = 0;
+        if(request.getParameter("week") != null && !request.getParameter("week").equals("")) {
+            week = Integer.valueOf(request.getParameter("week"));
+        }
+        mav.addObject("week", week);
+        int labRoom = 0;
+        if(request.getParameter("labRoom") != null && !request.getParameter("labRoom").equals("")) {
+            labRoom = Integer.valueOf(request.getParameter("labRoom"));
+        }
+        mav.addObject("labRoom", labRoom);
+        mav.setViewName("/schedule/comprehensiveTimetable.jsp");
+        return mav;
+    }
 
 
 
