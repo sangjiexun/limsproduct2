@@ -34,19 +34,19 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-main">
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
-            <legend >查看物资类别详情</legend>
+            <legend >查看物资存放地点</legend>
         </fieldset>
         <form class="layui-form detail_item" action="" lay-filter="assetsCabinetDetail">
             <input id="id" name="id" type="hidden" value="${id}"/>
             <div class="layui-row">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">物品柜编号</label>
+                    <label class="layui-form-label">仓库编号</label>
                     <div class="layui-input-block">
                         <input type="text" name="cabinetCode" id="cabinetCode"  autocomplete="off" class="layui-input" readonly="readonly">
                     </div>
                 </div>
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">物品柜名称</label>
+                    <label class="layui-form-label">仓库名称</label>
                     <div class="layui-input-block">
                         <input type="text" name="cabinetName" id="cabinetName"  autocomplete="off" class="layui-input" readonly="readonly">
                     </div>
