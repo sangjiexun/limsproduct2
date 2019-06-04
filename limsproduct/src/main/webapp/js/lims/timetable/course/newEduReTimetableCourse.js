@@ -1,5 +1,6 @@
 var contextPath = $("meta[name='contextPath']").attr("content");
 var zuulUrl ="";
+var flag = 1;
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     var url = zuulUrl + "api/timetable/common/apiViewTimetableInfo";
@@ -444,12 +445,13 @@ $(document).ready(function () {
      *学生判冲模式
      */
     $("#judgeTimetable").on('click', function () {
-        showJudgeTimetable();
+        showJudgeTimetable(flag);
         $('#submitButton').hide();
         $('#eduReTimetableCourse').hide();
         $('#eduReTimetable').show();
         $('#judgeTimetable').hide();
         $('#judgeTimetableCourse').show();
+        flag=flag+1;
     });
     $("#eduReTimetable").on('click', function () {
         $('#judgeTimetableCourse').hide();

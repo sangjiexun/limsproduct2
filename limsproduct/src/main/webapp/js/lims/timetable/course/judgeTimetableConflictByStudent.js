@@ -8,13 +8,14 @@ $(document).ready(function () {
 
 
 });
-function showJudgeTimetable() {
+function showJudgeTimetable(flag1) {
     layui.use(['layer', 'form', 'element', 'jquery', 'layer'], function () {
         var layer = layui.layer
             , form = layui.form
             , element = layui.element
             , $ = layui.$
             , layer = layui.layer;
+        if (flag1 == 1){
         getWeekday1();
         getClasses1();
         getWeeks1();
@@ -126,7 +127,7 @@ function showJudgeTimetable() {
                 }
             });
         }
-
+        }
 
     });
     layui.use(['layer', 'form', 'element', 'jquery', 'layer'], function () {
