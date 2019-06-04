@@ -96,7 +96,6 @@ public class ScheduleController<JsonResult> {
      * @author 刘博越
      */
     @RequestMapping("/comprehensiveTimetable")
-    @ResponseBody
     public ModelAndView comprehensiveTimetable(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUserDetail();
@@ -104,13 +103,24 @@ public class ScheduleController<JsonResult> {
         // 当前学期
         SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
         mav.addObject("term", schoolTerm.getTermName());
-        mav.addObject("zuulServerUrl", pConfig.auditServerUrl);
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         // 周次集合
         List<SchoolWeek> schoolWeeks = schoolWeekService.findallschoolweekbytermId(schoolTerm.getId());
         mav.addObject("schoolWeeks", schoolWeeks);
         //学院下所有实验室
         List<LabRoom> labRooms = labRoomService.findLabRoomBySchoolAcademy(user.getSchoolAcademy().getAcademyNumber());
         mav.addObject("labRoomList",labRooms);
+        //返回选择项
+        int week = 0;
+        if(request.getParameter("week") != null && !request.getParameter("week").equals("")) {
+            week = Integer.valueOf(request.getParameter("week"));
+        }
+        mav.addObject("week", week);
+        int labRoom = 0;
+        if(request.getParameter("labRoom") != null && !request.getParameter("labRoom").equals("")) {
+            labRoom = Integer.valueOf(request.getParameter("labRoom"));
+        }
+        mav.addObject("labRoom", labRoom);
         mav.setViewName("/schedule/comprehensiveTimetable.jsp");
         return mav;
     }
