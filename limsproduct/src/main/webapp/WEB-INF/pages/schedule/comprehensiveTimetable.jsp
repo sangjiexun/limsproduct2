@@ -21,7 +21,7 @@
     </script>
     <style>
         #coursesTable {
-            padding: 15px 10px;
+            padding: 15px 0;
         }
 
         .Courses-head {
