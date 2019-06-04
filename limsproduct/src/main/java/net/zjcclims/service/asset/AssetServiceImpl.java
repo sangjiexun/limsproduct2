@@ -1,6 +1,7 @@
 package net.zjcclims.service.asset;
 
 import net.zjcclims.dao.AssetAppRecordDAO;
+import net.zjcclims.dao.AssetCabinetRecordDAO;
 import net.zjcclims.dao.AssetDAO;
 import net.zjcclims.dao.LabCenterDAO;
 import net.zjcclims.domain.*;
@@ -30,6 +31,7 @@ public class AssetServiceImpl implements  AssetService {
 	@Autowired ShareService shareService;
 	@Autowired AssetDAO assetDAO;
 	@Autowired AssetAppRecordDAO assetAppRecordDAO;
+	@Autowired AssetCabinetRecordDAO assetCabinetRecordDAO;
 	@Autowired	LabCenterDAO labCenterDAO;
 	 
 	/***********************************************************************************
@@ -465,6 +467,16 @@ public class AssetServiceImpl implements  AssetService {
 			sql += " and id = " + asset.getId().toString();
 		}
 		return assetDAO.executeQuery(sql, pageSize*(currpage-1), pageSize);
+	}
+
+	/***********************************************************************************
+	 * @功能：获取存在药品柜的药品字典
+	 * @author 林威
+	 * @日期：2019-06-04
+	 * **********************************************************************************/
+	public List<Asset> findAllAssetsInCabinet(){
+		String sql = "select a from Asset a where a.id in (select distinct acr.assetId from AssetCabinetRecord acr)";
+		return assetDAO.executeQuery(sql,0,-1);
 	}
 	
 	/***********************************************************************************

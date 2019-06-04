@@ -628,7 +628,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                     <a href="javascript:void(0);" onclick="listItemMaterialRecordRest(${curr.id});">详情</a>
                                 </c:if>
                                 <c:if test="${curr.CDictionaryByLpStatusCheck.CNumber eq '3' and sessionScope.selected_role ne 'ROLE_STUDENT'}">
-                                    <c:if test="${fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 0)}">
+                                    <c:if test="${fn:length(curr.itemPlans) == 0 or (curr.itemPlans.iterator().next().type eq 0)}">
                                         <a onclick="openDiffType('不分批选', '${pageContext.request.contextPath}/openOperationItem/arrangeNoBatchChoose?id=${curr.id}')" href="javascript:void(0);">不分批选</a>
                                     </c:if>
                                     <c:if test="${PROJECT_NAME ne 'ndyzlims' && (fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 1)}">
