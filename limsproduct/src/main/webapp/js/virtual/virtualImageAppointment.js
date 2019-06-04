@@ -75,6 +75,19 @@ function VirtualLogin(id) {
     window.open(url);
 }
 
+
+function layerListVirtualImageReservation(imageId){
+    var index = layer.open({
+        type: 2,
+        title: '查看虚拟镜像预约记录',
+        maxmin: true,
+        shadeClose: true,
+        area : ['700px' , '350px'],
+        content: "../virtual/layerListVirtualImageReservation?imageId="+imageId+"&currpage=1",
+    });
+    //layer.full(index);
+}
+
 /*
 function testLogin() {
     var x;

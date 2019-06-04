@@ -23,6 +23,20 @@ public interface VirtualService {
      *************************************************************************************/
     public VirtualImage getVirtualImageByVirtualImageReservationID(Integer virtualImageReservationID);
     /*************************************************************************************
+     * Description:通过镜像id得到预约记录
+     *
+     * @author: 杨新蔚
+     * @date: 2019/6/3
+     *************************************************************************************/
+    public List<VirtualImageReservationVO> getVirtualImageReservationByImageId(String virtualImageId, int currpage, int pageSize);
+   /*************************************************************************************
+     * Description:通过镜像id得到预约记录总数
+     *
+     * @author: 杨新蔚
+     * @date: 2019/6/3
+     *************************************************************************************/
+    public Integer getCountVirtualImageReservationByImageId(String virtualImageId);
+    /*************************************************************************************
      * Description:得到所有虚拟实验室
      *
      * @author: 杨新蔚

@@ -75,6 +75,39 @@ public class VirtualServiceImpl implements VirtualService {
         return virtualImageDAO.executeQuery(sql).size()>0?virtualImageDAO.executeQuery(sql).get(0):null;
     }
 
+    /*************************************************************************************
+     * Description:通过镜像id得到预约记录
+     *
+     * @author: 杨新蔚
+     * @date: 2019/6/3
+     *************************************************************************************/
+    public List<VirtualImageReservationVO> getVirtualImageReservationByImageId(String virtualImageId, int currpage, int pageSize){
+        String sql = "select vir from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and v.id='"+virtualImageId+"'";
+        List<VirtualImageReservation> virtualImageReservations = virtualImageReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
+        List<VirtualImageReservationVO> virtualImageReservationVOS =new ArrayList<>();
+        for (VirtualImageReservation v:virtualImageReservations){
+            VirtualImage virtualImage = getVirtualImageByVirtualImageReservationID(v.getId());
+            VirtualImageReservationVO virtualImageReservationVO=new VirtualImageReservationVO();
+            virtualImageReservationVO.setVirtualImageName(virtualImage!=null?virtualImage.getName():"");
+            virtualImageReservationVO.setStartTime(v.getStartTime());
+            virtualImageReservationVO.setEndTime(v.getEndTime());
+            virtualImageReservationVO.setRemarks(v.getRemarks());
+            virtualImageReservationVO.setUserName(v.getUser().getCname());
+            virtualImageReservationVOS.add(virtualImageReservationVO);
+        }
+        return virtualImageReservationVOS;
+    }
+
+/*************************************************************************************
+     * Description:通过镜像id得到预约记录数量
+     *
+     * @author: 杨新蔚
+     * @date: 2019/6/3
+     *************************************************************************************/
+    public Integer getCountVirtualImageReservationByImageId(String virtualImageId){
+        String sql = "select count(vir) from VirtualImage v,VirtualImageReservation vir where v.id=vir.virtualImage and v.id='"+virtualImageId+"'";
+        return ((Long)virtualImageReservationDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
+    }
 
 
     /*************************************************************************************
