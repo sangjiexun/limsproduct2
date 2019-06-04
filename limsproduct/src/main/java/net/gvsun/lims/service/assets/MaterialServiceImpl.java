@@ -2004,7 +2004,7 @@ public class MaterialServiceImpl implements MaterialService {
         }else if(objects.size()==1){//只有一个物品柜时
             amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
-        } else { //没有物品柜，创建一个新柜
+        } else { //没有物品柜
             return "noCabinet";
         }
         if(amount<quantity&&assetReceive.getOperationItem()==null){//总数小于申请数时，无法申请
