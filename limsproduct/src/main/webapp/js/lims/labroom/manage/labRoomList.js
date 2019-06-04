@@ -32,8 +32,58 @@ function productsearch(search, start, limitsize) {
         }
     });
 
-    var url = zuulUrl + "api/labReservation/apiGetLabRoomList?search=" + search + "&sort=id&sortOrder=id";
-
+    var url = zuulUrl + "api/labroom/apiGetLabRoomList?search=" + search + "&sort=id&sortOrder=id";
+    var cols =[[{
+        title: '序号',
+        templet: '#indexTpl',
+        fixed: 'left',
+        width: 60
+    }, {
+        field: 'labRoomNumber',
+        title: '实验室编号',
+        minWidth: 110
+    }, {
+        field: 'labRoomName',
+        title: '实验室名称',
+        fixed: 'left',
+        width: 250
+    }, {
+        field: 'labRoomName',
+        title: '详细信息',
+        fixed: 'left',
+        width: 250
+    }, {
+        field: 'labRoomName',
+        title: '使用状态',
+        fixed: 'left',
+        width: 60
+    }, {
+        field: 'address',
+        title: '预约状态',
+        minWidth: 60
+    }, {
+        field: 'managers',
+        title: '实验室管理员',
+        minWidth: 110,
+        templet: function (d) {
+            var result = "";
+            for (var i = 0, len = d.managers.length; i < len; i++) {
+                result += d.managers[i].cname + "&nbsp;";
+            }
+            return result;
+        }
+    }, {
+        field: 'empty',
+        title: '操作',
+        minWidth: 60,
+        toolbar: '#barDemo'
+        // templet: function (d) {
+        //     var result = "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newReverberation()\" ><span class='glyphicon glyphicon-check'>预约</span></a>&nbsp;";
+        //     return result;
+        // }
+    }
+        // ,{fixed: 'right', width:150, align:'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+    ]]
     layui.use(['table', 'laypage', 'laydate'], function () {
         var table = layui.table,
             laydate = layui.laydate,
@@ -50,48 +100,7 @@ function productsearch(search, start, limitsize) {
             }
             , headers: {Authorization: authorization}
             , size: 'sm'
-            , cols: [
-                [{
-                    title: '序号',
-                    templet: '#indexTpl',
-                    fixed: 'left',
-                    width: 60
-                }, {
-                    field: 'labRoomName',
-                    title: '实验室名称',
-                    fixed: 'left',
-                    width: 250
-                }, {
-                    field: 'labRoomNumber',
-                    title: '实验室编号',
-                    minWidth: 110
-                }, {
-                    field: 'address',
-                    title: '实验室地址',
-                    minWidth: 110
-                }, {
-                    field: 'managers',
-                    title: '实验室管理员',
-                    minWidth: 110,
-                    templet: function (d) {
-                        var result = "";
-                        for (var i = 0, len = d.managers.length; i < len; i++) {
-                            result += d.managers[i].cname + "&nbsp;";
-                        }
-                        return result;
-                    }
-                }, {
-                    field: 'empty',
-                    title: '操作',
-                    minWidth: 60,
-                    toolbar: '#barDemo'
-                    // templet: function (d) {
-                    //     var result = "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newReverberation()\" ><span class='glyphicon glyphicon-check'>预约</span></a>&nbsp;";
-                    //     return result;
-                    // }
-                }
-                // ,{fixed: 'right', width:150, align:'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
-                ]]
+            , cols: newTableCols()
             ,
             page: { //分页设定
                 layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
@@ -152,4 +161,34 @@ function newReverberation() {
     });
     layer.full(index);
 
+}
+
+function newTableCols(data, enable) {
+    // 判断自定义显示数据是否为空
+    if (typeof enable === 'undefined' || enable === "") {
+        return data;
+    }
+    // 转json
+    var a = eval('(' + enable + ')');
+    console.log(a)
+    // var filterData = [];
+    // 筛选
+    for (var i = 0; i < a.length; i++) {
+        // false是不显示就在数据里剔除
+        if (!a[i].enable) {
+            // data
+            for (var j = 0; j < data[0].length; j++) {
+                var b = data[0][j].field;
+                console.log(b);
+                if (b === a[i].field) {
+                    console.log(b === a[i].field)
+                    data[0].splice(j, 1);
+                    console.log(data[0])
+                    j = j - 1;
+                }
+            }
+        }
+    }
+    // 因为cols属性是两个中括号
+    return data;
 }
