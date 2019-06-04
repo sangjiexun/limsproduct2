@@ -2938,12 +2938,12 @@ public class ReportServiceImpl implements ReportService
 		TableData td1 = ExcelUtils.createTableData(list1,ExcelUtils.createTableHeader(hearder1),field1);
 		TableData td2 = ExcelUtils.createTableData(list2,ExcelUtils.createTableHeader(hearder2),field2);
 		JsGridReportBase report = new JsGridReportBase(request, response);
-		String judgeDate = null;
-		if(!net.luxunsh.util.EmptyUtil.isObjectEmpty(a[16])) {
+		/*String judgeDate = null;
+		if(!EmptyUtil.isObjectEmpty(a[16])) {
 			judgeDate = (a[16].toString()).substring(0, a[16].toString().length()-2);
-		}
+		}*/
 		report.exportExcelForTeachPlan(title,schoolTerm.getTermName(),a[10].toString(),"教研室主任(签字):","院(部)盖章:","实验课程信息","实验项目信息",str1,
-				str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,td1,td2,a[1].toString(),a[3].toString(),judgeDate);
+				str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,td1,td2,a[1].toString(),a[3].toString());
 		//shareService.getUserDetail().getCname()
 	}
 }

@@ -711,14 +711,14 @@ public class JsGridReportBase {
 	 */
 	public void exportExcelForTeachPlan(String title,String schoolTermName, String creator, String info1,String info2,String info3,String info4,String str1,
 							String str2,String str3,String str4,String str5,String str6,String str7,String str8,String str9,String str10,String str11,TableData tableData1,TableData tableData2,
-							String courseName,String className, String judgeDate)
+							String courseName,String className)
 			throws Exception {
 
 		HSSFWorkbook wb = new HSSFWorkbook();// 创建新的Excel 工作簿
 
 		HashMap<String, HSSFCellStyle> styles = initStyles(wb);// 根据模板文件，初始化表头样式
 
-		wb = writeSheetsForTeachPlan(wb,title,info1,info2,info3,info4,str1,str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,styles,schoolTermName,creator,tableData1,tableData2,courseName,className,judgeDate);//写入工作表
+		wb = writeSheetsForTeachPlan(wb,title,info1,info2,info3,info4,str1,str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,styles,schoolTermName,creator,tableData1,tableData2,courseName,className);//写入工作表
 
 		creator = creator.replaceAll(" ","");
 		String sFileName = courseName+"_"+creator+"_"+className+".xls";
@@ -884,19 +884,19 @@ public class JsGridReportBase {
 	 */
 	public HSSFWorkbook writeSheetsForTeachPlan(HSSFWorkbook wb, String title,String info1,String info2,String info3,String info4,String str1,
 									String str2,String str3,String str4,String str5,String str6,String str7,String str8,String str9,String str10,String str11,
-									HashMap<String, HSSFCellStyle> styles,String schoolTermName, String creator, TableData tableData1,TableData tableData2,String courseName,String className, String judgeDate) throws Exception {
+									HashMap<String, HSSFCellStyle> styles,String schoolTermName, String creator, TableData tableData1,TableData tableData2,String courseName,String className) throws Exception {
 
 		TableHeaderMetaData headerMetaData1 = tableData1.getTableHeader();// 获得HTML的第一个表头元素
 		TableHeaderMetaData headerMetaData2 = tableData2.getTableHeader();// 获得HTML的第二个表头元素
 
 		String create_time = "";
-		if(judgeDate != null) {
+		/*if(judgeDate != null) {
 			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 			java.util.Date date=sdf.parse(judgeDate);
 
 			SimpleDateFormat formater = new SimpleDateFormat("yyyy年MM月dd日");
 			create_time = formater.format(date);
-		}
+		}*/
 
 		HSSFSheet sheet = wb.createSheet(title);// 在Excel工作簿中建一工作表
 
