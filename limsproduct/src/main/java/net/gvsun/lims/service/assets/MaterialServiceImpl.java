@@ -2647,7 +2647,7 @@ public class MaterialServiceImpl implements MaterialService {
         List<Object[]> auditUser=this.getAuditLevelUser(receiveId);
         for(Object[] o:auditUser) {
             Message message = new Message();
-            message.setTitle("物资申领");
+            message.setTitle("物资申领审核");
             Calendar calendar = Calendar.getInstance();
             message.setCreateTime(calendar);
             message.setMessageState(0);
@@ -2655,6 +2655,7 @@ public class MaterialServiceImpl implements MaterialService {
             message.setUsername(o[0]!=null?o[0].toString():null);
             message.setSendUser(o[1]!=null?o[1].toString():null);
             message.setSendCparty(o[2]!=null?o[2].toString():null);
+            message.setContent("<a onclick='changeMessage(this)' href='../lims/api/material/checkAssetsReceiveDetailAPI?id="+receiveId+"'>查看</a>");
             messageDAO.store(message);
         }
     }

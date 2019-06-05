@@ -1247,9 +1247,9 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{needAudit1}/{realAllAudits}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{needAudit}/{realAllAudits}", method = RequestMethod.GET)
     @ResponseBody
-    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int needAudit1,
+    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int needAudit,
                                         @PathVariable String[] realAllAudits,
                                         Model model, @ModelAttribute("selected_academy") String acno) {
         // id对应的实验分室
@@ -1261,10 +1261,10 @@ public class LabReservationController<JsonResult> {
             String[] RSWITCH = {"on", "off"};
             String rConfig = "";
             Map<String, String> params = new HashMap<>();
-            String businessType = "StationReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = "StationReservation";
             params.put("businessUid", labRoom.getId().toString());
             for (int i = 0; i < realAllAudits.length; i++) {
-                rConfig += realAllAudits[i].equals("1") && needAudit1 != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
+                rConfig += realAllAudits[i].equals("1") && needAudit != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
             }
             params.put("businessUid", labRoom.getId().toString());
             params.put("config", rConfig);
@@ -1274,13 +1274,13 @@ public class LabReservationController<JsonResult> {
             status = jsonObject.getString("status");
             JSONArray jsonArray = jsonObject.getJSONArray("data");
         }
-        if (needAudit1 != -1) {
-            labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit1));
-            if(needAudit1 == 622){
+        if (needAudit != -1) {
+            labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
+            if(needAudit == 622){
                 String[] RSWITCH = {"on", "off"};
                 String offConfig = "";
                 Map<String, String> params = new HashMap<>();
-                String businessType = "StationReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                String businessType = "StationReservation";
                 params.put("businessUid", labRoom.getId().toString());
                 for (int i = 0; i < realAllAudits.length; i++) {
                     offConfig += RSWITCH[1] + ",";
