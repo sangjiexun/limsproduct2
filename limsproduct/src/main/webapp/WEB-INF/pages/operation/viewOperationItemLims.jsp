@@ -168,17 +168,29 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach items="${listItemMaterialRecord}" var="curr" varStatus="i">
+                        <c:forEach items="${operationItem.itemAssets}" var="curr" varStatus="i">
                             <tr>
                                 <td>${i.count}</td>
-                                <td>${curr.lpmrName}</td>
-                                <td>${curr.CDictionary.CName}</td>
-                                <td>${curr.lpmrModel}</td>
-                                <td>${curr.lpmrUnit}</td>
-                                <td>${curr.lpmrQuantity}</td>
-                                <td>${curr.lpmrAmount}</td>
+                                <td>${curr.asset.chName}</td>
+                                <td>${materialKindMap[curr.asset.category]}</td>
+                                <td>${curr.asset.specifications}</td>
+                                <td>${curr.asset.unit}</td>
+                                <td>${curr.amount}</td>
+                                <td>${curr.asset.price * curr.amount}</td>
+                                    <%--                                                            <td>${curr.lpmrAmount}</td>--%>
                             </tr>
                         </c:forEach>
+<%--                        <c:forEach items="${listItemMaterialRecord}" var="curr" varStatus="i">--%>
+<%--                            <tr>--%>
+<%--                                <td>${i.count}</td>--%>
+<%--                                <td>${curr.lpmrName}</td>--%>
+<%--                                <td>${curr.CDictionary.CName}</td>--%>
+<%--                                <td>${curr.lpmrModel}</td>--%>
+<%--                                <td>${curr.lpmrUnit}</td>--%>
+<%--                                <td>${curr.lpmrQuantity}</td>--%>
+<%--                                <td>${curr.lpmrAmount}</td>--%>
+<%--                            </tr>--%>
+<%--                        </c:forEach>--%>
                         </tbody>
                     </table>
                 </div>

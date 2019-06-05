@@ -81,7 +81,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
         }
         // 保存材料添加
         function saveMaterialRecord() {
-            document.form_material.action="${pageContext.request.contextPath}/openOperationItem/saveItemAssets?itemId=${itemId}&page=${page}";
+            document.form_material.action="${pageContext.request.contextPath}/openOperationItem/saveItemAssets?itemId=${itemId}&page=${page}&type=1";
             if($("#asset.id").val() == ""){
                 alert("【耗材】选择耗材");
                 return false;
@@ -237,6 +237,10 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 <form:hidden path="userByLpCheckUser.username"/>
                                 <label>实验名称<font color="red">*</font> ：</label>
                                 <form:input path="lpName" id="lpName" class="easyui-validatebox" required="true"/>
+                            </fieldset>
+                            <fieldset>
+                                <label>实验编号：</label>
+                                <form:input path="lpCodeCustom" id="lpCodeCustom" class="easyui-validatebox"/>
                             </fieldset>
                             <fieldset>
                                 <label>实验性质<font color="red">*</font>：</label>

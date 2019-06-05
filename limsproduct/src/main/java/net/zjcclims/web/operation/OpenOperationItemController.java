@@ -490,13 +490,15 @@ public class OpenOperationItemController<JsonResult> {
 	 * @author 黄保钱 2019-04-26
 	 */
 	@RequestMapping("/saveItemAssets")
-	public ModelAndView saveItemAssets(HttpServletRequest request,@RequestParam Integer itemId,@RequestParam Integer page, @ModelAttribute ItemAssets itemAssets){
+	public ModelAndView saveItemAssets(HttpServletRequest request,@RequestParam Integer itemId,@RequestParam Integer page, @ModelAttribute ItemAssets itemAssets,@RequestParam(defaultValue = "1") Integer type){
     	ModelAndView mav = new ModelAndView();
     	OperationItem operationItem = new OperationItem();
     	operationItem.setId(itemId);
     	itemAssets.setOperationItem(operationItem);
     	itemAssetsDAO.store(itemAssets);
-		mav.setViewName("redirect:/openOperationItem/editOpenOperationItem?itemId="+itemId+"&page="+page);
+    	System.out.println(page);
+    	if(type==1) mav.setViewName("redirect:/openOperationItem/editOpenOperationItem?itemId="+itemId+"&page="+page);//开放项目管理编辑
+    	if(type ==2) mav.setViewName("redirect:/operation/editOperationItemLims?itemId="+itemId+"&page="+page);//实验项目管理编辑
 		return mav;
 	}
 

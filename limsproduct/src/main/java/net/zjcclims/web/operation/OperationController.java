@@ -3098,6 +3098,13 @@ public class OperationController<JsonResult> {
 		SchoolCourseInfo schoolCourseInfo = new SchoolCourseInfo();
 		mav.addObject("schoolCourseInfos", schoolCourseInfoService.getCourseInfoByQuery(schoolCourseInfo, -1, 1, -1));  //课程数据
 		mav.addObject("subjects", systemService.getAllSystemSubject12(1, -1));  //学科数据
+		//物资类型
+		List<MaterialKindDTO> materialKindDTOList=materialService.findAllAssetClassificationList();
+		Map<Integer, String> materialKindMap = new HashMap<>();
+		for(MaterialKindDTO m: materialKindDTOList){
+			materialKindMap.put(m.getId(), m.getCname());
+		}
+		mav.addObject("materialKindMap", materialKindMap);
 		//面向专业
 		String majors=operationItem.getLpMajorFit();
 		List<SchoolMajor>  majorList=new ArrayList<SchoolMajor>();
