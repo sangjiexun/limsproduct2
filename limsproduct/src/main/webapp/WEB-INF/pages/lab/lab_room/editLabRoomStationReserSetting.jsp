@@ -43,7 +43,130 @@ function cancel(){
 </script>
 
 <script>
+    //定义全局变量
+    var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
+    var needtutor="${needtutor}";//是否需要系主任审核
+    var needdean="${needdean}";//是否需要系主任审核
+    var trainingCenterDirector="${trainingCenterDirector}";//是否需要实训中心主任审核
+    var trainingDepartmentDirrector="${trainingDepartmentDirrector}";//是否需要实训中心主任审核
+    var needlabadministrator="${needlabadministrator}";//是否需要实训室管理员审核
+    var needAllowSecurityAccess="${device.CDictionaryByAllowSecurityAccess.id}";//是否需要安全准入trainType
+    //var trainType="${device.CDictionaryByTrainType.id}";//培训形式
+    var needAllAudits = "${needAllAudits}".replace(/\[|]/g,'').replace(/\s+/g,"").split(",");
+    //得到各个参数的值
+    $(document).ready(function() {
+        var needAllAuditStatus = "${needAllAuditStatus}".replace(/\[|]/g,'').replace(/\s+/g,"").split(",");
+        if(needAllAudits[0]) {
+            for (var i = 0; i < needAllAudits.length; i++) {
+                document.getElementById(needAllAudits[i] + needAllAuditStatus[i]).checked = true;
+            }
+        }
+        $("#needAudit1").click(function(){
+            needAudit=$("#needAudit1").val();
+        });
+        $("#needAudit2").click(function(){
+            needAudit=$("#needAudit2").val();
+        });
+    })
+    //是否需要审核的联动
+    $(document).ready(function(){
+        document.getElementById("isAudit").style.display="";
+        if (${empty isAudit}) {//是否可以预约联动
+//            document.getElementById("isAudit").style.display = "None";
+            document.getElementById('needAudit1').checked = "";
+            document.getElementById('needAudit2').checked = "";
+//            $("#rdo1").removeAttr("checked");
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "None";
+                }
+            }
+//        document.getElementById("trainingType").style.display = "None";
+        } else if(${isAudit == 1}){
+            document.getElementById('needAudit1').checked = true;
+        } else if(${isAudit == 2}){
+            document.getElementById('needAudit2').checked = true;
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "None";
+                }
+            }
+        }
 
+
+        $("#needAudit1").change(function(){
+            // document.getElementById("teacher").style.display="";
+            // document.getElementById("dean").style.display="";
+            // document.getElementById("labManager").style.display="";
+            // document.getElementById("trainingCenterDirector").style.display="";
+            // document.getElementById("trainingDepartmentDirrector").style.display="";
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "";
+                }
+            }
+        });
+        $("#needAudit2").change(function(){
+            // document.getElementById("teacher").style.display="None";
+            // document.getElementById("dean").style.display="None";
+            // document.getElementById("labManager").style.display="None";
+            // document.getElementById("trainingCenterDirector").style.display="None";
+            // document.getElementById("trainingDepartmentDirrector").style.display="None";
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "None";
+                }
+            }
+
+        });
+        if($("#needAudit2").prop("checked")){
+            $("#needAudit2").change();
+        }
+    });
+    function saveDeviceSettingRest() {
+        var needAudit1=needAudit;//预约是否需要审核
+        var realAllAudits = [];
+        if(needAllAudits[0]) {
+            for (var i = 0; i < needAllAudits.length; i++) {
+                for (var j = 1; j < 3; j++) {
+                    if (document.getElementById(needAllAudits[i] + j).checked) {
+                        realAllAudits.push(document.getElementById(needAllAudits[i] + j).value);
+                    }
+                }
+            }
+        }
+        if(needAudit==""){
+            alert("请选择是否审核");
+            return false;
+        }
+        if(!needAllAudits[0]) {
+            realAllAudits = [0];
+        }
+        if(realAllAudits.length != needAllAudits.length && needAllAudits[0]){
+            alert("请检查是否选完所有选项！");
+            return false;
+        }
+        $.ajax({
+            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"
+            + needAudit1+"/"+realAllAudits,
+            type:'GET',
+            async:false,
+            error:function (request){
+                alert('请求错误!');
+            },
+            success:function(data){
+                if(data == "success"){
+                    alert("保存成功");
+                }else{
+                    alert("保存失败");
+                }
+                var labRoomId = ${labRoomId};
+                window.location.href="${pageContext.request.contextPath}/device/editLabRoomStationReserSetting/"+labRoomId+"/"+1+"/"+1;
+                //var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                //parent.layer.close(index);
+            }
+        })
+    }
 function closeMyWindow(){
     var index=parent.layer.getFrameIndex(window.name);
     parent.layer.close(index);
@@ -99,10 +222,10 @@ margin-left:3px;
 	--%><div id="TabbedPanels1" class="TabbedPanels">
 	 <ul class="TabbedPanelsTabGroup">
 		<li class="TabbedPanelsTab" tabindex="0">
-		<a href="javascript:void(0);" onclick="openSetupLink(${labRoom.id},${currpage },${type})">参数设置</a>
+		<a href="javascript:void(0);" onclick="openSetupLink(${device.id},${currpage },${type})">参数设置</a>
 		</li>
 		 <li class="TabbedPanelsTab selected" tabindex="0">
-			 <a href="javascript:void(0);" onclick="openStationReserSetting(${labRoom.id},${currpage },${type})">工位预约审核设置</a>
+			 <a href="javascript:void(0);" onclick="openStationReserSetting(${device.id},${currpage },${type})">工位预约审核设置</a>
 		 </li>
 		 <c:if test="${device.CDictionaryByAllowSecurityAccess.CCategory=='c_active' && device.CDictionaryByAllowSecurityAccess.CNumber=='1' && device.labRoomReservation.toString() == '1'}">
 			 <li class="TabbedPanelsTab" tabindex="0">
@@ -170,7 +293,7 @@ margin-left:3px;
 				<td>
 				<c:forEach items="${CActives}" var="activ" varStatus="i">
 				<%-- <form:radiobutton id="needAudit${i.count}" path="CActiveByIsAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.name}</label> --%>
-				<form:radiobutton id="needAudit${i.count}" path="CDictionaryByIsAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.CName}</label>
+				<form:radiobutton id="needAudit${i.count}" path="CDictionaryByIsStationAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.CName}</label>
 				</c:forEach>
 				</td>
 			</tr>
