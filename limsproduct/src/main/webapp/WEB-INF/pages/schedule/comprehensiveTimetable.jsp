@@ -6,6 +6,10 @@
 <html>
 <head>
     <meta name="decorator" content="iframe"/>
+    <!-- 下拉的样式 -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
+    <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css" />
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/js/timetable/Timetables.min.js" type="text/javascript"></script>
@@ -112,6 +116,9 @@
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
         .course-hasContent div p {
+            color: #fff;
+        }
+        .course-hasContent div p a{
             color: #fff;
         }
     </style>
@@ -255,8 +262,12 @@ $(document).ready(function(){
                 for(var j = 0; j<arr.length;j++){
                     var str = "<div>";
                         str+= "<p>"+ data[i].courseName+"@"+data[i].courseNo +"</p>";
-                        if(data[i].itemName!=null){
-                            str+= "<p>"+ data[i].itemName+"</p>";
+                        if(data[i].items!=null){
+                            str+= "<p>"
+                            for(var y =0;y<data[i].items.length;y++){
+                                str+="<a data='"+ data[i].items[y].itemId +"'>"+data[i].items[y].itemName+",</a>"
+                            }
+                            str+="</p>"
                         }
                         if(data[i].labRoom!=null){
                             str+= "<p>"+ data[i].labRoom+"</p>";
@@ -310,5 +321,20 @@ $(document).ready(function(){
 </script>
 <%--综合课表悬停效果--%>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/timetableEffect.js"></script>
+<!-- 下拉框的js -->
+<script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    var config = {
+        '.chzn-select'           : {search_contains:true},
+        '.chzn-select-deselect'  : {allow_single_deselect:true},
+        '.chzn-select-no-single' : {disable_search_threshold:10},
+        '.chzn-select-no-results': {no_results_text:'Oops, nothing found!'},
+        '.chzn-select-width'     : {width:"100%"}
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
 </body>
 </html>
