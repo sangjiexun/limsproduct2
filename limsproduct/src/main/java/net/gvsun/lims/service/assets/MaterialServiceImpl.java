@@ -62,6 +62,8 @@ public class MaterialServiceImpl implements MaterialService {
     private OperationItemDAO operationItemDAO;
     @Autowired
     private AssetCabinetWarehouseDAO assetCabinetWarehouseDAO;
+    @Autowired
+    private MessageDAO messageDAO;
 
     /**
      * 物资分类列表
@@ -1291,7 +1293,7 @@ public class MaterialServiceImpl implements MaterialService {
             Calendar calendar = Calendar.getInstance();
             assetReceive.setReceiveDate(calendar);//保存当前日期
             assetReceive.setUser(shareService.getUser());//保存申请人
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             //保存开始日期与结束日期
             Calendar calendarBegin = Calendar.getInstance();
             calendarBegin.setTime(sdf.parse(assetsReceiveDTO.getBeginTime()));
@@ -2001,9 +2003,11 @@ public class MaterialServiceImpl implements MaterialService {
                 }
                 cabinetId = Integer.parseInt(objects.get(max)[0].toString());
             }
-        }else{//只有一个物品柜时
+        }else if(objects.size()==1){//只有一个物品柜时
             amount += Integer.parseInt(objects.get(0)[1].toString());
             cabinetId=Integer.parseInt(objects.get(0)[0].toString());
+        } else { //没有物品柜
+            return "noCabinet";
         }
         if(amount<quantity&&assetReceive.getOperationItem()==null){//总数小于申请数时，无法申请
             return "insufficient";
@@ -2613,6 +2617,45 @@ public class MaterialServiceImpl implements MaterialService {
             String quantity1=quantity.substring(0,quantity.length()-3);
             assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+Integer.parseInt(quantity1));
             assetCabinetRecordDAO.store(assetCabinetRecord);
+        }
+    }
+    /**
+     * Description 根据申领编号获取申领审核人
+     * @author 吴奇臻 2019-6-04
+     */
+    public List<Object[]> getAuditLevelUser(Integer receiveId){
+        String sql="SELECT\n" +
+                "\tua.user_id,\n" +
+                "  u.cname,\n" +
+                "  sa.academy_name\n" +
+                "FROM\n" +
+                "\tasset_receive ar\n" +
+                "LEFT JOIN authority a ON ar.cur_audit_level = a.authority_name\n" +
+                "LEFT JOIN user_authority ua on ua.authority_id=a.id\n" +
+                "LEFT JOIN user u on u.username=ar.app_user\n" +
+                "LEFT JOIN school_academy sa on sa.academy_number=u.academy_number\n" +
+                "where ar.id="+receiveId;
+        Query query=entityManager.createNativeQuery(sql);
+        List<Object[]> auditUser=query.getResultList();
+        return auditUser;
+    }
+    /**
+     * Description 生成物资申领的通知消息
+     * @author 吴奇臻 2019-6-04
+     */
+    public void setMessageInfoFroAssetsReceive(Integer receiveId){
+        List<Object[]> auditUser=this.getAuditLevelUser(receiveId);
+        for(Object[] o:auditUser) {
+            Message message = new Message();
+            message.setTitle("物资申领");
+            Calendar calendar = Calendar.getInstance();
+            message.setCreateTime(calendar);
+            message.setMessageState(0);
+            message.setTage(1);
+            message.setUsername(o[0]!=null?o[0].toString():null);
+            message.setSendUser(o[1]!=null?o[1].toString():null);
+            message.setSendCparty(o[2]!=null?o[2].toString():null);
+            messageDAO.store(message);
         }
     }
 }

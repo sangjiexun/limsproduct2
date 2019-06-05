@@ -75,14 +75,16 @@
 						<table class="tb" id="my_show">
 							<thead>
 								<tr>
+									<th>序号</th>
 								    <th>课程编号</th>
 									<th>课程名称</th>
 									<th>操作</th>
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${schoolCourseInfoList}" var="curr">
+								<c:forEach items="${schoolCourseInfoList}" var="curr" varStatus="i">
 									<tr>
+										<td>${i.count}</td>
 										<td>${curr.courseNumber}</td>
 										<td>${curr.courseName}</td>
 										<td>

@@ -541,4 +541,14 @@ public interface MaterialService {
      * @author 吴奇臻 2019-5-22
      */
     void returnAssetsReceiveItemAmount(Integer receiveId);
+    /**
+     * Description 根据申领编号获取申领审核人
+     * @author 吴奇臻 2019-6-04
+     */
+    List<Object[]> getAuditLevelUser(Integer receiveId);
+    /**
+     * Description 生成物资申领的通知消息
+     * @author 吴奇臻 2019-6-04
+     */
+    void setMessageInfoFroAssetsReceive(Integer receiveId);
 }

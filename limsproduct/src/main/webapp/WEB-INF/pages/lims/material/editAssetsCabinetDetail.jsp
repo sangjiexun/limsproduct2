@@ -35,18 +35,18 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-main">
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
-            <legend >新建/编辑物资类别</legend>
+            <legend >新建/编辑存放地点</legend>
         </fieldset>
         <form class="layui-form layui-from-pane detail_item" lay-filter="assetCabinetDetail" id="assetCabinetDetail">
             <input id="id" name="id" type="hidden" value="${id}"/>
             <div class="layui-row">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">物品柜类型※</label>
+                    <label class="layui-form-label">类型※</label>
                     <div class="layui-input-block">
                         <select name="type" id="type" lay-verify="required" lay-filter="type">
                             <option value=""></option>
-                            <option value="1">普通物品柜</option>
-                            <option value="2">智能物品柜</option>
+                            <option value="1">普通存放点</option>
+                            <%--<option value="2">智能物品柜</option>--%>
                         </select>
                     </div>
                 </div>
@@ -59,13 +59,13 @@
             </div>
             <div class="layui-row">
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">物品柜编号</label>
+                    <label class="layui-form-label">仓库编号</label>
                     <div class="layui-input-block">
                         <input type="text" name="cabinetCode" id="cabinetCode" placeholder="请输入" autocomplete="off" class="layui-input" >
                     </div>
                 </div>
                 <div class="layui-col-lg6">
-                    <label class="layui-form-label">物品柜名称</label>
+                    <label class="layui-form-label">仓库名称</label>
                     <div class="layui-input-block">
                         <input type="text" name="cabinetName" id="cabinetName" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                     </div>

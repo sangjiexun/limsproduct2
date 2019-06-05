@@ -470,7 +470,7 @@ public class CasualInspectionController<JsonResult> {
      *****************************************************************/
     @RequestMapping(value = "/getCheckItems", produces = "application/json;charset=utf-8")
     public @ResponseBody
-    String getDocumentList(@RequestParam int checkType) throws UnsupportedEncodingException {
+    String getDocumentList(HttpServletResponse response,@RequestParam int checkType) throws IOException {
         System.out.println(checkType);
 
         List<String> checkItems = labSecurityCheckService.findDictionariesCheckItems(checkType);
@@ -482,7 +482,8 @@ public class CasualInspectionController<JsonResult> {
         jsonCheckItems.substring(0, jsonCheckItems.length() - 1);
         jsonCheckItems = jsonCheckItems + "]";
         System.out.println(jsonCheckItems);
-
+        response.getWriter().print(jsonCheckItems);
+        response.getWriter().close();
         return URLDecoder.decode(jsonCheckItems, "UTF-8");
     }
 

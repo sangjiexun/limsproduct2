@@ -325,8 +325,8 @@ function getTimetablePlanView() {
             title: '序号',//标题  可不加
             width: "3%",
             formatter: function (value, row, index) {
-                // return index + 1;
-                return row.courseNumber;
+                return index + 1;
+                // return row.courseNumber;
             }
         }, {
             title: "课程信息",

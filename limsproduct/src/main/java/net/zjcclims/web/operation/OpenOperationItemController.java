@@ -8,6 +8,7 @@ import net.gvsun.lims.service.timetable.TimetableSelfCourseService;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
+import net.zjcclims.service.asset.AssetService;
 import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.device.LabRoomDeviceService;
@@ -59,6 +60,7 @@ public class OpenOperationItemController<JsonResult> {
 	@Autowired private OperationItemDAO operationItemDAO;
 	@Autowired private CommonDocumentDAO commonDocumentDAO;
 	@Autowired private AssetDAO assetDAO;
+	@Autowired private AssetService assetService;
 	@Autowired private ItemAssetsDAO itemAssetsDAO;
 	@Autowired private MaterialService materialService;
 	@Autowired private ItemLabUsersDAO itemLabUsersDAO;
@@ -279,7 +281,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("grades", shareService.getCDictionaryData("c_operation_item_open_grade")); // 开放年级选项
 		mav.addObject("terms", shareService.getCDictionaryData("c_operation_item_open_term")); // 开放学期选项
 		mav.addObject("itemResultTypes", shareService.getCDictionaryData("c_operation_item_result_type")); // 结果形式选项
-		mav.addObject("assets", assetDAO.findAllAssets()); // 耗材选项
+		mav.addObject("assets", assetService.findAllAssetsInCabinet()); // 耗材选项
 		mav.addObject("itemAssets", new ItemAssets()); // 耗材选项
 		List<MaterialKindDTO> materialKindDTOList=materialService.findAllAssetClassificationList();
 		Map<Integer, String> materialKindMap = new HashMap<>();

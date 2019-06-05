@@ -67,15 +67,19 @@
 						<table class="tb" id="my_show">
 							<thead>
 								<tr>
+									<th>序号</th>
 									<th>项目名称</th>
+									<th>课程名称</th>
 									<th>实验学时</th>
 									<th>所属实验室</th>
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${operationItems}" var="curr">
+								<c:forEach items="${operationItems}" var="curr" varStatus="i">
 									<tr>
+										<td>${i.count}</td>
 										<td>${curr.lpName}</td>
+										<td>${curr.schoolCourseInfo.courseName}</td>
 										<td>${curr.lpDepartmentHours}</td>
 										<td>
 											<c:choose>

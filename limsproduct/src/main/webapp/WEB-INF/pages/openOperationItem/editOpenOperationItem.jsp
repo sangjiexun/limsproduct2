@@ -473,7 +473,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                                             <td>${materialKindMap[curr.asset.category]}</td>
                                                             <td>${curr.asset.specifications}</td>
 <%--                                                            <td>${curr.asset.unit}</td>--%>
-                                                            <td>${curr.amount}<div id="unit${i.count}" style="display: inline">${curr.asset.specifications}</div></td>
+                                                            <td>${curr.amount}</td>
 <%--                                                            <td>${curr.lpmrAmount}</td>--%>
                                                             <td>
                                                                 <a href="javascript:void(0)" onclick="editMaterialRecord(${curr.id});">编辑</a>
@@ -589,7 +589,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                     </div>
                     <!-- 添加思考题弹框结束 -->
 
-                    <!-- 下拉框的js -->
+                    <!-- 下拉框的js -->editOpenOperationItem
                     <script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
                     <script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
                     <script type="text/javascript">

@@ -473,6 +473,7 @@ public class MaterialController {
             assetReceive.setAuditDate(calendar);
         }
         assetReceiveDAO.store(assetReceive);
+        materialService.setMessageInfoFroAssetsReceive(assetReceive.getId());
         return "success";
     }
     /**

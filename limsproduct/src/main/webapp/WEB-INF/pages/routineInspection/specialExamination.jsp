@@ -1,5 +1,5 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ page language="java" isELIgnored="false" contentType="text/html; charset=utf-8" pageEncoding="UTF-8" %>
+<%@ page language="java" isELIgnored="false" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <jsp:directive.include file="/WEB-INF/sitemesh-decorators/include.jsp"/>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -138,7 +138,7 @@
             $.ajax({
                 url: "${pageContext.request.contextPath}/getCheckItems",
                 dataType: "json",
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                contentType: "application/x-www-form-urlencoded;charset=utf-8",
                 type: "POST",
                 data: {checkType: $("#checkType").val()},
                 complete: function (result) {

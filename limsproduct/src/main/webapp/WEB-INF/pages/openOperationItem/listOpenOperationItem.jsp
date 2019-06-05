@@ -628,16 +628,16 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                     <a href="javascript:void(0);" onclick="listItemMaterialRecordRest(${curr.id});">详情</a>
                                 </c:if>
                                 <c:if test="${curr.CDictionaryByLpStatusCheck.CNumber eq '3' and sessionScope.selected_role ne 'ROLE_STUDENT'}">
-                                    <c:if test="${fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 0}">
+                                    <c:if test="${fn:length(curr.itemPlans) == 0 or (curr.itemPlans.iterator().next().type eq 0)}">
                                         <a onclick="openDiffType('不分批选', '${pageContext.request.contextPath}/openOperationItem/arrangeNoBatchChoose?id=${curr.id}')" href="javascript:void(0);">不分批选</a>
                                     </c:if>
-                                    <c:if test="${fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 1}">
+                                    <c:if test="${PROJECT_NAME ne 'ndyzlims' && (fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 1)}">
                                         <a onclick="openDiffType('分批自选', '${pageContext.request.contextPath}/openOperationItem/arrangeBatchChoose?id=${curr.id}')" href="javascript:void(0);">分批自选</a>
                                     </c:if>
                                     <c:if test="${fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 2}">
                                         <a onclick="openDiffType('不分批排', '${pageContext.request.contextPath}/openOperationItem/arrangeNoBatchNoChoose?id=${curr.id}')" href="javascript:void(0);">不分批排</a>
                                     </c:if>
-                                    <c:if test="${fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 3}">
+                                    <c:if test="${PROJECT_NAME ne 'ndyzlims' && (fn:length(curr.itemPlans) == 0 or curr.itemPlans.iterator().next().type eq 3)}">
                                         <a onclick="openDiffType('分批直排', '${pageContext.request.contextPath}/openOperationItem/arrangeBatchNoChoose?id=${curr.id}')" href="javascript:void(0);">分批直排</a>
                                     </c:if>
                                 </c:if>

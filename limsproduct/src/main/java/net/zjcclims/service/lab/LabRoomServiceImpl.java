@@ -630,8 +630,8 @@ public class LabRoomServiceImpl implements LabRoomService {
 			}
 
 			Set<Authority> auths = user.getAuthorities();
-			for (Authority authority : auths) {
-				if (authority.getId() == 4 || authority.getId() == 11 || authority.getId() == 3) {
+			for (Authority authority : auths) {//中心主任/超管/实践教学副院长/院系级系统管理员
+				if (authority.getId() == 4 || authority.getId() == 11 || authority.getId() == 3 || authority.getId() == 6) {
 					flag = true;
 				}
 			}
