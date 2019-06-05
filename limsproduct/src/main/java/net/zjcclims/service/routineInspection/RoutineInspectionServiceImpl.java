@@ -267,7 +267,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
 
                 for (RoutineInspection r : routineInspections) {
                     //如果有该周次的常规检查数据，则继续；否则页面显示×
-                    if (r.getWeek() != null && r.getWeek() > 0) {
+                    if (r.getWeek() != null && r.getWeek() == i ) {
                         //System.out.println(r.getTypeAuditing());
                         //审核通过、审核不通过、待审核状态，页面显示√
                         if (r.getTypeAuditing().equals("1") || r.getTypeAuditing().equals("2") || r.getTypeAuditing().equals("3")) {
