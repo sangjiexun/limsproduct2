@@ -80,7 +80,7 @@ public class AuditController<JsonResult> {
                     os[2] = o.getString("authName");
                     os[3] = businessAppUid;
                     os[4] = curStage;
-                    os[5] = curAuthName;
+                    os[5] = o.getString("authName");
                     auditItems.add(os);
                 }
                 mav.addObject("count", jsonArray.size());
@@ -153,8 +153,8 @@ public class AuditController<JsonResult> {
             // 判断业务类型分别取审核人
             switch (businessType){
                 case "StationReservation":
-                case "1StationReservation":
-                case "2StationReservation":
+//                case "1StationReservation":
+//                case "2StationReservation":
                     isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
                     break;
                 case "CancelLabRoomReservation":
