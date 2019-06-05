@@ -412,7 +412,9 @@
                                                         <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
                                                         <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
                                                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                                                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        <c:if test="${selected_role eq 'ROLE_CFO'}">
+                                                            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        </c:if>
                                                     </script>
                                                 </div>
                                             </div>
@@ -641,7 +643,9 @@
                                                         <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
                                                         <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
                                                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                                                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        <c:if test="${selected_role eq 'ROLE_CFO'}">
+                                                            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        </c:if>
                                                     </script>
                                                 </div>
                                             </div>
@@ -870,7 +874,9 @@
                                                         <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
                                                         <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
                                                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                                                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        <c:if test="${selected_role eq 'ROLE_CFO'}">
+                                                            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        </c:if>
                                                     </script>
                                                 </div>
                                             </div>
@@ -1099,7 +1105,9 @@
                                                         <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
                                                         <a class="layui-btn layui-btn-xs" lay-event="edit">项目管理</a>
                                                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                                                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        <c:if test="${selected_role eq 'ROLE_CFO'}">
+                                                            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="examine">审核</a>
+                                                        </c:if>
                                                     </script>
                                                 </div>
                                             </div>
