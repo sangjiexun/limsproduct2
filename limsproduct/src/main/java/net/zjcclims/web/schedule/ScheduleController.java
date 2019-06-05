@@ -111,7 +111,8 @@ public class ScheduleController<JsonResult> {
         List<LabRoom> labRooms = labRoomService.findLabRoomBySchoolAcademy(user.getSchoolAcademy().getAcademyNumber());
         mav.addObject("labRoomList",labRooms);
         //返回选择项
-        int week = 0;
+        //当前周
+        int week = shareService.findNewWeek();
         if(request.getParameter("week") != null && !request.getParameter("week").equals("")) {
             week = Integer.valueOf(request.getParameter("week"));
         }
