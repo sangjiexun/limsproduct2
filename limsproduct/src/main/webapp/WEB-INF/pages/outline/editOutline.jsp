@@ -419,14 +419,14 @@
                                     <td>实验室</td>
                                     <td>备注（必做/选做）</td>
                                 </tr>
-                                <c:forEach items="${operationOutline.operationItems}" var="s">
+                                <c:forEach items="${outline.operationItems}" var="s">
                                     <tr>
-                                        <td>${s.itemNumber}</td>
-                                        <td>${s.itemName}</td>
-                                        <td>${s.COperationItemType.name}</td>
-                                        <td>${s.experimentalClasses}</td>
-                                        <td>${s.eachGroupNumbers}</td>
-                                        <td>${s.labRoom.labRoomName}</td>
+                                        <td>${s.lpCodeCustom}</td>
+                                        <td>${s.lpName}</td>
+                                        <td>${s.CDictionaryByLpCategoryMain.CName}</td>
+                                        <td>${s.lpDepartmentHours}</td>
+                                        <td>${s.lpStudentNumberGroup}</td>
+                                        <td><c:forEach items="${s.labRooms}" var="a">${a.labRoomName}/</c:forEach></td>
                                         <td></td>
                                     </tr>
                                 </c:forEach>
