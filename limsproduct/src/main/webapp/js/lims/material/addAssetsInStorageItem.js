@@ -85,6 +85,23 @@ layui.use(['form'], function() {
             }
         });
     });
+    form.on('select(cabinets)', function(data){
+        //物资名录表单初始赋值
+        $.ajax({
+            url: contextPath + '/lims/api/material/findAssetsCabinetWareHouse?id='+data.value,
+            async: false,
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            success:function (data) {
+            },
+            error:function () {
+                if(assetsId!=""){
+                    alert("后台出了点问题，请重试！");
+                    return false;
+                }
+            }
+        });
+    });
     form.on('submit(saveAddAssetsInStorageDetail)', function(data){
         console.log('保存')
         console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象

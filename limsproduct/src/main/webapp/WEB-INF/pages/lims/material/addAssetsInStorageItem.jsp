@@ -38,7 +38,7 @@
             <input type="hidden" name="appId" id="appId" value="${storeId}" />
             <input type="hidden" name="id" id="id" value="${id}" />
             <div class="layui-row">
-                <div class="layui-col-lg6">
+                <div class="layui-col-lg12">
                     <label class="layui-form-label">原有物资名录</label>
                     <div class="layui-input-block">
                         <select name="assetsId" id="assetsId" lay-filter="assets" lay-search="">
@@ -46,10 +46,20 @@
                         </select>
                     </div>
                 </div>
+            </div>
+            <div class="layui-row">
                 <div class="layui-col-lg6">
                     <label class="layui-form-label">物品柜</label>
                     <div class="layui-input-block">
-                        <select name="cabinet" id="cabinet" lay-verify="required" >
+                        <select name="cabinet" id="cabinet" lay-verify="required" lay-filter="cabinets">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label">智能柜柜门</label>
+                    <div class="layui-input-block">
+                        <select name="wareHouse" id="wareHouse" lay-verify="required" >
                             <option value=""></option>
                         </select>
                     </div>
