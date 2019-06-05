@@ -1020,27 +1020,8 @@ public class LabReservationController<JsonResult> {
         // 获取所有单选的结果集（是/否）
         List<CDictionary> CActives = shareService.getCDictionaryData("c_active");
         mav.addObject("CActives", CActives);
-        // 预约形式
-        List<CDictionary> CAppointmentTypes = shareService.getCDictionaryData("c_appointment_type");
-        mav.addObject("CAppointmentTypes", CAppointmentTypes);
-        List<CDictionary> CLabAccessTypes = shareService.getCDictionaryData("c_lab_access_type");
-        mav.addObject("CLabAccessTypes", CLabAccessTypes);
-        //培训形式隐去
-        /*List<CDictionary> CTrainingTypes = shareService.getCDictionaryData("c_training_type");
-		mav.addObject("CTrainingTypes", CTrainingTypes);*/
         mav.setViewName("/lab/lab_room/editLabRoomStationReserSetting.jsp");
         mav.addObject("type",type);
-        if(labRoom.getLabRoomReservation() != null){
-            mav.addObject("allowAppointment", labRoom.getLabRoomReservation());
-        }
-
-        if (labRoom.getCDictionaryByIsAudit()!=null&&labRoom.getCDictionaryByIsAudit().getId()!=null) {
-
-            mav.addObject("isStationAudit", labRoom.getCDictionaryByIsStationAudit().getCNumber());
-        }
-        if (labRoom.getCDictionaryByAllowSecurityAccess()!=null&&labRoom.getCDictionaryByAllowSecurityAccess().getId()!=null) {
-            mav.addObject("allowSecurityAccess", labRoom.getCDictionaryByAllowSecurityAccess().getCNumber());
-        }
 
         //demo
         String[] RSWITCH = {"on", "off"};
@@ -1048,7 +1029,8 @@ public class LabReservationController<JsonResult> {
         List<Integer> needAllAuditStatus = new ArrayList<>();
         List<String> authNames = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
-        String businessType = "LabRoomReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+
+        String businessType = "StationReservation";
         params.put("businessUid", labRoom.getId().toString());
         params.put("businessType", pConfig.PROJECT_NAME + businessType);
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
@@ -1065,6 +1047,10 @@ public class LabReservationController<JsonResult> {
                 needAllAuditStatus.add(sc[1].equals(RSWITCH[0]) ? 1 : 2);
             }
         }
+        if (labRoom.getCDictionaryByIsStationAudit()!=null&&labRoom.getCDictionaryByIsStationAudit().getId()!=null) {
+
+            mav.addObject("isAudit", labRoom.getCDictionaryByIsStationAudit().getCNumber());
+        }
         mav.addObject("needAllAudits", needAllAudits);
         mav.addObject("needAllAuditStatus", needAllAuditStatus);
         mav.addObject("authNames", authNames);
@@ -1072,16 +1058,6 @@ public class LabReservationController<JsonResult> {
         mav.addObject("labRoomId", labRoomId);
         mav.addObject("page", currpage);
         mav.addObject("currpage", currpage);
-
-        // 开放范围
-        List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
-        mav.addObject("schoolAcademyList", schoolAcademies);
-        Set<SchoolAcademy> selectedSchoolAcademies = labRoom.getOpenSchoolAcademies();
-        mav.addObject("selectedSchoolAcademies", selectedSchoolAcademies);
-        if(selectedSchoolAcademies.size() == 0) {
-            SchoolAcademy selfAca = labRoom.getSchoolAcademy();
-            selectedSchoolAcademies.add(selfAca);
-        }
 
         return mav;
     }
@@ -1267,7 +1243,7 @@ public class LabReservationController<JsonResult> {
 	}
 
     /****************************************************************************
-     * @Description：实验室管理---保存工位预约审核设置
+     * @Description：实验室管理---保存工位预约实验室审核设置
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
@@ -1300,6 +1276,23 @@ public class LabReservationController<JsonResult> {
         }
         if (needAudit1 != -1) {
             labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit1));
+            if(needAudit1 == 622){
+                String[] RSWITCH = {"on", "off"};
+                String offConfig = "";
+                Map<String, String> params = new HashMap<>();
+                String businessType = "StationReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                params.put("businessUid", labRoom.getId().toString());
+                for (int i = 0; i < realAllAudits.length; i++) {
+                    offConfig += RSWITCH[1] + ",";
+                }
+                params.put("businessUid", labRoom.getId().toString());
+                params.put("config", offConfig);
+                params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                JSONObject jsonObject = JSON.parseObject(s);
+                status = jsonObject.getString("status");
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+            }
         }
         labRoomDAO.store(labRoom);
         return status;

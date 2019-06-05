@@ -241,7 +241,7 @@
             <div class="TabbedPanelsContent">
                 <div class="content-box">
                     <table class="tab_lab" style="margin:10px 0 0;">
-                        <c:if test="${isGraded}">
+                        <%--<c:if test="${isGraded}">
                             <tr>
                                 <th>实验室等级</th>
                                 <td colspan="3">
@@ -251,7 +251,7 @@
                                     </select>
                                 </td>
                             </tr>
-                        </c:if>
+                        </c:if>--%>
                         <c:if test="${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
                          and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
                          and businessName ne '1StationReservation' and businessName ne '2StationReservation' and businessName ne 'CancelLabRoomReservation'}">
