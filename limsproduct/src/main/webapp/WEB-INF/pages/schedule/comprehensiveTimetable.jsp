@@ -169,6 +169,12 @@
                                         </c:forEach>
                                     </select>
                                 </li>
+                                <li>课程:
+                                    <input id="courseName" name="courseName" value="${courseName}" type="text"/>
+                                </li>
+                                <li>实验项目:
+                                    <input id="itemName" name="itemName" value="${itemName}" type="text"/>
+                                </li>
                                 <%--<li>--%>
                                     <%--<input class="btn btn-new" id="myPrint" value="打印课表" type="button"/>--%>
                                 <%--</li>--%>
@@ -235,11 +241,13 @@ var Timetable = new Timetables({
 
 $(document).ready(function(){
     var week = $("#week").val();
+    var itemName = $("#itemName").val();
+    var courseName = $("#courseName").val();
     var labRoomId = $("#labRoom").val();
     var zuulServerUrl = $("#zuulServerUrl").val();
     $.ajax({
         type:"GET",
-        url:zuulServerUrl+"/timetable-service/api/schedule/timetable?labRoomId="+ labRoomId + "&week=" + week,
+        url:zuulServerUrl+"/timetable-service/api/schedule/timetable?labRoomId="+ labRoomId + "&week=" + week+ "&itemName=" + itemName+ "&courseName=" + courseName,
 //                data:{'week': week},
         success:function (data) {
             courseList = [

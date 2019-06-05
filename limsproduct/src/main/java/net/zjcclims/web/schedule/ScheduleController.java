@@ -122,6 +122,16 @@ public class ScheduleController<JsonResult> {
             labRoom = Integer.valueOf(request.getParameter("labRoom"));
         }
         mav.addObject("labRoom", labRoom);
+        String itemName = "";
+        if(request.getParameter("itemName") != null && !request.getParameter("itemName").equals("")) {
+            itemName = request.getParameter("itemName").toString();
+        }
+        mav.addObject("itemName", itemName);
+        String courseName = "";
+        if(request.getParameter("courseName") != null && !request.getParameter("courseName").equals("")) {
+            courseName = request.getParameter("courseName").toString();
+        }
+        mav.addObject("courseName", courseName);
         mav.setViewName("/schedule/comprehensiveTimetable.jsp");
         return mav;
     }
