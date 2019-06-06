@@ -311,10 +311,6 @@ public class SystemLogController {
         }
         sql.append(" order by o.id asc");
         Query query = entityManager.createQuery(sql.toString());
-        int totalRecords = query.getResultList().size();
-        query.setMaxResults(pagesize);
-        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
-        query.setFirstResult(firstResult);
         List<OperationItem> operationItemListNew = query.getResultList();
         List<ExperimentalScheduleVO> experimentalScheduleVOs = new ArrayList<ExperimentalScheduleVO>();
         int i = 1;
@@ -339,22 +335,33 @@ public class SystemLogController {
                 }
             }
         }
-        for(OperationItem operationItem:operationItemList){
-            ExperimentalScheduleVO experimentalScheduleVO = new ExperimentalScheduleVO();
-            experimentalScheduleVO.setId(i);
-            //实验名称
-            experimentalScheduleVO.setItemName(operationItem.getLpName());
-            //器材-实验物资
-            Set<ItemAssets> itemAssets = operationItem.getItemAssets();
-            String Asset = "";
-            if(itemAssets.size()!=0){
-                for(ItemAssets itemAsset : itemAssets){
-                    Asset = Asset + itemAsset.getAsset().getChName() + "、";
-                }
+        int totalRecords = operationItemList.size();
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        int targetLimit = firstResult+Integer.valueOf(pagesize);
+        if(operationItemList.size()>0) {
+            if (targetLimit <= operationItemList.size()) {
+                //do nothing
+            } else {
+                targetLimit = operationItemList.size();
             }
-			Asset = Asset.substring(0, Asset.length()-1);
-            experimentalScheduleVO.setItemAssets(Asset);
-            //器材-实验设备
+            for (int m = firstResult; m < targetLimit; m++) {
+                OperationItem operationItem = operationItemList.get(m);
+                ExperimentalScheduleVO experimentalScheduleVO = new ExperimentalScheduleVO();
+                experimentalScheduleVO.setId(i);
+                //实验名称
+                experimentalScheduleVO.setItemName(operationItem.getLpName());
+                //器材-实验物资
+                Set<ItemAssets> itemAssets = operationItem.getItemAssets();
+                String Asset = "";
+                if(itemAssets.size()!=0){
+                    for(ItemAssets itemAsset : itemAssets){
+                        Asset = Asset + itemAsset.getAsset().getChName() + "、";
+                    }
+                }if(!Asset.equals("")){
+                    Asset = Asset.substring(0, Asset.length()-1);
+                }
+                experimentalScheduleVO.setItemAssets(Asset);
+                //器材-实验设备
 //            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
 //            String device = "";
 //            if(operationItemDevices.size()!=0){
@@ -363,20 +370,21 @@ public class SystemLogController {
 //                }
 //            }
 //            experimentalScheduleVO.setItemDecvices(device);
-            //实验类型
-            if(operationItem.getCDictionaryByLpCategoryApp()!=null){
-                experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+                //实验类型
+                if(operationItem.getCDictionaryByLpCategoryApp()!=null){
+                    experimentalScheduleVO.setItemCategory(operationItem.getCDictionaryByLpCategoryApp().getCName());
+                }
+                //计划时间
+                if(operationItem.getPlanWeek()!=null){
+                    experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
+                }
+                //学期
+                if(operationItem.getSchoolTerm()!=null){
+                    experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
+                }
+                experimentalScheduleVOs.add(experimentalScheduleVO);
+                i++;
             }
-            //计划时间
-            if(operationItem.getPlanWeek()!=null){
-                experimentalScheduleVO.setPlanTime(operationItem.getPlanWeek());
-            }
-            //学期
-            if(operationItem.getSchoolTerm()!=null){
-                experimentalScheduleVO.setTermName(operationItem.getSchoolTerm().getTermName());
-            }
-            experimentalScheduleVOs.add(experimentalScheduleVO);
-            i++;
         }
         Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
         //学期
@@ -770,13 +778,9 @@ public class SystemLogController {
         sql.append(" order by o.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
-        int totalRecords = query.getResultList().size();
-        query.setMaxResults(pagesize);
-        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
-        query.setFirstResult(firstResult);
-        List<OperationItem> operationItemListNew = query.getResultList();
-        List<OperationItem> operationItemList = new ArrayList<>();
-        for(OperationItem operationItem :operationItemListNew){
+        List<OperationItem> operationItemList1 = query.getResultList();
+        List<OperationItem> operationItemList2 = new ArrayList<>();
+        for(OperationItem operationItem :operationItemList1){
             StringBuffer sql1 = new StringBuffer("select distinct m from ItemPlan m where m.operationItem.id=" + operationItem.getId());
             Query query1 = entityManager.createQuery(sql1.toString());
             List<ItemPlan> itemPlanList = query1.getResultList();
@@ -789,11 +793,26 @@ public class SystemLogController {
                 for(TimetableAppointment timetableAppointment :timetableAppointmentList) {
                     if(flag == false){
                         if (timetableAppointment.getStatus() != null && timetableAppointment.getStatus() == 1) {
-                            operationItemList.add(operationItem);
+                            operationItemList2.add(operationItem);
                             flag = true;
                         }
                     }
                 }
+            }
+        }
+        int totalRecords = operationItemList2.size();
+        int firstResult = (Integer.valueOf(currpage)-1) * pagesize;
+        int targetLimit = firstResult+Integer.valueOf(pagesize);
+        List<OperationItem> operationItemList = new ArrayList<>();
+        if(operationItemList2.size()>0) {
+            if (targetLimit <= operationItemList2.size()) {
+                //do nothing
+            } else {
+                targetLimit = operationItemList2.size();
+            }
+            for (int m = firstResult; m < targetLimit; m++) {
+                OperationItem operationItem = operationItemList2.get(m);
+                operationItemList.add(operationItem);
             }
         }
         mav.addObject("operationItemList",operationItemList);
