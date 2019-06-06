@@ -32,6 +32,7 @@ import net.zjcclims.service.common.MySQLService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.PageModel;
 import net.zjcclims.web.common.PConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -2491,8 +2492,23 @@ public class LabReservationController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		String starttime=request.getParameter("starttime");
 		String endtime=request.getParameter("endtime");
-		mav.addObject("starttime", starttime);
-		mav.addObject("endtime", endtime);
+
+		//默认获取最近一个月记录
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		if(StringUtils.isEmpty(endtime)){
+			request.setAttribute("endtime",format.format(c.getTime()));
+		} else{
+			request.setAttribute("endtime",endtime);
+		}
+		if(StringUtils.isEmpty(starttime)){
+			c.add(Calendar.MONTH, -1);
+			request.setAttribute("starttime",format.format(c.getTime()));
+		} else{
+			request.setAttribute("starttime",starttime);
+		}
+
 		mav.addObject("labRoomId",labRoomId);
 		List<LabRoomAgent> labRoomAgents = labRoomService.findLabRoomAgentByRoomId(labRoomId);
 		int pageSize = 30;

@@ -696,8 +696,8 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}else {sql.append(",''");}
 
 		// 考勤时间
-		String starttime= request.getParameter("starttime");
-		String endtime=	request.getParameter("endtime");
+		String starttime= (String)request.getAttribute("starttime");
+		String endtime=	(String)request.getAttribute("endtime");
 
 		if(starttime!=null && starttime.length()>0 ){
 			sql.append( ",'"+starttime +"'");
