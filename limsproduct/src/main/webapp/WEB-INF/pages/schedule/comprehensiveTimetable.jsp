@@ -39,7 +39,9 @@
             font-size: 14px;
             line-height: 28px;
         }
-
+        .left-hand-TextDom {
+            height: 57px!important;
+        }
         .left-hand-TextDom, .Courses-head {
             background-color: #f2f6f7;
         }
