@@ -100,7 +100,7 @@ public class ScheduleController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUserDetail();
         mav.addObject("user", user);
-        // 当前学期
+        // 当前学期listGeneralTimetable
         SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
         mav.addObject("term", schoolTerm.getTermName());
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
@@ -110,6 +110,8 @@ public class ScheduleController<JsonResult> {
         //学院下所有实验室
         List<LabRoom> labRooms = labRoomService.findLabRoomBySchoolAcademy(user.getSchoolAcademy().getAcademyNumber());
         mav.addObject("labRoomList",labRooms);
+        //日历
+        mav.addObject("schoolweeek", schoolWeekService.getMapDate());
         //返回选择项
         //当前周
         int week = shareService.findNewWeek();
