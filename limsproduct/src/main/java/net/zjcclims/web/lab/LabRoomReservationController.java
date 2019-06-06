@@ -811,7 +811,8 @@ public class LabRoomReservationController<JsonResult> {
 //            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
 //                    (stationReservation.getLabRoom().getLabRoomLevel() == null ? "" : stationReservation.getLabRoom().getLabRoomLevel().toString())
 //                    : "") + "StationReservation");
-            params.put("businessType", pConfig.PROJECT_NAME + "StationReservation");
+            String businessType = "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            params.put("businessType", pConfig.PROJECT_NAME + businessType);
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessLevelStatus", params);
             String returnStr = "";
             JSONArray curJSONArray = JSONObject.parseObject(s).getJSONArray("data");

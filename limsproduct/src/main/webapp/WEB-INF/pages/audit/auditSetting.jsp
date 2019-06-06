@@ -55,14 +55,14 @@
             var range = $("#selectedSchoolAcademy").val();
             if (range == null && ${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
              and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
-             and businessName ne '1StationReservation' and businessName ne '2StationReservation' and businessName ne 'CancelLabRoomReservation'}) {
+             and businessName ne 'CancelLabRoomReservation'}) {
                 alert("确认权限已保存，请选择开放范围！");
                 window.location.reload();
                 return false;
             }
             if (${businessName eq 'OperationItem' or businessName eq 'TimetableAudit'or businessName eq 'VirtualImageReservation' or businessName eq 'SelfTimetableAudit'
-             or businessName eq 'AdjustTimetableAudit' or businessName eq 'CloseTimetableAudit' or businessName eq 'OperationItemNewAudit' or businessName eq 'StationReservation'
-             or businessName eq '1StationReservation' or businessName eq '2StationReservation' or businessName eq 'CancelLabRoomReservation'}) {
+             or businessName eq 'AdjustTimetableAudit' or businessName eq 'CloseTimetableAudit' or businessName eq 'OperationItemNewAudit'
+             or businessName eq 'CancelLabRoomReservation'}) {
                 range = "";
             }
             var rangeStr = range.toString();
@@ -253,8 +253,8 @@
                             </tr>
                         </c:if>--%>
                         <c:if test="${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
-                         and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
-                         and businessName ne '1StationReservation' and businessName ne '2StationReservation' and businessName ne 'CancelLabRoomReservation'}">
+                         and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit'
+                         and businessName ne 'CancelLabRoomReservation'}">
                             <tr>
                                 <th>开放范围</th>
                                 <td colspan="3">
