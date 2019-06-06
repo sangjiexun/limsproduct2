@@ -21,7 +21,8 @@ public class CustomLoginHandler extends
             HttpServletResponse response, Authentication authentication)
             throws ServletException, IOException {
         SavedRequest savedRequest = (SavedRequest)request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-        if(savedRequest!=null) {
+        if(savedRequest!=null && savedRequest.getRedirectUrl()!=null && !"".equals(savedRequest.getRedirectUrl())
+        && !savedRequest.getRedirectUrl().contains("/xxx") && !savedRequest.getRedirectUrl().contains("/test")) {
             String targetUrl = savedRequest.getRedirectUrl();
             request.getSession().removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
             response.sendRedirect(targetUrl);
