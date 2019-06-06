@@ -2508,21 +2508,18 @@ public class LabReservationController<JsonResult> {
 		} else{
 			request.setAttribute("starttime",starttime);
 		}
-
 		mav.addObject("labRoomId",labRoomId);
-		List<LabRoomAgent> labRoomAgents = labRoomService.findLabRoomAgentByRoomId(labRoomId);
 		int pageSize = 30;
 		int totalRecords = 0;
 		List<LabAttendance> accessListAll = new ArrayList<LabAttendance>();
 		int setPage = 0;
 		long start = System.currentTimeMillis();
-		for(LabRoomAgent temp:labRoomAgents){
-			String ip=temp.getHardwareIp();
-			// 新版从iot获取数据
-			totalRecords += cmsShowService.findIotAttendanceByIpCount(commonHdwlog,ip,request,setPage,pageSize);
-			//页面显示的实验室
-			accessListAll.addAll(cmsShowService.findIotAttendanceByIp(commonHdwlog,ip,request,page,pageSize));
-		}
+
+		// 新版从iot获取数据
+		totalRecords += cmsShowService.findIotAttendanceBylabRoomIdCount(commonHdwlog,labRoomId.toString(),request,setPage,pageSize);
+		//页面显示的实验室
+		accessListAll.addAll(cmsShowService.findIotAttendanceBylabRoomId(commonHdwlog,labRoomId.toString(),request,page,pageSize));
+
 		long end = System.currentTimeMillis();
 		System.out.println("运行时间:"+(end-start));
 		Map<String, Integer> pageModel = shareService.getPage(page, pageSize, totalRecords);

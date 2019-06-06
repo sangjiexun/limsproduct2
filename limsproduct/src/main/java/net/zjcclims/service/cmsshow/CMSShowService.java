@@ -277,12 +277,25 @@ public interface CMSShowService {
 	public int findIotAttendanceByIpCount(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize);
 
 	/**
+	 * @Description: 根据实验室获取考勤记录数量
+	 * @Author: 林威
+	 * @CreateDate: 2019/6/6
+	 */
+	public int findIotAttendanceBylabRoomIdCount(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize);
+
+	/**
 	* @Description: 根据ip获取iot中考勤记录
 	* @Author: 徐明杭
 	* @CreateDate: 2019/3/25 10:28
 	*/
 	public List<LabAttendance> findIotAttendanceByIp(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize);
 
+	/**
+	 * @Description: 根据实验室获取iot中考勤记录
+	 * @Author: 林威
+	 * @CreateDate: 2019/3/25 10:28
+	 */
+	public List<LabAttendance> findIotAttendanceBylabRoomId(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize);
 
 	/**
 	 * @Description: 根据ip调用存储过程取iot中考勤记录
@@ -290,6 +303,13 @@ public interface CMSShowService {
 	 * @CreateDate: 2019/3/28 10:28
 	 */
 	public List<Object[]> getCommonHwdlogList(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize);
+
+	/**
+	 * @Description: 根据实验室调用存储过程取iot中考勤记录
+	 * @Author: 林威
+	 * @CreateDate: 2019/6/6
+	 */
+	public List<Object[]> getCommonHwdlogListByLabroomId(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize);
 
 	/**
 	 * Description 导出--实验室考勤名单
