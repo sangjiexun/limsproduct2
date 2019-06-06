@@ -502,8 +502,9 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
-        sql.append(" WHERE arr.assetReceive.status = 4 AND arr.asset.category = 2 order by arr.id asc");
+        StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr");
+        sql.append(" WHERE (arr.assetReceive.status = 4 OR arr.assetReceive.status = 5)");
+        sql.append(" AND arr.asset.category = 8 order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
@@ -634,8 +635,13 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("select distinct o from Asset o");
-
+        StringBuffer sql = new StringBuffer("select distinct o from Asset o where 1=1");
+        //物资名称筛选
+        if(request.getParameter("assetName") != null && !request.getParameter("assetName").equals("")){
+            String assetName = request.getParameter("assetName");
+            sql.append(" and o.chName like'%" + assetName + "%'");
+            mav.addObject("assetName", assetName);
+        }
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
         query.setMaxResults(pagesize);
@@ -671,9 +677,8 @@ public class SystemLogController {
         //物资
         Asset asset = assetDAO.findAssetByPrimaryKey(Integer.valueOf(assetId));
 
-        StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr ,AssetReceive ar");
-        sql.append(" where ar.id = arr.assetReceive.id");
-        sql.append(" and ar.status = 4 and arr.asset.id = "+ assetId);
+        StringBuffer sql = new StringBuffer("select arr from AssetReceiveRecord arr");
+        sql.append(" where (arr.assetReceive.status = 4 or arr.assetReceive.status = 5) and arr.asset.id = "+ assetId);
         sql.append(" order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
@@ -831,67 +836,66 @@ public class SystemLogController {
         List<Object> sectionList = new ArrayList();
         StringBuffer sql = new StringBuffer("SELECT i FROM ItemPlan i WHERE i.operationItem.id="+itemId);
         List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
-        if(itemPlanList.size()!=0){
-            ItemPlan itemPlan = itemPlanList.get(0);
-            TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
-            Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
-            //根据TimetableAppointment获取起止周次节次星期
-            for(TimetableAppointment timetableAppointment:timetableAppointments){
-                Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
-                if(timetableAppSameNumbers.size()!=0){
-                    for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
-                        startWeek = timetableAppointmentSameNumber.getStartWeek();
-                        endWeek = timetableAppointmentSameNumber.getEndWeek();
-                        startClass = timetableAppointmentSameNumber.getStartClass();
-                        endClass = timetableAppointmentSameNumber.getEndClass();
-                        weekday = timetableAppointment.getWeekday();
+		for(ItemPlan itemPlan:itemPlanList){
+			TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
+			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+			//根据TimetableAppointment获取起止周次节次星期
+			for(TimetableAppointment timetableAppointment:timetableAppointments){
+				Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
+				if(timetableAppSameNumbers.size()!=0){
+					for(TimetableAppointmentSameNumber timetableAppointmentSameNumber : timetableAppSameNumbers){
+						startWeek = timetableAppointmentSameNumber.getStartWeek();
+						endWeek = timetableAppointmentSameNumber.getEndWeek();
+						startClass = timetableAppointmentSameNumber.getStartClass();
+						endClass = timetableAppointmentSameNumber.getEndClass();
+						weekday = timetableAppointment.getWeekday();
 
-                        if(startWeek!=0){
-                            if(startWeek<endWeek){
-                                if(startClass<endClass){
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1] = startWeek;
-                                    object[2] = weekday;
-                                    object[3] = startClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                    startClass++;
-                                }else {
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1] = startWeek;
-                                    object[2] = weekday;
-                                    object[3] = endClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                }
-                                startWeek++;
-                            }else {
-                                if(startClass<endClass){
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1] = startWeek;
-                                    object[2] = weekday;
-                                    object[3] = startClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                    startClass++;
-                                }else {
-                                    Object[] object = new Object[5];
-                                    object[0] = operationItem;
-                                    object[1]= startWeek;
-                                    object[2] = weekday;
-                                    object[3] = endClass;
-                                    object[4] = timetableAppointment.getId();
-                                    sectionList.add(object);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+						if(startWeek!=0){
+							if(startWeek<endWeek){
+								if(startClass<endClass){
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1] = startWeek;
+									object[2] = weekday;
+									object[3] = startClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+									startClass++;
+								}else {
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1] = startWeek;
+									object[2] = weekday;
+									object[3] = endClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+								}
+								startWeek++;
+							}else {
+								if(startClass<endClass){
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1] = startWeek;
+									object[2] = weekday;
+									object[3] = startClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+									startClass++;
+								}else {
+									Object[] object = new Object[5];
+									object[0] = operationItem;
+									object[1]= startWeek;
+									object[2] = weekday;
+									object[3] = endClass;
+									object[4] = timetableAppointment.getId();
+									sectionList.add(object);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
         mav.addObject("sectionList",sectionList);
         int totalRecords = sectionList.size();
 		Map<String, Integer> pageModel = shareService.getPage(Integer.valueOf(currpage), pagesize, totalRecords);
