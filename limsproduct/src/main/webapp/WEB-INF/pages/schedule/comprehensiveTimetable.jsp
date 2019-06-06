@@ -122,6 +122,14 @@
         .grid-active span {
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
+        .course-hasContent div {
+            /*position: absolute;*/
+            /*top: 40%;*/
+            /*left: 32%;*/
+            /*height: 30%;*/
+            /*!* width: 50%; *!*/
+            /*margin: -15% 0 0 -25%;*/
+        }
         .course-hasContent div p {
             color: #fff;
         }
@@ -309,7 +317,7 @@ var Timetable = new Timetables({
             // 遍历课程表
             for(var i=0; i<data.length; i++) {
                 var arr = [];
-                while(data[i].startClass <= data[i].endClass){
+                while( parseInt(data[i].startClass)<= parseInt(data[i].endClass)){
                     arr.push(data[i].startClass++);
                 }
                 console.log(arr)
