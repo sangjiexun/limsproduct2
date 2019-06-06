@@ -6,10 +6,12 @@
 <html>
 <head>
     <meta name="decorator" content="iframe"/>
+    <meta name="contextPath" content="${pageContext.request.contextPath}"/>
     <!-- 下拉的样式 -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
     <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css" />
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/js/timetable/Timetables.min.js" type="text/javascript"></script>
@@ -88,6 +90,9 @@
         }
 
         .highlight-week {
+            color: #02a9f5 !important;
+        }
+        .highlight-week span{
             color: #02a9f5 !important;
         }
 
@@ -196,6 +201,8 @@
 //            $("#my_show").jqprint();
 //        }
 //    );
+var contextPath = $("meta[name='contextPath']").attr("content");
+$(document).ready(function(){
 var courseList = [
     ['','','','','','','','','','','',''],
     ['','','','','','','','','','','',''],
@@ -205,8 +212,38 @@ var courseList = [
     ['','','','','','','','','','','',''],
     ['','','','','','','','','','','',''],
 ];
-var weekTime = window.innerWidth > 360 ? ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] :
+var weekday = new Array();
+<c:forEach items="${weekDayDate}" var="curr" varStatus="i">
+weekday.push('${curr}')
+</c:forEach>
+console.log(weekday);
+var weektime = [];
+for(var z=0;z<weekday.length;z++){
+    if(z == 0){
+        weektime.push('周一<br><span>'+ weekday[z] +'</span>')
+    }
+    if(z == 1){
+        weektime.push('周二<br><span>'+ weekday[z] +'</span>')
+    }
+    if(z == 2){
+        weektime.push('周三<br><span>'+ weekday[z] +'</span>')
+    }
+    if(z == 3){
+        weektime.push('周四<br><span>'+ weekday[z] +'</span>')
+    }
+    if(z == 4){
+        weektime.push('周五<br><span>'+ weekday[z] +'</span>')
+    }if(z == 5){
+        weektime.push('周六<br><span>'+ weekday[z] +'</span>')
+    }if(z == 6){
+        weektime.push('周日<br><span>'+ weekday[z] +'</span>')
+    }
+
+}
+//var weekTime = window.innerWidth > 360 ? ['周一<br><span>2019-06-03</span>', '周二<br><span>2019-06-03</span>', '周三<br><span>2019-06-03</span>', '周四<br><span>2019-06-03</span>', '周五<br><span>2019-06-03</span>', '周六<br><span>2019-06-03</span>', '周日<br><span>2019-06-03</span>'] :
+var weekTime = window.innerWidth > 360 ? weektime :
     ['一', '二', '三', '四', '五', '六', '日'];
+//var dateTime = ['2019-06-03','2019-06-03','2019-06-03','2019-06-03','2019-06-03','2019-06-03','2019-06-03']
 var day = new Date().getDay();
 var courseType = [
 //    [{index: '1', name: '8:30'}, 1],
@@ -235,20 +272,27 @@ var Timetable = new Timetables({
         console.log(e);
     },
     styles: {
-        Gheight: 50
+        Gheight: 60
     }
 });
-
-$(document).ready(function(){
     var week = $("#week").val();
     var itemName = $("#itemName").val();
     var courseName = $("#courseName").val();
     var labRoomId = $("#labRoom").val();
     var zuulServerUrl = $("#zuulServerUrl").val();
+    var data1 = JSON.stringify({
+        "week": week,
+        "itemName": itemName,
+        "labRoomId": labRoomId,
+        "courseName": courseName,
+    });
     $.ajax({
-        type:"GET",
-        url:zuulServerUrl+"/timetable-service/api/schedule/timetable?labRoomId="+ labRoomId + "&week=" + week+ "&itemName=" + itemName+ "&courseName=" + courseName,
-//                data:{'week': week},
+        type:"post",
+//        url:zuulServerUrl+"/timetable-service/api/schedule/timetable?labRoomId="+ labRoomId + "&week=" + week+ "&itemName=" + itemName+ "&courseName=" + courseName,
+        url:zuulServerUrl+"/timetable-service/api/schedule/timetable",
+        data:data1,
+        headers: {Authorization: getJWTAuthority()},
+        contentType: "application/json;charset=UTF-8",
         success:function (data) {
             courseList = [
                 ['','','','','','','','','','','',''],
@@ -269,27 +313,31 @@ $(document).ready(function(){
                 console.log(arr)
                 for(var j = 0; j<arr.length;j++){
                     var str = "<div>";
-                        str+= "<p>"+ data[i].courseName+"@"+data[i].courseNo +"</p>";
-                        if(data[i].items!=null){
-                            str+= "<p>"
-                            for(var y =0;y<data[i].items.length;y++){
-                                str+="<a data='"+ data[i].items[y].itemId +"'>"+data[i].items[y].itemName+",</a>"
-                            }
-                            str+="</p>"
+                    str+= "<p>"+ data[i].courseName+"@"+data[i].courseNo +"</p>";
+                    if(data[i].items!=0){
+                        str+= "<p>实验项目："
+                        for(var y =0;y<data[i].items.length;y++){
+                            str+="<a href='javascript:void(0);' onclick='listItemMaterialRecordRest("+ data[i].items[y].itemId +")' data='"+ data[i].items[y].itemId +"'>"+data[i].items[y].itemName+",</a>"
                         }
-                        if(data[i].labRoom!=null){
-                            str+= "<p>"+ data[i].labRoom+"</p>";
-                        }
-                        if(data[i].teacher!=null){
-                            str+= "<p>"+ data[i].teacher+"</p>";
-                        }
-                        if(data[i].tutor!=null){
-                            str+= "<p>"+ data[i].tutor+"</p>";
-                        }
-                        if(data[i].resources!=null){
-                            str+= "<p>"+ data[i].resources+"</p>";
-                        }
-                        str+= "</div>";
+                        str+="</p>"
+                    }
+                    if(data[i].labRoom!=null){
+                        str+= "<p>实验室："+ data[i].labRoom+"</p>";
+                    }
+                    if(data[i].teacher!=null){
+                        str+= "<p>授课教师："+ data[i].teacher+"</p>";
+                    }
+                    if(data[i].tutor!=null){
+                        str+= "<p>助教："+ data[i].tutor+"</p>";
+                    }
+                    if(data[i].classes!=null){
+                        str+= "<p>班级："+ data[i].classes+"</p>";
+                    }
+                    if(data[i].resources!=null){
+//                            str+= "<p>资源链接："+ data[i].resources+"</p>";
+                        str+= "<p><a href='http://"+ data[i].resources +"'>资源链接</a></p>";
+                    }
+                    str+= "</div>";
 //                    courseList[data[i].weekday-1][arr[j]-1] = data[i].courseName+"@"+data[i].courseNo+","+data[i].itemName+","+data[i].labRoom;
                     courseList[data[i].weekday-1][arr[j]-1] = str;
 //                    courseList[data[i].weekday-1][data[i].endClass-1] = data[i].courseName;
@@ -302,6 +350,31 @@ $(document).ready(function(){
         }
     });
 });
+function listItemMaterialRecordRest(id) {
+    var index = layer.open({
+        type: 2,
+        title: '详情',
+        maxmin: true,
+        shadeClose: true,
+        content: "${pageContext.request.contextPath}/openOperationItem/viewOpenOperationItem/1/" + id,
+    });
+    layer.full(index);
+}
+
+function getJWTAuthority() {
+    var authorization = "";
+    initDirectoryEngine({
+        getHostsUrl: contextPath + "/shareApi/getHosts",
+        getAuthorizationUrl: contextPath + "/shareApi/getAuthorization"
+    });
+    getAuthorization({
+        async: false,
+        success: function (data) {
+            authorization = data;
+        }
+    });
+    return authorization;
+}
 
 
 //切换课表

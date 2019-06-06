@@ -35,7 +35,7 @@
     <script src="${pageContext.request.contextPath}/bootstrap/bootstrap-table/extensions/editable/bootstrap-table-editable.js"></script>
     <script src="${pageContext.request.contextPath}/bootstrap/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.js"></script>
     <script src="${pageContext.request.contextPath}/jquery/jquery.treegrid.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
+    `
     <c:choose>
         <c:when test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
             <script src="${pageContext.request.contextPath}/js/lims/timetable/self/newSelfReGroupCourseByStudent.js"

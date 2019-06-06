@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -119,6 +120,13 @@ public class ScheduleController<JsonResult> {
             week = Integer.valueOf(request.getParameter("week"));
         }
         mav.addObject("week", week);
+        //获取日期
+        String[] weekDayDate = new String[7];
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for(int i=1;i<8;i++){
+            weekDayDate[i-1]=sdf.format(schoolWeekService.getDate(schoolTerm.getId(),week,i).getTime());
+        }
+        mav.addObject("weekDayDate", weekDayDate);
         int labRoom = 0;
         if(request.getParameter("labRoom") != null && !request.getParameter("labRoom").equals("")) {
             labRoom = Integer.valueOf(request.getParameter("labRoom"));
