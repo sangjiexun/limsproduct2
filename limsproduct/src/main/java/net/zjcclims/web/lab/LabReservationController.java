@@ -1031,9 +1031,9 @@ public class LabReservationController<JsonResult> {
         List<String> authNames = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
 
-        String businessType = "StationReservation";
         params.put("businessUid", labRoom.getId().toString());
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        params.put("businessType", pConfig.PROJECT_NAME + businessType );
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
@@ -1262,7 +1262,7 @@ public class LabReservationController<JsonResult> {
             String[] RSWITCH = {"on", "off"};
             String rConfig = "";
             Map<String, String> params = new HashMap<>();
-            String businessType = "StationReservation";
+            String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             params.put("businessUid", labRoom.getId().toString());
             for (int i = 0; i < realAllAudits.length; i++) {
                 rConfig += realAllAudits[i].equals("1") && needAudit != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";

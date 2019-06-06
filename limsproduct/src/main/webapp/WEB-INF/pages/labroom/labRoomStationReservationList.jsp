@@ -90,7 +90,7 @@ var s=${isAudit};
 		window.location.href="${pageContext.request.contextPath}/labRoomLending/labReservationList?tage=0&page=1&isaudit=${isAudit}"
 	}
   //转到实验室预约
-  function openAuditWindow(id, businessId,businessType){
+  function openAuditWindow(id, businessId){
       layer.ready(function(){
           var index = layer.open({
               type: 2,
@@ -102,7 +102,7 @@ var s=${isAudit};
               shadeClose: true,
               move:false,
               area: ['1000px', '420px'],
-              content: '../auditing/auditList?businessType=' + businessType + '&businessUid='+ businessId + '&businessAppUid='+id,
+              content: '../auditing/auditList?businessUid='+ businessId + '&businessAppUid='+id,
               end: function(){
                   window.location.reload();
               }
@@ -194,11 +194,11 @@ var s=${isAudit};
      <td>
      <c:if test="${s.buttonMark eq 0}">
      	 <%--<a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">查看</a>--%>
-         <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', ${s.labRoom.id},'StationReservation');">查看</a>
+         <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', ${s.labRoom.id});">查看</a>
      </c:if>
      <c:if test="${s.buttonMark ne 0}">
      	 <%--<a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">审核</a>--%>
-         <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}',${s.labRoom.id}, 'StationReservation');">审核</a>
+         <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}',${s.labRoom.id});">审核</a>
      </c:if>
      <c:if test="${s.result==1}">
      <%--实验室管理员才可看到--%>

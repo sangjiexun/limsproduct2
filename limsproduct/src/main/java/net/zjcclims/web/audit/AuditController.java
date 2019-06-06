@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.AuditSaveParamDTO;
 import net.zjcclims.dao.AuthorityDAO;
+import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomLendingService;
@@ -37,6 +38,8 @@ public class AuditController<JsonResult> {
     @Autowired
     private AuthorityDAO authorityDAO;
     @Autowired
+    private LabRoomDAO labRoomDAO;
+    @Autowired
     private LabRoomReservationService labRoomReservationService;
     @Autowired
     private LabRoomLendingService labRoomLendingService;
@@ -44,12 +47,13 @@ public class AuditController<JsonResult> {
     @RequestMapping("/auditList")
     public ModelAndView auditList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        String businessType = request.getParameter("businessType");
         String businessUid = request.getParameter("businessUid");
         String businessAppUid = request.getParameter("businessAppUid");
         // 获取审核状态
         Integer curStage = -2;
         String curAuthName = "";
+        LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
+        String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
         Map<String, String> params = new HashMap<>();
         params.put("businessType", pConfig.PROJECT_NAME + businessType);
         params.put("businessUid", businessUid);
@@ -152,14 +156,15 @@ public class AuditController<JsonResult> {
             List<User> isAuditUser = new ArrayList<>();
             // 判断业务类型分别取审核人
             switch (businessType){
-                case "StationReservation":
+ //               case "StationReservation":
 //                case "1StationReservation":
 //                case "2StationReservation":
-                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
-                    break;
+//                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
                 case "CancelLabRoomReservation":
                     isAuditUser = labRoomLendingService.getNextUsers(authName, businessAppUid);
+                    break;
                 default:
+                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
             }
             // 如果当前登录人的权限是当前审核权限，则判断是否是审核人并且是否当前页面权限是当前审核权限
             if (request.getSession().getAttribute("selected_role").equals("ROLE_" + curAuthName)) {

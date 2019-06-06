@@ -1783,7 +1783,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			Map<String, String> params = new HashMap<>();
 			//默认教务排课，type=1
 //			String businessType = grade + "StationReservation";
-            String businessType = "StationReservation";
+            String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
 			params.put("businessUid", labRoom.getId().toString());
 			params.put("businessType", pConfig.PROJECT_NAME + businessType);
 			params.put("businessAppUid", labRoomStationReservation.getId().toString());
@@ -1849,7 +1849,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			// 给预约人发消息
 			message.setTitle("实验室工位预约不需要审核");
 //			String businessType = grade + "StationReservation";
-            String businessType = "StationReservation";
+			String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
 			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
 			message.setContent(content);
 			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
