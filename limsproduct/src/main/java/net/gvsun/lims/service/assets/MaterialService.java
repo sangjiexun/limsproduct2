@@ -26,6 +26,12 @@ public interface MaterialService {
     List<AssetsCabinetDTO> findAllAssetCabinetList(String assetId);
 
     /**
+     * 物品柜门列表
+     * @author 吴奇臻 2019-06-05
+     */
+    List<AssetsCabinetWareHouseDTO> findAllAssetCabinetWareHouseByCabinetId(Integer cabinetId);
+
+    /**
      * 物资列表
 
      * * @return MaterialKindDTO

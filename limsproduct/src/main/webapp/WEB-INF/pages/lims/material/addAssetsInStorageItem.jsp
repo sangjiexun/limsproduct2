@@ -56,10 +56,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="layui-col-lg6">
-                    <label class="layui-form-label">智能柜柜门</label>
+                <div class="layui-col-lg6" id="cabinetWareHouse">
+                    <label class="layui-form-label">柜门编号</label>
                     <div class="layui-input-block">
-                        <select name="wareHouse" id="wareHouse" lay-verify="required" >
+                        <select name="wareHouse" id="wareHouse" lay-verify="required" lay-filter="wareHouses" >
                             <option value=""></option>
                         </select>
                     </div>
