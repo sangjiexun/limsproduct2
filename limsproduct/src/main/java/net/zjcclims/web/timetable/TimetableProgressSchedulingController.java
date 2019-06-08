@@ -84,7 +84,7 @@ public class TimetableProgressSchedulingController<JsonResult> {
 
         // 查询条件
         // 所有学期
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         // 当前学期
         int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();

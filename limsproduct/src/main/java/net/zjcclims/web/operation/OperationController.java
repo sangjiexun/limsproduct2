@@ -152,7 +152,7 @@ public class OperationController<JsonResult> {
 		mav.addObject("status", status);
 		mav.addObject("orderBy", orderBy);
 		mav.addObject("users",operationService.getsome());
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		mav.addObject("schoolCourseInfos",operationService.getCourse(acno));
 		mav.addObject("currUser", currUser);  //当前登录用户
 		mav.addObject("operationItem1", new OperationItem());  //用于设置项目编号
@@ -374,7 +374,7 @@ public class OperationController<JsonResult> {
 		int pageSize = ConstantInterface.PAGE_SIZE;
 		//获取当前用户
 		User user = shareService.getUser();
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		//获取当前学期
 		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
 		mav.addObject("schoolTerm", schoolTerm);
@@ -712,7 +712,7 @@ public class OperationController<JsonResult> {
 //		mav.addObject("cid", cid);  //实验中心id
 		mav.addObject("orderBy", orderBy);  //实验中心id
 		mav.addObject("pageModel", shareService.getPage(currpage, pageSize, totalRecords));
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		mav.addObject("schoolCourseInfos",operationService.getCourse(acno));//课程数据
 		mav.addObject("listOperationItem", listOperationItem);
 		mav.addObject("allOperationItem", allOperationItem);
@@ -1854,7 +1854,7 @@ public class OperationController<JsonResult> {
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId(); 
 		mav.addObject("term", term);
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		mav.setViewName("operation/experimentalmanagement.jsp");
 		return mav;
@@ -2276,7 +2276,7 @@ public class OperationController<JsonResult> {
         mav.addObject("labProjectRewardLevel", shareService.getCDictionaryData("category_operation_item_reward_level"));  //获奖等级
         mav.addObject("labProjectRequire", shareService.getCDictionaryData("category_operation_item_require"));  //实验要求
         mav.addObject("labProjectGuideBook", shareService.getCDictionaryData("category_operation_item_guide_book"));  //实验指导书
-        mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //学期
+        mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //学期
         mav.addObject("users", systemService.getAllUser(1, -1, shareService.getUser()));  //教师数据
         LabRoom labRoom = new LabRoom();
         mav.addObject("labRooms", labRoomService.findAllLabRoomByQuery(1, -1, labRoom));  //实验室数据
@@ -2523,7 +2523,7 @@ public class OperationController<JsonResult> {
 		mav.addObject("labProjectRewardLevel", shareService.getCDictionaryData("category_operation_item_reward_level"));  //获奖等级
 		mav.addObject("labProjectRequire", shareService.getCDictionaryData("category_operation_item_require"));  //实验要求
 		mav.addObject("labProjectGuideBook", shareService.getCDictionaryData("category_operation_item_guide_book"));  //实验指导书
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //学期
 		LabRoom labRoom = new LabRoom();
 		SchoolCourseInfo schoolCourseInfo = new SchoolCourseInfo();
 		SchoolAcademy academy = shareService.findSchoolAcademyByPrimaryKey(acno);
@@ -2680,7 +2680,7 @@ public class OperationController<JsonResult> {
 		mav.addObject("status", status);
 		mav.addObject("orderBy", orderBy);
 		mav.addObject("users",operationService.getsome());
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		mav.addObject("schoolCourseInfos",operationService.getCourse(acno));
 		mav.addObject("currUser", currUser);  //当前登录用户
 		mav.addObject("operationItem1", new OperationItem());  //用于设置项目编号
@@ -3091,7 +3091,7 @@ public class OperationController<JsonResult> {
 		mav.addObject("labProjectRewardLevel", shareService.getCDictionaryData("category_operation_item_reward_level"));  //获奖等级
 		mav.addObject("labProjectRequire", shareService.getCDictionaryData("category_operation_item_require"));  //实验要求
 		mav.addObject("labProjectGuideBook", shareService.getCDictionaryData("category_operation_item_guide_book"));  //实验指导书
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //学期
 		mav.addObject("users", systemService.getAllUser(1, -1, shareService.getUser()));  //教师数据
 		LabRoom labRoom = new LabRoom();
 		mav.addObject("labRooms", labRoomService.findAllLabRoomByQuery(1, -1, labRoom));  //实验室数据

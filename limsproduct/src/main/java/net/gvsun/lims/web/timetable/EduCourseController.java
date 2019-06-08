@@ -98,7 +98,7 @@ public class EduCourseController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；

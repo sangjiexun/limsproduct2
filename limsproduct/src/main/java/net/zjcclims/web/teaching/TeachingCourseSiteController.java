@@ -117,7 +117,7 @@ public class TeachingCourseSiteController<JsonResult> {
         }
         mav.addObject("term", term);
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerm", schoolTerms);
         //分页参数
         int totalRecords = operationService.getAllOutlineCount(operationOutline,acno);
@@ -348,7 +348,7 @@ public class TeachingCourseSiteController<JsonResult> {
         int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
         mav.addObject("term", term);
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerm", schoolTerms);
         mav.setViewName("operationprogress/newoperationproject.jsp");
         return mav;
@@ -667,7 +667,7 @@ public class TeachingCourseSiteController<JsonResult> {
         mav.addObject("item",item);
         //所有学期
 //		mav.addObject("schoolTerm"s,shareService.getTermsMap());
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerm", schoolTerms);
         //查找登录人所在学院课程
         mav.addObject("schoolCourseInfoMap", operationService.getschoolcouresMap(acno));

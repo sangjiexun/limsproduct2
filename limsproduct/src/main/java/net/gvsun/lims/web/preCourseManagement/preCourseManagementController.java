@@ -237,7 +237,7 @@ public class preCourseManagementController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
 
         mav.addObject("isMy", "true");
@@ -272,7 +272,7 @@ public class preCourseManagementController<JsonResult> {
         SchoolTerm term = shareService.getBelongsSchoolTerm(Calendar.getInstance());
         mav.addObject("term", term);
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
 
         //当前登录人
@@ -409,7 +409,7 @@ public class preCourseManagementController<JsonResult> {
         SchoolTerm term = pta.getSchoolTerm();
         mav.addObject("term", term);
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         //课程信息
         SchoolCourseInfo schoolCourseInfo = pta.getSchoolCourseInfo();
@@ -516,7 +516,7 @@ public class preCourseManagementController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
 
         mav.addObject("isMy", "false");

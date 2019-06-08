@@ -112,7 +112,7 @@ public class TimetableCourseController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -130,7 +130,6 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("auditOrNot", shareService.getAuditOrNot("TimetableAuditOrNot"));
         // 审核参数
         mav.addObject("businessType", "TimetableAudit");
-        System.out.println("微服务排课请求开始时间"+new Date());
         mav.setViewName("lims/timetable/course/eduCourseList.jsp");
         return mav;
     }
@@ -147,7 +146,7 @@ public class TimetableCourseController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -261,7 +260,7 @@ public class TimetableCourseController<JsonResult> {
     public ModelAndView eduReCourseList(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -471,7 +470,7 @@ public class TimetableCourseController<JsonResult> {
     public ModelAndView newEduReGroupCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         //获取课程编号
         SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(request.getParameter("courseNo"));
         mav.addObject("schoolTerms", schoolTerms);

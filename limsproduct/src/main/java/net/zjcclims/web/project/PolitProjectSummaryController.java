@@ -78,7 +78,7 @@ public class PolitProjectSummaryController<JsonResult> {
 		mav.addObject("totalRecords", totalRecords);
 		mav.addObject("pageModel", shareService.getPage(currpage, pageSize, totalRecords));
 		mav.addObject("schoolTermMap", reportService.getTermsMap());
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		//LabCenter labcenter=labCenterDAO.findLabCenterById(cid);
 		//获取当前学期
 		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());

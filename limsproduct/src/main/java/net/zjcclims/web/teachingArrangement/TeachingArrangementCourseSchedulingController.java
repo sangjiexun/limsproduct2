@@ -105,7 +105,7 @@ public class TeachingArrangementCourseSchedulingController<JsonResult> {
 										  @ModelAttribute("selected_academy") String acno) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 根据课程及id获取选课组列表
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -169,7 +169,7 @@ public class TeachingArrangementCourseSchedulingController<JsonResult> {
 										   @ModelAttribute("selected_academy") String acno,int flag) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 根据课程及id获取选课组列表
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -274,8 +274,7 @@ public class TeachingArrangementCourseSchedulingController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("PROJECT_NAME",pConfig.PROJECT_NAME);
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-				.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -397,7 +396,7 @@ public class TeachingArrangementCourseSchedulingController<JsonResult> {
 			term = Integer.parseInt(request.getParameter("term"));
 		}
 		// 获取学期列表用于查询
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		// 获取课程列表
 		mav.addObject("schoolCourses", shareService.getSchoolCourseList(term));

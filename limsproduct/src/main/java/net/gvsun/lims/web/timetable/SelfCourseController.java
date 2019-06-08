@@ -89,7 +89,7 @@ public class SelfCourseController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -181,7 +181,7 @@ public class SelfCourseController<JsonResult> {
     public ModelAndView newSelfReGroupCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -225,7 +225,7 @@ public class SelfCourseController<JsonResult> {
         }
         mav.addObject("timetableSelfCourse", timetableSelfCourse);
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         // 学生列表
         mav.addObject("grade",schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));

@@ -89,7 +89,7 @@ public class ClassBrandController<JsonResult> {
 			term = Integer.parseInt(request.getParameter("term"));
 		}
 		// 获取学期列表用于查询
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		// 获取课程列表
 		mav.addObject("schoolCourses", teachingReportService.getSchoolCourseLists(term));
@@ -155,7 +155,7 @@ public class ClassBrandController<JsonResult> {
 			term = Integer.parseInt(request.getParameter("term"));
 		}
 		// 获取学期列表用于查询
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		// 获取课程列表
 		mav.addObject("schoolCourses", teachingReportService.getSchoolCourseLists(term));

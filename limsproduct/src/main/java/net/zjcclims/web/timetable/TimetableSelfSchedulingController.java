@@ -171,7 +171,7 @@ public class TimetableSelfSchedulingController<JsonResult> {
 		// 获取登录用户信息
 		mav.addObject("user", shareService.getUserDetail());
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		// 根据课程及id获取选课组列表
 		//int term = shareService.findNewTerm().getId();获取当前时段所处学期或下个新学期
@@ -721,7 +721,7 @@ public class TimetableSelfSchedulingController<JsonResult> {
 	@RequestMapping("/timetable/selfTimetable/listNewCourseCodeIframe")
 	public ModelAndView listNewCourseCodeIframe() {
 		ModelAndView mav = new ModelAndView();
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 根据选课组编号，获取排课信息
 		mav.setViewName("timetable/selfTimetable/listNewCourseCodeIframe.jsp");
@@ -757,7 +757,7 @@ public class TimetableSelfSchedulingController<JsonResult> {
 		}
 		mav.addObject("timetableSelfCourse", timetableSelfCourse);
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 获取所有课程列表
 		mav.addObject("schoolCourses", schoolCourseInfoService.getCourseInfoByQuery(null,acno, -1, 1, -1));
@@ -883,7 +883,7 @@ public class TimetableSelfSchedulingController<JsonResult> {
 		// 将User映射到user
 		mav.addObject("timetableSelfCourse", new TimetableSelfCourse());
 		// 根据页面的页码，查找出20条记录，将找到的用户映射给users
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 获取用户列表
 		mav.addObject("timetableSelfCourseMap",

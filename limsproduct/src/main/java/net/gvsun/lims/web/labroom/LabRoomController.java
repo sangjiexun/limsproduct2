@@ -70,7 +70,6 @@ public class LabRoomController<JsonResult> {
     @RequestMapping("/labRoomList")
     public ModelAndView labRoomList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         mav.setViewName("lims/labroom/manage/labRoomList.jsp");

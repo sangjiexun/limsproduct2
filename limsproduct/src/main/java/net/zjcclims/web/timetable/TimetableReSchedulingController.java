@@ -124,7 +124,7 @@ public class TimetableReSchedulingController<JsonResult> {
 		mav.addObject("schoolCourses", shareService.getSchoolCourseList(schoolTerm.getId()));
 		// 获取学期列表
 		mav.addObject("schoolTerm", schoolTerm);
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 获取实验分室室排课记录
 		mav.addObject("labTimetable",
@@ -247,7 +247,7 @@ public class TimetableReSchedulingController<JsonResult> {
 			term = Integer.parseInt(request.getParameter("term"));
 		}
 		// 获取学期列表用于查询
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		// 获取课程列表
 		mav.addObject("term", term);
@@ -356,7 +356,7 @@ public class TimetableReSchedulingController<JsonResult> {
 		// 获取登录用户信息
 		mav.addObject("user", shareService.getUserDetail());
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 
 		// 根据课程及id获取选课组列表
@@ -1053,7 +1053,7 @@ public class TimetableReSchedulingController<JsonResult> {
 	public ModelAndView listGroupTimetableStudentSelect(@ModelAttribute TimetableGroup timetableGroup) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 
 		// 获取分组排课信息，非登陆学生的用户，从list中去掉

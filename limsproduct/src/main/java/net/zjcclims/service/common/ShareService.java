@@ -29,13 +29,6 @@ public interface ShareService {
 	 */
 	public CDictionary getCDictionaryByCategory(String category, String number);
 	
-	/**
-	 * 获取所有的学期数据
-	 * @author hly
-	 * 2015.08.03
-	 */
-	public List<SchoolTerm> findAllSchoolTerm();
-
 	/*
 	 * 分页显示
 	 */

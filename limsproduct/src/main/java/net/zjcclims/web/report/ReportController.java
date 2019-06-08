@@ -724,7 +724,7 @@ public class ReportController<JsonResult> {
 	public ModelAndView experimentTypeAcademy(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance())
 				.getId();
 		String sql = "select * from view_report_academytype_1 v where 1=1";
@@ -756,8 +756,7 @@ public class ReportController<JsonResult> {
 	public ModelAndView experimentType(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-				.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance())
 				.getId();
 		String sql = "select * from view_report_labtypesdu_1 v where 1=1";
@@ -788,8 +787,7 @@ public class ReportController<JsonResult> {
 	public ModelAndView reportLabOpenRateInfo(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-				.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance())
 				.getId();
 		String sql = "select * from view_report_labratesdu_10 v where 1=1";
@@ -819,8 +817,7 @@ public class ReportController<JsonResult> {
 	public ModelAndView reportLabOpenInfo(HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-				.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance())
 				.getId();
 		String sql = "select * from view_report_labratesdu_10 v where 1=1";
@@ -849,7 +846,7 @@ public class ReportController<JsonResult> {
 	public ModelAndView listTakePost(HttpServletRequest request, @RequestParam Integer currpage, @ModelAttribute("selected_academy") String acno) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerm", schoolTerms);
 		//获取查询条件
 		String term = request.getParameter("term");
@@ -1045,7 +1042,7 @@ public class ReportController<JsonResult> {
 		// 当前学期
 		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
 		//学期列表
-		List<SchoolTerm> termList = shareService.findAllSchoolTerm();
+		List<SchoolTerm> termList = shareService.findAllSchoolTerms();
 		mav.addObject("termList", termList);
 		if(schoolCourseDetail != null && schoolCourseDetail.getSchoolTerm() != null) {
 			mav.addObject("termId", schoolCourseDetail.getSchoolTerm().getId());
