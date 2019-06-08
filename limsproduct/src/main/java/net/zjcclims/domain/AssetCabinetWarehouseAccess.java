@@ -78,24 +78,51 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	Integer flag;
-	
+
+	@Column(name = "asset_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer assetId;
+
+	@Column(name = "app_record_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer appRecordId;
+
+
+	@Column(name = "warehouse_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer warehouseId;
+
+
 	@Column(name = "type")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
-	Integer type; 
+	String type;
 	/**
 	 * ���ʽ������
 	 * 
 	 */
 
-	@Column(name = "cabinet_quantity", scale = 2, precision = 11)
+	@Column(name = "cabinet_quantity")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
-	BigDecimal cabinetQuantity;
+	Integer cabinetQuantity;
+
+	@Column(name = "remain_quantity")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer remainQuantity;
 	/**
 	 * ����
 	 * 
 	 */
+
+	@Column(name = "manager")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String manager;
 
 	@Column(name = "mem")
 	@Basic(fetch = FetchType.EAGER)
@@ -129,11 +156,6 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 	Integer ifPublic;
 
 	/**
-	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({ @JoinColumn(name = "manager", referencedColumnName = "username") })
-	@XmlTransient
-	User user;
 	/**
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -142,17 +164,7 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 	LabRoom labRoom;
 	/**
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({ @JoinColumn(name = "asset_id", referencedColumnName = "id") })
-	@XmlTransient
-	Asset asset;
-	
-	/**
-	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumns({ @JoinColumn(name = "app_record_id", referencedColumnName = "id") })
-	@XmlTransient
-	AssetAppRecord assetAppRecord;
+
 	
 	/**
 	 */
@@ -178,14 +190,30 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 		return this.id;
 	}
 
-	
-	public Integer getType() {
+	public Integer getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Integer warehouseId) {
+		this.warehouseId = warehouseId;
+	}
+
+	public String getType() {
 		return type;
 	}
 
-	public void setType(Integer type) {
+	public void setType(String type) {
 		this.type = type;
 	}
+
+	public Integer getRemainQuantity() {
+		return remainQuantity;
+	}
+
+	public void setRemainQuantity(Integer remainQuantity) {
+		this.remainQuantity = remainQuantity;
+	}
+
 	/**
 	 * ����ʱ��
 	 * 
@@ -216,6 +244,22 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 		this.operationItem = operationItem;
 	}
 
+	public Integer getAssetId() {
+		return assetId;
+	}
+
+	public void setAssetId(Integer assetId) {
+		this.assetId = assetId;
+	}
+
+	public Integer getAppRecordId() {
+		return appRecordId;
+	}
+
+	public void setAppRecordId(Integer appRecordId) {
+		this.appRecordId = appRecordId;
+	}
+
 	/**
 	 */
 	@JsonIgnore
@@ -231,20 +275,12 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 		return this.status;
 	}
 
-	/**
-	 * ���ʽ������
-	 * 
-	 */
-	public void setCabinetQuantity(BigDecimal cabinetQuantity) {
-		this.cabinetQuantity = cabinetQuantity;
+	public Integer getCabinetQuantity() {
+		return cabinetQuantity;
 	}
 
-	/**
-	 * ���ʽ������
-	 * 
-	 */
-	public BigDecimal getCabinetQuantity() {
-		return this.cabinetQuantity;
+	public void setCabinetQuantity(Integer cabinetQuantity) {
+		this.cabinetQuantity = cabinetQuantity;
 	}
 
 	/**
@@ -263,17 +299,12 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 		return this.mem;
 	}
 
-	/**
-	 */
-	public void setUser(User user) {
-		this.user = user;
+	public String getManager() {
+		return manager;
 	}
 
-	/**
-	 */
-	@JsonIgnore
-	public User getUser() {
-		return user;
+	public void setManager(String manager) {
+		this.manager = manager;
 	}
 
 	/**
@@ -289,33 +320,7 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 		return labRoom;
 	}
 
-	/**
-	 */
-	public void setAsset(Asset asset) {
-		this.asset = asset;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Asset getAsset() {
-		return asset;
-	}
-
-	
-
-	/**
-	 */
-	@JsonIgnore
-	public AssetAppRecord getAssetAppRecord() {
-		return assetAppRecord;
-	}
-	
-	/**
-	 */
-	public void setAssetAppRecord(AssetAppRecord assetAppRecord) {
-		this.assetAppRecord = assetAppRecord;
-	}
 
 	public Calendar getStockDate() {
 		return stockDate;
@@ -381,10 +386,7 @@ public class AssetCabinetWarehouseAccess implements Serializable {
 		setCabinetQuantity(that.getCabinetQuantity());
 		setMem(that.getMem());
 		setOperationItem(that.getOperationItem());
-		setUser(that.getUser());
 		setLabRoom(that.getLabRoom());
-		setAsset(that.getAsset());
-		setAssetAppRecord(that.getAssetAppRecord());
 		setAssetCabinetWarehouseAccessRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccessRecord>(that.getAssetCabinetWarehouseAccessRecords()));
 	}
 

@@ -224,10 +224,7 @@ public class AssetAppRecord implements Serializable {
 	SchoolAcademy schoolAcademy;
 	/**
 	 */
-	 
-	@OneToMany(mappedBy = "assetAppRecord", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetCabinetWarehouseAccess> assetCabinetWarehouseAccesses;
+
 	
 	public String getAppfinalSpec() {
 		return appfinalSpec;
@@ -497,22 +494,10 @@ public class AssetAppRecord implements Serializable {
 	public void setSchoolAcademy(SchoolAcademy schoolAcademy) {
 		this.schoolAcademy = schoolAcademy;
 	}
-	/**
-	 */
-	public void setAssetCabinetWarehouseAccesses(Set<AssetCabinetWarehouseAccess> assetCabinetWarehouseAccesses) {
-		this.assetCabinetWarehouseAccesses = assetCabinetWarehouseAccesses;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetCabinetWarehouseAccess> getAssetCabinetWarehouseAccesses() {
-		if (assetCabinetWarehouseAccesses == null) {
-			assetCabinetWarehouseAccesses = new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccess>();
-		}
-		return assetCabinetWarehouseAccesses;
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
 	}
-
 
 	/**
 	 */
@@ -545,7 +530,6 @@ public class AssetAppRecord implements Serializable {
 		setAssetApp(that.getAssetApp());
 		setAsset(that.getAsset());
 		setSchoolAcademy(that.getSchoolAcademy());
-		setAssetCabinetWarehouseAccesses(new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccess>(that.getAssetCabinetWarehouseAccesses()));
 	}
 
 	/**

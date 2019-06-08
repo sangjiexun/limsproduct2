@@ -95,7 +95,7 @@
                 <div class="layui-col-lg12">
                     <label class="layui-form-label">功能描述</label>
                     <div class="layui-input-block">
-                        <input type="text" name="function"  autocomplete="off" class="layui-input" disabled="disabled" readonly="readonly" />
+                        <textarea type="text" name="function"  autocomplete="off" class="layui-textarea" disabled="disabled" readonly="readonly" ></textarea>
                     </div>
                 </div>
             </div>

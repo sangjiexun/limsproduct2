@@ -130,6 +130,7 @@
 				<class>net.zjcclims.domain.AssetStorageRecord</class>
 				<class>net.zjcclims.domain.AssetClassification</class>
       			<class>net.zjcclims.domain.AssetCabinetWarehouseAccess</class>
+				<class>net.zjcclims.domain.AssetCabinetWarehouseRecord</class>
       			<class>net.zjcclims.domain.AssetReceive</class>
       			<class>net.zjcclims.domain.AssetReceiveAudit</class>
       			<class>net.zjcclims.domain.AssetReceiveAllocation</class>

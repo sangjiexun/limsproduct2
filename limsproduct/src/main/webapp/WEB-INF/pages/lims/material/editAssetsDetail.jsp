@@ -81,18 +81,19 @@
                         <input type="text" name="factory"  placeholder="请填写推荐厂家" autocomplete="on" class="layui-input" />
                     </div>
                 </div>
-                <div class="layui-col-lg6" >
-                    <label class="layui-form-label">功能描述</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="function"  placeholder="请填写功能描述" autocomplete="on" class="layui-input" />
-                    </div>
-                </div>
-            </div>
-            <div class="layui-row">
                 <div class="layui-col-lg6" id="cas">
                     <label class="layui-form-label">cas号※</label>
                     <div class="layui-input-block">
                         <input type="text" name="cas"  placeholder="请填写cas号" autocomplete="on" class="layui-input" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-lg12" >
+                    <label class="layui-form-label">功能描述</label>
+                    <div class="layui-input-block">
+                        <textarea type="text" name="function"  placeholder="请填写功能描述" autocomplete="on" class="layui-textarea" ></textarea>
                     </div>
                 </div>
             </div>

@@ -361,6 +361,15 @@ public interface MaterialService {
      */
     AssetCabinetRecord findAssetsCabinetRecordByCabinetAndAssets(Integer cabinetId, Integer assetsId);
 
+
+    /**
+     * 根据柜门id和物资id确认物品柜物资记录
+     * =
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-4-2
+     */
+    AssetCabinetWarehouseRecord findAssetsCabinetWarehouseRecordByWareHouseAndAssets(Integer warehouseId, Integer assetsId);
+
     /**
      * 根据申购ID获取所有申购条目
      *
