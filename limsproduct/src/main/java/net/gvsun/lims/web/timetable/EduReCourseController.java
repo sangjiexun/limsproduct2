@@ -86,7 +86,7 @@ public class EduReCourseController<JsonResult> {
     public ModelAndView eduReCourseList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -216,7 +216,7 @@ public class EduReCourseController<JsonResult> {
     public ModelAndView newEduReGroupCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         //获取课程编号
         SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(request.getParameter("courseNo"));
         mav.addObject("schoolTerms", schoolTerms);

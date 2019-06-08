@@ -198,6 +198,30 @@ function deleteTimetableSelfCourse(selfId) {
     }
 }
 
+// 删除timetable_appointment_same_number
+function deleteTimetableByBySameNumberId(sameNumberId) {
+    if (confirm('删除后数据无法恢复，是否确认删除？')) {
+        $.ajax({
+            url: zuulUrl + "api/timetable/manage/apiDeleteTimetableBySameNumberId?id=" + sameNumberId,
+            contentType: "application/json;charset=utf-8",
+            headers:{Authorization: getJWTAuthority()},
+            async: false,
+            dataType: "json",
+            type: "post",
+            success: function (json) {
+                layer.msg("已删除！");
+            },
+            error: function () {
+                layer.msg('后台出了点问题，请重试!', {
+                    icon: 1,
+                });
+                return false;
+            }
+        });
+        refreshBootstrapTable();
+    }
+}
+
 function refreshBootstrapTable() {
     var url = "";
     var view_radio =$("input[name='view_radio']:checked").val();
@@ -518,11 +542,20 @@ function getTimetableMangerView() {
             formatter: function (value, row, index) {
                 var rt = "";
                 var timetableDTOs = row.timetableDTOs;
-                if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                    rt += '<table id="tb'+index+'" border="1"><tr><td width="10%">批/组</td><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="18%">实验室</td><td width="15%">授课教师</td><td width="18%">实验项目</td><td width="7%">名单</td></tr>';
+
+                if (timetableDTOs.length > 0 && (row.timetableStyle == 4 || row.timetableStyle == 6)) {
+                    rt += '<table id="tb' + index + '" border="1"><tr><td width="10%">批/组</td><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="18%">实验室</td><td width="15%">授课教师</td><td width="18%">实验项目</td><td width="7%">名单</td>';
+                    if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
+                        rt += '<td width="7%">操作</td>';
+                    }
+                    rt += "</tr>";
                 }
-                if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                    rt += '<table border="1"><tr><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="32%">实验室</td><td width="15%">授课教师</td><td width="32%">实验项目</td></tr>';
+                if (timetableDTOs.length > 0 && row.timetableStyle != 4 && row.timetableStyle != 6) {
+                    rt += '<table border="1"><tr><td width="7%">星期</td><td width="7%">节次</td><td width="7%">周次</td><td width="32%">实验室</td><td width="15%">授课教师</td><td width="32%">实验项目</td>';
+                    if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
+                        rt += '<td width="7%">操作</td>';
+                    }
+                    rt += "</tr>";
                 }
                 var count = Number(0);
                 for (var i = 0, len = timetableDTOs.length; i < len; i++) {
@@ -530,11 +563,18 @@ function getTimetableMangerView() {
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.selfId + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td></tr>";
-                        rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td>";
+                        if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
+                            rt += "<td><a href='javascript:;' class='btn btn-xs' title='删除'  onclick=\"deleteTimetableByBySameNumberId(" + timetableDTOs[i].sameNumberId + ")\" >删除</a></td>";
+                        }
+                        rt += "</tr><tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td>";
+                        if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
+                            rt += "<td><a href='javascript:;' class='btn btn-xs' title='删除'  onclick=\"deleteTimetableByBySameNumberId(" + timetableDTOs[i].sameNumberId + ")\" >删除</a></td>";
+                        }
+                        rt += "</tr>";
                     }
                  }
                 if (timetableDTOs.length > 0) {

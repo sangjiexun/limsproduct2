@@ -106,7 +106,7 @@ public class TeachingReportController<JsonResult> {
 		mav.addObject("user", shareService.getUserDetail());
 		// 获取当前学期
 		SchoolTerm currentTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		List<LabRoom> labRooms = shareService.findAllLabRooms();
 		mav.addObject("labRooms", labRooms);
@@ -156,7 +156,7 @@ public class TeachingReportController<JsonResult> {
 			schoolTerm = currentTerm;
 			schoolTerm.setTermCode(0);
 		}
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);  //学期下拉框数据
 		mav.addObject("weeksMap", teachingReportService.getWeekMap(schoolTerm.getId()));  //周次下拉框数据
 		// 获取实验分室室排课记录
@@ -228,7 +228,7 @@ public class TeachingReportController<JsonResult> {
 		String end_date = request.getParameter("end_date");
 		mav.addObject("end_date", end_date);
 		// 获取所有的学期
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 封装参数
 		QueryParamsVO queryParamsVO = new QueryParamsVO();

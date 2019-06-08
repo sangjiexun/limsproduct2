@@ -1722,4 +1722,14 @@ public class MaterialController {
             return "fail";
         }
     }
+    /**
+     * Description 删除物资记录
+     * @author 吴奇臻 2019-6-05
+     */
+    @RequestMapping("/findAssetsCabinetWareHouse")
+    @ResponseBody
+    public List<AssetsCabinetWareHouseDTO> findAssetsCabinetWareHouse(Integer id) {
+        List<AssetsCabinetWareHouseDTO> assetsCabinetWareHouseDTOList=materialService.findAllAssetCabinetWareHouseByCabinetId(id);
+        return assetsCabinetWareHouseDTOList;
+    }
 }

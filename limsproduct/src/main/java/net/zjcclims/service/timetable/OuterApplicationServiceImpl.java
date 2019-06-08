@@ -703,17 +703,6 @@ public class OuterApplicationServiceImpl implements OuterApplicationService {
 	}
 
 	/************************************************************
-	 * @获取所有学期数据，按id倒序
-	 * @作者：魏诚
-	 * @日期：2014-08-17
-	 ************************************************************/
-	public List<SchoolTerm> getSchoolTermList() {
-		String sql = "select c from SchoolTerm c order by id desc";
-		List<SchoolTerm> schoolTerms = schoolTermDAO.executeQuery(sql,0,-1);
-		return schoolTerms;
-	}
-	
-	/************************************************************
 	 * 功能：获取空闲的实验室（二次排课）
 	 * 作者：戴昊宇
 	 * 日期：2017-09-27

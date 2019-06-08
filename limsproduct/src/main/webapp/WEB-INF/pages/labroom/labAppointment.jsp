@@ -1040,34 +1040,38 @@ function cancel(){
                                             alert("预约失败，实验室已被借用");
                                         }else if(data=="reserved"){
                                             alert("预约失败，实验室已被预约");
-                                        }else if(data=="success1"){
-						    				alert("预约成功，等待相关人员审核");
+                                        }else if(data=="success"){
+						    				alert("预约成功！");
 						    				flag = 0;
 						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
 						                    parent.layer.close(index);//关闭弹窗
 											window.location.reload();
-						    			}else if(data=="success2"){
-						    				alert("预约成功，二级实训室无需审核");
-						    				flag = 0;
-						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-						                    parent.layer.close(index);//关闭弹窗
-                                            window.location.reload();
-						    			}else if(data=="noAudit1"){
-											alert("预约成功，一级实训室无需审核");
-											flag = 0;
-											var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-											parent.layer.close(index);//关闭弹窗
-											window.location.reload();
-										}else if(data=="noAudit2"){
-											alert("预约成功，二级实训室无需审核");
-											flag = 0;
-											var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-											parent.layer.close(index);//关闭弹窗
-											window.location.reload();
-										}else{
-						    				layer.msg('预约失败！'+data+'不是合法学号', {icon: 5});
-						    			}
-						    			flag = 0;
+						    			}else{
+                                            layer.msg('预约失败！'+data+'不是合法学号', {icon: 5});
+                                            }
+                                            flag = 0;
+						    			//else if(data=="success2"){
+						    			// 	alert("预约成功，二级实训室无需审核");
+						    			// 	flag = 0;
+						    			// 	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+						                 //    parent.layer.close(index);//关闭弹窗
+                                         //    window.location.reload();
+						    			// }else if(data=="noAudit1"){
+											// alert("预约成功，一级实训室无需审核");
+											// flag = 0;
+											// var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+											// parent.layer.close(index);//关闭弹窗
+											// window.location.reload();
+                                        // }else if(data=="noAudit2"){
+											// alert("预约成功，二级实训室无需审核");
+											// flag = 0;
+											// var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+											// parent.layer.close(index);//关闭弹窗
+											// window.location.reload();
+                                        // }else{
+						    			// 	layer.msg('预约失败！'+data+'不是合法学号', {icon: 5});
+						    			// }
+						    			//flag = 0;
 						    		},
 						    		error:function(){
 						      			alert("预约未成功！请重试！");

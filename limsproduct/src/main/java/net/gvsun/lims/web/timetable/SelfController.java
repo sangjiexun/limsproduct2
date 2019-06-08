@@ -92,7 +92,7 @@ public class SelfController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -124,7 +124,7 @@ public class SelfController<JsonResult> {
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -228,7 +228,7 @@ public class SelfController<JsonResult> {
     public ModelAndView newSelfReGroupCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         // 获取实验室排课的通用配置对象；
@@ -276,7 +276,7 @@ public class SelfController<JsonResult> {
         }
         mav.addObject("timetableSelfCourse", timetableSelfCourse);
         // 获取学期列表
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         // 年级列表

@@ -121,7 +121,7 @@ public class OperationControllerRest<JsonResult> {
         mav.addObject("labProjectRewardLevel", shareService.getCDictionaryData("category_operation_item_reward_level"));  //获奖等级
         mav.addObject("labProjectRequire", shareService.getCDictionaryData("category_operation_item_require"));  //实验要求
         mav.addObject("labProjectGuideBook", shareService.getCDictionaryData("category_operation_item_guide_book"));  //实验指导书
-        mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //学期
+        mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //学期
         mav.addObject("users", systemService.getAllUser(1, -1, shareService.getUser()));  //教师数据
         LabRoom labRoom = new LabRoom();
         mav.addObject("labRooms", labRoomService.findAllLabRoomByQuery(1, -1, labRoom));  //实验室数据
@@ -263,7 +263,7 @@ public class OperationControllerRest<JsonResult> {
 		mav.addObject("status", status);
 		mav.addObject("orderBy", orderBy);
 		mav.addObject("users",operationService.getsome());
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		mav.addObject("schoolCourseInfos",operationService.getCourse(acno));
 		mav.addObject("currUser", currUser);  //当前登录用户
 		mav.addObject("operationItem1", new OperationItem());  //用于设置项目编号
@@ -517,7 +517,7 @@ public class OperationControllerRest<JsonResult> {
 		mav.addObject("toCheck", shareService.getCDictionaryByCategory("status_operation_item_check", "2"));  // 审核中
 		mav.addObject("checkYes", shareService.getCDictionaryByCategory("status_operation_item_check", "3"));  // 审核通过
 		mav.addObject("checkNo", shareService.getCDictionaryByCategory("status_operation_item_check", "4"));  //审核拒绝
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		//获取当前学期
 		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
 		mav.addObject("schoolTerm", schoolTerm);

@@ -21,12 +21,12 @@ layui.use(['table','jquery','layer'], function(){
         }
         ,cols: [[
             {field:'assetId', title: '序号', fixed: true, type: 'numbers',minwidth: 80}
-            ,{field:'cas',title:'cas号'}
-            ,{field:'cname', title: '物资名称', }
+            ,{field:'cas',title:'cas号',width: 150}
+            ,{field:'cname', title: '物资名称',width: 80 }
             ,{field:'categoryCname', title: '物资类别'}
-            ,{field:'unit', title: '计量单位'}
+            ,{field:'unit', title: '计量单位',width: 80 }
             ,{field:'specifications', title: '物资规格'}
-            ,{field:'sum', title: '物资数量', sort: true}
+            ,{field:'sum', title: '物资数量', sort: true,width: 120 }
             ,{title:'操作', fixed: 'right', toolbar: '#assetRecordToolBar', minwidth:150}
         ]]
         ,id: 'assetCabinetRecordList'

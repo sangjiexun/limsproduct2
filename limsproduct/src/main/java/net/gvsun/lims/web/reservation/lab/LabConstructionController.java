@@ -152,10 +152,11 @@ public class LabConstructionController {
      **/
 
     @RequestMapping("/grandSonProject")
-    public ModelAndView grandSonProject(ModelAndView mav, String projectName, String createTime) {
+    public ModelAndView grandSonProject(HttpServletRequest request,ModelAndView mav, String projectName, String createTime) {
         List<ParentProjectDTO> parentProjectDTOS = labConstructionProjectService.getParentProjectsForGrandSonProject(projectName, createTime);
         mav.addObject("parentProjects", parentProjectDTOS);
-
+        //用户权限
+        mav.addObject("selected_role",request.getSession().getAttribute("selected_role"));
         // 未审核
         mav.addObject("notAudit", labConstructionProjectService.getGrandSonProjectsCount(0));
         // 审核中

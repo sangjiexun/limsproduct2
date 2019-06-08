@@ -1,9 +1,12 @@
-package net.gvsun.lims.web.labroom;
+package net.gvsun.lims.web.timetable;
 
-import net.zjcclims.dao.SystemTimeDAO;
+/****************************************************************************
+ * Descriptions 学生选课模块相关
+ * @author 陈乐为 2019年6月5日
+ ****************************************************************************/
+
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,24 +22,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-/****************************************************************************
- * Descriptions：实验室预约管理
- *
- * @作者：魏诚
- * @时间：2018-09-04
- ****************************************************************************/
-@Controller("labRoomController")
+@Controller("StudentCourseController")
 @SessionAttributes("selected_academy")
-@RequestMapping("/lims/labroom/manage")
-public class LabRoomController<JsonResult> {
-    @Autowired
-    private OuterApplicationService outerApplicationService;
-    @Autowired
-    private ShareService shareService;
-    @Autowired
-    private PConfig pConfig;
-    @Autowired
-    SystemTimeDAO systemTimeDAO;
+@RequestMapping("/lims/timetable/student")
+public class StudentCourseController<JsonResult> {
+    @Autowired private HttpServletRequest request;
+    @Autowired private ShareService shareService;
+    @Autowired private PConfig pConfig;
     /************************************************************
      * @初始化WebDataBinder，这个WebDataBinder用于填充被@InitBinder注释的处理 方法的command和form对象
      *
@@ -62,17 +54,26 @@ public class LabRoomController<JsonResult> {
     }
 
     /************************************************************
-     * Descriptions：实验室预约管理-可预约的实验室列表页面
-     *
-     * @作者：魏诚
-     * @时间：2019-09-04
+     * Description 学生选课管理--选课页面
+     * @param acno
+     * @return
+     * @author 陈乐为 2019年6月5日
      ************************************************************/
-    @RequestMapping("/labRoomList")
-    public ModelAndView labRoomList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
+    @RequestMapping("/stuCourseList")
+    public ModelAndView stuCourseList(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
+        // 获取学期列表
+        List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
+        mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-        mav.setViewName("lims/labroom/manage/labRoomList.jsp");
+        // 当前学期
+        mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
+
+        mav.setViewName("lims/timetable/course/stuCourseList.jsp");
         return mav;
     }
+
+
 }
+
+

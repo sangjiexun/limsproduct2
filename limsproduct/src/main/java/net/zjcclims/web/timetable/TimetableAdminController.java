@@ -168,7 +168,7 @@ public class TimetableAdminController<JsonResult> {
 			@RequestParam int currpage,@ModelAttribute("selected_academy") String acno) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -212,8 +212,7 @@ public class TimetableAdminController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("PROJECT_NAME",pConfig.PROJECT_NAME);
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-					.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -330,8 +329,7 @@ public class TimetableAdminController<JsonResult> {
 			@RequestParam int currpage) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-					.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		//int term = shareService.findNewTerm().getId();取当前所处学期或下个学期
@@ -617,8 +615,7 @@ public class TimetableAdminController<JsonResult> {
 				@RequestParam int currpage,@ModelAttribute("selected_academy") String acno) {
 			ModelAndView mav = new ModelAndView();
 			// 获取学期列表
-			List<SchoolTerm> schoolTerms = outerApplicationService
-						.getSchoolTermList();
+			List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 			mav.addObject("schoolTerms", schoolTerms);
 			// 当前时间的学期
 			int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -718,8 +715,7 @@ public class TimetableAdminController<JsonResult> {
 			@RequestParam int currpage) {
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService
-					.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		//int term = shareService.findNewTerm().getId();取当前所处学期或下个学期
@@ -1024,7 +1020,7 @@ public class TimetableAdminController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		// 查询条件
 		// 所有学期
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -1137,7 +1133,7 @@ public class TimetableAdminController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		// 查询条件
 		// 所有学期
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -1486,7 +1482,7 @@ public class TimetableAdminController<JsonResult> {
 	public ModelAndView allTimetableAppointment(HttpServletRequest request, @ModelAttribute("selected_academy") String acno){
     	ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();

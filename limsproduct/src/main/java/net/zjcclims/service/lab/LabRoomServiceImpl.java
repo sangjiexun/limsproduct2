@@ -3376,7 +3376,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 		StringBuffer sql = new StringBuffer("select distinct m from LabRoom m inner join m.labRoomDevices ld where 1=1 ");
 		sql.append(" and m.isUsed = 1");
 		if (isReservation != null && isReservation == 1) {
-			sql.append("and m.labRoomActive = 1");
+			sql.append(" and m.labRoomActive = 1");
 		}
 		sql.append(" and m.labCategory=1 and m.schoolAcademy.academyNumber="+acno+"");
 		return labRoomDAO.executeQuery(sql.toString(), 0, -1);

@@ -74,7 +74,6 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labRoomList")
     public ModelAndView labRoomList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         mav.setViewName("lims/reservation/lab/labRoomList.jsp");
@@ -90,7 +89,6 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labReservationList")
     public ModelAndView labReservationList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         mav.setViewName("lims/reservation/lab/labReservationList.jsp");
@@ -106,7 +104,6 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labReservationAuditList")
     public ModelAndView labReservationAuditList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         mav.setViewName("lims/reservation/lab/labReservationAuditList.jsp");
@@ -122,7 +119,6 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/newLabReservation")
     public ModelAndView newLabReservation(HttpServletRequest request,@ModelAttribute("selected_academy") String acno,String labRoomId) {
         ModelAndView mav = new ModelAndView();
-        List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         mav.addObject("labRoomId", labRoomId);

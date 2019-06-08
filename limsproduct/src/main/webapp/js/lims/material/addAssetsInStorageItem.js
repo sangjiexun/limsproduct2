@@ -86,13 +86,23 @@ layui.use(['form'], function() {
         });
     });
     form.on('select(cabinets)', function(data){
-        //物资名录表单初始赋值
+        //选择物品柜
         $.ajax({
             url: contextPath + '/lims/api/material/findAssetsCabinetWareHouse?id='+data.value,
             async: false,
             type: "GET",
             contentType: "application/json;charset=UTF-8",
             success:function (data) {
+                if(data.length===0){
+                    $("#cabinetWareHouse").hide();
+                }else {
+                    $("#cabinetWareHouse").show();
+                    $.each(data, function (index, item) {
+                        $('#wareHouse').append(new Option(item.wareHouseCode,item.id));// 下拉菜单里添加元素
+                        $('#wareHouse').val(wareHouse);
+                    });
+                    layui.form.render("select");
+                }
             },
             error:function () {
                 if(assetsId!=""){

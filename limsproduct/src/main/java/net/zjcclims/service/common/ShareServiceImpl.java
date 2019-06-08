@@ -162,18 +162,6 @@ public class ShareServiceImpl implements ShareService {
 		return null;
 	}
 	
-	/**
-	 * 获取所有的学期数据
-	 * @author hly
-	 * 2015.08.03
-	 */
-	@Override
-	public List<SchoolTerm> findAllSchoolTerm() {
-		StringBuffer hql = new StringBuffer("select t from SchoolTerm t ");
-		hql.append(" order by t.termStart desc");
-		return schoolTermDAO.executeQuery(hql.toString(), 0, -1);
-	}
-
 	/*
 	 * 分页显示
 	 */

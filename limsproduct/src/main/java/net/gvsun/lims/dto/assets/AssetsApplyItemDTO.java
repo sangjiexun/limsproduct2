@@ -40,6 +40,8 @@ public class AssetsApplyItemDTO {
     private String amount;
     //13.发票号
     private String invoiceNumber;
+    //14.柜门
+    private String wareHouse;
 
     public Integer getId() {
         return id;
@@ -176,5 +178,13 @@ public class AssetsApplyItemDTO {
 
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
+    }
+
+    public String getWareHouse() {
+        return wareHouse;
+    }
+
+    public void setWareHouse(String wareHouse) {
+        this.wareHouse = wareHouse;
     }
 }

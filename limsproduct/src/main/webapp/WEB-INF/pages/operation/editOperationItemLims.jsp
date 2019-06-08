@@ -58,7 +58,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
         }
         // 保存材料添加
         function saveMaterialRecord() {
-            document.form_material.action="${pageContext.request.contextPath}/openOperationItem/saveItemAssets?itemId=${itemId}&page=${page}";
+            document.form_material.action="${pageContext.request.contextPath}/openOperationItem/saveItemAssets?itemId=${itemId}&page=${page}&type=2";
             if($("#asset.id").val() == ""){
                 alert("【耗材】选择耗材");
                 return false;
@@ -189,6 +189,10 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 <form:hidden path="userByLpCheckUser.username"/>
                                 <label>实验名称<font color="red">*</font> ：</label>
                                 <form:input path="lpName" id="lpName" class="easyui-validatebox" required="true"/>
+                            </fieldset>
+                            <fieldset>
+                                <label>实验编号：</label>
+                                <form:input path="lpCodeCustom" id="lpCodeCustom" class="easyui-validatebox"/>
                             </fieldset>
                             <fieldset>
                                 <label>所属学期<font color="red">*</font>：</label>
@@ -427,7 +431,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                                             <td>${curr.asset.chName}</td>
                                                             <td>${materialKindMap[curr.asset.category]}</td>
                                                             <td>${curr.asset.specifications}</td>
-                                                            <td>${curr.amount}<div id="unit${i.count}" style="display: inline">${curr.asset.specifications}</div></td>
+                                                            <td>${curr.amount}<div id="unit${i.count}" style="display: inline"></div></td>
                                                             <td>
                                                                 <a href="javascript:void(0)" onclick="editMaterialRecord(${curr.id});">编辑</a>
                                                                 <a href="${pageContext.request.contextPath}/openOperationItem/deleteItemAsset?itemAssetId=${curr.id}&itemId=${itemId}&page=${page}" onclick="return confirm('确认要删除吗？')">删除</a>
@@ -603,7 +607,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
         }
         var unit  = content.substring(x,y+1);
         unit = unit.replace(/[^a-z^A-Z]/g,'');
-        $("#unit").html(unit);
+        //$("#unit").html(unit);
     }
 
     function getSimpleSpec(unit) {

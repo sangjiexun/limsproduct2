@@ -1734,22 +1734,27 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 
 
-		boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
-		String grade = "";
-		if(flag){
-			grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
-			boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
-			if(audit){
-				labRoomStationReservation.setState(3);
-				labRoomStationReservation.setResult(3);
-			}else{
-				labRoomStationReservation.setResult(1);
-				labRoomStationReservation.setState(6);
-			}
-		}else{
-			labRoomStationReservation.setState(3);
+//		boolean flag = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+//		String grade = "";
+//		if(flag){
+//			grade = labRoomStationReservation.getLabRoom().getLabRoomLevel().toString();
+//			boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
+//			if(audit){
+//				labRoomStationReservation.setState(3);
+//				labRoomStationReservation.setResult(3);
+//			}else{
+//				labRoomStationReservation.setResult(1);
+//				labRoomStationReservation.setState(6);
+//			}
+//		}else{
+//			labRoomStationReservation.setState(3);
+//			labRoomStationReservation.setResult(3);
+//		}
+        if(labRoom.getCDictionaryByIsStationAudit().getCNumber().equals("2")){   //实验室设置工位预约不需要审核
+		    labRoomStationReservation.setResult(1);//设置该预约记录审核通过
+        }else {
 			labRoomStationReservation.setResult(3);
-		}
+        }
 
 		labRoomStationReservation = labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
@@ -1772,20 +1777,22 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 
 		//消息
-		if(labRoomStationReservation.getResult() != 1) {//需要审核就发信息
+		if(labRoomStationReservation.getResult() != 1 ) {//需要审核就发信息
 
 			// 审核微服务
 			Map<String, String> params = new HashMap<>();
 			//默认教务排课，type=1
-			String businessType = grade + "StationReservation";
-			params.put("businessUid", "-1");
+//			String businessType = grade + "StationReservation";
+            String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+			params.put("businessUid", labRoom.getId().toString());
 			params.put("businessType", pConfig.PROJECT_NAME + businessType);
 			params.put("businessAppUid", labRoomStationReservation.getId().toString());
 			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
 			JSONObject jsonObject = JSON.parseObject(s);
 			String statusStr = jsonObject.getString("status");
-			if(!statusStr.equals("success")){
-				return;
+			if(!statusStr.equals("success")){             //审核服务没有查到审核层级意味着未配置全局审核设置项
+                labRoomStationReservation.setResult(1);   //设置该预约记录审核通过
+				return ;
 			}
 			s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
 			jsonObject = JSON.parseObject(s);
@@ -1841,7 +1848,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			message.setCond(0);
 			// 给预约人发消息
 			message.setTitle("实验室工位预约不需要审核");
-			String businessType = grade + "StationReservation";
+//			String businessType = grade + "StationReservation";
+			String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
 			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
 			message.setContent(content);
 			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);

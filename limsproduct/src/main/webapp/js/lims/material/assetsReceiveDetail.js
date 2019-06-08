@@ -213,9 +213,13 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 contentType: "application/json;charset=UTF-8",
                 success:function (res) {
                     console.log(res);
-                    var index=parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
-                    window.parent.location.reload();
+                    var index = parent.layer.getFrameIndex(window.name);
+                    if (index === 1) {
+                        parent.layer.close(index);
+                        window.parent.location.reload();
+                    }else{
+                        window.location.href=contextPath+"/personal/messageList?currpage=1&tage=1";
+                    }
                 },
                 error:function(){
                     alert("后台出了点问题，请重试！");

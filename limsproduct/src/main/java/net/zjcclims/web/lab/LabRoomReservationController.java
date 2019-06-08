@@ -721,23 +721,24 @@ public class LabRoomReservationController<JsonResult> {
 //                    labRoomReservationService.saveReservationStations(labRoomId, reservation, start, end, array, reason, teacher, deanUser.getUsername(), userRole);
 //                }
                 labRoomReservationService.saveReservationStations(labRoomId, reservation, start, end, array, reason, teacher, userRole);
-                boolean LabRoomStationGradedOrNot = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
-                String grade = "";
-                if(LabRoomStationGradedOrNot){
-                    grade = labRoomDAO.findLabRoomById(labRoomId).getLabRoomLevel().toString();
-                    boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
-                    if (!audit) {
-                        return "noAudit" + grade;
-                    }else{
-                        return "success1";
-                    }
-                }else{
-                    return "success1";
-                }
+//                boolean LabRoomStationGradedOrNot = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
+//                String grade = "";
+//                if(LabRoomStationGradedOrNot){
+//                    grade = labRoomDAO.findLabRoomById(labRoomId).getLabRoomLevel().toString();
+//                    boolean audit = shareService.getExtendItem(grade + "LabRoomStationGradedOrNot");
+//                    if (!audit) {
+//                        return "noAudit" + grade;
+//                    }else{
+//                        return "success1";
+//                    }
+//                }else{
+//                    return "success1";
+//                }
             } else {
                 return errorUsernames;
             }
         }
+        return "success";
     }
 
     /****************************************************************************
@@ -805,11 +806,13 @@ public class LabRoomReservationController<JsonResult> {
         for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
             // 审核记录
             Map<String, String> params = new HashMap<>();
-            params.put("businessUid", "-1");
+            params.put("businessUid", stationReservation.getLabRoom().getId().toString());
             params.put("businessAppUid", stationReservation.getId().toString());
-            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
-                    (stationReservation.getLabRoom().getLabRoomLevel() == null ? "" : stationReservation.getLabRoom().getLabRoomLevel().toString())
-                    : "") + "StationReservation");
+//            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
+//                    (stationReservation.getLabRoom().getLabRoomLevel() == null ? "" : stationReservation.getLabRoom().getLabRoomLevel().toString())
+//                    : "") + "StationReservation");
+            String businessType = "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            params.put("businessType", pConfig.PROJECT_NAME + businessType);
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessLevelStatus", params);
             String returnStr = "";
             JSONArray curJSONArray = JSONObject.parseObject(s).getJSONArray("data");
@@ -842,7 +845,7 @@ public class LabRoomReservationController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("tage", tage);
         mav.addObject("isAudit", isaudit);
-        mav.addObject("isGraded", shareService.getAuditOrNot("LabRoomStationGradedOrNot"));
+//        mav.addObject("isGraded", shareService.getAuditOrNot("LabRoomStationGradedOrNot"));
         mav.setViewName("/labroom/labRoomStationReservationList.jsp");
         return mav;
     }

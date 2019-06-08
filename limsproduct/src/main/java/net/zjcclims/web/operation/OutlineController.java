@@ -159,9 +159,9 @@ public class OutlineController<JsonResult> {
         if(d.size()>0){
             for (OperationItem itm : d) {
                 if(itm.getCDictionaryByLpCategoryRequire()==null ){
-                    str+="<tr align='center'><td align='center'><input type='checkbox' value='"+itm.getId()+"'></td><td align='center'>"+itm.getLpCodeCustom()+"</td><td align='center'>"+itm.getLpName()+"</td><td align='center'></td></tr>";
+                    str+="<tr align='center'><td align='center'><input type='checkbox' value='"+itm.getId()+"'></td><td align='center'>"+(itm.getLpCodeCustom()==null?"":itm.getLpCodeCustom())+"</td><td align='center'>"+itm.getLpName()+"</td><td align='center'></td></tr>";
                 }else{
-                    str+="<tr align='center'><td align='center'><input type='checkbox' value='"+itm.getId()+"'></td><td align='center'>"+itm.getLpCodeCustom()+"</td><td align='center'>"+itm.getLpName()+"</td><td align='center'>"+itm.getCDictionaryByLpCategoryRequire().getCName()+"</td></tr>";
+                    str+="<tr align='center'><td align='center'><input type='checkbox' value='"+itm.getId()+"'></td><td align='center'>"+(itm.getLpCodeCustom()==null?"":itm.getLpCodeCustom())+"</td><td align='center'>"+itm.getLpName()+"</td><td align='center'>"+itm.getCDictionaryByLpCategoryRequire().getCName()+"</td></tr>";
                 }
             }
         }else{

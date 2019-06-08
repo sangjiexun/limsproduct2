@@ -135,7 +135,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("status", status);
 		mav.addObject("orderBy", orderBy);
 		mav.addObject("users",operationService.getsome());
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //所有学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //所有学期
 		mav.addObject("schoolCourseInfos",operationService.getCourse(acno));
 		mav.addObject("currUser", currUser);  //当前登录用户
 		mav.addObject("operationItem1", new OperationItem());  //用于设置项目编号
@@ -290,7 +290,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("materialKindMap", materialKindMap);
 
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //学期
 		LabRoom labRoom = new LabRoom();
 		SchoolCourseInfo schoolCourseInfo = new SchoolCourseInfo();
 		SchoolAcademy academy = shareService.findSchoolAcademyByPrimaryKey(acno);
@@ -490,13 +490,15 @@ public class OpenOperationItemController<JsonResult> {
 	 * @author 黄保钱 2019-04-26
 	 */
 	@RequestMapping("/saveItemAssets")
-	public ModelAndView saveItemAssets(HttpServletRequest request,@RequestParam Integer itemId,@RequestParam Integer page, @ModelAttribute ItemAssets itemAssets){
+	public ModelAndView saveItemAssets(HttpServletRequest request,@RequestParam Integer itemId,@RequestParam Integer page, @ModelAttribute ItemAssets itemAssets,@RequestParam(defaultValue = "1") Integer type){
     	ModelAndView mav = new ModelAndView();
     	OperationItem operationItem = new OperationItem();
     	operationItem.setId(itemId);
     	itemAssets.setOperationItem(operationItem);
     	itemAssetsDAO.store(itemAssets);
-		mav.setViewName("redirect:/openOperationItem/editOpenOperationItem?itemId="+itemId+"&page="+page);
+    	System.out.println(page);
+    	if(type==1) mav.setViewName("redirect:/openOperationItem/editOpenOperationItem?itemId="+itemId+"&page="+page);//开放项目管理编辑
+    	if(type ==2) mav.setViewName("redirect:/operation/editOperationItemLims?itemId="+itemId+"&page="+page);//实验项目管理编辑
 		return mav;
 	}
 
@@ -599,7 +601,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("labProjectRewardLevel", shareService.getCDictionaryData("category_operation_item_reward_level"));  //获奖等级
 		mav.addObject("labProjectRequire", shareService.getCDictionaryData("category_operation_item_require"));  //实验要求
 		mav.addObject("labProjectGuideBook", shareService.getCDictionaryData("category_operation_item_guide_book"));  //实验指导书
-		mav.addObject("schoolTerms", shareService.findAllSchoolTerm());  //学期
+		mav.addObject("schoolTerms", shareService.findAllSchoolTerms());  //学期
 		mav.addObject("users", systemService.getAllUser(1, -1, shareService.getUser()));  //教师数据
 		LabRoom labRoom = new LabRoom();
 		mav.addObject("labRooms", labRoomService.findAllLabRoomByQuery(1, -1, labRoom));  //实验室数据
@@ -978,7 +980,7 @@ public class OpenOperationItemController<JsonResult> {
     public ModelAndView timetableChooseGroupList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno){
         ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
 		// 获取实验室排课的通用配置对象；

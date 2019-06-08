@@ -149,7 +149,7 @@ public class TimetableAttendanceController {
 
 		ModelAndView mav = new ModelAndView();
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 当前时间的学期
 		//int term = shareService.findNewTerm().getId();获取当前时段所处学期或下个新学期
@@ -475,8 +475,7 @@ public class TimetableAttendanceController {
 			List<TimetableAppointment> listTimetableAppointment=timetableAttendanceService.findTimetableAttendance(timetableAppointment,page,pageSize);
 			mav.addObject("listTimetableAppointment",listTimetableAppointment);
 			// 获取学期列表
-			List<SchoolTerm> schoolTerms = outerApplicationService
-					.getSchoolTermList();
+			List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 			
 			mav.addObject("schoolTerm", schoolTerms);
 			//mav.addObject("user",timetableAttendanceService.findUser());
@@ -545,7 +544,7 @@ public class TimetableAttendanceController {
 		mav.addObject("week", week);
 		//查询表单的对象
 		mav.addObject("schoolCourse", schoolCourse);
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);// 学期
 		Set<SchoolCourse> schoolCourses=shareService.findSchoolCourse();
 		mav.addObject("schoolCourses", schoolCourses);//课程
@@ -623,7 +622,7 @@ public class TimetableAttendanceController {
 		ModelAndView mav = new ModelAndView();
 		int pageSize = 20;
 		// 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 学期参数
 		int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();

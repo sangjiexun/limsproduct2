@@ -32,6 +32,7 @@ import net.zjcclims.service.common.MySQLService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.PageModel;
 import net.zjcclims.web.common.PConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -1030,9 +1031,9 @@ public class LabReservationController<JsonResult> {
         List<String> authNames = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
 
-        String businessType = "StationReservation";
         params.put("businessUid", labRoom.getId().toString());
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        params.put("businessType", pConfig.PROJECT_NAME + businessType );
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
@@ -1247,9 +1248,9 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{needAudit1}/{realAllAudits}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{needAudit}/{realAllAudits}", method = RequestMethod.GET)
     @ResponseBody
-    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int needAudit1,
+    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int needAudit,
                                         @PathVariable String[] realAllAudits,
                                         Model model, @ModelAttribute("selected_academy") String acno) {
         // id对应的实验分室
@@ -1261,10 +1262,10 @@ public class LabReservationController<JsonResult> {
             String[] RSWITCH = {"on", "off"};
             String rConfig = "";
             Map<String, String> params = new HashMap<>();
-            String businessType = "StationReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             params.put("businessUid", labRoom.getId().toString());
             for (int i = 0; i < realAllAudits.length; i++) {
-                rConfig += realAllAudits[i].equals("1") && needAudit1 != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
+                rConfig += realAllAudits[i].equals("1") && needAudit != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
             }
             params.put("businessUid", labRoom.getId().toString());
             params.put("config", rConfig);
@@ -1274,13 +1275,13 @@ public class LabReservationController<JsonResult> {
             status = jsonObject.getString("status");
             JSONArray jsonArray = jsonObject.getJSONArray("data");
         }
-        if (needAudit1 != -1) {
-            labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit1));
-            if(needAudit1 == 622){
+        if (needAudit != -1) {
+            labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
+            if(needAudit == 622){
                 String[] RSWITCH = {"on", "off"};
                 String offConfig = "";
                 Map<String, String> params = new HashMap<>();
-                String businessType = "StationReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                String businessType = "StationReservation";
                 params.put("businessUid", labRoom.getId().toString());
                 for (int i = 0; i < realAllAudits.length; i++) {
                     offConfig += RSWITCH[1] + ",";
@@ -2491,22 +2492,34 @@ public class LabReservationController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		String starttime=request.getParameter("starttime");
 		String endtime=request.getParameter("endtime");
-		mav.addObject("starttime", starttime);
-		mav.addObject("endtime", endtime);
+
+		//默认获取最近一个月记录
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		if(StringUtils.isEmpty(endtime)){
+			request.setAttribute("endtime",format.format(c.getTime()));
+		} else{
+			request.setAttribute("endtime",endtime);
+		}
+		if(StringUtils.isEmpty(starttime)){
+			c.add(Calendar.MONTH, -1);
+			request.setAttribute("starttime",format.format(c.getTime()));
+		} else{
+			request.setAttribute("starttime",starttime);
+		}
 		mav.addObject("labRoomId",labRoomId);
-		List<LabRoomAgent> labRoomAgents = labRoomService.findLabRoomAgentByRoomId(labRoomId);
 		int pageSize = 30;
 		int totalRecords = 0;
 		List<LabAttendance> accessListAll = new ArrayList<LabAttendance>();
 		int setPage = 0;
 		long start = System.currentTimeMillis();
-		for(LabRoomAgent temp:labRoomAgents){
-			String ip=temp.getHardwareIp();
-			// 新版从iot获取数据
-			totalRecords += cmsShowService.findIotAttendanceByIpCount(commonHdwlog,ip,request,setPage,pageSize);
-			//页面显示的实验室
-			accessListAll.addAll(cmsShowService.findIotAttendanceByIp(commonHdwlog,ip,request,page,pageSize));
-		}
+
+		// 新版从iot获取数据
+		totalRecords += cmsShowService.findIotAttendanceBylabRoomIdCount(commonHdwlog,labRoomId.toString(),request,setPage,pageSize);
+		//页面显示的实验室
+		accessListAll.addAll(cmsShowService.findIotAttendanceBylabRoomId(commonHdwlog,labRoomId.toString(),request,page,pageSize));
+
 		long end = System.currentTimeMillis();
 		System.out.println("运行时间:"+(end-start));
 		Map<String, Integer> pageModel = shareService.getPage(page, pageSize, totalRecords);

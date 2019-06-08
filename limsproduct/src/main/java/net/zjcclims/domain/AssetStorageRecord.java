@@ -73,6 +73,11 @@ public class AssetStorageRecord implements Serializable {
 	@XmlElement
 	String info;
 
+	@Column(name = "warehouse_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer warehouseId;
+
 	public Integer getId() {
 		return id;
 	}
@@ -159,6 +164,14 @@ public class AssetStorageRecord implements Serializable {
 
 	public void setInfo(String info) {
 		this.info = info;
+	}
+
+	public Integer getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Integer warehouseId) {
+		this.warehouseId = warehouseId;
 	}
 
 	/**

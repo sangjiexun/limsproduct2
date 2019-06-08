@@ -500,7 +500,7 @@ public class TimetableAcademicSchedulingController<JsonResult> {
 			@ModelAttribute("selected_academy") String acno) {
 		ModelAndView mav = new ModelAndView();
         // 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 根据课程及id获取选课组列表
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -564,7 +564,7 @@ public class TimetableAcademicSchedulingController<JsonResult> {
 			@ModelAttribute("selected_academy") String acno,int flag) {
 		ModelAndView mav = new ModelAndView();
         // 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		// 根据课程及id获取选课组列表
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
@@ -687,7 +687,7 @@ public class TimetableAcademicSchedulingController<JsonResult> {
 	public ModelAndView newTimetableSetting(@ModelAttribute SchoolTermActive schoolTermActive){
 		ModelAndView mav = new ModelAndView();
 		 // 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		mav.addObject("schoolTermActive", schoolTermActive);
 		mav.setViewName("timetable/schedulingcourse/newTimetableSetting.jsp");
@@ -774,7 +774,7 @@ public class TimetableAcademicSchedulingController<JsonResult> {
 	public ModelAndView editTimetableSetting(@ModelAttribute SchoolTermActive schoolTermActive, @RequestParam int id){
 		ModelAndView mav = new ModelAndView();
 		 // 获取学期列表
-		List<SchoolTerm> schoolTerms = outerApplicationService.getSchoolTermList();
+		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
 		SchoolTermActive sta = schoolTermActiveDAO.findSchoolTermActiveById(id);
 		mav.addObject("currSchoolTerm", sta.getSchoolTerm().getTermName());

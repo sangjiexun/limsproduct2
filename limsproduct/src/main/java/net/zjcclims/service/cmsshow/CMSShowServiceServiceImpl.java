@@ -639,6 +639,17 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	}
 
 	/**
+	 * @Description: 根据ip获取iot中考勤记录数量
+	 * @Author: 徐明杭
+	 * @CreateDate: 2019/3/25 9:44
+	 */
+	@Override
+	public int findIotAttendanceBylabRoomIdCount(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize){
+		List<Object[]> list = getCommonHwdlogListByLabroomId(commonHdwlog,labRoomId,request,page,pageSize);
+		return list.size();
+	}
+
+	/**
 	 * @Description: 根据ip获取iot中考勤记录
 	 * @Author: 徐明杭
 	 * @CreateDate: 2019/3/25 10:28
@@ -654,6 +665,36 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 			LabRoomAgent labRoomAgent = labRoomAgents.iterator().next();
 			lab_name = labRoomAgent.getLabRoom().getLabRoomName();
 		}
+
+		List<LabAttendance> labAttendances = new ArrayList<>();
+		for(Object[] temp: list){
+			LabAttendance labAttendance = new LabAttendance();
+			labAttendance.setCname(temp[0].toString()); //用户
+			labAttendance.setUsername(temp[1].toString());//用户工号
+			labAttendance.setAcademyName(temp[2].toString());//学院名称
+			if (temp[4]!=null){
+				labAttendance.setClassName(temp[4].toString());//班级名称
+			}else {labAttendance.setClassName("");}
+			labAttendance.setMajor(temp[5].toString());//专业
+			labAttendance.setAttendanceTime(temp[6].toString());//考勤时间
+			labAttendance.setLabRoomName(lab_name);//实验室名称
+			labAttendances.add(labAttendance);
+		}
+
+		return labAttendances;
+	}
+
+	/**
+	 * @Description: 根据实验室获取iot中考勤记录
+	 * @Author: 林威
+	 * @CreateDate: 2019/6/6
+	 */
+	@Override
+	public List<LabAttendance> findIotAttendanceBylabRoomId(CommonHdwlog commonHdwlog,String labNumber,HttpServletRequest request, Integer page, int pageSize){
+
+		List<Object[]> list = getCommonHwdlogListByLabroomId(commonHdwlog,labNumber,request,page,pageSize);
+		// 实验室名称
+		String lab_name = labRoomDAO.findLabRoomById(Integer.parseInt(labNumber)).getLabRoomName();
 
 		List<LabAttendance> labAttendances = new ArrayList<>();
 		for(Object[] temp: list){
@@ -696,8 +737,52 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}else {sql.append(",''");}
 
 		// 考勤时间
-		String starttime= request.getParameter("starttime");
-		String endtime=	request.getParameter("endtime");
+		String starttime= (String)request.getAttribute("starttime");
+		String endtime=	(String)request.getAttribute("endtime");
+
+		if(starttime!=null && starttime.length()>0 ){
+			sql.append( ",'"+starttime +"'");
+		}else {sql.append(",''");}
+
+		if(endtime!=null&& endtime.length()>0){
+			sql.append( ",'"+endtime+"'");
+		}else {sql.append(",''");}
+
+		sql.append(","+page.toString()+"");
+		sql.append(","+pageSize+"");
+		sql.append(");");
+
+		Query query = entityManager.createNativeQuery(String.valueOf(sql));
+		List<Object[]> list = query.getResultList();
+		return list;
+	}
+
+	/**
+	 * @Description: 根据实验室调用存储过程取iot中考勤记录
+	 * @Author: 徐明杭
+	 * @CreateDate: 2019/3/28 10:28
+	 */
+	@Override
+	public List<Object[]> getCommonHwdlogListByLabroomId(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize){
+		labRoomId = labRoomDAO.findLabRoomById(Integer.parseInt(labRoomId)).getLabRoomNumber();
+		StringBuffer sql = new StringBuffer("call proc_common_hwdlog_roomId(");
+
+		// labroom_id
+		if(labRoomId!=null&&!labRoomId.equals("")){
+			sql.append("'"+labRoomId+"'");
+		}else {sql.append("''");}
+		// username 学号
+		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
+			sql.append(",'"+commonHdwlog.getUsername()+"'");
+		}else {sql.append(",''");}
+		// canem 姓名
+		if (commonHdwlog.getCardname()!=null&&!commonHdwlog.getCardname().equals("")) {
+			sql.append(",'"+commonHdwlog.getCardname()+"' ");
+		}else {sql.append(",''");}
+
+		// 考勤时间
+		String starttime= (String)request.getAttribute("starttime");
+		String endtime=	(String)request.getAttribute("endtime");
 
 		if(starttime!=null && starttime.length()>0 ){
 			sql.append( ",'"+starttime +"'");

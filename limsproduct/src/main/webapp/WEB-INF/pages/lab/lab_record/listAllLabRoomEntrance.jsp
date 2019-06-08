@@ -117,8 +117,8 @@ table{table-layout:fixed;}
 		<form:input id="username" path="username" />
 		</li>
 
-		<li>门禁刷卡时间：<input id="starttime" class="Wdate" type="text" name="starttime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;" readonly />
-		</li><li>到<input id="endtime" class="Wdate" type="text" name="endtime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;"  readonly />
+		<li>门禁刷卡时间：<input id="starttime" class="Wdate" type="text" name="starttime" value="${starttime}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;" readonly />
+		</li><li>到<input id="endtime" class="Wdate" type="text" name="endtime" value="${endtime}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:160px;"  readonly />
 		</li>
 	<li >
 	
@@ -161,7 +161,7 @@ table{table-layout:fixed;}
 	<td><p>${access.academyName}</p></td>
 	<%--<td><p>${access.className}</p></td>--%>
 	<%--<td><p>${access.major}</p></td>--%>
-	<td><p>${access.attendanceTime}</p></td>
+	<td><p>${fn:substring(access.attendanceTime, 0, 18)}</p></td>
 	<td><p>${access.status}</p></td>
 	<td><a href="${pageContext.request.contextPath}/labRoom/openVideoBack?id=${videoAgentId}&time=${access.attendanceTime}">开视频</a></td>
 	</tr>
@@ -178,7 +178,7 @@ table{table-layout:fixed;}
 <div class="page" >
 ${totalRecords}条记录,共${pageModel.totalPage}页
     <a href="javascript:void(0)"    onclick="first('${pageContext.request.contextPath}/lab/entranceListAll?page=1&labRoomId=${labRoomId}')" target="_self">首页</a>
-	<a href="javascript:void(0)" onclick="previcous('${pageContext.request.contextPath}/lab/entranceListAll?labRoomId=${labRoomId}&page=')" target="_self">上一页</a>
+	<a href="javascript:void(0)" onclick="previous('${pageContext.request.contextPath}/lab/entranceListAll?labRoomId=${labRoomId}&page=')" target="_self">上一页</a>
 	第<select onchange="javascript:window.location.href = this.options[this.selectedIndex].value;">
 	<option value="${pageContext.request.contextPath}/lab/entranceListAll?labRoomId=${labRoomId}&page=${page}">${page}</option>
 	<c:forEach begin="${pageModel.firstPage}" end="${pageModel.lastPage}" step="1" varStatus="j" var="current">	

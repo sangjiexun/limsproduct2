@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class ScheduleController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUserDetail();
         mav.addObject("user", user);
-        // 当前学期
+        // 当前学期listGeneralTimetable
         SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
         mav.addObject("term", schoolTerm.getTermName());
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
@@ -110,6 +111,8 @@ public class ScheduleController<JsonResult> {
         //学院下所有实验室
         List<LabRoom> labRooms = labRoomService.findLabRoomBySchoolAcademy(user.getSchoolAcademy().getAcademyNumber());
         mav.addObject("labRoomList",labRooms);
+        //日历
+        mav.addObject("schoolweeek", schoolWeekService.getMapDate());
         //返回选择项
         //当前周
         int week = shareService.findNewWeek();
@@ -117,11 +120,28 @@ public class ScheduleController<JsonResult> {
             week = Integer.valueOf(request.getParameter("week"));
         }
         mav.addObject("week", week);
+        //获取日期
+        String[] weekDayDate = new String[7];
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for(int i=1;i<8;i++){
+            weekDayDate[i-1]=sdf.format(schoolWeekService.getDate(schoolTerm.getId(),week,i).getTime());
+        }
+        mav.addObject("weekDayDate", weekDayDate);
         int labRoom = 0;
         if(request.getParameter("labRoom") != null && !request.getParameter("labRoom").equals("")) {
             labRoom = Integer.valueOf(request.getParameter("labRoom"));
         }
         mav.addObject("labRoom", labRoom);
+        String itemName = "";
+        if(request.getParameter("itemName") != null && !request.getParameter("itemName").equals("")) {
+            itemName = request.getParameter("itemName").toString();
+        }
+        mav.addObject("itemName", itemName);
+        String courseName = "";
+        if(request.getParameter("courseName") != null && !request.getParameter("courseName").equals("")) {
+            courseName = request.getParameter("courseName").toString();
+        }
+        mav.addObject("courseName", courseName);
         mav.setViewName("/schedule/comprehensiveTimetable.jsp");
         return mav;
     }
