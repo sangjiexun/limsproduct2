@@ -65,8 +65,8 @@ function cancel(){
         $("#needAudit1").click(function(){
             needAudit=$("#needAudit1").val();
         });
-        $("#needAudit2").click(function(){
-            needAudit=$("#needAudit2").val();
+        $("#needAudit0").click(function(){
+            needAudit=$("#needAudit0").val();
         });
         $("#appointment1").click(function(){
             needAppointment=$("#appointment1").val();
@@ -81,13 +81,18 @@ function cancel(){
         if (${empty isAppointment}) {
             document.getElementById('appointment1').checked = "";
             document.getElementById('appointment0').checked = "";
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "None";
+                }
+            }
         }else if(${isAppointment == 1}){
             document.getElementById("isAudit").style.display="";
             document.getElementById('appointment1').checked = true;
-            if (${empty isAudit}) {//是否可以预约联动
+            if (${empty isAudit1}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
                 document.getElementById('needAudit1').checked = "";
-                document.getElementById('needAudit2').checked = "";
+                document.getElementById('needAudit0').checked = "";
 //            $("#rdo1").removeAttr("checked");
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
@@ -95,10 +100,10 @@ function cancel(){
                     }
                 }
 //        document.getElementById("trainingType").style.display = "None";
-            } else if(${isAudit == 1}){
+            } else if(${isAudit1 == 1}){
                 document.getElementById('needAudit1').checked = true;
-            } else if(${isAudit == 2}){
-                document.getElementById('needAudit2').checked = true;
+            } else if(${isAudit1 == 0}){
+                document.getElementById('needAudit0').checked = true;
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
                         document.getElementById(needAllAudits[i]).style.display = "None";
@@ -123,7 +128,7 @@ function cancel(){
                 }
             }
         });
-        $("#needAudit2").change(function(){
+        $("#needAudit0").change(function(){
             // document.getElementById("teacher").style.display="None";
             // document.getElementById("dean").style.display="None";
             // document.getElementById("labManager").style.display="None";
@@ -136,26 +141,34 @@ function cancel(){
             }
 
         });
-        if($("#needAudit2").prop("checked")){
-            $("#needAudit2").change();
+        if($("#needAudit0").prop("checked")){
+            $("#needAudit0").change();
         }
         //是否可以预约联动
         $("#appointment1").change(function(){
+            console.log(${isAudit1})
+            console.log(${isAppointment})
 //            document.getElementById("allowSecurityAccess").style.display="";
             document.getElementById("isAudit").style.display="";
 //            document.getElementById("selectAcademy").style.display="";
-            if(${isAudit==2} || ${empty isAudit})
-            {//是否需要审核联动
+            if (${empty isAudit1}) {//是否可以预约联动
+//            document.getElementById("isAudit").style.display = "None";
+                document.getElementById('needAudit1').checked = "";
+                document.getElementById('needAudit0').checked = "";
+//            $("#rdo1").removeAttr("checked");
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
                         document.getElementById(needAllAudits[i]).style.display = "None";
                     }
                 }
-            }else
-            {
+//        document.getElementById("trainingType").style.display = "None";
+            } else if(${isAudit1 == 1}){
+                document.getElementById('needAudit1').checked = true;
+            } else if(${isAudit1 == 0}){
+                document.getElementById('needAudit0').checked = true;
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
-                        document.getElementById(needAllAudits[i]).style.display = "";
+                        document.getElementById(needAllAudits[i]).style.display = "None";
                     }
                 }
             }
@@ -352,10 +365,12 @@ margin-left:3px;
 			<tr id="isAudit">
 				<td>预约是否需要审核:</td>
 				<td>
-				<c:forEach items="${CActives}" var="activ" varStatus="i">
+				<%--<c:forEach items="${CActives}" var="activ" varStatus="i">--%>
 					<%-- <form:radiobutton id="needAudit${i.count}" path="CActiveByIsAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.name}</label> --%>
-					<form:radiobutton id="needAudit${i.count}" path="CDictionaryByIsStationAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.CName}</label>
-				</c:forEach>
+					<form:radiobutton path="CDictionaryByIsStationAudit.id" value="1" id="needAudit1"/><label for="needAudit1">是</label>
+					<form:radiobutton path="CDictionaryByIsStationAudit.id" value="0" id="needAudit0"/><label for="needAudit0">否</label>
+					<%--<form:radiobutton id="needAudit${i.count}" path="CDictionaryByIsStationAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.CName}</label>--%>
+				<%--</c:forEach>--%>
 				</td>
 			</tr>
 				<c:forEach items="${needAllAudits}" var="needAllAudit" varStatus="i">

@@ -1053,12 +1053,16 @@ public class LabReservationController<JsonResult> {
         LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
         if (labRelevantConfigIsApp !=null ) {
             mav.addObject("isAppointment", labRelevantConfigIsApp.getSetItem());
-        }
+        }else {
+			mav.addObject("isAppointment",null);
+		}
         //是否允许审核
         LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
         if (labRelevantConfigIsAudit != null) {
-            mav.addObject("isAudit", labRelevantConfigIsAudit.getSetItem());
-        }
+			mav.addObject("isAudit1",labRelevantConfigIsAudit.getSetItem());
+        }else {
+			mav.addObject("isAudit1",null);
+		}
         mav.addObject("needAllAudits", needAllAudits);
         mav.addObject("needAllAuditStatus", needAllAuditStatus);
         mav.addObject("authNames", authNames);
@@ -1066,6 +1070,7 @@ public class LabReservationController<JsonResult> {
         mav.addObject("labRoomId", labRoomId);
         mav.addObject("page", currpage);
         mav.addObject("currpage", currpage);
+
 
         return mav;
     }
