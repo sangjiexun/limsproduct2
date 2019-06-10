@@ -117,6 +117,7 @@ public class LabReservationController<JsonResult> {
 	@Autowired private SchoolAcademyDAO schoolAcademyDAO;
 	@Autowired private LabRoomLimitTimeDAO labRoomLimitTimeDAO;
 	@Autowired private ReservationSetItemDAO reservationSetItemDAO;
+	@Autowired private LabRelevantConfigDAO labRelevantConfigDAO;
     @Autowired
     PConfig pConfig;
 	@Autowired private VisualizationService visualizationService;
@@ -1048,9 +1049,15 @@ public class LabReservationController<JsonResult> {
                 needAllAuditStatus.add(sc[1].equals(RSWITCH[0]) ? 1 : 2);
             }
         }
-        if (labRoom.getCDictionaryByIsStationAudit()!=null&&labRoom.getCDictionaryByIsStationAudit().getId()!=null) {
-
-            mav.addObject("isAudit", labRoom.getCDictionaryByIsStationAudit().getCNumber());
+        //是否允许预约
+        LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if (labRelevantConfigIsApp !=null ) {
+            mav.addObject("isAppointment", labRelevantConfigIsApp.getSetItem());
+        }
+        //是否允许审核
+        LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
+        if (labRelevantConfigIsAudit != null) {
+            mav.addObject("isAudit", labRelevantConfigIsAudit.getSetItem());
         }
         mav.addObject("needAllAudits", needAllAudits);
         mav.addObject("needAllAuditStatus", needAllAuditStatus);
@@ -1248,9 +1255,9 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{needAudit}/{realAllAudits}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}", method = RequestMethod.GET)
     @ResponseBody
-    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int needAudit,
+    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int isAppointment,@PathVariable int needAudit,
                                         @PathVariable String[] realAllAudits,
                                         Model model, @ModelAttribute("selected_academy") String acno) {
         // id对应的实验分室
@@ -1275,9 +1282,30 @@ public class LabReservationController<JsonResult> {
             status = jsonObject.getString("status");
             JSONArray jsonArray = jsonObject.getJSONArray("data");
         }
+
+        if(isAppointment != -1){
+            LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+            if(labRelevantConfigIsApp == null){
+                labRelevantConfigIsApp = new LabRelevantConfig();
+                labRelevantConfigIsApp.setLabRoomId(labRoomId);
+                labRelevantConfigIsApp.setConfigCategory("lab_station_is_appointment");
+            }
+            labRelevantConfigIsApp.setSetItem(isAppointment);
+            labRelevantConfigDAO.store(labRelevantConfigIsApp);
+        }
+
         if (needAudit != -1) {
-            labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
-            if(needAudit == 622){
+            LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
+            if(labRelevantConfigIsAudit == null){
+                labRelevantConfigIsAudit = new LabRelevantConfig();
+                labRelevantConfigIsAudit.setLabRoomId(labRoomId);
+                labRelevantConfigIsAudit.setConfigCategory("lab_station_is_appointment_audit");
+            }
+            labRelevantConfigIsAudit.setSetItem(needAudit);
+            labRelevantConfigDAO.store(labRelevantConfigIsAudit);
+
+            //labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
+            if(needAudit == 0){
                 String[] RSWITCH = {"on", "off"};
                 String offConfig = "";
                 Map<String, String> params = new HashMap<>();
