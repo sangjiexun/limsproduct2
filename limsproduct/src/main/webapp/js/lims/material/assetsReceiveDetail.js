@@ -214,7 +214,7 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate'], function() 
                 success:function (res) {
                     console.log(res);
                     var index = parent.layer.getFrameIndex(window.name);
-                    if (index === 1) {
+                    if (index === 1 || index === 2) {
                         parent.layer.close(index);
                         window.parent.location.reload();
                     }else{

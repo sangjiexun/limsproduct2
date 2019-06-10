@@ -349,10 +349,6 @@ public interface MaterialService {
      */
     void saveAssetsCabinetRecordFromReceive(Integer id);
 
-
-
-
-
     /**
      * 根据物品柜id和物资id确认物品柜物资记录
      * =
@@ -360,6 +356,15 @@ public interface MaterialService {
      * @author 吴奇臻 2019-4-2
      */
     AssetCabinetRecord findAssetsCabinetRecordByCabinetAndAssets(Integer cabinetId, Integer assetsId);
+
+    /**
+     * 根据物品柜id和物资id确认智能柜具体物资记录
+     * =
+     * * @return 状态字符串
+     * @author 吴奇臻 2019-6-10
+     */
+    List<AssetCabinetWarehouseRecord> findAssetsCabinetWarehouseRecordByCabinetAndAssets(Integer cabinetId, Integer assetsId);
+
 
 
     /**
