@@ -112,6 +112,11 @@ function cancel(){
             }
         }else if(${isAppointment == 0}){
             document.getElementById('appointment0').checked = true;
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "None";
+                }
+            }
         }
 
 
