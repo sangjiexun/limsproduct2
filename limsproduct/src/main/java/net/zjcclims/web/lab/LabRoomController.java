@@ -2654,7 +2654,7 @@ public class LabRoomController<JsonResult> {
         // 判断是否需要教师审核{以及审核权限为教师&当前权限为学生=bingo}
         if (returnStr.equals("success")) {
             //demo
-            boolean flag = true;
+            boolean flag = false;
             String[] RSWITCH = {"on", "off"};
             String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
             Map<String, String> params = new HashMap<>();
