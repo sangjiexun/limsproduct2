@@ -1070,9 +1070,7 @@ public class LabRoomController<JsonResult> {
                                       String username, Integer roomId, Integer page, Integer typeId)
             throws UnsupportedEncodingException {
         if (cname != null) {
-
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
-
         }
         User u = shareService.getUser();
         String academyNumber = "";
@@ -1203,6 +1201,21 @@ public class LabRoomController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         // id对应的实验室物联管理员
         LabRoomAdmin admin = labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
+        List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(admin.getLabRoom().getId());
+        if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+            String str = "{\"Table1\":[";
+            // 遍历门禁
+            for (LabRoomAgent agent : agentList) {
+                if (agent.getCDictionary().getCNumber().equals("2")) {
+                    str += "{\"IDNo\":\""+ admin.getUser().getCardno() +"\",\"DoorNum\":"+ agent.getDoorindex() +"},";
+                }
+            }
+            if (str.length() > 11) {// 删除最后多余的“,”
+                str = str.substring(0, str.length()-1);
+            }
+            str += "]}";
+            HttpClientUtil.doPost("http://10.50.20.100:85/deleteManager?updatedata='"+ str +"'");
+        }
         labRoomAdminDAO.remove(admin);
         // 判断该实验室管理员是否还有其他实验室管理
         List labRooms = labRoomAdminService.findLabRoomAdminForByUsernameAndType(admin.getUser().getUsername(), admin.getTypeId());
@@ -1902,7 +1915,30 @@ public class LabRoomController<JsonResult> {
             proc.waitFor();
 
             return "success";
-        }else {
+        } else if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+            // 实验室管理员&物联管理员
+            List<LabRoomAdmin> admins = new ArrayList<LabRoomAdmin>();
+            admins.addAll(labRoomDeviceService.findLabRoomAdminByRoomId(roomId, 1));
+            admins.addAll(labRoomDeviceService.findLabRoomAdminByRoomId(roomId, 2));
+
+            String str = "{\"Table1\":[";
+            // 遍历实验室管理员
+            for (LabRoomAdmin admin : admins) {
+                // 遍历门禁
+                for (LabRoomAgent agent : agentList) {
+                    if (agent.getCDictionary().getCNumber().equals("2")) {
+                        str += "{\"IDNo\":\""+ admin.getUser().getCardno() +"\",\"DoorNum\":"+ agent.getDoorindex() +"},";
+                    }
+                }
+            }
+            if (str.length() > 11) {// 删除最后多余的“,”
+                str = str.substring(0, str.length()-1);
+            }
+            str += "]}";
+            HttpClientUtil.doPost("http://10.50.20.100:85/addManager?updatedata='"+ str +"'");
+
+            return "success";
+        } else {
             String agentPort = labRoomService.findAgentPortByRoomId(roomId);
             //1、创建一个服务器端Socket，指定主机和端口，并连接
             String Host = a.getCommonServer().getServerIp();

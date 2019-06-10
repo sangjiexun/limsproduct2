@@ -865,7 +865,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "arr.quantity*a.price as total_price,\n" +
                 "arr.info,\n" +
                 "ar.audit_date,\n" +
-                "CONCAT(u.cname,\"(\",u.username,\")\")\n" +
+                "CONCAT(u.cname,\"(\",u.username,\")\"),\n" +
+                "ar.app_user\n" +
                 "FROM\n" +
                 "\tasset_receive_record arr\n" +
                 "LEFT JOIN asset_receive ar ON arr.receive_id = ar.id\n" +
@@ -897,8 +898,9 @@ public class MaterialServiceImpl implements MaterialService {
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("receiveItemList",materialListDTOList);//保存入库单条目
-        //获取登录用户
-        User user=shareService.getUser();
+        //获取领料人用户
+        String username=assetList.get(0)[10].toString();
+        User user=userDao.findUserByUsername(username);
         String applicant=user.getCname()+"("+user.getUsername()+")";
         String department=user.getSchoolAcademy().getAcademyName();
         jsonObject.put("department",department);//学院
