@@ -4,8 +4,6 @@ import org.skyway.spring.util.dao.JpaDao;
 import net.zjcclims.domain.LabRelevantConfig;
 import org.springframework.dao.DataAccessException;
 
-        import java.util.Set;
-
 public interface LabRelevantConfigDAO extends JpaDao<LabRelevantConfig> {
 
     public LabRelevantConfig findLabRelevantConfigBylabRoomIdAndCategory(Integer id,String category) throws DataAccessException;

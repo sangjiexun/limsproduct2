@@ -14,8 +14,4 @@ COMMENT='实验室相关配置项表'
 ROW_FORMAT=DYNAMIC
 ;
 
--- 功能：增加预约业务开放学院字段type
-ALTER TABLE `lab_open_academy`
-ADD COLUMN `type`  int(11) NULL COMMENT '标志位：1实验室预约2工位预约' AFTER `academy_number`;
-update lab_open_academy set type = 1 WHERE 1=1;
 

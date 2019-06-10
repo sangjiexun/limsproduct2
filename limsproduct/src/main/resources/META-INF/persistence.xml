@@ -153,6 +153,7 @@
       			<class>net.zjcclims.domain.ResearchProject</class>
                 <class>net.zjcclims.domain.ReservationSetItem</class>
 			    <class>net.zjcclims.domain.LabRelevantConfig</class>
+				<class>net.zjcclims.domain.LabOpenUpAcademy</class>
       			<class>net.zjcclims.domain.ViewTimetable</class>
       			<class>net.zjcclims.domain.Software</class>
       			<class>net.zjcclims.domain.SoftwareReserve</class>
