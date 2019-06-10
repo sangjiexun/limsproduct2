@@ -11,7 +11,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-sacale=1.0,user-scalable=no"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <style type="text/css" media="screen">
 			@import url("${pageContext.request.contextPath}/js/jquery-easyui/themes/icon.css");
 			@import url("${pageContext.request.contextPath}/js/jquery-easyui/themes/gray/easyui.css");
@@ -46,6 +46,7 @@ function cancel(){
     //定义全局变量
     var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
     var needtutor="${needtutor}";//是否需要系主任审核
+    var needAppointment = "";//是否需要预约
     var needdean="${needdean}";//是否需要系主任审核
     var trainingCenterDirector="${trainingCenterDirector}";//是否需要实训中心主任审核
     var trainingDepartmentDirrector="${trainingDepartmentDirrector}";//是否需要实训中心主任审核
@@ -67,31 +68,46 @@ function cancel(){
         $("#needAudit2").click(function(){
             needAudit=$("#needAudit2").val();
         });
+        $("#appointment1").click(function(){
+            needAppointment=$("#appointment1").val();
+        });
+        $("#appointment0").click(function(){
+            needAppointment=$("#appointment0").val();
+        });
     })
     //是否需要审核的联动
     $(document).ready(function(){
-        document.getElementById("isAudit").style.display="";
-        if (${empty isAudit}) {//是否可以预约联动
+        document.getElementById("isAudit").style.display="None";
+        if (${empty isAppointment}) {
+            document.getElementById('appointment1').checked = "";
+            document.getElementById('appointment0').checked = "";
+        }else if(${isAppointment == 1}){
+            document.getElementById('appointment1').checked = true;
+            if (${empty isAudit}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
-            document.getElementById('needAudit1').checked = "";
-            document.getElementById('needAudit2').checked = "";
+                document.getElementById('needAudit1').checked = "";
+                document.getElementById('needAudit2').checked = "";
 //            $("#rdo1").removeAttr("checked");
-            if(needAllAudits[0]) {
-                for (var i = 0; i < needAllAudits.length; i++) {
-                    document.getElementById(needAllAudits[i]).style.display = "None";
+                if(needAllAudits[0]) {
+                    for (var i = 0; i < needAllAudits.length; i++) {
+                        document.getElementById(needAllAudits[i]).style.display = "None";
+                    }
                 }
-            }
 //        document.getElementById("trainingType").style.display = "None";
-        } else if(${isAudit == 1}){
-            document.getElementById('needAudit1').checked = true;
-        } else if(${isAudit == 2}){
-            document.getElementById('needAudit2').checked = true;
-            if(needAllAudits[0]) {
-                for (var i = 0; i < needAllAudits.length; i++) {
-                    document.getElementById(needAllAudits[i]).style.display = "None";
+            } else if(${isAudit == 1}){
+                document.getElementById('needAudit1').checked = true;
+            } else if(${isAudit == 2}){
+                document.getElementById('needAudit2').checked = true;
+                if(needAllAudits[0]) {
+                    for (var i = 0; i < needAllAudits.length; i++) {
+                        document.getElementById(needAllAudits[i]).style.display = "None";
+                    }
                 }
             }
+        }else if(${isAppointment == 0}){
+            document.getElementById('appointment0').checked = true;
         }
+
 
 
         $("#needAudit1").change(function(){
@@ -122,9 +138,48 @@ function cancel(){
         if($("#needAudit2").prop("checked")){
             $("#needAudit2").change();
         }
+        //是否可以预约联动
+        $("#appointment1").change(function(){
+//            document.getElementById("allowSecurityAccess").style.display="";
+            document.getElementById("isAudit").style.display="";
+//            document.getElementById("selectAcademy").style.display="";
+            if(${isAudit==2} || ${empty isAudit})
+            {//是否需要审核联动
+                if(needAllAudits[0]) {
+                    for (var i = 0; i < needAllAudits.length; i++) {
+                        document.getElementById(needAllAudits[i]).style.display = "None";
+                    }
+                }
+            }else
+            {
+                if(needAllAudits[0]) {
+                    for (var i = 0; i < needAllAudits.length; i++) {
+                        document.getElementById(needAllAudits[i]).style.display = "";
+                    }
+                }
+            }
+        });
+        $("#appointment0").change(function(){
+//            document.getElementById("allowSecurityAccess").style.display="None";
+            document.getElementById("isAudit").style.display="None";
+//            document.getElementById("selectAcademy").style.display="None";
+            // document.getElementById("labManager").style.display="None";
+            // document.getElementById("dean").style.display="None";
+            // document.getElementById("trainingCenterDirector").style.display="None";
+            // document.getElementById("trainingDepartmentDirrector").style.display="None";
+            // document.getElementById("teacher").style.display="None";
+            if(needAllAudits[0]) {
+                for (var i = 0; i < needAllAudits.length; i++) {
+                    document.getElementById(needAllAudits[i]).style.display = "None";
+                }
+            }
+//		document.getElementById("trainingType").style.display="None";
+            //document.getElementById("isAuditTimeLimit").style.display="None";
+        });
     });
     function saveDeviceSettingRest() {
         var needAudit1=needAudit;//预约是否需要审核
+        var needAppointmentSave=needAppointment;//预约是否需要审核
         var realAllAudits = [];
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
@@ -135,9 +190,14 @@ function cancel(){
                 }
             }
         }
-        if(needAudit==""){
-            alert("请选择是否审核");
+        if(needAppointmentSave==""){
+            alert("请选择是否预约");
             return false;
+        }else if(needAppointmentSave == "1"){
+			if(needAudit==""){
+				alert("请选择是否审核");
+				return false;
+			}
         }
         if(!needAllAudits[0]) {
             realAllAudits = [0];
@@ -147,7 +207,7 @@ function cancel(){
             return false;
         }
         $.ajax({
-            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"
+            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needAppointmentSave+"/"
             + needAudit1+"/"+realAllAudits,
             type:'GET',
             async:false,
@@ -275,25 +335,25 @@ margin-left:3px;
 				</td>
 			</tr>--%>
 
-				<%--<tr id="allowAppointment">
+				<tr id="allowAppointment">
 					<td>是否允许预约:</td>
 					<td>
 						<c:forEach var="xx" begin="1" end="2" step="1">
 							<c:if test="${xx == 1 }">
-								<form:radiobutton path="labRoomReservation" value="${xx}" id="appointment${xx}"/><label for="appointment${xx}">是</label>
+								<form:radiobutton path="labRoomReservation" value="1" id="appointment1"/><label for="appointment1">是</label>
 							</c:if>
 							<c:if test="${xx == 2 }">
-								<form:radiobutton path="labRoomReservation" value="${xx}" id="appointment${xx}"/><label for="appointment${xx}">否</label>
+								<form:radiobutton path="labRoomReservation" value="0" id="appointment0"/><label for="appointment0">否</label>
 							</c:if>
 						</c:forEach>
 					</td>
-				</tr>--%>
+				</tr>
 			<tr id="isAudit">
 				<td>预约是否需要审核:</td>
 				<td>
 				<c:forEach items="${CActives}" var="activ" varStatus="i">
-				<%-- <form:radiobutton id="needAudit${i.count}" path="CActiveByIsAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.name}</label> --%>
-				<form:radiobutton id="needAudit${i.count}" path="CDictionaryByIsStationAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.CName}</label>
+					<%-- <form:radiobutton id="needAudit${i.count}" path="CActiveByIsAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.name}</label> --%>
+					<form:radiobutton id="needAudit${i.count}" path="CDictionaryByIsStationAudit.id" value="${activ.id}"  /><label for="needAudit${i.count}">${activ.CName}</label>
 				</c:forEach>
 				</td>
 			</tr>
