@@ -1056,7 +1056,7 @@ public class LabReservationController<JsonResult> {
         }else {
 			mav.addObject("isAppointment",null);
 		}
-        //是否允许审核
+        //预约是否需要审核
         LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
         if (labRelevantConfigIsAudit != null) {
 			mav.addObject("isAudit1",labRelevantConfigIsAudit.getSetItem());
@@ -1314,7 +1314,7 @@ public class LabReservationController<JsonResult> {
                 String[] RSWITCH = {"on", "off"};
                 String offConfig = "";
                 Map<String, String> params = new HashMap<>();
-                String businessType = "StationReservation";
+                String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
                 params.put("businessUid", labRoom.getId().toString());
                 for (int i = 0; i < realAllAudits.length; i++) {
                     offConfig += RSWITCH[1] + ",";
