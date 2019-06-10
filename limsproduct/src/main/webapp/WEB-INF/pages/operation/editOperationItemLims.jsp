@@ -133,10 +133,16 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
         });
         //保存新建/编辑 的实验室项目卡
         function saveEditForm(){
+            if ($("#lpCodeCustom").val()=="" || $("#lpCodeCustom").val() == null) {
+                alert("请填写项目编号！");
+                return false;
+            }
             if($("#systemSubject12").val()=="" || $("#systemSubject12").val()==null){
-                alert("请选择所属学科！")
+                alert("请选择所属学科！");
+                return false;
             }else if($("#schoolCourseInfo").val()=="" || $("#schoolCourseInfo").val()==null){
-                alert("请选择所属课程！")
+                alert("请选择所属课程！");
+                return false;
             }else{
                 document.edit_form.submit();
             }
@@ -191,7 +197,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 <form:input path="lpName" id="lpName" class="easyui-validatebox" required="true"/>
                             </fieldset>
                             <fieldset>
-                                <label>实验编号：</label>
+                                <label>实验编号<font color="red">*</font>：</label>
                                 <form:input path="lpCodeCustom" id="lpCodeCustom" class="easyui-validatebox"/>
                             </fieldset>
                             <fieldset>
@@ -494,7 +500,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                         <div class="moudle_footer">
                             <div class="submit_link">
                                 <a class="btn btn-return" type="button" href="${pageContext.request.contextPath}/operation/listOperationItemLims?currpage=1&status=1&orderBy=9">返回</a>
-                                <input class="btn btn-return" type="submit" value="保存" onclick="saveEditForm();">
+                                <input class="btn btn-return" type="submit" value="保存" onclick="saveEditForm();return false;">
                             </div>
                         </div>
                     </form:form>

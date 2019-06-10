@@ -701,13 +701,6 @@ public interface LabRoomService {
 	 */
 	public List<Object[]> getRefuseItemBackup(Integer roomId);
 
-	/**
-     * Description 刷新权限接口（json）
-	 * @param id 实验室id
-	 * @author 黄保钱 2019-1-27
-	 */
-	void sendRefreshInterface(Integer id);
-
     /**
      * Description 刷新权限接口（jwt）
      *

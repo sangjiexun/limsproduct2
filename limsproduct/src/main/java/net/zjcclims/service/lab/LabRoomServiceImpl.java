@@ -3076,40 +3076,6 @@ public class LabRoomServiceImpl implements LabRoomService {
 	}
 
 	/**
-	 * Description 刷新权限接口（json）
-	 *
-	 * @param id 实验室id
-	 * @author 黄保钱 2019-1-27
-	 */
-	@Override
-	public void sendRefreshInterface(Integer id) {
-		// 先找到实验室
-		String sql = "select agent from LabRoomAgent agent where 1=1 ";
-		if(id != null){
-			sql += " and agent.labRoom.id=" + id;
-		}
-		// 找到该实验室下为电源控制器和门禁的物联设备
-		sql += " and agent.CDictionary.CCategory = 'c_agent_type' ";
-		sql += " and (agent.CDictionary.CNumber = '2' or agent.CDictionary.CNumber = '4') ";
-		List<LabRoomAgent> labRoomAgents = labRoomAgentDAO.executeQuery(sql);
-		for(LabRoomAgent labRoomAgent: labRoomAgents){
-			JSONObject jsonObject = new JSONObject();
-			// 物联设备类型CDictionary的id
-			jsonObject.put("hardwaretype", labRoomAgent.getCDictionary().getId().toString());
-			// 物联服务器ip
-			jsonObject.put("commonserver", labRoomAgent.getCommonServer().getServerIp());
-			// 物联服务器端口
-			jsonObject.put("port", labRoomAgent.getCommonServer().getServerSn());
-			// 硬件IP
-			jsonObject.put("hardwareip", labRoomAgent.getHardwareIp());
-			System.out.println(jsonObject.toString());
-			// 以json格式发送
-			String s =  HttpClientUtil.doPostJson(pConfig.refreshReservationUrl + "post/", jsonObject.toString());
-			System.out.println(s);
-		}
-	}
-
-	/**
 	 * Description 刷新权限接口（jwt）
 	 *
 	 * @param id 实验室id
