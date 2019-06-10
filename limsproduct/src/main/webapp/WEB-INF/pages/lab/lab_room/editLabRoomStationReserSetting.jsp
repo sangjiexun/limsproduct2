@@ -11,7 +11,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-sacale=1.0,user-scalable=no"/>
 <style type="text/css" media="screen">
 			@import url("${pageContext.request.contextPath}/js/jquery-easyui/themes/icon.css");
 			@import url("${pageContext.request.contextPath}/js/jquery-easyui/themes/gray/easyui.css");
@@ -46,7 +46,7 @@ function cancel(){
     //定义全局变量
     var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
     var needtutor="${needtutor}";//是否需要系主任审核
-    var needAppointment = "";//是否需要预约
+    var needAppointment = "${isAppointment}";//是否需要预约
     var needdean="${needdean}";//是否需要系主任审核
     var trainingCenterDirector="${trainingCenterDirector}";//是否需要实训中心主任审核
     var trainingDepartmentDirrector="${trainingDepartmentDirrector}";//是否需要实训中心主任审核
@@ -82,6 +82,7 @@ function cancel(){
             document.getElementById('appointment1').checked = "";
             document.getElementById('appointment0').checked = "";
         }else if(${isAppointment == 1}){
+            document.getElementById("isAudit").style.display="";
             document.getElementById('appointment1').checked = true;
             if (${empty isAudit}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
