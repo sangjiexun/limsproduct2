@@ -2617,7 +2617,7 @@ public class LabRoomController<JsonResult> {
             params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
                 params.put("businessUid", labRoom.getId().toString());
-                params.put("businessType",pConfig.PROJECT_NAME + "StationReservation");
+                params.put("businessType",pConfig.PROJECT_NAME + "StationReservation"+ labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             }
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);

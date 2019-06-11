@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.AuditSaveParamDTO;
 import net.zjcclims.dao.AuthorityDAO;
 import net.zjcclims.dao.LabRoomDAO;
+import net.zjcclims.dao.LabRoomStationReservationDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomLendingService;
@@ -43,6 +44,8 @@ public class AuditController<JsonResult> {
     private LabRoomReservationService labRoomReservationService;
     @Autowired
     private LabRoomLendingService labRoomLendingService;
+    @Autowired
+    private LabRoomStationReservationDAO labRoomStationReservationDAO;
 
     @RequestMapping("/auditList")
     public ModelAndView auditList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
@@ -212,6 +215,25 @@ public class AuditController<JsonResult> {
             JSONObject resultJSONObject = jsonObject.getJSONObject("data");
             nextAuthName = (String) resultJSONObject.values().iterator().next();
         }
+        //若是工位预约
+        if(auditSaveParamDTO.getBusinessType().contains("StationReservation")){
+            LabRoomStationReservation labRoomStationReservation =
+                    labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(auditSaveParamDTO.getBusinessAppUid()));
+            if(nextAuthName.equals("pass")){   //审核通过，设置该条预约记录的状态值为审核通过
+                labRoomStationReservation.setResult(1);
+                labRoomStationReservationDAO.store(labRoomStationReservation);
+                labRoomStationReservationDAO.flush();
+            }else if(nextAuthName.equals("fail")){         //审核拒绝
+                labRoomStationReservation.setResult(4);
+                labRoomStationReservationDAO.store(labRoomStationReservation);
+                labRoomStationReservationDAO.flush();
+            }else {
+                labRoomStationReservation.setResult(2);        //审核中
+                labRoomStationReservationDAO.store(labRoomStationReservation);
+                labRoomStationReservationDAO.flush();
+            }
+        }
+
         return nextAuthName;
     }
 

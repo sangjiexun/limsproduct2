@@ -810,10 +810,25 @@ public class LabRoomReservationController<JsonResult> {
         // 根据分页信息查询出来的记录
         List<LabRoomStationReservation> listLabRoomStationReservation = labRoomReservationService.findLabRoomreservatioList(labRoomStationReservation, tage, currpage, pageSize, acno, isaudit);
         //判断所处审核阶段，关联到前端的按钮
-        if (listLabRoomStationReservation != null) {
-            for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                //先初始化为0
-                labRoomStationReservation2.setButtonMark(0);
+        if(isaudit == 1){
+            if (listLabRoomStationReservation != null) {
+                for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
+                    if(labRoomStationReservation2.getResult() == 2 || labRoomStationReservation2.getResult() == 3){
+                        //审核
+                        labRoomStationReservation2.setButtonMark(1);
+                    }else {
+                        //查看
+                        labRoomStationReservation2.setButtonMark(0);
+                    }
+                }
+            }
+        }
+        if(isaudit == 2){
+            if (listLabRoomStationReservation != null) {
+                for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
+                    //审核
+                    labRoomStationReservation2.setButtonMark(0);
+                }
             }
         }
 
