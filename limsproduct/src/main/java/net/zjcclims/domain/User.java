@@ -708,11 +708,7 @@ public class User implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
 	@XmlElement(name = "", namespace = "")
 	java.util.Set<net.zjcclims.domain.AssetReceive> assetReceives;
-	/**
-	 */
-	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetCabinetWarehouseAccess> assetCabinetWarehouseAccesses;
+
 
 	/**
 	 */
@@ -1213,21 +1209,7 @@ public class User implements Serializable {
 		return assetReceives;
 	}
 
-	/**
-	 */
-	public void setAssetCabinetWarehouseAccesses(Set<AssetCabinetWarehouseAccess> assetCabinetWarehouseAccesses) {
-		this.assetCabinetWarehouseAccesses = assetCabinetWarehouseAccesses;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetCabinetWarehouseAccess> getAssetCabinetWarehouseAccesses() {
-		if (assetCabinetWarehouseAccesses == null) {
-			assetCabinetWarehouseAccesses = new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccess>();
-		}
-		return assetCabinetWarehouseAccesses;
-	}
 
 	/**
 	 */

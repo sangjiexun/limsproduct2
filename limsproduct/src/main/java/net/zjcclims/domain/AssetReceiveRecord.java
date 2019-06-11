@@ -92,6 +92,11 @@ public class AssetReceiveRecord implements Serializable {
 	@XmlElement
 	Integer cabinetId;
 
+	@Column(name = "warehouse_id")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer warehouseId;
+
 	@Column(name = "return_quantity")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
@@ -154,6 +159,14 @@ public class AssetReceiveRecord implements Serializable {
 
 	public void setCabinetId(Integer cabinetId) {
 		this.cabinetId = cabinetId;
+	}
+
+	public Integer getWarehouseId() {
+		return warehouseId;
+	}
+
+	public void setWarehouseId(Integer warehouseId) {
+		this.warehouseId = warehouseId;
 	}
 
 	public Integer getReturnQuantity() {

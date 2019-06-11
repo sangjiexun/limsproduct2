@@ -7,6 +7,7 @@ import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.LabWorkerDAO;
 import net.zjcclims.dao.OperationItemDAO;
 import net.zjcclims.dao.SchoolTermDAO;
+import net.zjcclims.domain.LabRoom;
 import net.zjcclims.domain.LabWorker;
 import net.zjcclims.domain.OperationItem;
 import net.zjcclims.domain.SchoolTerm;
@@ -161,23 +162,32 @@ public class DataReportServiceImpl implements DataReportService {
             String lpStudentNumberGroup = String.format("%-2s", operationItem.getLpStudentNumberGroup().trim());
             // 实验学时数
             String lpDepartmentHours = String.format("%-4s", operationItem.getLpDepartmentHours().toString().trim());
-            // 实验室编号
+            // 实验室编号-项目和实验室多对多，编号怎么取呢？插个小红旗埋个雷
             // 实验室编号-取实验室所在中心编号
-            String labRoomNumber;
+            String labRoomNumber = String.format("%-10s", "none");
             if(operationItem.getLabCenter()!=null && operationItem.getLabCenter().getCenterNumber()!=null) {
                 labRoomNumber = String.format("%-10s", operationItem.getLabCenter().getCenterNumber().trim());
-            }else {
-                labRoomNumber = String.format("%-10s", "none");
+            } else if (operationItem.getLabRooms()!=null && operationItem.getLabRooms().size() > 0) {
+                for (LabRoom labRoom : operationItem.getLabRooms()) {
+                    labRoomNumber = String.format("%-10s", labRoom.getLabCenter().getCenterNumber().trim());
+                    break;
+                }
             }
             // 实验室名称 ,实际取所属实验中心名称
-            String labRoomName;
+            String labRoomName = String.format("%-50s", "none");
             if(operationItem.getLabCenter()!=null && operationItem.getLabCenter().getCenterName()!=null) {
                 int lablen = this.length(operationItem.getLabCenter().getCenterName().trim());
                 int labemp = 50-lablen;
                 labRoomName = String.format("%-"+labemp+"s", "");
                 labRoomName = operationItem.getLabCenter().getCenterName().trim()+labRoomName;
-            }else {
-                labRoomName = String.format("%-50s", "none");
+            }else if (operationItem.getLabRooms()!=null && operationItem.getLabRooms().size() > 0) {
+                for (LabRoom labRoom : operationItem.getLabRooms()) {
+                    int lablen = this.length(labRoom.getLabCenter().getCenterName().trim());
+                    int labemp = 50-lablen;
+                    labRoomName = String.format("%-"+labemp+"s", "");
+                    labRoomName = labRoom.getLabCenter().getCenterName().trim()+labRoomName;
+                    break;
+                }
             }
 
             content += pConfig.schoolCode

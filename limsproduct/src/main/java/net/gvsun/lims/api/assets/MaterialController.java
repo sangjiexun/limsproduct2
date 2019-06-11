@@ -277,8 +277,14 @@ public class MaterialController {
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
         String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId(),Integer.parseInt(assetsApplyItemDTO.getAppId()));
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
-            assetsApplyItemDTO.setCabinet(s);
-            materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
+            if(s.contains("-")) {
+                assetsApplyItemDTO.setCabinet(s.split("-")[0]);
+                assetsApplyItemDTO.setWareHouse(s.split("-")[1]);
+                materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
+            }else{
+                assetsApplyItemDTO.setCabinet(s);
+                materialService.saveAddAssetsReceiveDetail(assetsApplyItemDTO);
+            }
         }
         return s;
     }

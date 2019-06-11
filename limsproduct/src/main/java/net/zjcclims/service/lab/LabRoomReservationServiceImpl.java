@@ -56,6 +56,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	@Autowired private LabRoomService labRoomService;
 	@Autowired private SchoolWeekDAO schoolWeekDAO;
 	@Autowired private SystemTimeDAO systemTimeDAO;
+	@Autowired private LabRelevantConfigDAO labRelevantConfigDAO;
 	@Autowired private PConfig pConfig;
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -319,17 +320,19 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if (labReservations != null && labReservations.size() > 0 && lendingDate != null) {
 			for (LabReservation labReservation : labReservations) {
 				for (LabReservationTimeTable lrtt : labReservation.getLabReservationTimeTables()) {
-					if (labReservation.getLendingTime().equals(reservationTime)) {//和借用日期在同一天的
-						if (lrtt.getStartTime().after(endTime) ||
-								lrtt.getEndTime().before(startTime) ||
-								lrtt.getStartTime().equals(endTime) ||
-								lrtt.getEndTime().equals(startTime)) {//未和所选时间冲突
-							//do nothing
-						} else {
-							reservationStatus = 3;
-							return reservationStatus;
-						}
-					}
+					if(labReservation.getLendingTime() != null){
+                        if (labReservation.getLendingTime().equals(reservationTime)) {//和借用日期在同一天的
+                            if (lrtt.getStartTime().after(endTime) ||
+                                    lrtt.getEndTime().before(startTime) ||
+                                    lrtt.getStartTime().equals(endTime) ||
+                                    lrtt.getEndTime().equals(startTime)) {//未和所选时间冲突
+                                //do nothing
+                            } else {
+                                reservationStatus = 3;
+                                return reservationStatus;
+                            }
+                        }
+                    }
 				}
 			}
 		}
@@ -1750,7 +1753,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 //			labRoomStationReservation.setState(3);
 //			labRoomStationReservation.setResult(3);
 //		}
-        if(labRoom.getCDictionaryByIsStationAudit().getCNumber().equals("2")){   //实验室设置工位预约不需要审核
+		//该实验室下的工位预约是否需要审核
+		LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
+        if(labRelevantConfig == null ||(labRelevantConfig != null && labRelevantConfig.getSetItem()==0) ){   //实验室设置工位预约不需要审核
 		    labRoomStationReservation.setResult(1);//设置该预约记录审核通过
         }else {
 			labRoomStationReservation.setResult(3);

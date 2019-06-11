@@ -22,14 +22,14 @@ function editLabRoomOpenSettingRest(id,currpage,type){//将labRoomId deviceNumbe
     //alert(url);
     window.location.href=url;
 }
-//参数设置
+//实验室预约设置
 function openSetupLink(labRoomId,currpage,type){//将labRoomId page传递到后台
 	var labRoomId = $("#labRoomId").val();
 	var url =$("#pageContext").val()+"/device/editLabRoomSettingRest/"+labRoomId+"/"+currpage+"/"+type;
 	//alert(url);
 	window.location.href=url;
 }
-//工位预约审核设置
+//工位预约设置
 function openStationReserSetting(labRoomId,currpage,type){//将labRoomId page传递到后台
 	var labRoomId = $("#labRoomId").val();
 	var url =$("#pageContext").val()+"/device/editLabRoomStationReserSetting/"+labRoomId+"/"+currpage+"/"+type;

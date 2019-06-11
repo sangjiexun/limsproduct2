@@ -336,6 +336,27 @@ public class OpenOperationItemController<JsonResult> {
 		return mav;
 	}
 
+
+	/**
+	 * Description 删除项目
+	 * @param request
+	 * @param operationItemId
+	 * @param status
+	 * @return
+	 * @author 孙汉承 2018-9-10
+	 */
+	@RequestMapping("/deleteOpenOperationItem")
+	public String deleteOpenOperationItem(HttpServletRequest request,@RequestParam int operationItemId, int status,int page){
+		String ip = shareService.getIpAddr(request);
+		//保存日志信息 saveOperationItemLog(String userIp, int tag, int action, int id)
+		//tag：子模块标志位  0-我的实验项目  1-实验项目管理  2-实验项目导入  id：项目卡的id 0-查看 -1--新建
+		//action:  0 新建 1 编辑 2 查看 3 删除 4 提交 5 审核查看 6 保存 7 审核编辑后保存 8 导入 9 审核结果
+		systemLogService.saveOperationItemLog(ip, status, 3, operationItemId);
+		operationService.deleteOperationItem(operationItemId);
+		return "redirect:/openOperationItem/listOpenOperationItem?currpage="+page+"&status="+status+"&orderBy=9";
+	}
+
+
     /**
      * Description 保存项目
      * @param request
@@ -345,7 +366,7 @@ public class OpenOperationItemController<JsonResult> {
      * @author 陈乐为 2018-8-25
      */
     @RequestMapping("/saveOpenOperationItem")
-    public ModelAndView saveOperationItemLims(HttpServletRequest request,@ModelAttribute OperationItem operationItem,
+    public ModelAndView saveOpenOperationItem(HttpServletRequest request,@ModelAttribute OperationItem operationItem,
                                               @ModelAttribute("selected_academy") String acno,int page){
         ModelAndView mav=new ModelAndView();
         if(operationItem == null || operationItem.getCDictionaryByLpStatusCheck() == null ||

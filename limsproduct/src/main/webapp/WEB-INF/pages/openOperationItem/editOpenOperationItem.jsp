@@ -180,14 +180,33 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
         });
         //保存新建/编辑 的实验室项目卡
         function saveEditForm(){
-            // if($("#systemSubject12").val()=="" || $("#systemSubject12").val()==null){
-            //     alert("请选择所属学科！")
-            // }else if($("#schoolCourseInfo").val()=="" || $("#schoolCourseInfo").val()==null){
-            //     alert("请选择所属课程！")
-            // }else{
-            //     document.edit_form.submit();
-            // }
-                document.edit_form.submit();
+
+            //判断必填字段是否为空
+            if($("#lpName").val()=="" || $("#lpName").val()==null){
+                alert("请填写实验名称！")
+            }else if($("#CDictionaryByLpCategoryNature").val()=="" || $("#CDictionaryByLpCategoryNature").val()==null){
+                 alert("请选择实验性质！")
+            }else if($("#CDictionaryByTitle").val()=="" || $("#CDictionaryByTitle").val()==null){
+                alert("请选择职称！")
+            }else if($("#lpStudentNumber").val()=="" || $("#lpStudentNumber").val()==null){
+                alert("请填写实验者总人数！")
+            }else if($("#CDictionaryByMinUnit").val()=="" || $("#CDictionaryByMinUnit").val()==null){
+                alert("请选择实验最小单位！")
+            }else if($("#CDictionaryByLpCategoryApp").val()=="" || $("#CDictionaryByLpCategoryApp").val()==null){
+                alert("请选择实验类型！")
+            }else if($("#schoolCourseInfo").val()=="" || $("#schoolCourseInfo").val()==null){
+                alert("请选择实验隶属课程！")
+            }else if($("#operationOutline").val()=="" || $("#operationOutline").val()==null){
+                alert("请选择实验隶属大纲！")
+            }else if($("#CDictionaryByItemResultType").val()=="" || $("#CDictionaryByItemResultType").val()==null){
+                alert("请选择实验结果形式！")
+            }else if($("#itemBudget").val()=="" || $("#itemBudget").val()==null){
+                alert("请填写实验预算！")
+            }else if($("#planWeek").val()=="" || $("#planWeek").val()==null){
+                alert("请填写计划周次！")
+            }else{
+               document.edit_form.submit();
+            }
         }
     </script>
     <style>
@@ -257,7 +276,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                             </fieldset>
                             <fieldset style="height: 76px;">
                                 <%--<label>实验项目开发人：${creator.cname}</label>--%>
-                                <label>职称：</label>
+                                <label>职称<font color="red">*</font>：</label>
                                 <form:select path="CDictionaryByTitle.id" id="CDictionaryByTitle" required="true">
                                     <form:option value="">- - - -请选择- - - -</form:option>
                                     <form:options items="${titles}" itemLabel="CName" itemValue="id"/>
@@ -273,16 +292,16 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 />
                             </fieldset>
                             <fieldset>
-                                <label>实验最小单位： </label>
+                                <label>实验最小单位<font color="red">*</font>： </label>
                                     <form:select path="CDictionaryByMinUnit.id" id="CDictionaryByMinUnit" required="true">
                                         <form:option value="">- - - -请选择- - - -</form:option>
                                         <form:options items="${minUnits}" itemLabel="CName" itemValue="id"/>
                                     </form:select>
 
                                 <div id="group">
-                                    <label>实验组数：
+                                    <label>实验组数<font color="red">*</font>：
                                     </label>
-                                    <form:input path="lpSetNumber" id="lpSetNumber" class="easyui-validatebox"
+                                    <form:input path="lpSetNumber" id="lpSetNumber" class="easyui-validatebox" required="true"
                                                 onkeyup="value=value.replace(/[^\d]/g,'') "   maxlength="3"
                                                 placeholder="请输入大于零的整数"
                                     />
@@ -352,7 +371,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                             </fieldset>
                             <fieldset>
                                 <label>开放专业：</label>
-                                <form:select path="lpMajorFit" id="lpMajorFit" class="chzn-select" multiple="true">
+                                <form:select path="lpMajorFit" id="lpMajorFit" class="chzn-select" required="true" multiple="true">
                                     <c:forEach items="${chooseMajors}" varStatus="j" var="m">
                                         <form:option value="${m.majorNumber}" selected="selected">[${m.majorNumber}]${m.majorName}</form:option>
                                     </c:forEach>
@@ -362,26 +381,26 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 </form:select>
                             </fieldset>
                             <fieldset>
-                                <label>开放年级：</label>
+                                <label>开放年级<font color="red">*</font>：</label>
                                 <form:select path="CDictionaryByOpenGrade.id" id="CDictionaryByOpenGrade" required="true">
                                     <form:options items="${grades}" itemLabel="CName" itemValue="id"/>
                                 </form:select>
                             </fieldset>
                             <fieldset>
-                                <label>开放学期：</label>
+                                <label>开放学期<font color="red">*</font>：</label>
                                 <form:select path="CDictionaryByOpenTerm.id" id="CDictionaryByOpenTerm" required="true">
                                     <form:options items="${terms}" itemLabel="CName" itemValue="id"/>
                                 </form:select>
                             </fieldset>
                             <fieldset>
                                 <label>实验隶属课程<font color="red">*</font>：</label>
-                                <form:select path="schoolCourseInfo.courseNumber" id="schoolCourseInfo" class="chzn-select">
+                                <form:select path="schoolCourseInfo.courseNumber" id="schoolCourseInfo" class="chzn-select" required="true">
                                     <form:option value="">加载中...</form:option>
                                 </form:select>
                             </fieldset>
                             <fieldset>
                                 <label>实验隶属大纲<font color="red">*</font>：</label>
-                                <form:select path="operationOutline.id" id="operationOutline" required="true" class="chzn-select">
+                                <form:select path="operationOutline.id" id="operationOutline" class="chzn-select" required="true">
                                     <form:option value="">- - - -请选择- - - -</form:option>
                                     <form:options items="${operationOutlines}" itemLabel="labOutlineName" itemValue="id"/>
                                 </form:select>
@@ -407,21 +426,21 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                                 <form:textarea path="itemAttention" id="itemAttention" cssStyle=" height:150px;"/>
                             </fieldset>
                             <fieldset style="width: 21%;">
-                                <label>实验结果形式：</label>
-                                <form:select path="CDictionaryByItemResultType.id" id="CDictionaryByItemResultType">
+                                <label>实验结果形式<font color="red">*</font>：</label>
+                                <form:select path="CDictionaryByItemResultType.id" id="CDictionaryByItemResultType" required="true">
                                     <form:option value="">- - - -请选择- - - -</form:option>
                                     <form:options items="${itemResultTypes}" itemLabel="CName" itemValue="id"/>
                                 </form:select>
                             </fieldset>
                             <fieldset style="width: 21%;">
-                                <label>实验预算：</label>
+                                <label>实验预算<font color="red">*</font>：</label>
                                 <form:input path="itemBudget" id="itemBudget" class="easyui-validatebox" required="true"
                                             onkeyup="if(isNaN(value))execCommand('undo')" maxlength="6"
                                             placeholder="请输入大于零的数"
                                 />
                             </fieldset>
                             <fieldset>
-                                <label>计划周次*：</label>
+                                <label>计划周次<font color="red">*</font>：</label>
                                 <form:input path="planWeek" id="planWeek" required="true" />
                             </fieldset>
 <%--                            <fieldset>--%>
