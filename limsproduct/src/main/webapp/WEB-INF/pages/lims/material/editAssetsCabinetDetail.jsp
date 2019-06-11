@@ -46,7 +46,7 @@
                         <select name="type" id="type" lay-verify="required" lay-filter="type">
                             <option value=""></option>
                             <option value="1">普通存放点</option>
-                            <%--<option value="2">智能物品柜</option>--%>
+                            <option value="2">智能物品柜</option>
                         </select>
                     </div>
                 </div>
