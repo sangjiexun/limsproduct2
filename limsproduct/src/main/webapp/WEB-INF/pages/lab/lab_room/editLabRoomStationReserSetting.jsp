@@ -200,6 +200,15 @@ function cancel(){
         var needAudit1=needAudit;//预约是否需要审核
         var needAppointmentSave=needAppointment;//预约是否需要审核
         var realAllAudits = [];
+
+        var academies = $("#selectedSchoolAcademy").val();
+
+        if(academies == undefined || academies.length == 0){
+            academies = ["-1"];
+        }
+        if( needAppointmentSave == 0){
+            academies = ["-1"];
+        }
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 for (var j = 1; j < 3; j++) {
@@ -227,7 +236,7 @@ function cancel(){
         }
         $.ajax({
             url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needAppointmentSave+"/"
-            + needAudit1+"/"+realAllAudits,
+            + needAudit1+"/"+realAllAudits+"/"+academies,
             type:'GET',
             async:false,
             error:function (request){
@@ -414,7 +423,7 @@ margin-left:3px;
 			</table>
 			</div>
 			</form:form>
-				<%--<div class="TabbedPanels" id="selectAcademy">
+				<div class="TabbedPanels" id="selectAcademy">
 					<table class="tab_lab" style="margin:10px 0 0;">
 						<tr>
 							<th>开放范围</th>
@@ -434,7 +443,7 @@ margin-left:3px;
 							</td>
 						</tr>
 					</table>
-				</div>--%>
+				</div>
 				<div style="width: 50px; margin: 20px auto">
 					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="确定">
 				</div>

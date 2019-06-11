@@ -118,6 +118,7 @@ public class LabReservationController<JsonResult> {
 	@Autowired private LabRoomLimitTimeDAO labRoomLimitTimeDAO;
 	@Autowired private ReservationSetItemDAO reservationSetItemDAO;
 	@Autowired private LabRelevantConfigDAO labRelevantConfigDAO;
+	@Autowired private LabOpenUpAcademyDAO labOpenUpAcademyDAO;
     @Autowired
     PConfig pConfig;
 	@Autowired private VisualizationService visualizationService;
@@ -1019,10 +1020,23 @@ public class LabReservationController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         // id对应的实验分室
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
-        // 获取所有单选的结果集（是/否）
-        List<CDictionary> CActives = shareService.getCDictionaryData("c_active");
-        mav.addObject("CActives", CActives);
-        mav.setViewName("/lab/lab_room/editLabRoomStationReserSetting.jsp");
+
+		// 开放范围
+		List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
+		mav.addObject("schoolAcademyList", schoolAcademies);
+		//工位预约type为2
+        Set<SchoolAcademy> selectedSchoolAcademies = new LinkedHashSet<>();
+        Set<LabOpenUpAcademy>openUpAcademies = labOpenUpAcademyDAO.findLabOpenUpAcademyBylabRoomIdAndType(labRoomId,2);
+        for(LabOpenUpAcademy labOpenUpAcademy : openUpAcademies){
+            SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(labOpenUpAcademy.getAcademyNumber());
+            selectedSchoolAcademies.add(schoolAcademy);
+        }
+        if(selectedSchoolAcademies.size() == 0) {
+            SchoolAcademy selfAca = labRoom.getSchoolAcademy();
+            selectedSchoolAcademies.add(selfAca);
+        }
+		mav.addObject("selectedSchoolAcademies", selectedSchoolAcademies);
+
         mav.addObject("type",type);
 
         //demo
@@ -1071,7 +1085,7 @@ public class LabReservationController<JsonResult> {
         mav.addObject("page", currpage);
         mav.addObject("currpage", currpage);
 
-
+		mav.setViewName("/lab/lab_room/editLabRoomStationReserSetting.jsp");
         return mav;
     }
 
@@ -1260,14 +1274,44 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}/{academies}", method = RequestMethod.GET)
     @ResponseBody
     public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int isAppointment,@PathVariable int needAudit,
-                                        @PathVariable String[] realAllAudits,
+                                        @PathVariable String[] realAllAudits,@PathVariable String[] academies,
                                         Model model, @ModelAttribute("selected_academy") String acno) {
         // id对应的实验分室
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
         String status = "success";
+
+        // 保存开放学院
+        Set<SchoolAcademy> schoolAcademies = new HashSet<>();
+        //先删除
+        Set<LabOpenUpAcademy>openUpAcademies = labOpenUpAcademyDAO.findLabOpenUpAcademyBylabRoomIdAndType(labRoomId,2);
+        for(LabOpenUpAcademy labOpenUpAcademy :openUpAcademies){
+            labOpenUpAcademyDAO.remove(labOpenUpAcademy);
+        }
+        //后保存
+        if (academies != null && academies.length != 0 && !"-1".equals(academies[0])) {
+            for (String s : academies) {
+                if(s.equals("-2")) {//全校
+                    Set<SchoolAcademy>schoolAcademySet = schoolAcademyDAO.findAllSchoolAcademys();
+                    for(SchoolAcademy schoolAcademy :schoolAcademySet){
+                        LabOpenUpAcademy labOpenUpAcademy = new LabOpenUpAcademy();
+                        labOpenUpAcademy.setLabRoomId(labRoomId);
+                        labOpenUpAcademy.setType(2);
+                        labOpenUpAcademy.setAcademyNumber(schoolAcademy.getAcademyNumber());
+                        labOpenUpAcademyDAO.store(labOpenUpAcademy);
+                    }
+                    break;
+                }else {
+                    LabOpenUpAcademy labOpenUpAcademy = new LabOpenUpAcademy();
+                    labOpenUpAcademy.setLabRoomId(labRoomId);
+                    labOpenUpAcademy.setType(2);
+                    labOpenUpAcademy.setAcademyNumber(s);
+                    labOpenUpAcademyDAO.store(labOpenUpAcademy);
+                }
+            }
+        }
 
         //demo
         if (!"0".equals(realAllAudits[0])) {
