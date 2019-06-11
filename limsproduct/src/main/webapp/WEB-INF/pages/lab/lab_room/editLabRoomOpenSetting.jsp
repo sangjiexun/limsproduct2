@@ -120,10 +120,10 @@ margin-left:3px;
 	<div id="TabbedPanels1" class="TabbedPanels">
 	 <ul class="TabbedPanelsTabGroup">
 		<li class="TabbedPanelsTab" tabindex="0">
-		<a href="javascript:void(0);" onclick="openSetupLink(${labRoom.id},${currpage },${type})">参数设置</a>
+		<a href="javascript:void(0);" onclick="openSetupLink(${labRoom.id},${currpage },${type})">实验室预约设置</a>
 		</li>
         <li class="TabbedPanelsTab" tabindex="0">
-		    <a href="javascript:void(0);" onclick="openStationReserSetting(${labRoom.id},${currpage },${type})">工位预约审核设置</a>
+		    <a href="javascript:void(0);" onclick="openStationReserSetting(${labRoom.id},${currpage },${type})">工位预约设置</a>
 		</li>
          <c:if test="${labRoom.CDictionaryByAllowSecurityAccess.CCategory=='c_active' && labRoom.CDictionaryByAllowSecurityAccess.CNumber=='1' && labRoom.labRoomReservation.toString() == '1'}">
              <li class="TabbedPanelsTab" tabindex="0">
