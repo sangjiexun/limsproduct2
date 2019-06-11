@@ -15,6 +15,7 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.util.HttpClientUtil;
+import net.zjcclims.vo.AgentIOT;
 import net.zjcclims.web.common.PConfig;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -3475,4 +3476,56 @@ public class LabRoomServiceImpl implements LabRoomService {
 
 		return labRoomAgentDAO.executeQuery(sql, 0, -1);
 	}
+
+	/**
+	 * Description 发送iot下发权限的信息
+	 * @param lab_id 实验室id
+	 * @param app_type 业务类型{labRes:实验室预约，devRes:设备预约，staRes:工位预约}
+	 * @param app_id
+	 * @return
+	 * @author 陈乐为 2019年6月11日
+	 */
+	public String sendAgentInfoTodayToIOT(Integer lab_id, String app_type, Integer app_id) {
+		// 实验室的门禁、实验室电源控制器、设备电源控制器
+		String sql = "select agent from LabRoomAgent agent left join agent.labRoomDevices device where 1=1 ";
+		sql += " and (agent.labRoom.id=" + lab_id +" or device.labRoom.id=" + lab_id +")";
+		// 找到该实验室下为电源控制器和门禁的物联设备
+		sql += " and agent.CDictionary.CCategory = 'c_agent_type' ";
+		sql += " and (agent.CDictionary.CNumber = '2' or agent.CDictionary.CNumber = '4') ";
+		List<LabRoomAgent> labRoomAgents = labRoomAgentDAO.executeQuery(sql);
+		// 遍历
+		for (LabRoomAgent agent : labRoomAgents) {
+			String hql = "{call proc_agent_info_for_iot(" + app_id + ",'"+null+"','"+ agent.getHardwareIp() +"',"+ agent.getCDictionary().getId() +")}";
+			Query query =entityManager.createNativeQuery(hql);
+			List<Object[]> objects=query.getResultList();
+			List<AgentIOT> agentIOTS = new ArrayList<>();
+			for(Object[] obj : objects){
+				AgentIOT agentIOT = new AgentIOT();
+				agentIOT.setId(obj[0]!=null?obj[0].toString():null);
+				agentIOT.setUsername(obj[1] != null ? obj[1].toString() : null);
+				agentIOT.setCname(obj[2] != null ? obj[2].toString() : null);
+				agentIOT.setCardno(obj[3] != null ? obj[3].toString() : null);
+				agentIOT.setIsAdmin(obj[4] != null ? Integer.parseInt(obj[4].toString()) : null);
+				agentIOT.setDeviceindex(obj[5] != null ? Integer.parseInt(obj[5].toString()) : null);
+				agentIOT.setStarttime(obj[6] != null ? obj[6].toString() : null);
+				agentIOT.setEndtime(obj[7] != null ? obj[7].toString() : null);
+				agentIOTS.add(agentIOT);
+			}
+
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("serverIp", agent.getCommonServer().getServerIp());
+			jsonObject.put("data", agentIOTS);
+			String json = jsonObject.toString();
+			String serverIp = agent.getCommonServer().getServerIp() + ":" + agent.getCommonServer().getServerSn();
+			try {
+				String url="http://"+ serverIp + "/reservation/iot/guard/" + agent.getHardwareIp() + "/regcard";
+				System.out.println("接口调用地址:" + url);
+				HttpClientUtil.doPostJson(url, json);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+		return "success";
+	}
+
 }
