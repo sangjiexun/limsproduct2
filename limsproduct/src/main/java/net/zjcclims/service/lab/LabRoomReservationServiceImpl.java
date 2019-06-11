@@ -320,17 +320,19 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if (labReservations != null && labReservations.size() > 0 && lendingDate != null) {
 			for (LabReservation labReservation : labReservations) {
 				for (LabReservationTimeTable lrtt : labReservation.getLabReservationTimeTables()) {
-					if (labReservation.getLendingTime().equals(reservationTime)) {//和借用日期在同一天的
-						if (lrtt.getStartTime().after(endTime) ||
-								lrtt.getEndTime().before(startTime) ||
-								lrtt.getStartTime().equals(endTime) ||
-								lrtt.getEndTime().equals(startTime)) {//未和所选时间冲突
-							//do nothing
-						} else {
-							reservationStatus = 3;
-							return reservationStatus;
-						}
-					}
+					if(labReservation.getLendingTime() != null){
+                        if (labReservation.getLendingTime().equals(reservationTime)) {//和借用日期在同一天的
+                            if (lrtt.getStartTime().after(endTime) ||
+                                    lrtt.getEndTime().before(startTime) ||
+                                    lrtt.getStartTime().equals(endTime) ||
+                                    lrtt.getEndTime().equals(startTime)) {//未和所选时间冲突
+                                //do nothing
+                            } else {
+                                reservationStatus = 3;
+                                return reservationStatus;
+                            }
+                        }
+                    }
 				}
 			}
 		}
