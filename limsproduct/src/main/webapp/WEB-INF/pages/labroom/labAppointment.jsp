@@ -478,9 +478,6 @@ function cancel(){
 		.tool-box input{
 			float:none;
 		}
-		/*#labRoom_chzn,#usingObj_chzn{*/
-			/*width:200px !important;*/
-		/*}*/
 		.content-box .tab_lab{
 	    	width: 100%;
             left: 0;
@@ -591,18 +588,9 @@ function cancel(){
 <div class="TabbedPanelsTabGroup-box">
 <div class="TabbedPanelsContentGroup">
 <div class="TabbedPanelsContent">
-	<%--<ul class="btn_reser cf">
-		<li><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a></li>
-		<li><a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1"><spring:message code="all.trainingRoom.labroom" />预约</a></li>
-	</ul>
-	--%><form id="formid" method="POST">
+	<form id="formid" method="POST">
 				<table class="tab_lab">
 					<tr>
-                       <%-- 工位预约/实验室预约--%>
-					    <%--<td rowspan="2" class="btn_reser br_selected btn_labr" style="background:#77bace ;border-bottom:1px solid #77bace;">
-					        <div class="br_btm"></div>
-					        <a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1">工位预约</a>
-					    </td>--%>
 						<th>
 							<input type="hidden" id="deviceType" name="deviceType">
 							<spring:message code="all.trainingRoom.labroom" />名称

@@ -3345,7 +3345,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 		if (isReservation != null && isReservation == 1) {
 			sql.append(" and m.labRoomActive = 1");
 		}
-		sql.append(" and m.labCategory=1 and m.schoolAcademy.academyNumber="+acno+"");
+		sql.append(" and m.labCategory=1 and m.schoolAcademy.academyNumber='"+acno+"'");
 		return labRoomDAO.executeQuery(sql.toString(), 0, -1);
 	}
 	/**

@@ -1743,7 +1743,7 @@ public class LabRoomController<JsonResult> {
         // 流媒体服务器地址
         String serverIp = agent.getSnNo();
         // 端口
-        String hardwarePort = agent.getManufactor();
+        String hardwarePort = agent.getCommonServer().getServerSn();
         // 摄像头本身ip的 xxx.xxx.xxx.123   最后那个123
         String lastFour = "";
         // 192.168.0.sz
