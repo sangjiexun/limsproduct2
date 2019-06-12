@@ -567,7 +567,7 @@
                                     <th>序号</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>编号</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>名称</th>
-                                    <th><spring:message code="all.trainingRoom.labroom"/>地址</th>
+                                    <th><spring:message code="all.trainingRoom.labroom"/>楼层</th>
                                     <c:if test="${PROJECT_NAME eq 'zjcclims'}">
                                         <th><spring:message code="all.trainingRoom.labroom"/>等级</th>
                                     </c:if>
@@ -586,7 +586,8 @@
                                         <td>${i.count+(currpage-1)*pageSize }</td>
                                         <td>${s.labRoomNumber}</td>
                                         <td>${s.labRoomName}</td>
-                                        <td>${s.labRoomAddress}</td>
+                                        <td><c:if test="${s.floorNo ne null}">${s.systemBuild.buildName}(${s.floorNo}楼)</c:if>
+                                            <c:if test="${s.floorNo eq null || s.floorNo eq ''}"></c:if></td>
                                         <c:if test="${PROJECT_NAME eq 'zjcclims'}">
                                             <c:if test="${s.labRoomLevel eq 0}">
                                                 <td>特级</td>
