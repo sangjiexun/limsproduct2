@@ -1340,7 +1340,7 @@ public class TeachingReportServiceImpl implements TeachingReportService {
         String s = "select c from LabRoom c "
                 + "where c.CDictionaryByLabRoom.id=583 and c.labCenter.schoolAcademy.academyNumber like '%";
         //防止学院编号过短导致报错
-        if(academyNumber.length()>=SchoolConstantInterface.INT_SCHOOLACADEMY_NUMBER){
+        if(academyNumber.length()> SchoolConstantInterface.INT_SCHOOLACADEMY_NUMBER){
             s += academyNumber.substring(0, SchoolConstantInterface.INT_SCHOOLACADEMY_NUMBER) + "%' and (c.isUsed=1 or c.isUsed=null)";
         }else{
             s += academyNumber + "%' and (c.isUsed=1 or c.isUsed=null)";
