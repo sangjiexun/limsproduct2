@@ -33,6 +33,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
 <!-- 下拉的样式结束 -->
+    <link href="${pageContext.request.contextPath}/static_limsproduct/css/global_static.css" rel="stylesheet" type="text/css">
 
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/Calendar.js"></script>
@@ -41,7 +42,11 @@ function cancel(){
 	window.location.href="${pageContext.request.contextPath}/device/listLabRoomDevice?page=1";
 }
 </script>
-
+<style type="text/css">
+    .chzn-choices {
+        border: none!important;
+    }
+</style>
 <script>
     //定义全局变量
     var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
@@ -414,7 +419,23 @@ margin-left:3px;
 						</td>
 					</tr>
 				</c:forEach>
-
+                <tr>
+                    <td>开放范围</td>
+                    <td >
+                        <select class="chzn-select" multiple id="selectedSchoolAcademy"
+                                name="selectedSchoolAcademy">
+                            <c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
+                                <c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">
+                                    <option value="${schoolAcademy.academyNumber}"
+                                            selected>${schoolAcademy.academyName}</option>
+                                </c:if>
+                                <c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">
+                                    <option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
+                                </c:if>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
 			<%--<tr id="allowSecurityAccess">
 				<td>是否需要安全准入:</td>
 				<td>
@@ -439,27 +460,27 @@ margin-left:3px;
 			</table>
 			</div>
 			</form:form>
-				<div class="TabbedPanels" id="selectAcademy">
-					<table class="tab_lab" style="margin:10px 0 0;">
-						<tr>
-							<th>开放范围</th>
-							<td width="90%">
-								<select class="chzn-select" multiple id="selectedSchoolAcademy"
-										name="selectedSchoolAcademy">
-									<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
-										<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">
-											<option value="${schoolAcademy.academyNumber}"
-													selected>${schoolAcademy.academyName}</option>
-										</c:if>
-										<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">
-											<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</td>
-						</tr>
-					</table>
-				</div>
+				<%--<div class="TabbedPanels" id="selectAcademy">--%>
+					<%--<table class="tab_lab" style="margin:10px 0 0;">--%>
+						<%--<tr>--%>
+							<%--<th>开放范围</th>--%>
+							<%--<td width="90%">--%>
+								<%--<select class="chzn-select" multiple id="selectedSchoolAcademy"--%>
+										<%--name="selectedSchoolAcademy">--%>
+									<%--<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">--%>
+										<%--<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}"--%>
+													<%--selected>${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+										<%--<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+									<%--</c:forEach>--%>
+								<%--</select>--%>
+							<%--</td>--%>
+						<%--</tr>--%>
+					<%--</table>--%>
+				<%--</div>--%>
 				<div style="width: 50px; margin: 20px auto">
 					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="确定">
 				</div>
