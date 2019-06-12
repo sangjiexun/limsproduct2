@@ -76,6 +76,16 @@ public interface LabRoomReservationService {
 	 * @date 2017-09-20
 	 *************************************************************************************/
 	public List<LabRoom> findLabRoompage(LabRoom labRoom, int currpage, int pageSize, String acno,HttpServletRequest request);
+
+	/*************************************************************************************
+	 * Description 分页查询实训室列表（工位预约）
+	 *
+	 * @author 孙虎
+	 * @date 2017-09-20
+     * update Hezhaoyi 2019-6-12
+	 *************************************************************************************/
+	public List<LabRoom> findLabRoomStationBypage(LabRoom labRoom, int currpage, int pageSize, String acno,HttpServletRequest request);
+
 	/*************************************************************************************
 	 * 判断工位预约时间与实验室预约时间是否冲突
 	 * 顾延钊

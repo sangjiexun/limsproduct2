@@ -239,6 +239,59 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		return labRoomDAO.executeQuery(hql,(currpage-1)*pageSize,pageSize);
 	}
+
+	/*************************************************************************************
+	 * Description 分页查询实验室列表（工位预约）
+	 *
+	 * @author 孙虎
+	 * @date 2017-09-20
+	 * update Hezhaoyi 2019-6-12
+	 *************************************************************************************/
+	public List<LabRoom> findLabRoomStationBypage(LabRoom labRoom, int currpage, int pageSize, String acno,HttpServletRequest request) {
+        StringBuffer sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
+        sql.append(" where l.labRoomActive=1 and l.id = loua.labRoomId and lrc.labRoomId = l.id");
+        if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+            sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
+            sql.append(" where l.labRoomLevel != 0 and l.id = loua.labRoomId and lrc.labRoomId = l.id");
+        }
+        sql.append(" and lrc.configCategory = 'lab_station_is_appointment' and lrc.setItem = 1");
+
+		if (labRoom.getLabRoomName() != null && !labRoom.getLabRoomName().equals("")) {
+            sql.append(" and  (l.labRoomName like '%" + labRoom.getLabRoomName() + "%'  or l.labRoomNumber like '%"
+					+ labRoom.getLabRoomName() + "%')");
+		}
+		String worker = request.getParameter("worker");
+		String searchflg = request.getParameter("searchflg");
+		if(searchflg != null && searchflg != ""){
+			if(worker != null && worker != ""){
+
+				if(searchflg.equals("1")){
+                    sql.append(" and l.labRoomWorker = " + worker);
+				}else if(searchflg.equals("2")){
+                    sql.append(" and l.labRoomWorker > " + worker);
+				}else if(searchflg.equals("3")){
+                    sql.append(" and l.labRoomWorker < " + worker);
+				}
+			}
+		}
+		if (labRoom.getLabRoomWorker() != null) {
+            sql.append(" and  l.labRoomWorker = " + labRoom.getLabRoomWorker());
+		}
+		if (labRoom.getLabRoomEnName() != null && !labRoom.getLabRoomEnName().equals("")){
+			sql.append(" and l in (select l from Software s,LabRoom l,SoftwareRoomRelated srr where s.id=srr.software.id and l.id=srr.labRoom.id and s.name like'%"+labRoom.getLabRoomEnName()+"%')");
+		}
+		if (labRoom.getLabRoonAbbreviation() != null && !labRoom.getLabRoonAbbreviation().equals("")){
+//            sql.append(" and l in (select l from LabRoomDevice d,LabRoom l where d.id not in (select ld.labRoomDevice.id from OperationItemDevice ld) and d.labRoom.id=l.id and d.schoolDevice.deviceName like'%"+labRoom.getLabRoonAbbreviation()+"%')" );
+            sql.append(" and l in (select l from LabRoomDevice d,LabRoom l where d.labRoom.id=l.id and d.schoolDevice.deviceName like'%"+labRoom.getLabRoonAbbreviation()+"%')" );
+
+        }
+		if(acno!=null && !acno.equals("-1")){// 20190506全校
+			// 开放范围
+            sql.append(" and (loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2");
+		}
+		return labRoomDAO.executeQuery(sql.toString(),(currpage-1)*pageSize,pageSize);
+	}
+
 	/*************************************************************************************
 	 * Description 分页查询实验室列表（实验室预约）,不包括软件
 	 *

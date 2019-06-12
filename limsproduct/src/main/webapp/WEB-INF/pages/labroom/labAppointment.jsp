@@ -740,9 +740,9 @@ function cancel(){
 							<th>序号</th>
 							<th><spring:message code="all.trainingRoom.labroom" />编号</th>
 							<th><spring:message code="all.trainingRoom.labroom" />名称</th>
-							<th><spring:message code="all.trainingRoom.labroom" />地址</th>
+							<th><spring:message code="all.trainingRoom.labroom" />楼层</th>
 							<th><spring:message code="all.trainingRoom.labroom" />等级</th>
-							<th><spring:message code="all.trainingRoom.labroom" />容量</th>
+							<%--<th><spring:message code="all.trainingRoom.labroom" />容量</th>--%>
 							<th>可预约工位数</th>
 							<th>设备详情</th>
 							<th>软件详情</th>
@@ -755,7 +755,8 @@ function cancel(){
 								<td>${i.count+(currpage-1)*pageSize }</td>
 								<td>${s.labRoomNumber}</td>
 								<td>${s.labRoomName}</td>
-								<td>${s.labRoomAddress}</td>
+								<td><c:if test="${s.floorNo ne null}">${s.systemBuild.buildName}(${s.floorNo}楼)</c:if>
+									<c:if test="${s.floorNo eq null || s.floorNo eq ''}"></c:if></td>
 								<c:if test="${s.labRoomLevel eq 0}">
 									<td>特级</td>
 								</c:if>
@@ -768,7 +769,7 @@ function cancel(){
 								<c:if test="${empty s.labRoomLevel}">
 									<td>未设置</td>
 								</c:if>
-								<td>${s.labRoomCapacity}</td>
+								<%--<td>${s.labRoomCapacity}</td>--%>
 								<td>${s.labRoomWorker}</td>
 								<td><a onclick="showLabRoomDevice(${s.id})" href="javascript:void(0)"  >设备详情</a></td>
 								<td><a onclick="showLabRoomSoftware(${s.id})" href="javascript:void(0)"  >软件详情</a></td>

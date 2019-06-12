@@ -425,7 +425,7 @@ public class LabRoomController<JsonResult> {
             labRoom1.setIsOpen(1);
         }
         // 可预约工位数
-        labRoom1.setLabRoomWorker(labRoom.getLabRoomWorker());
+        //labRoom1.setLabRoomWorker(labRoom.getLabRoomWorker());
         //////////////////////////////////页面附加信息/////////////////////////////////
         // 基地
         if(!EmptyUtil.isObjectEmpty(labRoom) && !EmptyUtil.isObjectEmpty(labRoom.getLabBase())

@@ -1010,7 +1010,7 @@ public class LabReservationController<JsonResult> {
 	}
 
     /****************************************************************************
-     * @Description: 实验室管理---工位预约审核设置
+     * @Description: 实验室管理---工位预约设置
      * @Author Hezhaoyi 2019-6-3
      ****************************************************************************/
     @RequestMapping(value = "/device/editLabRoomStationReserSetting/{labRoomId}/{currpage}/{type}", method = RequestMethod.GET)
@@ -1084,6 +1084,7 @@ public class LabReservationController<JsonResult> {
         mav.addObject("labRoomId", labRoomId);
         mav.addObject("page", currpage);
         mav.addObject("currpage", currpage);
+        mav.addObject("labRoomWorker",labRoom.getLabRoomWorker());
 
 		mav.setViewName("/lab/lab_room/editLabRoomStationReserSetting.jsp");
         return mav;
@@ -1274,10 +1275,10 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}/{academies}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}/{academies}/{labRoomWorker}", method = RequestMethod.GET)
     @ResponseBody
     public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int isAppointment,@PathVariable int needAudit,
-                                        @PathVariable String[] realAllAudits,@PathVariable String[] academies,
+                                        @PathVariable String[] realAllAudits,@PathVariable String[] academies,@PathVariable int labRoomWorker,
                                         Model model, @ModelAttribute("selected_academy") String acno) {
         // id对应的实验分室
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
@@ -1372,6 +1373,8 @@ public class LabReservationController<JsonResult> {
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
             }
         }
+        //可预约工位数
+        labRoom.setLabRoomWorker(labRoomWorker);
         labRoomDAO.store(labRoom);
         return status;
     }
