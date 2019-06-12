@@ -804,6 +804,11 @@
       <version>1.6</version>
       <classifier>jdk1.6</classifier>
     </dependency>
+    <dependency>
+      <groupId>net.gvsun.mvc</groupId>
+      <artifactId>lyuap</artifactId>
+      <version>1.0.0</version>
+    </dependency>
 
   </dependencies>
   <repositories>
