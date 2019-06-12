@@ -1337,10 +1337,15 @@ public class TeachingReportServiceImpl implements TeachingReportService {
             academyNumber = shareService.getUserDetail().getSchoolAcademy().getAcademyNumber();
         }
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
-        StringBuffer sql = new StringBuffer("select c from LabRoom c "
-                + "where c.CDictionaryByLabRoom.id=583 and c.labCenter.schoolAcademy.academyNumber like '%"
-                + academyNumber
-                .substring(0, SchoolConstantInterface.INT_SCHOOLACADEMY_NUMBER) + "%' and (c.isUsed=1 or c.isUsed=null)");
+        String s = "select c from LabRoom c "
+                + "where c.CDictionaryByLabRoom.id=583 and c.labCenter.schoolAcademy.academyNumber like '%";
+        //防止学院编号过短导致报错
+        if(academyNumber.length()>=SchoolConstantInterface.INT_SCHOOLACADEMY_NUMBER){
+            s += academyNumber.substring(0, SchoolConstantInterface.INT_SCHOOLACADEMY_NUMBER) + "%' and (c.isUsed=1 or c.isUsed=null)";
+        }else{
+            s += academyNumber + "%' and (c.isUsed=1 or c.isUsed=null)";
+        }
+        StringBuffer sql = new StringBuffer(s);
         List<LabRoom> list = labRoomDAO.executeQuery(sql.toString(), 0, -1);
         return list;
     }
