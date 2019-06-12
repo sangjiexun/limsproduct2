@@ -14,6 +14,7 @@ import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.Labreservationlist;
 import excelTools.TableData;
+import net.gvsun.lims.vo.labRoom.ParamLabSettingVO;
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -1275,12 +1276,11 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}/{academies}/{labRoomWorker}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting", method = RequestMethod.POST)
     @ResponseBody
-    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int isAppointment,@PathVariable int needAudit,
-                                        @PathVariable String[] realAllAudits,@PathVariable String[] academies,@PathVariable int labRoomWorker,
-                                        Model model, @ModelAttribute("selected_academy") String acno) {
+    public String saveLabRoomStationReserSetting(@RequestBody ParamLabSettingVO paramLabSettingVO) {
         // id对应的实验分室
+        int labRoomId = paramLabSettingVO.getLabRoomId();
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
         String status = "success";
 
@@ -1292,6 +1292,7 @@ public class LabReservationController<JsonResult> {
             labOpenUpAcademyDAO.remove(labOpenUpAcademy);
         }
         //后保存
+        String[] academies = paramLabSettingVO.getAcademies();
         if (academies != null && academies.length != 0 && !"-1".equals(academies[0])) {
             for (String s : academies) {
                 if(s.equals("-2")) {//全校
@@ -1315,6 +1316,11 @@ public class LabReservationController<JsonResult> {
         }
 
         //demo
+        String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
+        int needAudit = -1;
+        if(paramLabSettingVO.getNeedAudit()!=null){
+            needAudit = paramLabSettingVO.getNeedAudit();
+        }
         if (!"0".equals(realAllAudits[0])) {
             String[] RSWITCH = {"on", "off"};
             String rConfig = "";
@@ -1333,6 +1339,7 @@ public class LabReservationController<JsonResult> {
             JSONArray jsonArray = jsonObject.getJSONArray("data");
         }
 
+        int isAppointment = paramLabSettingVO.getIsAppointment();
         if(isAppointment != -1){
             LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
             if(labRelevantConfigIsApp == null){
@@ -1374,7 +1381,9 @@ public class LabReservationController<JsonResult> {
             }
         }
         //可预约工位数
-        labRoom.setLabRoomWorker(labRoomWorker);
+        if(paramLabSettingVO.getLabRoomWorker()!=null){
+            labRoom.setLabRoomWorker(paramLabSettingVO.getLabRoomWorker());
+        }
         labRoomDAO.store(labRoom);
         return status;
     }

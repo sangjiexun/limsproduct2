@@ -253,15 +253,14 @@ function cancel(){
             "labRoomId": ${labRoomId},
             "page": ${page},
             "type": ${type},
-            "needAppointmentSave": needAppointmentSave,
-            "needAudit1": needAudit1,
+            "isAppointment": needAppointmentSave,
+            "needAudit": needAudit1,
             "realAllAudits": realAllAudits,
             "academies": academies,
             "labRoomWorker": labRoomWorker,
         });
         $.ajax({
-            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needAppointmentSave+"/"
-            + needAudit1+"/"+realAllAudits+"/"+academies+"/"+labRoomWorker,
+            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting",
             type:'POST',
 			data:data1,
             contentType: "application/json;charset=UTF-8",
