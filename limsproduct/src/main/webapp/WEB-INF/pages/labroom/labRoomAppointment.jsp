@@ -743,9 +743,12 @@
                         var teacher = "";
                         var labRoomId;
                         var needtutor = 0;
-
+                        var isAjax=false;
                         //保存实训室借用
                         function saveLabRoomLending() {
+                            if(isAjax){
+                                return false;
+                            }
                             // layer.msg('正在提交请稍候...', {icon: 16});
                             if ($("#labRoom").val() == "请选择") {
                                 alert("请选择实验室");
@@ -807,10 +810,12 @@
                                 'teacher': teacher,
                                 'reservationTime': $("#reservationTime").val()
                             };
+                            isAjax=true;
                             $.ajax({
                                 type: "POST",
                                 url: "${pageContext.request.contextPath}/LabRoomReservation/saveLabReservation?labRoomId=" + labRoomId,
                                 data: myData,
+//                                async: false,
                                 dataType: 'text',
                                 success: function (data) {
                                     layer.msg("删除成功", {icon: 1});
