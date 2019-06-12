@@ -249,10 +249,22 @@ function cancel(){
             alert("请检查是否选完所有选项！");
             return false;
         }
+        var data1 = JSON.stringify({
+            "labRoomId": ${labRoomId},
+            "page": ${page},
+            "type": ${type},
+            "needAppointmentSave": needAppointmentSave,
+            "needAudit1": needAudit1,
+            "realAllAudits": realAllAudits,
+            "academies": academies,
+            "labRoomWorker": labRoomWorker,
+        });
         $.ajax({
             url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needAppointmentSave+"/"
             + needAudit1+"/"+realAllAudits+"/"+academies+"/"+labRoomWorker,
-            type:'GET',
+            type:'POST',
+			data:data1,
+            contentType: "application/json;charset=UTF-8",
             async:false,
             error:function (request){
                 alert('请求错误!');
