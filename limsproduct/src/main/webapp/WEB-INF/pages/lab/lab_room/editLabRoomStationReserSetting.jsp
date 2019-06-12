@@ -46,6 +46,7 @@ function cancel(){
     //定义全局变量
     var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
     var needtutor="${needtutor}";//是否需要系主任审核
+    var labRoomWorker="${labRoomWorker}";//可预约工位数
     var needAppointment = "${isAppointment}";//是否需要预约
     var needdean="${needdean}";//是否需要系主任审核
     var trainingCenterDirector="${trainingCenterDirector}";//是否需要实训中心主任审核
@@ -78,6 +79,7 @@ function cancel(){
     //是否需要审核的联动
     $(document).ready(function(){
         document.getElementById("isAudit").style.display="None";
+        document.getElementById("labRoomWorkers").style.display="None";
         if (${empty isAppointment}) {
             document.getElementById('appointment1').checked = "";
             document.getElementById('appointment0').checked = "";
@@ -88,6 +90,7 @@ function cancel(){
             }
         }else if(${isAppointment == 1}){
             document.getElementById("isAudit").style.display="";
+            document.getElementById("labRoomWorkers").style.display="";
             document.getElementById('appointment1').checked = true;
             if (${empty isAudit1}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
@@ -155,6 +158,7 @@ function cancel(){
             console.log(${isAppointment})
 //            document.getElementById("allowSecurityAccess").style.display="";
             document.getElementById("isAudit").style.display="";
+            document.getElementById("labRoomWorkers").style.display="";
 //            document.getElementById("selectAcademy").style.display="";
             if (${empty isAudit1}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
@@ -181,6 +185,7 @@ function cancel(){
         $("#appointment0").change(function(){
 //            document.getElementById("allowSecurityAccess").style.display="None";
             document.getElementById("isAudit").style.display="None";
+            document.getElementById("labRoomWorkers").style.display="None";
 //            document.getElementById("selectAcademy").style.display="None";
             // document.getElementById("labManager").style.display="None";
             // document.getElementById("dean").style.display="None";
@@ -199,6 +204,7 @@ function cancel(){
     function saveDeviceSettingRest() {
         var needAudit1=needAudit;//预约是否需要审核
         var needAppointmentSave=needAppointment;//预约是否需要审核
+        var labRoomWorker=$('#labRoomWorker').val();//可预约工位数
         var realAllAudits = [];
 
         var academies = $("#selectedSchoolAcademy").val();
@@ -226,6 +232,10 @@ function cancel(){
 				alert("请选择是否审核");
 				return false;
 			}
+			if(labRoomWorker==""){
+				alert("请填写可预约工位数");
+				return false;
+			}
         }
         if(!needAllAudits[0]) {
             realAllAudits = [0];
@@ -236,7 +246,7 @@ function cancel(){
         }
         $.ajax({
             url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needAppointmentSave+"/"
-            + needAudit1+"/"+realAllAudits+"/"+academies,
+            + needAudit1+"/"+realAllAudits+"/"+academies+"/"+labRoomWorker,
             type:'GET',
             async:false,
             error:function (request){
@@ -374,6 +384,12 @@ margin-left:3px;
 								<form:radiobutton path="labRoomReservation" value="0" id="appointment0"/><label for="appointment0">否</label>
 							</c:if>
 						</c:forEach>
+					</td>
+				</tr>
+				<tr id="labRoomWorkers">
+					<td>可预约工位数:</td>
+					<td>
+						<form:input path="labRoomWorker" type="number" id="labRoomWorker" value="${labRoomWorker}"/>
 					</td>
 				</tr>
 			<tr id="isAudit">
