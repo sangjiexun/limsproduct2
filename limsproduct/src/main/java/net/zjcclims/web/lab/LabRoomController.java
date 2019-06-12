@@ -2583,19 +2583,19 @@ public class LabRoomController<JsonResult> {
 
     /****************************************************************************
      * @throws ParseException
-     * @功能：安全准入验证
+     * @功能：安全准入验证-工位预约
      * @作者：李小龙
      ****************************************************************************/
     @RequestMapping(value = "/securityAccess", method = RequestMethod.POST)
     public @ResponseBody
     String securityAccess(@RequestParam Integer id, HttpServletRequest request) throws ParseException {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(id);
-        if (labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0) {
-            return "noReservation";
-        }
-        if (!labRoomService.isSettingForLabRoom(id)) {
-            return "noSetting";
-        }
+//        if (labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0) {
+//            return "noReservation";
+//        }
+//        if (!labRoomService.isSettingForLabRoom(id)) {
+//            return "noSetting";
+//        }
         User user = shareService.getUser();
         String data = labRoomService.securityAccess(user.getUsername(), id, request);
 //        boolean LabRoomStationGradedOrNot = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
