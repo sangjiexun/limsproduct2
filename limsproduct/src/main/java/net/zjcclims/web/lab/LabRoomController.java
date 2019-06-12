@@ -2,6 +2,7 @@ package net.zjcclims.web.lab;
 
 import api.net.gvsunlims.constant.ConstantInterface;
 import com.alibaba.fastjson.JSON;
+import net.gvsun.lims.vo.labRoom.LabRoomVO;
 import net.luxunsh.util.EmptyUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -86,6 +87,8 @@ public class LabRoomController<JsonResult> {
     RefuseItemBackupDAO refuseItemBackupDAO;
     @Autowired
     LabRoomLimitTimeDAO labRoomLimitTimeDAO;
+    @Autowired
+    private LabRelevantConfigDAO labRelevantConfigDAO;
 
     @InitBinder
     public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register
@@ -213,10 +216,51 @@ public class LabRoomController<JsonResult> {
         int totalRecords=0;
         if(type==ConstantInterface.LAB_FOR_ROOM) {// 实验室
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 1, labRoom,9, request, acno).size();
-            mav.addObject("listLabRoom", labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno));
+            List<LabRoom>listLabRoom = labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno);
+            mav.addObject("listLabRoom", listLabRoom);
             // 本学院所有可用实验室-批量添加管理员
             List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
             mav.addObject("labRoomList", labRoomList);
+            List<LabRoomVO> labRoomVOList = new ArrayList<>();
+            for(LabRoom labroom : listLabRoom){
+                LabRoomVO labRoomVO = new LabRoomVO();
+                labRoomVO.setId(labroom.getId());
+                labRoomVO.setLabRoomNumber(labroom.getLabRoomNumber());
+                labRoomVO.setLabRoomName(labroom.getLabRoomName());
+                if(labroom.getFloorNo()!=null){
+                    labRoomVO.setBuildFloor(labroom.getSystemBuild().getBuildName()+labroom.getFloorNo());
+                }
+                if(labroom.getLabCenter()!=null){
+                    labRoomVO.setCenterName(labroom.getLabCenter().getCenterName());
+                }
+                if(labroom.getLabRoomLevel()!=null){
+                    labRoomVO.setLabRoomLevel(labroom.getLabRoomLevel());
+                }
+                if(labroom.getLabRoomCapacity()!=null){
+                    labRoomVO.setLabRoomCapacity(labroom.getLabRoomCapacity());
+                }
+                if(labroom.getLabRoomActive()!=null){
+                    labRoomVO.setLabRoomActive(labroom.getLabRoomActive());
+                }
+                //预约状态拼接
+                String reservationrStatus = "";
+                if(labroom.getLabRoomReservation()!=null && labroom.getLabRoomReservation()==1){   //实验室可预约
+                    reservationrStatus = "实验室可预约";
+                }else {
+                    reservationrStatus = "实验室不可预约";
+                }
+                LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labroom.getId(),"lab_station_is_appointment");
+                if (labRelevantConfigIsApp !=null && labRelevantConfigIsApp.getSetItem() == 1) {
+                    reservationrStatus = reservationrStatus +"/"+ "工位可预约";
+                }else {
+                    reservationrStatus = reservationrStatus +"/"+ "工位不可预约";
+                }
+
+                labRoomVO.setReservationrStatus(reservationrStatus);
+                labRoomVO.setLabRoomWorker(labroom.getLabRoomWorker());
+                labRoomVOList.add(labRoomVO);
+            }
+            mav.addObject("labRoomVOList", labRoomVOList);
             mav.setViewName("lab/lab_room/listLabRoom.jsp");
         }else if(type==ConstantInterface.LAB_FOR_WORKSPACE){// 工作室
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 2, labRoom,9, request, acno).size();

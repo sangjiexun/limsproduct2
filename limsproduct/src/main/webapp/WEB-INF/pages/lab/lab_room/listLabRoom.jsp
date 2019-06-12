@@ -357,13 +357,14 @@
 						</tr>
 						</thead>
 						<tbody>
-						<c:forEach items="${listLabRoom}" var="curr">
+						<c:forEach items="${labRoomVOList}" var="curr">
 							<tr>
 								<td>${curr.labRoomNumber}</td>
 								<td>${curr.labRoomName}</td>
-								<td><c:if test="${curr.floorNo ne null}">${curr.systemBuild.buildName}(${curr.floorNo}楼)</c:if>
-									<c:if test="${curr.floorNo eq null || curr.floorNo eq ''}"></c:if></td>
-								<td>${curr.labCenter.centerName}</td>
+								<%--<td><c:if test="${curr.floorNo ne null}">${curr.systemBuild.buildName}(${curr.floorNo}楼)</c:if>
+									<c:if test="${curr.floorNo eq null || curr.floorNo eq ''}"></c:if></td>--%>
+								<td>${curr.buildFloor}楼</td>
+								<td>${curr.centerName}</td>
 								<c:if test="${project eq 'zjcclims'}">
 									<td>
 										<c:if test="${curr.labRoomLevel==0}">特级</c:if>
@@ -378,12 +379,13 @@
 										<c:otherwise>不可用</c:otherwise>
 									</c:choose>
 								</td>
-								<td>
+								<%--<td>
 									<c:choose>
 										<c:when test="${curr.labRoomReservation==1}">可预约</c:when>
 										<c:otherwise>不可预约</c:otherwise>
 									</c:choose>
-								</td>
+								</td>--%>
+                                <td>${curr.reservationrStatus}</td>
 								<c:if test="${stationNum eq 'true'}"><!-- 有工位相关需求时显示 -->
 									<td>${curr.labRoomWorker}</td>
 								</c:if>
