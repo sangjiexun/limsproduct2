@@ -186,7 +186,7 @@ public class RoutineInspectionServiceImpl implements RoutineInspectionService {
         for (LabRoom lb : labRooms) {
             int[] typeAudit = getInspectionByLabRoom(lb, weekCount, schoolTerm);
             StringBuffer sb = new StringBuffer("%");
-            for (int i = 0; i < typeAudit.length; i++) {
+            for (int i = 1; i < typeAudit.length; i++) {
                 sb.append(typeAudit[i]).append("%");
             }
             //System.out.println(sb);

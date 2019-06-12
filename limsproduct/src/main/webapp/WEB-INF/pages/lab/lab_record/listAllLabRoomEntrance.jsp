@@ -161,7 +161,7 @@ table{table-layout:fixed;}
 	<td><p>${access.academyName}</p></td>
 	<%--<td><p>${access.className}</p></td>--%>
 	<%--<td><p>${access.major}</p></td>--%>
-	<td><p>${fn:substring(access.attendanceTime, 0, 18)}</p></td>
+	<td><p>${fn:substring(access.attendanceTime, 0, 19)}</p></td>
 	<td><p>${access.status}</p></td>
 	<td><a href="${pageContext.request.contextPath}/labRoom/openVideoBack?id=${videoAgentId}&time=${access.attendanceTime}">开视频</a></td>
 	</tr>
