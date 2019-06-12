@@ -68,6 +68,7 @@
 	<input type="hidden" id="selfId" name="selfId" value="${timetableSelfCourse.id}">
 	<form id="form_lab" action="" method="post">
 		<input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
+		<input type="hidden" id="acno" value="${acno}" />
 		<br>
 		<div style="width:95%;">
 			<h3><b>新建教学班</b></h3>

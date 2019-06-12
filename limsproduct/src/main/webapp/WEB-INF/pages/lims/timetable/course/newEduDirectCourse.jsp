@@ -40,16 +40,19 @@
     <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
     <input type="hidden" id="academyNumber" name="academyNumber" value="${academyNumber}">
     <input type="hidden" id="courseNo" name="courseNo" value="${courseNo}">
-    <h3>开始直接排课</h3>
-    软件筛选<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >
-    <!-- schoolCourseDetail的no -->
-    &emsp;<input type="button" id="submitButton" name="deviceButton" value=" 确定 " class="btn btn-primary"  style="float:right">
+    <input type="button" id="submitButton" name="deviceButton" value=" 确定 " class="btn btn-primary"  style="float:right">
     <hr>
     <br>
     <table border="0" align="center" style="width:100%;">
         <tr>
             <td width="5%"></td>
             <td width="15%"></td>
+            <td width="80%"></td>
+        </tr>
+        <c:if test="${softManage eq 'true'}">
+        <tr>
+            <td width="5%"></td>
+            <td align=left width="17%" ><h5>软件筛选：<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" /></h5></td>
             <td width="80%"></td>
         </tr>
         <tr style="display:none" id="tr_soft">
@@ -61,6 +64,7 @@
                 <label for="soft_id"></label>
             </td>
         </tr>
+        </c:if>
         <tr>
             <td width="5%"></td>
             <td align=left width="17%"><h5>请选择实验室<font color="red"> *</font>：</h5></td>
@@ -70,21 +74,21 @@
                 <label for="labRoom_id"></label>
             </td>
         </tr>
-<c:if test="${virtual eq 'true'}">
-        <tr>
-            <td width="5%"></td>
-            <td align=left width="17%"><h5>虚拟镜像：</h5></td>
-            <td>
-                <select id="virtualId" name="virtualId">
-                    <option value="">请选择虚拟镜像...</option>
-                    <c:forEach var="curr" items="${virtualImageList}">
-                        <option value="${curr.id}">${curr.name}</option>
-                    </c:forEach>
-                </select>
-                <label for="virtualId"></label>
-            </td>
-        </tr>
-</c:if>
+        <c:if test="${virtual eq 'true'}">
+            <tr>
+                <td width="5%"></td>
+                <td align=left width="17%"><h5>虚拟镜像：</h5></td>
+                <td>
+                    <select id="virtualId" name="virtualId">
+                        <option value="">请选择虚拟镜像...</option>
+                        <c:forEach var="curr" items="${virtualImageList}">
+                            <option value="${curr.id}">${curr.name}</option>
+                        </c:forEach>
+                    </select>
+                    <label for="virtualId"></label>
+                </td>
+            </tr>
+        </c:if>
         <tr>
             <td width="5%"></td>
             <td align=left width="17%"><h5>请选择授课教师<font color="red"> *</font>：</h5></td>

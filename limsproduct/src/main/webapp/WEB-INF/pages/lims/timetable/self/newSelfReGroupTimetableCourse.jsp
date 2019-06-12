@@ -82,7 +82,6 @@
                 <c:if test="${empty timetableAppointmentSameNumber}">开始排课选择</c:if>
                 <c:if test="${!empty timetableAppointmentSameNumber}">编辑排课选择</c:if>
             </b></h3>
-            软件筛选<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >
             <input type="button" id="submitButton" name="submitButton" value=" 确定 " class="btn btn-primary btn-lg"
                    style="float:right">
         </div>
@@ -90,6 +89,14 @@
         <!-- schoolCourseDetail的no -->
         <hr>
         <table border="0" align="center" style="width:100%;border-collapse:separate; border-spacing:0px 10px;">
+            <c:if test="${softManage eq 'true'}">
+                <tr>
+                    <td align=left width="12%"><h3>软件筛选：</h3></td>
+                    <td>
+                        <input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" >
+                    </td>
+                </tr>
+            </c:if>
             <tr style="overflow: hidden">
                 <td align=left width="12%"><h3>授课教师<font color="red"> *</font>：</h3></td>
                 <td>
