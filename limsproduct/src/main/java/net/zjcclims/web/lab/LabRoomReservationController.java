@@ -194,17 +194,6 @@ public class LabRoomReservationController<JsonResult> {
             isHaveDeans = true;
         }
         mav.addObject("isHaveDeans", isHaveDeans);
-//        //下拉框实验室
-//        String sql = "select l from LabRoom l where l.labRoomReservation = 1 and l.labRoomActive=1";
-//        if (pConfig.PROJECT_NAME.equals("zjcclims")) {
-//            sql = "select l from LabRoom l where l.labRoomLevel != 0 and l.labRoomReservation = 1";
-//        }
-//
-//        if(acno!=null && !acno.equals("-1")){// 20190506全校
-//            // 开放范围
-//            sql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506')";
-//            sql += " order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
-//        }
         //下拉框实验室
         StringBuffer sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
         sql.append(" where l.labRoomActive=1 and l.id = loua.labRoomId and lrc.labRoomId = l.id");
@@ -217,6 +206,7 @@ public class LabRoomReservationController<JsonResult> {
         if(acno!=null && !acno.equals("-1")){// 20190506全校
             // 开放范围
             sql.append(" and (loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2");
+            sql.append(" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end");
         }
 
         List<LabRoom> labRooms = entityManager.createQuery(sql.toString()).getResultList();
