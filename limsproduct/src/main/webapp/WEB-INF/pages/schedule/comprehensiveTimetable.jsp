@@ -118,7 +118,7 @@
         }
 
         .grid-active {
-            z-index: 9999;
+            /*z-index: 9999;*/
         }
 
         .grid-active span {
