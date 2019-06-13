@@ -244,8 +244,8 @@ public class wxAPIController {
         String[] RSWITCH = {"on", "off"};
         String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
         Map<String, String> params = new HashMap<>();
-        params.put("businessUid", "-1");
-        params.put("businessType",pConfig.PROJECT_NAME + "StationReservation");
+        params.put("businessUid", l.getId().toString());
+        params.put("businessType",pConfig.PROJECT_NAME + "StationReservation" + acno);
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
         Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);

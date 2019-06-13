@@ -791,4 +791,14 @@ public interface LabRoomService {
 	 * @author 陈乐为 2019年4月29日
 	 */
 	public List<LabRoomAgent> getAgentByType(Integer lab_id, String c_number, String c_catagory);
+
+	/**
+	 * Description 发送iot下发权限的信息
+	 * @param lab_id 实验室id
+	 * @param app_type 业务类型{labRes:实验室预约，devRes:设备预约，staRes:工位预约}
+	 * @param app_id
+	 * @return
+	 * @author 陈乐为 2019年6月11日
+	 */
+	public String sendAgentInfoTodayToIOT(Integer lab_id, String app_type, Integer app_id);
 }

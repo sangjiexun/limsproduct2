@@ -308,7 +308,7 @@ public class TimetableAppointment implements Serializable {
 	@Column(name = "virtual_image_id")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
-	Integer virtualImageId;
+	String virtualImageId;
 
 	@Column(name = "adjust_status")
 	@Basic(fetch = FetchType.EAGER)
@@ -599,11 +599,11 @@ public class TimetableAppointment implements Serializable {
 		this.updatedBy = updatedBy;
 	}
 
-	public Integer getVirtualImageId() {
+	public String getVirtualImageId() {
 		return virtualImageId;
 	}
 
-	public void setVirtualImageId(Integer virtualImageId) {
+	public void setVirtualImageId(String virtualImageId) {
 		this.virtualImageId = virtualImageId;
 	}
 

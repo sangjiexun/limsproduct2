@@ -194,12 +194,12 @@
 									</form:select>
 								</fieldset>
 							</c:if>--%>
-							<c:if test="${stationNum eq 'true'}"><!-- 有工位相关需求时显示 -->
+<%--							<c:if test="${stationNum eq 'true'}"><!-- 有工位相关需求时显示 -->
 							<fieldset>
 								<label>可预约工位数：</label>
 								<form:input path="labRoomWorker" required="true"/>
 							</fieldset>
-							</c:if>
+							</c:if>--%>
 						</div>
 						<div class="new-classroom" style="border: 1px solid #ccc;">
 							<label style="float: left; width: 100%; font-size: 14px;text-align: center;"><spring:message code="all.trainingRoom.labroom"/>附加信息（非必填）</label>

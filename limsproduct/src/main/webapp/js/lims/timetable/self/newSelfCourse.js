@@ -106,7 +106,7 @@ $(document).ready(function () {
             type: "post",
             data: function (params) {
                 var arr = new Object();
-                arr.search = params.term;
+                arr.search = $("#acno").val();
                 var arrs = JSON.stringify(arr);
                 return arrs;
                 /*var query = {

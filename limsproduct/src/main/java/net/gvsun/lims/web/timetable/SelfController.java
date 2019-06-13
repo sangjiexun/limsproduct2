@@ -172,6 +172,8 @@ public class SelfController<JsonResult> {
         mav.addObject("virtual", pConfig.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
+        // 软件
+        mav.addObject("softManage", pConfig.softManage);
         mav.setViewName("lims/timetable/self/newSelfReTimetableCourse.jsp");
         return mav;
     }
@@ -214,6 +216,8 @@ public class SelfController<JsonResult> {
         mav.addObject("virtual", pConfig.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
+        // 软件
+        mav.addObject("softManage", pConfig.softManage);
         mav.setViewName("lims/timetable/self/newSelfReGroupTimetableCourse.jsp");
         return mav;
     }
@@ -281,6 +285,7 @@ public class SelfController<JsonResult> {
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         // 年级列表
         mav.addObject("grade",schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+        mav.addObject("acno", acno);
         mav.setViewName("lims/timetable/self/newSelfCourse.jsp");
         return mav;
     }

@@ -107,7 +107,6 @@
                                 <input id="allRadio" type="radio" name="view_status" onclick="refreshBootstrapTable()" checked="checked" value="ALL">所有
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="TIMETABLED">排课中
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="STAND_TO_AUDIT">待审核
-                                <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="AUDITING">审核中
                                 <input type="radio" name="view_status" onclick="getTimetableHistoryView()" value="AUDIT_FAIL">审核拒绝
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="STAND_TO_RELEASE">审核通过<!-- 原待发布 -->
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="RELEASED">已发布

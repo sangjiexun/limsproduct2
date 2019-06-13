@@ -33,6 +33,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
 <!-- 下拉的样式结束 -->
+    <link href="${pageContext.request.contextPath}/static_limsproduct/css/global_static.css" rel="stylesheet" type="text/css">
 
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/Calendar.js"></script>
@@ -41,11 +42,16 @@ function cancel(){
 	window.location.href="${pageContext.request.contextPath}/device/listLabRoomDevice?page=1";
 }
 </script>
-
+<style type="text/css">
+    .chzn-choices {
+        border: none!important;
+    }
+</style>
 <script>
     //定义全局变量
     var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
     var needtutor="${needtutor}";//是否需要系主任审核
+    var labRoomWorker="${labRoomWorker}";//可预约工位数
     var needAppointment = "${isAppointment}";//是否需要预约
     var needdean="${needdean}";//是否需要系主任审核
     var trainingCenterDirector="${trainingCenterDirector}";//是否需要实训中心主任审核
@@ -78,6 +84,7 @@ function cancel(){
     //是否需要审核的联动
     $(document).ready(function(){
         document.getElementById("isAudit").style.display="None";
+        document.getElementById("labRoomWorkers").style.display="None";
         if (${empty isAppointment}) {
             document.getElementById('appointment1').checked = "";
             document.getElementById('appointment0').checked = "";
@@ -88,6 +95,7 @@ function cancel(){
             }
         }else if(${isAppointment == 1}){
             document.getElementById("isAudit").style.display="";
+            document.getElementById("labRoomWorkers").style.display="";
             document.getElementById('appointment1').checked = true;
             if (${empty isAudit1}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
@@ -155,6 +163,7 @@ function cancel(){
             console.log(${isAppointment})
 //            document.getElementById("allowSecurityAccess").style.display="";
             document.getElementById("isAudit").style.display="";
+            document.getElementById("labRoomWorkers").style.display="";
 //            document.getElementById("selectAcademy").style.display="";
             if (${empty isAudit1}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
@@ -181,6 +190,7 @@ function cancel(){
         $("#appointment0").change(function(){
 //            document.getElementById("allowSecurityAccess").style.display="None";
             document.getElementById("isAudit").style.display="None";
+            document.getElementById("labRoomWorkers").style.display="None";
 //            document.getElementById("selectAcademy").style.display="None";
             // document.getElementById("labManager").style.display="None";
             // document.getElementById("dean").style.display="None";
@@ -199,6 +209,7 @@ function cancel(){
     function saveDeviceSettingRest() {
         var needAudit1=needAudit;//预约是否需要审核
         var needAppointmentSave=needAppointment;//预约是否需要审核
+        var labRoomWorker=$('#labRoomWorker').val();//可预约工位数
         var realAllAudits = [];
 
         var academies = $("#selectedSchoolAcademy").val();
@@ -226,6 +237,10 @@ function cancel(){
 				alert("请选择是否审核");
 				return false;
 			}
+			if(labRoomWorker==""){
+				alert("请填写可预约工位数");
+				return false;
+			}
         }
         if(!needAllAudits[0]) {
             realAllAudits = [0];
@@ -234,10 +249,21 @@ function cancel(){
             alert("请检查是否选完所有选项！");
             return false;
         }
+        var data1 = JSON.stringify({
+            "labRoomId": ${labRoomId},
+            "page": ${page},
+            "type": ${type},
+            "isAppointment": needAppointmentSave,
+            "needAudit": needAudit1,
+            "realAllAudits": realAllAudits,
+            "academies": academies,
+            "labRoomWorker": labRoomWorker,
+        });
         $.ajax({
-            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needAppointmentSave+"/"
-            + needAudit1+"/"+realAllAudits+"/"+academies,
-            type:'GET',
+            url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting",
+            type:'POST',
+			data:data1,
+            contentType: "application/json;charset=UTF-8",
             async:false,
             error:function (request){
                 alert('请求错误!');
@@ -376,6 +402,12 @@ margin-left:3px;
 						</c:forEach>
 					</td>
 				</tr>
+				<tr id="labRoomWorkers">
+					<td>可预约工位数:</td>
+					<td>
+						<form:input path="labRoomWorker" type="number" id="labRoomWorker" value="${labRoomWorker}"/>
+					</td>
+				</tr>
 			<tr id="isAudit">
 				<td>预约是否需要审核:</td>
 				<td>
@@ -398,7 +430,23 @@ margin-left:3px;
 						</td>
 					</tr>
 				</c:forEach>
-
+                <tr>
+                    <td>开放范围</td>
+                    <td >
+                        <select class="chzn-select" multiple id="selectedSchoolAcademy"
+                                name="selectedSchoolAcademy">
+                            <c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
+                                <c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">
+                                    <option value="${schoolAcademy.academyNumber}"
+                                            selected>${schoolAcademy.academyName}</option>
+                                </c:if>
+                                <c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">
+                                    <option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
+                                </c:if>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
 			<%--<tr id="allowSecurityAccess">
 				<td>是否需要安全准入:</td>
 				<td>
@@ -423,27 +471,27 @@ margin-left:3px;
 			</table>
 			</div>
 			</form:form>
-				<div class="TabbedPanels" id="selectAcademy">
-					<table class="tab_lab" style="margin:10px 0 0;">
-						<tr>
-							<th>开放范围</th>
-							<td width="90%">
-								<select class="chzn-select" multiple id="selectedSchoolAcademy"
-										name="selectedSchoolAcademy">
-									<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
-										<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">
-											<option value="${schoolAcademy.academyNumber}"
-													selected>${schoolAcademy.academyName}</option>
-										</c:if>
-										<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">
-											<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</td>
-						</tr>
-					</table>
-				</div>
+				<%--<div class="TabbedPanels" id="selectAcademy">--%>
+					<%--<table class="tab_lab" style="margin:10px 0 0;">--%>
+						<%--<tr>--%>
+							<%--<th>开放范围</th>--%>
+							<%--<td width="90%">--%>
+								<%--<select class="chzn-select" multiple id="selectedSchoolAcademy"--%>
+										<%--name="selectedSchoolAcademy">--%>
+									<%--<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">--%>
+										<%--<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}"--%>
+													<%--selected>${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+										<%--<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+									<%--</c:forEach>--%>
+								<%--</select>--%>
+							<%--</td>--%>
+						<%--</tr>--%>
+					<%--</table>--%>
+				<%--</div>--%>
 				<div style="width: 50px; margin: 20px auto">
 					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="确定">
 				</div>

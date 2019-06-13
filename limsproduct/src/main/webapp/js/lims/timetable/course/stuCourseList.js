@@ -181,7 +181,7 @@ function getTimetablePlanView() {
 
                     if (timetableBatchDTOS.length > 0) {
                         rt += "<tr><td>" + timetableBatchDTOS[i].batchName + "</td>" +
-                            "<td>" + startDate.getFullYear()+"-"+ startDate.getMonth()+"-"+ startDate.getDay() +"~"+ endDate.getFullYear()+"-"+ endDate.getMonth()+"-"+ endDate.getDay() + "</td>" +
+                            "<td>" + startDate.toLocaleDateString() + "~" + endDate.toLocaleDateString() + "</td>" +
                             "<td>" + gp + "</td></tr>";
                     }
                     batchId = timetableBatchDTOS[i].id;

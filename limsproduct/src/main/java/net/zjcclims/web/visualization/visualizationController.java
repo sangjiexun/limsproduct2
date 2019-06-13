@@ -322,7 +322,7 @@ public class visualizationController<JsonResult> {
 					String serverIp = agent.getCommonServer().getServerIp();
 					mav.addObject("serverIp", serverIp);
 					// 端口
-					String hardwarePort = agent.getSnNo();
+					String hardwarePort = agent.getCommonServer().getServerSn();
 					mav.addObject("hardwarePort", hardwarePort);
 					// 摄像头本身ip的 xxx.xxx.xxx.123 最后那个123
 					String lastFour = "";

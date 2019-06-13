@@ -14,6 +14,7 @@ import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.Labreservationlist;
 import excelTools.TableData;
+import net.gvsun.lims.vo.labRoom.ParamLabSettingVO;
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -1010,7 +1011,7 @@ public class LabReservationController<JsonResult> {
 	}
 
     /****************************************************************************
-     * @Description: 实验室管理---工位预约审核设置
+     * @Description: 实验室管理---工位预约设置
      * @Author Hezhaoyi 2019-6-3
      ****************************************************************************/
     @RequestMapping(value = "/device/editLabRoomStationReserSetting/{labRoomId}/{currpage}/{type}", method = RequestMethod.GET)
@@ -1084,6 +1085,7 @@ public class LabReservationController<JsonResult> {
         mav.addObject("labRoomId", labRoomId);
         mav.addObject("page", currpage);
         mav.addObject("currpage", currpage);
+        mav.addObject("labRoomWorker",labRoom.getLabRoomWorker());
 
 		mav.setViewName("/lab/lab_room/editLabRoomStationReserSetting.jsp");
         return mav;
@@ -1274,12 +1276,11 @@ public class LabReservationController<JsonResult> {
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting/{labRoomId}/{page}/{type}/{isAppointment}/{needAudit}/{realAllAudits}/{academies}", method = RequestMethod.GET)
+    @RequestMapping(value = "/device/saveLabRoomStationReserSetting", method = RequestMethod.POST)
     @ResponseBody
-    public String saveLabRoomStationReserSetting(@PathVariable int labRoomId, @PathVariable int page, @PathVariable int type, @PathVariable int isAppointment,@PathVariable int needAudit,
-                                        @PathVariable String[] realAllAudits,@PathVariable String[] academies,
-                                        Model model, @ModelAttribute("selected_academy") String acno) {
+    public String saveLabRoomStationReserSetting(@RequestBody ParamLabSettingVO paramLabSettingVO) {
         // id对应的实验分室
+        int labRoomId = paramLabSettingVO.getLabRoomId();
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
         String status = "success";
 
@@ -1291,6 +1292,7 @@ public class LabReservationController<JsonResult> {
             labOpenUpAcademyDAO.remove(labOpenUpAcademy);
         }
         //后保存
+        String[] academies = paramLabSettingVO.getAcademies();
         if (academies != null && academies.length != 0 && !"-1".equals(academies[0])) {
             for (String s : academies) {
                 if(s.equals("-2")) {//全校
@@ -1314,6 +1316,11 @@ public class LabReservationController<JsonResult> {
         }
 
         //demo
+        String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
+        int needAudit = -1;
+        if(paramLabSettingVO.getNeedAudit()!=null){
+            needAudit = paramLabSettingVO.getNeedAudit();
+        }
         if (!"0".equals(realAllAudits[0])) {
             String[] RSWITCH = {"on", "off"};
             String rConfig = "";
@@ -1332,6 +1339,7 @@ public class LabReservationController<JsonResult> {
             JSONArray jsonArray = jsonObject.getJSONArray("data");
         }
 
+        int isAppointment = paramLabSettingVO.getIsAppointment();
         if(isAppointment != -1){
             LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
             if(labRelevantConfigIsApp == null){
@@ -1371,6 +1379,10 @@ public class LabReservationController<JsonResult> {
                 status = jsonObject.getString("status");
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
             }
+        }
+        //可预约工位数
+        if(paramLabSettingVO.getLabRoomWorker()!=null){
+            labRoom.setLabRoomWorker(paramLabSettingVO.getLabRoomWorker());
         }
         labRoomDAO.store(labRoom);
         return status;

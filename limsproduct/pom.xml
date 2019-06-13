@@ -385,6 +385,11 @@
       <version>2.0</version>
     </dependency>
     <dependency>
+      <groupId>net.gvsun.mvc</groupId>
+      <artifactId>lyuap</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-servlet</artifactId>
       <version>3.0-rc3</version>
@@ -803,6 +808,11 @@
       <artifactId>kingstar-sso-client-authenticate</artifactId>
       <version>1.6</version>
       <classifier>jdk1.6</classifier>
+    </dependency>
+    <dependency>
+      <groupId>net.gvsun.mvc</groupId>
+      <artifactId>lyuap</artifactId>
+      <version>1.0.0</version>
     </dependency>
 
   </dependencies>

@@ -452,6 +452,16 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
     }
 
 
+    /**
+     * Description 实验室预约审核结果保存
+     * @param labReservation
+     * @param sAuditResult1
+     * @param remark
+     * @param acno
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @author 谁？
+     */
     @Transactional
     public LabReservation saveAuditResult(LabReservation labReservation, String sAuditResult1, String remark, String acno) throws NoSuchAlgorithmException {
         LabRoom labRoom = labReservation.getLabRoom();
@@ -499,7 +509,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         if(jsonArrayCurStage.size() != 0){
             JSONObject jsonObjectCurStage0 = jsonArrayCurStage.getJSONObject(0);
             Integer level = jsonObjectCurStage0.getIntValue("level");
-            if(level == -1){
+            if(level == -1){// 审核通过
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.MILLISECOND,0);
                 calendar.set(Calendar.SECOND,0);
@@ -508,7 +518,9 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                 if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
                     if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
                         HttpClientUtil.doGet("http://10.50.20.100:85/setplan");
-                    }else {
+                    } else if (pConfig.PROJECT_NAME.equals("limsproduct")) {
+                        labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
+                    } else {
                         labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
                     }
                 }

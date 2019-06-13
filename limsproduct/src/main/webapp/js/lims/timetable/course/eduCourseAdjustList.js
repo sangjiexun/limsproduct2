@@ -444,11 +444,23 @@ function getSeflMangerView() {
                                 var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                                 var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                                 var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                                rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
+                                rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>";
+                                if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                                    rt += timetableDTOs[i].endClass;
+                                } else {
+                                    rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                                }
+                                rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
                                 rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                             }
                             if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                                rt += "<tr><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
+                                rt += "<tr><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>";
+                                if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                                    rt += timetableDTOs[i].endClass;
+                                } else {
+                                    rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                                }
+                                rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
                             }
                         }
                     }
@@ -681,11 +693,23 @@ function getTimetableMangerView() {
                                 var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                                 var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                                 var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                                rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
+                                rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>";
+                                if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                                    rt += timetableDTOs[i].endClass;
+                                } else {
+                                    rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                                }
+                                rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
                                 rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                             }
                             if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                                rt += "<tr><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
+                                rt += "<tr><td>第" +j+"周（星期"+ timetableDTOs[i].weekday + "）</td><td>";
+                                if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                                    rt += timetableDTOs[i].endClass;
+                                } else {
+                                    rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                                }
+                                rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + teacher + "</td><td>" + timetableDTOs[i].items + "</td><td>" + studentList + "</td><td>" + operation + "</td></tr>";
                             }
                         }
                     }
@@ -862,11 +886,35 @@ function getTimetableAdjustHistoryView() {
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + result + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + result + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
                         rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
                     }
                 }
                 if (timetableDTOs.length > 0) {
@@ -1012,11 +1060,35 @@ function getTimetableSuspendHistoryView() {
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + result + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + result + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
                         rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].termName + "</td></tr>";
                     }
                 }
                 if (timetableDTOs.length > 0) {

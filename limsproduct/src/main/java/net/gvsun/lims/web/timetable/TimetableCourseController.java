@@ -194,6 +194,8 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("virtualImageList", virtualImageList);
         // 是否审核
         mav.addObject("auditOrNot", shareService.getAuditOrNot("TimetableAuditOrNot"));
+        // 软件
+        mav.addObject("softManage", pConfig.softManage);
         mav.setViewName("lims/timetable/course/newEduDirectCourse.jsp");
         return mav;
     }
@@ -246,6 +248,8 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("virtual", pConfig.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
+        // 软件
+        mav.addObject("softManage", pConfig.softManage);
         mav.setViewName("lims/timetable/course/newEduAdjustCourse.jsp");
         return mav;
     }
@@ -307,6 +311,8 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("virtual", pConfig.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
+        // 软件
+        mav.addObject("softManage", pConfig.softManage);
         mav.setViewName("lims/timetable/course/newEduReTimetableCourse.jsp");
         return mav;
     }
@@ -350,6 +356,8 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("virtual", pConfig.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
+        // 软件
+        mav.addObject("softManage", pConfig.softManage);
         mav.setViewName("lims/timetable/course/newEduReGroupTimetableCourse.jsp");
         return mav;
     }

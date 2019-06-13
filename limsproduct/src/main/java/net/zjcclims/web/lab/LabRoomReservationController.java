@@ -174,11 +174,11 @@ public class LabRoomReservationController<JsonResult> {
         mav.addObject("labRoom", labRoom);
         int pageSize = 20;
         // 查询出来的总记录条数
-        int totalRecords = labRoomReservationService.findLabRoompage(labRoom, 1, Integer.MAX_VALUE, "-1", request).size();
+        int totalRecords = labRoomReservationService.findLabRoomStationBypage(labRoom, 1, Integer.MAX_VALUE, acno, request).size();
         // 分页信息
         Map<String, Integer> pageModel = shareService.getPage(currpage, pageSize, totalRecords);
         // 根据分页信息查询出来的记录
-        List<LabRoom> listLabRoom = labRoomReservationService.findLabRoompage(labRoom, currpage, pageSize, "-1", request);
+        List<LabRoom> listLabRoom = labRoomReservationService.findLabRoomStationBypage(labRoom, currpage, pageSize, acno, request);
         //获取当前登陆人
         User user = shareService.getUser();
         mav.addObject("user", user);
@@ -194,22 +194,11 @@ public class LabRoomReservationController<JsonResult> {
             isHaveDeans = true;
         }
         mav.addObject("isHaveDeans", isHaveDeans);
-//        //下拉框实验室
-//        String sql = "select l from LabRoom l where l.labRoomReservation = 1 and l.labRoomActive=1";
-//        if (pConfig.PROJECT_NAME.equals("zjcclims")) {
-//            sql = "select l from LabRoom l where l.labRoomLevel != 0 and l.labRoomReservation = 1";
-//        }
-//
-//        if(acno!=null && !acno.equals("-1")){// 20190506全校
-//            // 开放范围
-//            sql += " and l in (select lr from LabRoom lr left join LabOpenUpAcademy loua on loua.labRoomId = lr.id where (loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2)";
-//            sql += " order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
-//        }
         //下拉框实验室
         StringBuffer sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
         sql.append(" where l.labRoomActive=1 and l.id = loua.labRoomId and lrc.labRoomId = l.id");
         if (pConfig.PROJECT_NAME.equals("zjcclims")) {
-            sql.append("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
+            sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
             sql.append(" where l.labRoomLevel != 0 and l.id = loua.labRoomId and lrc.labRoomId = l.id");
         }
         sql.append(" and lrc.configCategory = 'lab_station_is_appointment' and lrc.setItem = 1");
@@ -217,6 +206,7 @@ public class LabRoomReservationController<JsonResult> {
         if(acno!=null && !acno.equals("-1")){// 20190506全校
             // 开放范围
             sql.append(" and (loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2");
+            sql.append(" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end");
         }
 
         List<LabRoom> labRooms = entityManager.createQuery(sql.toString()).getResultList();
@@ -2896,7 +2886,8 @@ public class LabRoomReservationController<JsonResult> {
                 calendar.set(Calendar.HOUR_OF_DAY,0);
                 // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
                 if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
-                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                    labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
+//                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
                 }
                 TimetableAppointment timetableAppointment = new TimetableAppointment();
                 timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);
@@ -3045,7 +3036,8 @@ public class LabRoomReservationController<JsonResult> {
             calendar.set(Calendar.HOUR_OF_DAY,0);
             // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
             if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
-                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
+//                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
             }
             TimetableAppointment timetableAppointment = new TimetableAppointment();
             timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);

@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
     <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
+    <script src="${pageContext.request.contextPath}/layui/layui.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
@@ -270,21 +272,39 @@ var courseType = [
     [{index: '11', name: ''}, 1],
     [{index: '12', name: ''}, 1]
 ];
+    var Timetable;
 // 实例化(初始化课表)
-var Timetable = new Timetables({
+    layui.use('layer', function(){
+        var layer = layui.layer;
+    Timetable = new Timetables({
     el: '#coursesTable',
     timetables: courseList,
     week: weekTime,
     timetableType: courseType,
     highlightWeek: day,
     gridOnClick: function (e) {
-//        alert(e.name + '  ' + e.week + ', 第' + e.index + '节课, 课长' + e.length + '节');
+
+
+            var reg = /<\/{0,}[a-z](.+?)>[\s\S]*?<\/{0,}[a-z](.+?)>/;
+            var str  = e.name.replace(/<[^>]*>/gi,'');
+            if(str!=""){
+                layer.open({
+                    title: '课程详情'
+                    ,content: e.name
+                    ,shadeClose: true
+                });
+            }
+
+
+
+
         console.log(e);
     },
     styles: {
         Gheight: 60
     }
 });
+    });
     var week = $("#week").val();
     var itemName = $("#itemName").val();
     var courseName = $("#courseName").val();

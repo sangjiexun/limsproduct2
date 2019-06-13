@@ -347,7 +347,7 @@ function getTimetablePlanView() {
         columns: [{
             //field: 'Number',//可不加
             title: '序号',//标题  可不加
-            width: "3%",
+            width: "2%",
             formatter: function (value, row, index) {
                 return index + 1;
                 // return row.courseNumber;
@@ -391,12 +391,12 @@ function getTimetablePlanView() {
         }, {
             title: "已排课表",
             field: "timetableDTOs",
-            width: "35%",
+            width: "40%",
             formatter: function (value, row, index) {
                 var rt = "";
                 var timetableDTOs = row.timetableDTOs;
                 if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                    rt += '<table border="1"><tr><td width="21%">批/组</td><td width="12%">星期</td><td width="14%">节次</td><td width="14%">周次</td><td width="28%">实验室</td><td width="10%">授课教师</td><td width="10%">实验项目</td><td width="6%">名单</td></tr>';
+                    rt += '<table border="1"><tr><td width="12%">批/组</td><td width="8%">星期</td><td width="8%">节次</td><td width="8%">周次</td><td width="20%">实验室</td><td width="10%">授课教师</td><td width="10%">实验项目</td><td width="6%">选课类型</td><td width="10%">选课时间</td><td width="6%">名单</td></tr>';
                 }
                 if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
                     rt += '<table border="1"><tr><td width="7%">星期</td><td width="13%">节次</td><td width="15%">周次</td><td width="30%">实验室</td><td width="15%">授课教师</td><td width="20%">实验项目</td></tr>';
@@ -404,14 +404,47 @@ function getTimetablePlanView() {
                 var count = Number(0);
                 for (var i = 0, len = timetableDTOs.length; i < len; i++) {
                     if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
+                        var startDate = new Date(timetableDTOs[i].startDate);
+                        var endDate = new Date(timetableDTOs[i].endDate);
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers +"/" + timetableDTOs[i].tutors + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers +"/" + timetableDTOs[i].tutors + "</td><td>" + timetableDTOs[i].items + "</td><td>";
+                        if (timetableDTOs[i].ifSelect == 0) {
+                            rt += "系统分配";
+                        } else if (timetableDTOs[i].ifSelect == 1) {
+                            rt += "学生自选";
+                        }
+                        rt += "</td><td>" + startDate.toLocaleDateString() + "~" + endDate.toLocaleDateString();
+                        rt += "</td><td>" + result + "</td></tr>";
                         rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers +"/" + timetableDTOs[i].tutors + "</td><td>" + timetableDTOs[i].items + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers +"/" + timetableDTOs[i].tutors + "</td><td>" + timetableDTOs[i].items + "</td></tr>";
                     }
                 }
                 if (timetableDTOs.length > 0) {
@@ -420,26 +453,7 @@ function getTimetablePlanView() {
 
                 return rt;
             }
-        }/*, {
-            title: "已排课表",
-            field: "timetableMergeDTOs",
-            width: "20%",
-            formatter: function (value, row, index) {
-                var rt = "";
-                var timetableMergeDTOs = row.timetableMergeDTOs;
-                if(timetableMergeDTOs.length>0){
-                    rt +=  '<table border="1"><tr><td width="15%">星期</td><td width="15%">节次</td><td width="15%">周次</td><td width="55%">实验室</td></tr>';
-                }
-                var count = Number(0);
-                for (var i = 0, len = timetableMergeDTOs.length; i < len; i++) {
-                    rt += "<tr><td>"+timetableMergeDTOs[i].weekday+"</td><td>"+timetableMergeDTOs[i].startClass+"-"+timetableMergeDTOs[i].endClass+"</td><td>"+timetableMergeDTOs[i].startWeek+"-"+timetableMergeDTOs[i].endWeek+"</td><td>"+timetableMergeDTOs[i].labInfo+"</td></tr>";
-                }
-                if(timetableMergeDTOs.length>0){
-                    rt +='</table>';
-                }
-                return rt;
-            }
-        }*/, {
+        }, {
             title: "上课教师",
             field: "cname",
             width: "5%",
@@ -459,7 +473,7 @@ function getTimetablePlanView() {
             }
         }, {
             title: "操作",
-            width: "19%",
+            width: "15%",
             field: "empty",
             formatter: function (value, row, index) {
                 var id = value;
@@ -667,7 +681,7 @@ function getTimetableMangerView() {
                 }
                 /**子表表头**/
                 if (tlength > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                    rt += '<table border="1"><tr><td width="13%">批/组</td><td width="7%">星期</td><td width="12%">节次</td><td width="12%">周次</td><td width="13%">实验室</td><td width="10%">授课教师</td><td width="11%">实验项目</td><td width="6%">名单</td>';
+                    rt += '<table border="1"><tr><td width="10%">批/组</td><td width="5%">星期</td><td width="8%">节次</td><td width="8%">周次</td><td width="10%">实验室</td><td width="10%">授课教师</td><td width="10%">实验项目</td><td width="6%">选课类型</td><td width="10%">选课时间</td><td width="6%">名单</td>';
                     if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
                         rt += '<td width="6%">操作</td>';
                     }
@@ -684,17 +698,50 @@ function getTimetableMangerView() {
                 var count = Number(0);
                 for (var i = 0, len = tlength; i < len; i++) {
                     if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
+                        var startDate = new Date(timetableDTOs[i].startDate);
+                        var endDate = new Date(timetableDTOs[i].endDate);
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td><td>" + result + "</td>";
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td><td>";
+                        if (timetableDTOs[i].ifSelect == 0) {
+                            rt += "系统分配";
+                        } else if (timetableDTOs[i].ifSelect == 1) {
+                            rt += "学生自选";
+                        }
+                        rt += "</td><td>" + startDate.toLocaleDateString() + "~" + endDate.toLocaleDateString();
+                        rt += "</td><td>" + result + "</td>";
                         if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
                             rt += "<td><a href='javascript:;' class='btn btn-xs green' title='删除'  onclick=\"deleteTimetableByBySameNumberId(" + timetableDTOs[i].sameNumberId + ")\" >删除</a></td>";
                         }
                         rt += "</tr><tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers + "</td><td>" + timetableDTOs[i].items + "</td>";
                         if (row.timetableStatus==1 && row.baseActionAuthDTO.deleteManageAuth) {
                             rt += "<td><a href='javascript:;' class='btn btn-xs green' title='删除'  onclick=\"deleteTimetableByBySameNumberId(" + timetableDTOs[i].sameNumberId + ")\" >删除</a></td>";
                         }
@@ -849,7 +896,7 @@ function getTimetableHistoryView() {
         columns: [{
             //field: 'Number',//可不加
             title: '序号',//标题  可不加
-            width: "3%",
+            width: "2%",
             formatter: function (value, row, index) {
                 return index + 1;
             }
@@ -864,12 +911,12 @@ function getTimetableHistoryView() {
         },  {
             title: "已排课表",
             field: "timetableDTOs",
-            width: "31%",
+            width: "40%",
             formatter: function (value, row, index) {
                 var rt = "";
                 var timetableDTOs = row.timetableDTOs;
                 if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                    rt += '<table border="1"><tr><td width="21%">批/组</td><td width="12%">星期</td><td width="14%">节次</td><td width="14%">周次</td><td width="28%">实验室</td><td width="6%">名单</td></tr>';
+                    rt += '<table border="1"><tr><td width="12%">批/组</td><td width="8%">星期</td><td width="8%">节次</td><td width="8%">周次</td><td width="20%">实验室</td><td width="6%">选课类型</td><td width="10%">选课时间</td><td width="6%">名单</td></tr>';
                 }
                 if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
                     rt += '<table border="1"><tr><td width="15%">星期</td><td width="15%">节次</td><td width="15%">周次</td><td width="50%">实验室</td></tr>';
@@ -877,14 +924,47 @@ function getTimetableHistoryView() {
                 var count = Number(0);
                 for (var i = 0, len = timetableDTOs.length; i < len; i++) {
                     if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
+                        var startDate = new Date(timetableDTOs[i].startDate);
+                        var endDate = new Date(timetableDTOs[i].endDate);
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
                         var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + result + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>";
+                        if (timetableDTOs[i].ifSelect == 0) {
+                            rt += "系统分配";
+                        } else if (timetableDTOs[i].ifSelect == 1) {
+                            rt += "学生自选";
+                        }
+                        rt += "</td><td>" + startDate.toLocaleDateString() + "~" + endDate.toLocaleDateString();
+                        rt += "</td><td>" + result + "</td></tr>";
                         rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
                     }
                     if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>" + timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass + "</td><td>" + timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek + "</td><td>" + timetableDTOs[i].labInfo + "</td></tr>";
+                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>";
+                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
+                            rt += timetableDTOs[i].endClass;
+                        } else {
+                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
+                        }
+                        rt += "</td><td>";
+                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
+                            rt += timetableDTOs[i].endWeek;
+                        } else {
+                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
+                        }
+                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td></tr>";
                     }
                 }
                 if (timetableDTOs.length > 0) {
@@ -918,7 +998,7 @@ function getTimetableHistoryView() {
             }
         }, {
             title: "操作",
-            width: "19%",
+            width: "15%",
             field: "empty",
             formatter: function (value, row, index) {
                 return row.academyName;

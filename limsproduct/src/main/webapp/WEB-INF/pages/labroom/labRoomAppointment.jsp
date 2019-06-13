@@ -601,7 +601,7 @@
                                     <th>序号</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>编号</th>
                                     <th><spring:message code="all.trainingRoom.labroom"/>名称</th>
-                                    <th><spring:message code="all.trainingRoom.labroom"/>地址</th>
+                                    <th><spring:message code="all.trainingRoom.labroom"/>楼层</th>
                                     <c:if test="${PROJECT_NAME eq 'zjcclims'}">
                                         <th><spring:message code="all.trainingRoom.labroom"/>等级</th>
                                     </c:if>
@@ -619,7 +619,8 @@
                                         <td>${i.count+(currpage-1)*pageSize }</td>
                                         <td>${s.labRoomNumber}</td>
                                         <td>${s.labRoomName}</td>
-                                        <td>${s.systemRoom.roomName}</td>
+                                        <td><c:if test="${s.floorNo ne null}">${s.systemBuild.buildName}(${s.floorNo}楼)</c:if>
+                                            <c:if test="${s.floorNo eq null || s.floorNo eq ''}"></c:if></td>
                                         <c:if test="${PROJECT_NAME eq 'zjcclims'}">
                                             <c:if test="${s.labRoomLevel eq 0}">
                                                 <td>特级</td>
@@ -742,9 +743,12 @@
                         var teacher = "";
                         var labRoomId;
                         var needtutor = 0;
-
+                        var isAjax=false;
                         //保存实训室借用
                         function saveLabRoomLending() {
+                            if(isAjax){
+                                return false;
+                            }
                             // layer.msg('正在提交请稍候...', {icon: 16});
                             if ($("#labRoom").val() == "请选择") {
                                 alert("请选择实验室");
@@ -806,10 +810,12 @@
                                 'teacher': teacher,
                                 'reservationTime': $("#reservationTime").val()
                             };
+                            isAjax=true;
                             $.ajax({
                                 type: "POST",
                                 url: "${pageContext.request.contextPath}/LabRoomReservation/saveLabReservation?labRoomId=" + labRoomId,
                                 data: myData,
+//                                async: false,
                                 dataType: 'text',
                                 success: function (data) {
                                     layer.msg("删除成功", {icon: 1});

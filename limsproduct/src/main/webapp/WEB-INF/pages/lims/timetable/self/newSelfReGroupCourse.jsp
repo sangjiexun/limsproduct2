@@ -46,6 +46,7 @@
                     type="text/javascript"></script>
         </c:otherwise>
     </c:choose>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
 
     <style>
         .fixed-table-container thead th .sortable {
