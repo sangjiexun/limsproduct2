@@ -191,21 +191,40 @@ function refreshPermissions(){
     // $.messager.alert("提示","<span style='font-size: 14px; color: red'>数据加载中，请您耐心等待...</span>" );
     $("#refreshing1").hide();
     $("#refreshing2").hide();
-    $.ajax({
-        url:'${pageContext.request.contextPath}/labRoom/refreshPermissions?roomId='+${labRoom.id},
-        type:"POST",
-        dataType:"json",
-        success:function(data){
-            console.log(data);
-            if(data.result){
-                alert("刷新成功");
-            }else{
-                alert("刷新失败,请检查网络或者重新刷新");
-            }
-        },error:function (request){
-            alert('请求错误,请检查网络或者重新刷新');
-        }
-    });
+	var proj_name = $("#proj_name").val();
+	if (proj_name=='zisulims') {
+		$.ajax({
+			url:'${pageContext.request.contextPath}/labRoom/refreshPermissions?roomId='+${labRoom.id},
+			type:"POST",
+			dataType:"text",
+			success:function(data){
+				console.log(data);
+				if(data=='success'){
+					alert("刷新成功");
+				}else{
+					alert("刷新失败,请检查网络或者重新刷新");
+				}
+			},error:function (request){
+				alert('请求错误,请检查网络或者重新刷新');
+			}
+		});
+	}else {
+		$.ajax({
+			url:'${pageContext.request.contextPath}/labRoom/refreshPermissions?roomId='+${labRoom.id},
+			type:"POST",
+			dataType:"json",
+			success:function(data){
+				console.log(data);
+				if(data.result){
+					alert("刷新成功");
+				}else{
+					alert("刷新失败,请检查网络或者重新刷新");
+				}
+			},error:function (request){
+				alert('请求错误,请检查网络或者重新刷新');
+			}
+		});
+	}
     $("#refreshing1").show();
     $("#refreshing2").show();
 }
@@ -2186,7 +2205,7 @@ td {
 									<form name="form" action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoom.id}&type=${type}" method="post" onsubmit="return checkAuthorized()">
 										<div class="tool-box" style="float:left;">
 											<ul>
-											<li>人员名称/编号：</li>
+											<li>人员名称/编号：</li><input id="proj_name" type="hidden" value="${proj_name}" />
 											<li>
 												<select id="username3" name="username3" class="chzn-select">
 											<%--<c:forEach items="${userList}" var="curr">--%>

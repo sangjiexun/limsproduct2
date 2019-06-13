@@ -253,7 +253,7 @@
                 <td align=left width="10%"><h3>星期<font color="red"> *</font>：</h3></td>
                 <td width="39%">
                     <select id="weekday" name="weekday" onchange="doValidProperty()"  required>
-                        <c:if test="${fn:length(schoolCourse.schoolCourseDetails)>0}">
+                        <%--<c:if test="${fn:length(schoolCourse.schoolCourseDetails)>0}">
                             <c:if test="${schoolCourse.schoolCourseDetails.iterator().next().weekday==1}">
                                 <option value ="${schoolCourse.schoolCourseDetails.iterator().next().weekday}" selected="selected">星期一</option>
                             </c:if>
@@ -275,7 +275,7 @@
                             <c:if test="${schoolCourse.schoolCourseDetails.iterator().next().weekday==7}">
                                 <option value ="${schoolCourse.schoolCourseDetails.iterator().next().weekday}" selected="selected">星期日</option>
                             </c:if>
-                        </c:if>
+                        </c:if>--%>
                     </select>
                     <label for="weekday"></label>
                 </td>
