@@ -620,7 +620,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	public List<LabRoomStationReservation> findLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit) {
 		String sql = "select l from LabRoomStationReservation l where 1=1 ";
 		if(labRoomStationReservation.getResult()!=null){
-		    sql += "l.result ="+ labRoomStationReservation.getResult();
+		    sql += " and l.result ="+ labRoomStationReservation.getResult();
+        }else{
+            sql += " and l.result = 2";
         }
 		if(labRoomStationReservation.getLabRoom() != null){
 			if (labRoomStationReservation.getLabRoom().getLabRoomName() != null && !labRoomStationReservation.getLabRoom().getLabRoomName().equals("")) {
