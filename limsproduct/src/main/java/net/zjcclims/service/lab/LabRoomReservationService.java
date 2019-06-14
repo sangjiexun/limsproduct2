@@ -231,5 +231,5 @@ public interface LabRoomReservationService {
 	 * @author 黄保钱 2019-5-7
 	 */
 	@Transactional
-	List<User> getNextAuditUser(String nextAuth, String businessAppUid);
+	List<User> getNextAuditUser(String nextAuth, String businessAppUid,String businessType);
 }

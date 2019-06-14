@@ -1258,7 +1258,11 @@ public class LabRoomController<JsonResult> {
                 str = str.substring(0, str.length()-1);
             }
             str += "]}";
-            HttpClientUtil.doPost("http://10.50.20.100:85/deleteManager?updatedata='"+ str +"'");
+
+            Map<String, String> params = new HashMap<>();
+            params.put("updatedata", str);
+
+            HttpClientUtil.doPost("http://10.50.20.100:85/deleteManager", params);
         }
         labRoomAdminDAO.remove(admin);
         // 判断该实验室管理员是否还有其他实验室管理
@@ -1979,7 +1983,11 @@ public class LabRoomController<JsonResult> {
                 str = str.substring(0, str.length()-1);
             }
             str += "]}";
-            HttpClientUtil.doPost("http://10.50.20.100:85/addManager?updatedata='"+ str +"'");
+
+            Map<String, String> params = new HashMap<>();
+            params.put("updatedata", str);
+
+            HttpClientUtil.doPost("http://10.50.20.100:85/addManager", params);
 
             return "success";
         } else {

@@ -19,7 +19,7 @@
 	$(function($) {
 		var loginUser = '${username}';
 		if(''==loginUser || loginUser == null || loginUser == 'null'){
-			// do nothing
+            alert("信息错误！请重新登录");
 		}else{
 			$('#j_username').val(loginUser);
             $('#j_password').val(loginUser);

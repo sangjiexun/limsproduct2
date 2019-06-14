@@ -2167,7 +2167,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetRecordDAO.store(assetCabinetRecord);
             //如果是智能柜的情况
             AssetCabinet assetCabinet=assetCabinetDAO.findAssetCabinetByPrimaryKey(cabinetId);
-            if(assetCabinet.getType()==2){//智能柜类型
+            if(assetCabinet.getType()!=null&&assetCabinet.getType()==2){//智能柜类型
                 List<AssetCabinetWarehouseRecord> assetCabinetWarehouseRecordList=this.findAssetsCabinetWarehouseRecordByCabinetAndAssets(cabinetId,assetsId);
                 //目前只进行智能柜单个扣除
                 int no=0;//智能柜所在顺序

@@ -437,6 +437,12 @@ $(document).ready(function () {
             //window.parent.location.reload();
             refreshBootstrapTable();
             $("#weeks").val("").change();
+            $("#weekday").val("").change();
+            $("#classes").val("").change();
+            $("#labRoom_id").val("").change();
+            $("#items").val("").change();
+            $("#tutorRelated").val("").change();
+            $("#virtualId").val("").change();
         } else {
             alert("请验证输入！");
         }

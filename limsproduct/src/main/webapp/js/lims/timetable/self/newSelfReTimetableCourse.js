@@ -411,11 +411,15 @@ $(document).ready(function () {
                     }
                 }
             });
-            //window.parent.location.reload();
-            //var index = parent.layer.getFrameIndex(window.name);
-            //parent.layer.close(index);
             refreshBootstrapTable();
             $("#weeks").val("").change();
+            $("#teacherRelated").val("").change();
+            $("#weekday").val("").change();
+            $("#classes").val("").change();
+            $("#labRoom_id").val("").change();
+            $("#items").val("").change();
+            $("#tutorRelated").val("").change();
+            $("#virtualId").val("").change();
         } else {
             alert("请验证输入！");
         }

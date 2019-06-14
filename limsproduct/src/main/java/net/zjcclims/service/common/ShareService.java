@@ -787,6 +787,15 @@ public interface ShareService {
 	 */
 	public String getSerialNumber(@RequestParam String businessAppUid, String businessType);
 
+    /**
+     * Description 根据当前流水单反查预约id
+     * @param uuid
+     * @param businessType
+     * @return
+     * @author Hezhaoyi 2019年6月14日
+     */
+    public String getReservationIdBySerialNumber(@RequestParam String uuid, String businessType);
+
 	/**
 	 * Description 删除流水单
 	 * @param uuid

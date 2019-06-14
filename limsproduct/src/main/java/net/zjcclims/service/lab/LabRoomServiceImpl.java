@@ -3127,24 +3127,27 @@ public class LabRoomServiceImpl implements LabRoomService {
 		// 设备
 		LabRoomAgent labRoomAgent = labRoomAgentDAO.findLabRoomAgentById(agentId);
 
-		Map<String, String> params = new HashMap<>();
-		// 物联设备类型CDictionary的id
-		params.put("hardwaretype", labRoomAgent.getCDictionary().getId().toString());
-		// 物联服务器ip
-		params.put("commonserver", labRoomAgent.getCommonServer().getServerIp());
-		// 物联服务器端口
-		params.put("port", labRoomAgent.getCommonServer().getServerSn());
-		// 硬件IP
-		params.put("hardwareip", labRoomAgent.getHardwareIp());
-		// 门号
-		params.put("doorindex", doorIndex.toString());
-		String[] jwtStr = new String[2];
-		// 获取jwt
-		Authorization a = AuthorizationUtil.getAuthorization(shareService.getUserDetail().getUsername(), params);
-		jwtStr[0] = "Authorization";
-		jwtStr[1] = a.getJwtToken();
+//		Map<String, String> params = new HashMap<>();
+//		// 物联设备类型CDictionary的id
+//		params.put("hardwaretype", labRoomAgent.getCDictionary().getId().toString());
+//		// 物联服务器ip
+//		params.put("commonserver", labRoomAgent.getCommonServer().getServerIp());
+//		// 物联服务器端口
+//		params.put("port", labRoomAgent.getCommonServer().getServerSn());
+//		// 硬件IP
+//		params.put("hardwareip", labRoomAgent.getHardwareIp());
+//		// 门号
+//		params.put("doorindex", doorIndex.toString());
+//		String[] jwtStr = new String[2];
+//		// 获取jwt
+//		Authorization a = AuthorizationUtil.getAuthorization(shareService.getUserDetail().getUsername(), params);
+//		jwtStr[0] = "Authorization";
+//		jwtStr[1] = a.getJwtToken();
 		// 以jwt形式发送请求
-		String s =  HttpClientUtil.doPost(pConfig.refreshReservationUrl + "add/", jwtStr);
+//		String s =  HttpClientUtil.doPost(pConfig.refreshReservationUrl + "add/", jwtStr);
+		// 2019年6月14日  新版物联
+		String url = pConfig.refreshReservationUrl +"iot/acldoor/"+ labRoomAgent.getHardwareIp() +"/opendoor/"+ doorIndex;
+		String s = HttpClientUtil.doGet(url);
 		return s;
 	}
 

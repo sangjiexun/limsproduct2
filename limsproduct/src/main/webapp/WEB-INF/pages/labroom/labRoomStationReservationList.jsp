@@ -150,6 +150,35 @@ var s=${isAudit};
                         <ul style="position: absolute;">
                             <li><spring:message code="all.trainingRoom.labroom"/>:<form:input
                                     path="labRoom.labRoomName"/></li>
+                            <li>审核状态:
+                                <form:select id="auditStatus" name="auditStatus" path="result">
+                                    <%--<c:forEach items="${auditStatus}" var="as">--%>
+                                    <c:if test="${auditStatus == 2}">
+                                        <option value="2" selected>审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <option value="3">未审核</option>
+                                        <option value="4">审核拒绝</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 1}">
+                                        <option value="2">审核中</option>
+                                        <option value="1" selected>审核通过</option>
+                                        <option value="3">未审核</option>
+                                        <option value="4">审核拒绝</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 3}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <option value="3" selected>未审核</option>
+                                        <option value="4">审核拒绝</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 4}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <option value="3">未审核</option>
+                                        <option value="4" selected>审核拒绝</option>
+                                    </c:if>
+                                </form:select>
+                            </li>
                             <li><input type="submit" value="查询">
                                 <input class="cancel-submit" type="button" onclick="cancleQuery()" value="取消"></li>
                         </ul>
