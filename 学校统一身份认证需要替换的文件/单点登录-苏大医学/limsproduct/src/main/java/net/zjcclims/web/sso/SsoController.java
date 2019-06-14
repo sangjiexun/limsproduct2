@@ -75,7 +75,7 @@ public class SsoController<JsonResult> {
             String str = id_tag + pass + timestamp;
             //加密后的字符串
             System.out.println("str:[" + str + "]3");
-            md5str = shareService.createMD5(str).toUpperCase();
+            md5str = shareService.createMD5(str);
             // 比对业务系统生成的和OA系统传过来的md5字符串
             if (!md5str.equals(secret)) {// 如不相同，则不做任何处理
                 mav.addObject("username", "");
