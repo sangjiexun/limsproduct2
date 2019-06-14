@@ -612,7 +612,7 @@ N<%@ page language="java" isELIgnored="false" contentType="text/html; charset=ut
                     </div>
                     <!-- 添加思考题弹框结束 -->
 
-                    <!-- 下拉框的js -->editOpenOperationItem
+                    <!-- 下拉框的js -->
                     <script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
                     <script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
                     <script type="text/javascript">

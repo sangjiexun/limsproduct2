@@ -3146,8 +3146,17 @@ public class LabRoomServiceImpl implements LabRoomService {
 		// 以jwt形式发送请求
 //		String s =  HttpClientUtil.doPost(pConfig.refreshReservationUrl + "add/", jwtStr);
 		// 2019年6月14日  新版物联
-		String url = pConfig.refreshReservationUrl +"iot/acldoor/"+ labRoomAgent.getHardwareIp() +"/opendoor/"+ doorIndex;
-		String s = HttpClientUtil.doGet(url);
+		Map<String,String> headers = new HashMap<>();
+		headers.put("Authorization", "gvsunopendoorbyfallenleaf");
+
+		String url = pConfig.refreshReservationUrl + "iot/acldoor/"+ labRoomAgent.getHardwareIp() +"/opendoor/"+ doorIndex;
+
+		String[] jwtStr = new String[2];
+		// 获取jwt
+		jwtStr[0] = "Authorization";
+		jwtStr[1] = "gvsunopendoorbyfallenleaf";
+
+		String s = HttpClientUtil.doPost(url, jwtStr);
 		return s;
 	}
 

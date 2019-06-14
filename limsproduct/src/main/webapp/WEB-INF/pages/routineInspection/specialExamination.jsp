@@ -318,7 +318,8 @@
                                         <%--<input type="button" value="复查" onclick="reviewExamine(${curr.id});"/>--%>
                                         <a href="javascript:void(0)" onclick="reviewExamine(${curr.id});">复查</a>
                                     </sec:authorize>
-                                    <a href="${pageContext.request.contextPath}/casualInspection/exportExamineSpecialExamination?specialExaminationId=${curr.id}">导出</a>
+                                    <%--<a href="${pageContext.request.contextPath}/casualInspection/exportExamineSpecialExamination?specialExaminationId=${curr.id}">导出</a>--%>
+                                        <a href="${pageContext.request.contextPath}/casualInspection/exportFile?id=${curr.id}" target="_blank">导出</a>
                                 </td>
                             </tr>
                         </c:forEach>
