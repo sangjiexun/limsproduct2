@@ -416,9 +416,9 @@ public class RoutineInspectionController<JsonResult> {
         // 系统换行符
         String lineSeparator = "\r\n";
         // 日常管理情况
-        aapJson1.put("riCheckContent", URLEncoder.encode(ri.getCheckContent().replaceAll(lineSeparator, "\\\\n"),"utf-8"));
+        aapJson1.put("riCheckContent", URLEncoder.encode(ri.getCheckContent().replaceAll(lineSeparator, "\\\n"),"utf-8"));
         // 安全管理情况
-        aapJson1.put("riSafetyManagement", URLEncoder.encode(ri.getSafetyManagement().replaceAll(lineSeparator, "\\\\n"),"utf-8"));
+        aapJson1.put("riSafetyManagement", URLEncoder.encode(ri.getSafetyManagement().replaceAll(lineSeparator, "\\\n"),"utf-8"));
         if (ri.getLabCenter() != null) {
             aapJson1.put("riLabCenterName", URLEncoder.encode(ri.getLabCenter().getCenterName(),"utf-8"));// 实验中心
             if (ri.getLabRoom() == null) {

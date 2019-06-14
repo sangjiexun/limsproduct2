@@ -3050,6 +3050,24 @@ System.out.println("二维码路径："+url);
 		}
 		return str;
 	}
+    /**
+     * Description 根据当前流水单反查预约id
+     * @param uuid
+     * @param businessType
+     * @return
+     * @author Hezhaoyi 2019年6月14日
+     */
+    public String getReservationIdBySerialNumber(@RequestParam String uuid, String businessType) {
+        String sql = "select business_id from audit_serial_number where uuid='"+uuid+"' and business_type='"+businessType+"' and enable=1";
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object> list = query.getResultList();
+        String str = "fail";
+        for (Object obj : list) {
+            str = obj.toString();
+            break;
+        }
+        return str;
+    }
 
 	/**
 	 * Description 删除流水单

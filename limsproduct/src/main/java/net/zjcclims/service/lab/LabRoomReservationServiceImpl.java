@@ -1760,7 +1760,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	}
 
 	/*************************************************************************************
-	 * Description 保存实验室预约（实验室预约-预约）
+	 * Description 保存实验室预约（工位预约-预约）
 	 *
 	 * @author 孙虎
 	 * @throws NoSuchAlgorithmException
@@ -1835,16 +1835,19 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 
 		//消息
-		if(labRoomStationReservation.getResult() != 1 ) {//需要审核就发信息
-
+        String businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        String businessAppUid = shareService.saveAuditSerialNumbers(labRoomStationReservation.getId().toString(), businessType);
+        String businessUid = labRoom.getId().toString();
+        if(labRoomStationReservation.getResult() != 1 ) {//需要审核就发信息
 			// 审核微服务
 			Map<String, String> params = new HashMap<>();
 			//默认教务排课，type=1
 //			String businessType = grade + "StationReservation";
-            String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-			params.put("businessUid", labRoom.getId().toString());
-			params.put("businessType", pConfig.PROJECT_NAME + businessType);
-			params.put("businessAppUid", labRoomStationReservation.getId().toString());
+            params.put("businessUid", businessUid);
+			params.put("businessType", businessType);
+            // 业务流水号，保存并返回流水号
+            params.put("businessAppUid", businessAppUid);
+//			params.put("businessAppUid", labRoomStationReservation.getId().toString());
 			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
 			JSONObject jsonObject = JSON.parseObject(s);
 			String statusStr = jsonObject.getString("status");
@@ -1867,15 +1870,14 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				curAuthName = o.getString("result");
 			}
 
-			List<User> nextUsers = this.getNextAuditUser(curAuthName, labRoomStationReservation.getId().toString());
-
+			List<User> nextUsers = this.getNextAuditUser(curAuthName, businessAppUid,businessType);
 			Message message = new Message();
 			Calendar date1 = Calendar.getInstance();
 			message.setSendUser(shareService.getUserDetail().getCname());
 			message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
 			message.setCond(0);
 			message.setTitle("实验室工位预约审核");
-			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">审核</a>";
+			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=" + businessUid + "&businessAppUid=" + businessAppUid + "\">审核</a>";
 			message.setContent(content);
 			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
 			message.setCreateTime(date1);
@@ -1894,7 +1896,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			}
 			// 给预约人发消息
 			message.setTitle("实验室工位预约提交成功");
-			content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
+			content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=" + businessUid + "&businessAppUid=" + businessAppUid + "\">点击查看</a>";
 			message.setContent(content);
 			message.setTage(1);
 			shareService.sendMsg(labRoomStationReservation.getUser(), message);
@@ -1907,8 +1909,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			// 给预约人发消息
 			message.setTitle("实验室工位预约不需要审核");
 //			String businessType = grade + "StationReservation";
-			String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + labRoomStationReservation.getId() + "\">点击查看</a>";
+
+			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=" + businessUid + "&businessAppUid=" + businessAppUid + "\">点击查看</a>";
 			message.setContent(content);
 			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
 			message.setCreateTime(Calendar.getInstance());
@@ -1934,7 +1936,14 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 */
 	@Override
 	@Transactional
-	public List<User> getNextAuditUser(String nextAuth, String businessAppUid) {
+	public List<User> getNextAuditUser(String nextAuth, String businessAppUid,String businessType) {
+        if(shareService.getReservationIdBySerialNumber(businessAppUid,businessType)=="fail"){
+            //没有流水单号
+            //do nothing
+        }else {
+            //有流水单号反查预约id
+            businessAppUid = shareService.getReservationIdBySerialNumber(businessAppUid,businessType);
+        }
 		List<User> auditUsers = new ArrayList<>();
 		Integer id = Integer.parseInt(businessAppUid);
 		LabRoomStationReservation stationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
