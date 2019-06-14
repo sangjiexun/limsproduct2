@@ -731,8 +731,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 
         StringBuffer sql = new StringBuffer("SELECT DISTINCT * FROM operation_item oi");
         sql.append(" LEFT JOIN item_plans ip ON ip.item_id = oi.id");
-        sql.append(" LEFT JOIN timetable_self_course tsc ON ip.self_course_id = tsc.id");
-        sql.append(" LEFT JOIN timetable_appointment ta ON ta.course_code = tsc.course_code");
+        sql.append(" LEFT JOIN timetable_appointment ta ON ta.self_course_code = ip.self_course_id");
         sql.append(" LEFT JOIN timetable_lab_related tlr ON ta.id = tlr.appointment_id");
         sql.append(" WHERE oi.lp_category_app =" + categoryApp);
         sql.append(" AND oi.open_grade =" + openGrade);
