@@ -876,6 +876,12 @@ public class LabRoomReservationController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("tage", tage);
         mav.addObject("isAudit", isaudit);
+        if(request.getParameter("auditStatus")!=null){
+            mav.addObject("auditStatus",request.getParameter("auditStatus"));
+        }else {
+            mav.addObject("auditStatus",2);
+        }
+
 //        mav.addObject("isGraded", shareService.getAuditOrNot("LabRoomStationGradedOrNot"));
         mav.setViewName("/labroom/labRoomStationReservationList.jsp");
         return mav;

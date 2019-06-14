@@ -619,6 +619,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 *************************************************************************************/
 	public List<LabRoomStationReservation> findLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit) {
 		String sql = "select l from LabRoomStationReservation l where 1=1 ";
+		if(labRoomStationReservation.getResult()!=null){
+		    sql += "l.result ="+ labRoomStationReservation.getResult();
+        }
 		if(labRoomStationReservation.getLabRoom() != null){
 			if (labRoomStationReservation.getLabRoom().getLabRoomName() != null && !labRoomStationReservation.getLabRoom().getLabRoomName().equals("")) {
 				sql += " and (l.labRoom.labRoomName like '%" + labRoomStationReservation.getLabRoom().getLabRoomName()+"%'"+ "or  l.labRoom.labRoomNumber like '%"  + labRoomStationReservation.getLabRoom().getLabRoomName() + "%' )";
@@ -734,7 +737,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if (tage == 4) {
 			sql += " and l.result=4";
 		}
-		sql += "   order by l.reservation ";
+		sql += "   order by l.id desc";
 		List<LabRoomStationReservation> lll = labRoomStationReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
 		
 		return lll;
