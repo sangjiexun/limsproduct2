@@ -1112,9 +1112,17 @@ public class OpenOperationItemController<JsonResult> {
 						assetsApplyItemDTO.setAppId(assetsReceiveId.toString());
 						assetsApplyItemDTO.setAssetsId(itemAssets.getAsset().getId().toString());
 						Integer quantity = 0;
-						if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {
-						    quantity = 1;
-                        }else {
+						/**
+						 * 1.宁德需求：不分批排
+						 * 2.分组实验，数量按照组数计算；否则按照实际上课人数计算
+						 */
+						if (pConfig.PROJECT_NAME.equals("ndyzlims") && operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {
+							if (operationItem.getLpSetNumber()!=null && !operationItem.getLpSetNumber().equals("")) {
+								quantity = Integer.parseInt(operationItem.getLpSetNumber());
+							}
+                        } else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {
+							quantity = 1;
+						} else {
                             if (timetableSelfCourse.getItemPlans().iterator().next().getType() == 1 || timetableSelfCourse.getItemPlans().iterator().next().getType() == 3) {//分批自选、分批直排
                                 for (TimetableGroup group : ta.getTimetableGroups()) {
                                     quantity += group.getNumbers();
