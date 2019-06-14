@@ -624,7 +624,7 @@ public class SystemLogServiceImpl implements SystemLogService {
         List<ItemPlan> itemPlanList = entityManager.createQuery(sql.toString()).getResultList();
         for(ItemPlan itemPlan:itemPlanList){
 			TimetableSelfCourse timetableSelfCourse = itemPlan.getTimetableSelfCourse();
-			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(timetableSelfCourse.getCourseCode());
+			Set<TimetableAppointment> timetableAppointments = timetableAppointmentDAO.findTimetableAppointmentByCourseCode(String.valueOf(timetableSelfCourse.getId()));
 			//根据TimetableAppointment获取起止周次节次星期
 			for(TimetableAppointment timetableAppointment:timetableAppointments){
 				Set<TimetableAppointmentSameNumber> timetableAppSameNumbers = timetableAppointment.getTimetableAppointmentSameNumbers();
