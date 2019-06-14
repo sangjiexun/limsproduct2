@@ -65,7 +65,7 @@
 	  				时间：<input  style="border:0px" type="text" readonly="true" size="30" id="riTime" value="${specialExamination.schoolTerm.termName}"/>				
 			</td>
 			<td style="white-space:nowrap">
-					学院：<input  style="border:0px" type="text" readonly="true" size="30" id="riCenterName" value="${specialExamination.labRoom.labAnnex.labCenter.schoolAcademy.academyName}"/>					
+					学院：<input  style="border:0px" type="text" readonly="true" size="30" id="riCenterName" value="${specialExamination.labAnnex.labCenter.schoolAcademy.academyName}"/>
 			</td>
 			<td style="white-space:nowrap">
 				检查人：<input  style="border:0px" type="text" readonly="true" size="30" id="riCnam" value="${specialExamination.user.cname}"/>
