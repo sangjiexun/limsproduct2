@@ -803,12 +803,14 @@ public class LabRoomReservationController<JsonResult> {
         if(isaudit == 1){
             if (listLabRoomStationReservation != null) {
                 for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                    if(labRoomStationReservation2.getResult() == 2 || labRoomStationReservation2.getResult() == 3){
-                        //审核
-                        labRoomStationReservation2.setButtonMark(1);
-                    }else {
-                        //查看
-                        labRoomStationReservation2.setButtonMark(0);
+                    if(labRoomStationReservation2.getResult()!= null){
+                        if(labRoomStationReservation2.getResult() == 2 || labRoomStationReservation2.getResult() == 3){
+                            //审核
+                            labRoomStationReservation2.setButtonMark(1);
+                        }else {
+                            //查看
+                            labRoomStationReservation2.setButtonMark(0);
+                        }
                     }
                 }
             }
@@ -816,7 +818,7 @@ public class LabRoomReservationController<JsonResult> {
         if(isaudit == 2){
             if (listLabRoomStationReservation != null) {
                 for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                    //审核
+                    //查看
                     labRoomStationReservation2.setButtonMark(0);
                 }
             }
@@ -829,12 +831,19 @@ public class LabRoomReservationController<JsonResult> {
             // 审核记录
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", stationReservation.getLabRoom().getId().toString());
-            params.put("businessAppUid", stationReservation.getId().toString());
+            String businessType = pConfig.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            if(shareService.getSerialNumber(stationReservation.getId().toString(), businessType)=="fail"){
+                //没有流水单号就是用预约id用作业务id
+                params.put("businessAppUid", stationReservation.getId().toString());
+            }else {
+                String businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
+                //有流水单号用流水单号做业务id
+                params.put("businessAppUid", businessAppUid);
+            }
 //            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
 //                    (stationReservation.getLabRoom().getLabRoomLevel() == null ? "" : stationReservation.getLabRoom().getLabRoomLevel().toString())
 //                    : "") + "StationReservation");
-            String businessType = "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params.put("businessType", businessType);
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessLevelStatus", params);
             String returnStr = "";
             JSONArray curJSONArray = JSONObject.parseObject(s).getJSONArray("data");
@@ -2703,7 +2712,7 @@ public class LabRoomReservationController<JsonResult> {
             stationReservation.setState(6);
             labRoomStationReservationDAO.store(stationReservation);
         }else{
-            List<User> nextAuditUser = labRoomReservationService.getNextAuditUser(auditResult, businessAppUid);
+            List<User> nextAuditUser = labRoomReservationService.getNextAuditUser(auditResult, businessAppUid,businessType);
             title = "实验室工位预约" + authCname + shareService.getUserDetail().getCname() + "审核通过";
             message.setTitle(title);
             content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=-1&businessAppUid=" + businessAppUid + "\">审核</a>";

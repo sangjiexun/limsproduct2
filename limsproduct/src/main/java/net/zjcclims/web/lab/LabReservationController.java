@@ -1330,7 +1330,6 @@ public class LabReservationController<JsonResult> {
             for (int i = 0; i < realAllAudits.length; i++) {
                 rConfig += realAllAudits[i].equals("1") && needAudit != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
             }
-            params.put("businessUid", labRoom.getId().toString());
             params.put("config", rConfig);
             params.put("businessType", pConfig.PROJECT_NAME + businessType);
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
@@ -1371,7 +1370,6 @@ public class LabReservationController<JsonResult> {
                 for (int i = 0; i < realAllAudits.length; i++) {
                     offConfig += RSWITCH[1] + ",";
                 }
-                params.put("businessUid", labRoom.getId().toString());
                 params.put("config", offConfig);
                 params.put("businessType", pConfig.PROJECT_NAME + businessType);
                 String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);

@@ -52,13 +52,20 @@ public class AuditController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         String businessUid = request.getParameter("businessUid");
         String businessAppUid = request.getParameter("businessAppUid");
+        LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
+        String businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
         // 获取审核状态
         Integer curStage = -2;
         String curAuthName = "";
-        LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
-        String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
         Map<String, String> params = new HashMap<>();
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        if(shareService.getSerialNumber(businessAppUid, businessType)=="fail"){
+            //没有流水单号的旧数据就用预约id用作业务id
+           //do nothing
+        }else{
+            //有流水单号用流水单号做业务id
+            businessAppUid = shareService.getSerialNumber(businessAppUid, businessType);
+        }
+        params.put("businessType", businessType);
         params.put("businessUid", businessUid);
         params.put("businessAppUid", businessAppUid);
         String currStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
@@ -127,7 +134,7 @@ public class AuditController<JsonResult> {
         if (state < curStage || curStage == 0 || curStage == -1) {
             // 获取审核配置
             Map<String, String> params = new HashMap<>();
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params.put("businessType",businessType);
             params.put("businessUid", businessUid);
             params.put("businessAppUid", businessAppUid);
             String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
@@ -167,7 +174,7 @@ public class AuditController<JsonResult> {
                     isAuditUser = labRoomLendingService.getNextUsers(authName, businessAppUid);
                     break;
                 default:
-                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
+                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid,businessType);
             }
             // 如果当前登录人的权限是当前审核权限，则判断是否是审核人并且是否当前页面权限是当前审核权限
             if (request.getSession().getAttribute("selected_role").equals("ROLE_" + curAuthName)) {
@@ -201,7 +208,7 @@ public class AuditController<JsonResult> {
     @ResponseBody
     public String saveAudit(@RequestBody AuditSaveParamDTO auditSaveParamDTO) {
         Map<String, String> params = new HashMap<>();
-        params.put("businessType", pConfig.PROJECT_NAME + auditSaveParamDTO.getBusinessType());
+        params.put("businessType", auditSaveParamDTO.getBusinessType());
         params.put("businessAppUid", auditSaveParamDTO.getBusinessAppUid());
         params.put("businessUid", auditSaveParamDTO.getBusinessUid());
         params.put("result", auditSaveParamDTO.getAuditResult() == 1 ? "pass" : "fail");
@@ -217,8 +224,16 @@ public class AuditController<JsonResult> {
         }
         //若是工位预约
         if(auditSaveParamDTO.getBusinessType().contains("StationReservation")){
+            String businessAppUid = auditSaveParamDTO.getBusinessAppUid();
+            if(shareService.getReservationIdBySerialNumber(auditSaveParamDTO.getBusinessAppUid(),auditSaveParamDTO.getBusinessType())=="fail"){
+                //没有流水单号
+                //do nothing
+            }else {
+                //有流水单号反查预约id
+                businessAppUid = shareService.getReservationIdBySerialNumber(auditSaveParamDTO.getBusinessAppUid(),auditSaveParamDTO.getBusinessType());
+            }
             LabRoomStationReservation labRoomStationReservation =
-                    labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(auditSaveParamDTO.getBusinessAppUid()));
+                    labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
             if(nextAuthName.equals("pass")){   //审核通过，设置该条预约记录的状态值为审核通过
                 labRoomStationReservation.setResult(1);
                 labRoomStationReservationDAO.store(labRoomStationReservation);
