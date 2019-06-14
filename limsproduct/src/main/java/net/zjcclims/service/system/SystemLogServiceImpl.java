@@ -907,7 +907,7 @@ public class SystemLogServiceImpl implements SystemLogService {
         }
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr ");
         sql.append(" WHERE (arr.assetReceive.status = 4 OR arr.assetReceive.status = 5)");
-        sql.append(" AND arr.asset.category = 8 order by arr.id asc");
+        sql.append(" AND arr.asset.category = 1 order by arr.id asc");
         Query query = entityManager.createQuery(sql.toString());
         // 当前页打印条件
         if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
