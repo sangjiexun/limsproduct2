@@ -1,7 +1,6 @@
 package net.zjcclims.web.routineInspection;
 
 import net.luxunsh.web.aop.SystemServiceLog;
-import net.zjcclims.common.WordGenerator;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -20,12 +19,11 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -687,8 +685,9 @@ public class CasualInspectionController<JsonResult> {
      * 作者：张愉
      * 日期：2018-03-09
      ***********************************************/
-    @RequestMapping("/casualInspection/exportExamineSpecialExamination")
-    public void exportExamineSpecialExamination(HttpServletRequest request, HttpServletResponse response, @RequestParam Integer specialExaminationId, @ModelAttribute("selected_academy") String acno)
+   /*
+   @RequestMapping("/casualInspection/exportExamineSpecialExamination")
+   public void exportExamineSpecialExamination(HttpServletRequest request, HttpServletResponse response, @RequestParam Integer specialExaminationId, @ModelAttribute("selected_academy") String acno)
             throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         Map<String, Object> map = new HashMap<String, Object>();
@@ -784,6 +783,22 @@ public class CasualInspectionController<JsonResult> {
             }
             if (file != null) file.delete();    // 删除临时文件
         }
+    }*/
+    /****************************************************************************
+     * @description: 导出world文件
+     * @author: 顾延钊
+     * @date: 2019-06-14
+     ****************************************************************************/
+    @RequestMapping("/casualInspection/exportFile")
+    public ModelAndView exportFile(@RequestParam Integer id,HttpServletRequest request) throws Exception {
+        ModelAndView mav = new ModelAndView();
+        //id对应的文档
+        String sql = "select s from CommonDocument s where 1=1";
+        sql += " and s.specialExamination=" + id;
+        List<CommonDocument> commonDocuments = commonDocumentDAO.executeQuery(sql);
+        mav.addObject("cmmonDocument", commonDocuments.get(0));
+        mav.setViewName("routineInspection/showFileForspeE.jsp");
+        return mav;
     }
 
     /****************************************************************************
@@ -801,6 +816,7 @@ public class CasualInspectionController<JsonResult> {
         List<CommonDocument> commonDocuments = commonDocumentDAO.executeQuery(sql);
         mav.addObject("cmmonDocument", commonDocuments.get(0));
         mav.setViewName("routineInspection/showFileForspeE.jsp");
+        //mav.setViewName("routineInspection/specialExamination.jsp");
         return mav;
     }
 }
