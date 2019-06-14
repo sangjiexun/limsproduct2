@@ -755,7 +755,16 @@ public class SystemLogServiceImpl implements SystemLogService {
 		if (request.getParameter("term") != null) {
 			term = Integer.parseInt(request.getParameter("term"));
 		}
-        StringBuffer sql = new StringBuffer("select distinct o from OperationItem o order by o.id asc");
+		StringBuffer sql = new StringBuffer("select distinct o from OperationItem o,ItemPlan m,TimetableAppointment t");
+		sql.append(" where o.id = m.operationItem.id and t.timetableSelfCourse.id = m.timetableSelfCourse.id");
+		sql.append(" and t.status =1");
+
+		//学期条件筛选
+		if(request.getParameter("term") != null && !request.getParameter("term").equals("")){
+			int selectedTermId = Integer.valueOf(request.getParameter("term"));
+			sql.append(" and o.schoolTerm.id =" + selectedTermId);
+		}
+		sql.append(" order by o.id asc");
         Query query = entityManager.createQuery(sql.toString());
 		// 当前页打印条件
         if (request.getParameter("currpage") != null && request.getParameter("pagesize") != null) {
@@ -781,7 +790,9 @@ public class SystemLogServiceImpl implements SystemLogService {
                     Asset = Asset +" "+ itemAsset.getAsset().getChName() + "、";
                 }
             }
-            Asset = Asset.substring(0, Asset.length()-1);
+            if(Asset.length()>1){
+				Asset = Asset.substring(0, Asset.length()-1);
+			}
             map.put("itemAssets", Asset);//实验物资
 //            //器材-实验设备
 //            Set<OperationItemDevice> operationItemDevices = operationItem.getOperationItemDevices();
