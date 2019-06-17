@@ -1745,7 +1745,7 @@ public class LabRoomController<JsonResult> {
 
         LabRoomAgent agent = labRoomAgentDAO.findLabRoomAgentByPrimaryKey(agentId);
         // 流媒体服务器地址
-        String serverIp = agent.getSnNo();
+        String serverIp = agent.getCommonServer().getServerIp();
         // 端口
         String hardwarePort = agent.getCommonServer().getServerSn();
         // 摄像头本身ip的 xxx.xxx.xxx.123   最后那个123
@@ -2194,6 +2194,7 @@ public class LabRoomController<JsonResult> {
      * @內容：打开门禁视频监控
      * @作者：周志辉
      * @日期：2017-11-22
+     * @需要调试
      *************************************************************************************/
     @RequestMapping("/openVideoBack")
     public ModelAndView openVideoBack(@RequestParam Integer id, String time) throws ParseException {
@@ -2218,7 +2219,7 @@ public class LabRoomController<JsonResult> {
         String ip = "";
         String port = "";
         if (agent != null) {
-            ip = agent.getSnNo();
+            ip = agent.getCommonServer().getServerIp();
             port = agent.getManufactor();
         }
         mav.addObject("id", id);
@@ -2234,6 +2235,7 @@ public class LabRoomController<JsonResult> {
      * @內容：打开门禁视频监控
      * @作者：周志辉
      * @日期：2017-11-22
+     * @暂时没用，需要调试
      *************************************************************************************/
     @RequestMapping("/openVideoBackByDurtime")
     public ModelAndView openVideoBackByDurtime(@RequestParam Integer id, String time, String durtime) throws ParseException {
@@ -2269,7 +2271,7 @@ public class LabRoomController<JsonResult> {
         String ip = "";
         String port = "";
         if (agent != null) {
-            ip = agent.getSnNo();
+            ip = agent.getCommonServer().getServerIp();
             port = agent.getManufactor();
         }
         mav.addObject("id", id);
@@ -3445,7 +3447,7 @@ public class LabRoomController<JsonResult> {
             String[] ip = agent.getHardwareIp().split("\\.");
             String ip3 = ip[2] + ip[3];
             url = "rtmp://" + agent.getCommonServer().getServerIp()
-                    + ":"+agent.getSnNo()+"/live/" + ip3;
+                    + ":"+agent.getCommonServer().getServerSn()+"/live/" + ip3;
 //			url = "http://" + agent.getCommonServer().getServerIp()
 //					+ ":8080/players/jwplayer6.html?stream=" + ip3;
 
@@ -3478,7 +3480,7 @@ public class LabRoomController<JsonResult> {
         if (agent != null) {
             String[] ip = agent.getHardwareIp().split("\\.");
             String ip3 = ip[3];
-            mav.addObject("agentPort", agent.getSnNo());
+            mav.addObject("agentPort", agent.getCommonServer().getServerSn());
             mav.addObject("agentIp", agent.getCommonServer().getServerIp());
             mav.addObject("agentRemark", ip3);
         }

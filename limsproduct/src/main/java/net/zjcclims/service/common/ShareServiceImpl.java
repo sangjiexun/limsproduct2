@@ -3079,4 +3079,49 @@ System.out.println("二维码路径："+url);
 		entityManager.createNativeQuery(hql1.toString()).executeUpdate();
 	}
 
+	/**
+	 * Description 判断当前登录人是否有远程开门权限
+	 * @param lab_id
+	 * @return
+	 * @author 陈乐为 2019年6月17日
+	 */
+	public boolean getAuthToOpenDoor(Integer lab_id) {
+		User user = this.getUserDetail();
+		String sql = "select * from lab_room_admin where lab_room_id="+lab_id;
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object[]> objects = query.getResultList();
+
+		Boolean str = false;
+		for (Object[] obj : objects) {
+			if (obj[2]!=null && obj[2].toString().equals(user.getUsername())) {
+				if (obj[3]!=null && (obj[3].toString().equals("1") || obj[3].toString().equals("2"))) {//实验室&物联管理员
+					str = true;
+					break;
+				} else if (obj[3]!=null && obj[3].toString().equals("3")) {//授权人员
+					if (obj[4]!=null && obj[5]!=null && obj[4].toString()!=null && obj[5].toString()!=null) {//timetableGroup.getTimetableBatch().getStartDate().getTime().before(new Date())
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+						SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+						try {
+							Date startDate = sdf.parse(obj[4].toString());
+							Date endDate = sdf.parse(obj[5].toString());
+							if (startDate.before(new Date()) && endDate.after(new Date())) {
+								Date startTime = formatter.parse(obj[6].toString());
+								Date endTime = formatter.parse(obj[7].toString());
+								String nowStr = formatter.format(new Date());
+								Date nowTime = formatter.parse(nowStr);
+								if (startTime.before(nowTime) && endTime.after(nowTime)) {
+									str = true;
+									break;
+								}
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		return str;
+	}
+
 }

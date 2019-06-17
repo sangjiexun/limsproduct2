@@ -3110,7 +3110,8 @@ public class LabRoomServiceImpl implements LabRoomService {
 			jwtStr[0] = "Authorization";
 			jwtStr[1] = a.getJwtToken();
 			// 以jwt形式发送请求
-			s = HttpClientUtil.doPost(pConfig.refreshReservationUrl + "regcard/", jwtStr);
+			String url = "http://"+labRoomAgent.getCommonServer().getServerIp()+":"+labRoomAgent.getCommonServer().getServerSn()+"/reservation/regcard/";
+			s = HttpClientUtil.doPost(url + "regcard/", jwtStr);
 		}
 		return s;
 	}
@@ -3126,6 +3127,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	public String sendOpenDoorInterfaceByJWT(Integer agentId, Integer doorIndex) {
 		// 设备
 		LabRoomAgent labRoomAgent = labRoomAgentDAO.findLabRoomAgentById(agentId);
+		User user = shareService.getUserDetail();
 
 //		Map<String, String> params = new HashMap<>();
 //		// 物联设备类型CDictionary的id
@@ -3149,14 +3151,21 @@ public class LabRoomServiceImpl implements LabRoomService {
 		Map<String,String> headers = new HashMap<>();
 		headers.put("Authorization", "gvsunopendoorbyfallenleaf");
 
-		String url = pConfig.refreshReservationUrl + "iot/acldoor/"+ labRoomAgent.getHardwareIp() +"/opendoor/"+ doorIndex;
+		Boolean flag = shareService.getAuthToOpenDoor(labRoomAgent.getLabRoom().getId());
+		String s = "noAuth";
+		if (flag) {
+			String url = "http://"+labRoomAgent.getCommonServer().getServerIp()+":" + labRoomAgent.getCommonServer().getServerSn() +
+					"/iot/acldoor/"+ labRoomAgent.getHardwareIp() +"/opendoor/"+ doorIndex+"/"+user.getUsername()+"/"+user.getCname();
 
-		String[] jwtStr = new String[2];
-		// 获取jwt
-		jwtStr[0] = "Authorization";
-		jwtStr[1] = "gvsunopendoorbyfallenleaf";
+			String[] jwtStr = new String[2];
+			// 获取jwt
+			jwtStr[0] = "Authorization";
+			jwtStr[1] = "gvsunopendoorbyfallenleaf";
 
-		String s = HttpClientUtil.doPost(url, jwtStr);
+			System.out.println(url);
+			s = HttpClientUtil.doPost(url, jwtStr);
+		}
+
 		return s;
 	}
 
@@ -3193,7 +3202,8 @@ public class LabRoomServiceImpl implements LabRoomService {
 		jwtStr[0] = "Authorization";
 		jwtStr[1] = a.getJwtToken();
 		// 以jwt形式发送请求
-		String s =  HttpClientUtil.doPost(pConfig.refreshReservationUrl + "guard/", jwtStr);
+		String url = "http://"+labRoomAgent.getCommonServer().getServerIp()+":"+labRoomAgent.getCommonServer().getServerSn()+"/reservation/guard/";
+		String s =  HttpClientUtil.doPost(url + "guard/", jwtStr);
 		return s;
 	}
 
