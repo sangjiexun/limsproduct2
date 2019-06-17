@@ -25,30 +25,50 @@
   <script src="${pageContext.request.contextPath}/js/jquery-easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
   <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/js/My97DatePicker/WdatePicker.js"></script>
+    <%--<script type="text/javascript" src="${pageContext.request.contextPath}/js/tCourseSite/message/bootstrap-datetimepicker.js"></script>--%>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
+    <script src="${pageContext.request.contextPath}/layui/layui.js"></script>
+    <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
+    <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
 
-	<script type="text/javascript">
-
-        function onChangeDate() {
-            if($("#labRoom").val() == ""){
-                alert("请先填写实验室名称")
-            }
-            if ($("#labRoom").val() != "") {
-                if ($("#lendingTime").val() != "") {
-                    $.ajax({
-                        url:"${pageContext.request.contextPath}/labRoomLending/checkConflict",
-                        type:"POST",
-                        data:{
-                            labRoom: $("#labRoom").val(),
-                            lendingTime: $("#lendingTime").val()
-                        },
-                        success:function (data) {
-                            $("#reservationTime").html(data);
-                            $("#reservationTime").trigger("liszt:updated");
-                        }
-                    });
-                }
-            }
+    <style type="text/css">
+        .layui-input {
+            display: inline;
         }
+    </style>
+    <script type="text/javascript">
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            //时间范围选择
+            laydate.render({
+                elem: '#reservationTime'
+                ,type: 'time'
+                ,range: true //或 range: '~' 来自定义分割字符
+                ,trigger : 'click'
+            });
+        });
+        <%--function onChangeDate() {--%>
+
+            <%--if($("#labRoom").val() == ""){--%>
+                <%--alert("请先填写实验室名称")--%>
+            <%--}--%>
+            <%--if ($("#labRoom").val() != "") {--%>
+                <%--if ($("#lendingTime").val() != "") {--%>
+                    <%--$.ajax({--%>
+                        <%--url:"${pageContext.request.contextPath}/labRoomLending/checkConflict",--%>
+                        <%--type:"POST",--%>
+                        <%--data:{--%>
+                            <%--labRoom: $("#labRoom").val(),--%>
+                            <%--lendingTime: $("#lendingTime").val()--%>
+                        <%--},--%>
+                        <%--success:function (data) {--%>
+                            <%--$("#reservationTime").html(data);--%>
+                            <%--$("#reservationTime").trigger("liszt:updated");--%>
+                        <%--}--%>
+                    <%--});--%>
+                <%--}--%>
+            <%--}--%>
+        <%--}--%>
 	</script>
   <script type="text/javascript">
   //取消查询
@@ -660,13 +680,14 @@ function cancel(){
 						<td colspan="3">
 							<input class="Wdate" id="lendingTime" name="lendingTime" type="text"
 								   value="<fmt:formatDate value="${labReservation.lendingTime.time}" pattern="yyyy-MM-dd"/>"
-								   onclick="WdatePicker({minDate:'%y-%M-{%d}',dateFmt:'yyyy-MM-dd',onpicked:function(){onChangeDate();}})" />
+								   onclick="WdatePicker({minDate:'%y-%M-{%d}',dateFmt:'yyyy-MM-dd'})" />
 								<%--<input  class="easyui-datebox"  id="reservationTime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>--%>
 							<font class="space"></font>
 							预约时间&nbsp;:
-							<select class="chzn-select" name="reservationTime" id="reservationTime" style="" multiple>
+							<%--<select class="chzn-select" name="reservationTime" id="reservationTime" style="" multiple>--%>
 
-							</select>
+							<%--</select>--%>
+                            <input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">
                             <a onclick="findRestStations()">查询</a>
 						</td>
 					</tr>
