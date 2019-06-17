@@ -87,8 +87,6 @@ public class PConfig {
     public String refuseTitle;
     @Value("${selfRefuseTitle}")
     public String selfRefuseTitle;
-    @Value("${refreshReservationUrl}")
-    public String refreshReservationUrl;
     @Value("${newServer}")
     public String newServer;
     @Value("${virtual}")

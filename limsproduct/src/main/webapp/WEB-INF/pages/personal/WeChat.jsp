@@ -48,9 +48,11 @@
                 <div><a href="" onclick="generateQrCode()" class="updatebtn">更新</a></div>			
                 <div class="hint">
 				    <label>1.&nbsp;请长按保存图中二维码&nbsp;;</label>
-					<div><span>①&nbsp;</span><font>2.&nbsp;</font>打开实验室小程序，进入【我的】<span>;</span><font>，</font><br/><span>②&nbsp;</span>点击【点击微信绑定】<span>;</span><font>,</font><br/><span>③&nbsp;</span>进入【二维码绑定账号】;</div>
+					<div><span>①&nbsp;</span><font>2.&nbsp;</font>打开实验室小程序，进入首页<span>;</span><font>，</font><br/><span>②&nbsp;</span>点击右上方扫一扫绑定个人账号微信<span>。</span>
+						<%--<font>,</font><br/><span>③&nbsp;</span>进入【二维码绑定账号】;--%>
+					</div>
 					<label>3.&nbsp;点击二维码扫描界面右上角的【相册】，选中刚才保存的二维码，确定后进行识别，完成个人账号与微信小程序的绑定&nbsp;;</label>
-					<div><span>④&nbsp;扫一扫，绑定个人账号与微信&nbsp;;</span></div>
+					<%--<div><span>④&nbsp;扫一扫，绑定个人账号与微信&nbsp;;</span></div>--%>
 				</div>
                 <div style="display: none">
                     <img src="${pageContext.request.contextPath}/ValidateCodeServle" id="updateCode" align="middle">
@@ -63,9 +65,10 @@
 		        <img src="../images/system_pic/${PROJECT_NAME}_wechat.jpg"/>
                 <div class="hint">
 				    <label class="tc">请长按识别图中二维码<br/>关注实验室管理小程序</label>
-					<div><span>①&nbsp;打开微信&nbsp;;</span></div>
-					<div><span>②&nbsp;点击微信主页面右上角的【扫一扫】，进入二维码扫描界面;</span></div>
-					<div><span>③&nbsp;扫描图中二维码，关注实验室管理小程序&nbsp;;</span></div>
+					<%--<div><span>①&nbsp;打开微信&nbsp;;</span></div>--%>
+					<%--<div><span>②&nbsp;点击微信主页面右上角的【扫一扫】，进入二维码扫描界面;</span></div>--%>
+					<%--<div><span>③&nbsp;扫描图中二维码，关注实验室管理小程序&nbsp;;</span></div>--%>
+					<div><span>微信扫一扫，关注实验室管理小程序</span></div>
 				</div>               
 	        </div>
 		</div>	

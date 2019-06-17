@@ -1,9 +1,6 @@
 package net.zjcclims.dao;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -129,6 +126,24 @@ public class SchoolWeekDAOImpl extends AbstractJpaDao<SchoolWeek> implements
 	@Transactional
 	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId,int startResult, int maxRows) throws DataAccessException {
 		Query query = createNamedQuery("findSchoolWeekByWeekAndWeekdayAndTerm", startResult, maxRows, week,weekday,termId);
+		return (net.zjcclims.domain.SchoolWeek)query.getSingleResult();
+	}
+
+	@Transactional
+	public SchoolWeek findSchoolWeekByDateNew(Calendar date) throws DataAccessException {
+
+		return findSchoolWeekByDateNew(date, -1, -1);
+	}
+
+	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public SchoolWeek findSchoolWeekByDateNew(Calendar date, int startResult, int maxRows) throws DataAccessException {
+		Query query = createNamedQuery("findSchoolWeekByDate", startResult, maxRows, date);
 		return (net.zjcclims.domain.SchoolWeek)query.getSingleResult();
 	}
 

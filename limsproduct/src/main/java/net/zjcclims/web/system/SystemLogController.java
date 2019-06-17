@@ -17,7 +17,6 @@ import net.zjcclims.service.system.SystemLogService;
 
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.vo.QueryParamsVO;
-import org.python.antlr.op.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -487,7 +486,7 @@ public class SystemLogController {
 
         StringBuffer sql = new StringBuffer("SELECT arr FROM AssetReceiveRecord arr");
         sql.append(" WHERE (arr.assetReceive.status = 4 OR arr.assetReceive.status = 5)");
-        sql.append(" AND arr.asset.category = 8 order by arr.id asc");
+        sql.append(" AND arr.asset.category = 1 order by arr.id asc");
 
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
@@ -607,6 +606,7 @@ public class SystemLogController {
 
     /*************************************************************************************
      * Description:开放项目相关报表--耗材领用记录单-耗材物资列表
+	 * 20190614-化学品领用登记单
      *
      * @author: Hezhaoyi
      * @date: 2019-5-15
@@ -618,7 +618,7 @@ public class SystemLogController {
         int pagesize = 20;
         String currpage = request.getParameter("currpage");
 
-        StringBuffer sql = new StringBuffer("select distinct o from Asset o where 1=1");
+        StringBuffer sql = new StringBuffer("select distinct o from Asset o where o.category = 3");
         //物资名称筛选
         if(request.getParameter("assetName") != null && !request.getParameter("assetName").equals("")){
             String assetName = request.getParameter("assetName");

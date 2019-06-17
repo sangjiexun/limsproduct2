@@ -32,7 +32,11 @@
     <script type="text/javascript">
 
         function onChangeDate() {
-            if ($("#labRoom").val() != "请选择") {
+            if($("#labRoom").val() == ""){
+                alert("请先填写实验室名称")
+                $("#lendingTime").val('');
+            }
+            if ($("#labRoom").val() != "") {
                 if ($("#lendingTime").val() != "") {
                     $.ajax({
                         url:"${pageContext.request.contextPath}/labRoomLending/checkConflict",
@@ -479,7 +483,7 @@
                             <tr>
                                 <th><spring:message code="all.trainingRoom.labroom"/>名称</th>
                                 <td>
-                                    <select class="chzn-select" id="labRoom" onchange="selectLabRoom();onChangeDate();">
+                                    <select class="chzn-select" id="labRoom" onchange="selectLabRoom();">
                                         <c:if test="${labRoom != null}">
                                             <option value="${labRoom.id}" selected="selected">${labRoom.labRoomName }</option>
                                         </c:if>
