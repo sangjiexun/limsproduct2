@@ -190,15 +190,28 @@ public class CommonController<JsonResult> {
 		 * 角色判断：如果具有老师权限则默认为老师，如果没有教师权限则默认为学生
 		*/
 		String sss = session.getAttribute("selected_role").toString();
+//		if(session.getAttribute("selected_role")!=null) {
+////			// 切换角色后不需要重置权限
+////		}else if(auths.toString().contains("TEACHER")){
+////			session.setAttribute("selected_role", "ROLE_TEACHER");
+////		}else if(auths.toString().contains("STUDENT")){
+////			session.setAttribute("selected_role", "ROLE_STUDENT");
+////		}else if(auths.toString().contains("SUPERADMIN")){
+////			session.setAttribute("selected_role", "ROLE_SUPERADMIN");
+////		}
 		if(session.getAttribute("selected_role")!=null) {
 			// 切换角色后不需要重置权限
-		}else if(auths.toString().contains("TEACHER")){
-			session.setAttribute("selected_role", "ROLE_TEACHER");
-		}else if(auths.toString().contains("STUDENT")){
-			session.setAttribute("selected_role", "ROLE_STUDENT");
-		}else if(auths.toString().contains("SUPERADMIN")){
-			session.setAttribute("selected_role", "ROLE_SUPERADMIN");
-		}
+		}else if(auths.toString().contains("ACADEMYLEVELM")){
+			session.setAttribute("selected_role", "ROLE_ACADEMYLEVELM");
+		}else if(auths.toString().contains("EXCENTERDIRECTOR")){
+			session.setAttribute("selected_role", "ROLE_EXCENTERDIRECTOR");
+		}else if(auths.toString().contains("LABMANAGER")){
+			session.setAttribute("selected_role", "ROLE_LABMANAGER");
+		} else if(auths.toString().contains("TEACHER")){
+            session.setAttribute("selected_role", "ROLE_TEACHER");
+        } else if(auths.toString().contains("STUDENT")){
+            session.setAttribute("selected_role", "ROLE_STUDENT");
+        }
 		
 		//将当前登录人放到session中
 		session.setAttribute("loginUser", user);
