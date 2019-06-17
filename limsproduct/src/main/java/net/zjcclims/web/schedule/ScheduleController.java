@@ -1,5 +1,6 @@
 package net.zjcclims.web.schedule;
 
+import net.zjcclims.dao.SchoolWeekDAO;
 import net.zjcclims.domain.LabRoom;
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.domain.SchoolWeek;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Controller("ScheduleController")
@@ -46,6 +48,7 @@ public class ScheduleController<JsonResult> {
     @Autowired private LabRoomService labRoomService;
     @Autowired private PConfig pConfig;
     @Autowired private SchoolWeekService schoolWeekService;
+    @Autowired private SchoolWeekDAO schoolWeekDAO;
     /**************************************************************************************/
 
     /**
@@ -71,6 +74,12 @@ public class ScheduleController<JsonResult> {
         int week = 0;
         if(request.getParameter("week") != null && !request.getParameter("week").equals("")) {
             week = Integer.valueOf(request.getParameter("week"));
+        }else {      //返回默认当前周次
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            SchoolWeek schoolWeek = schoolWeekDAO.findSchoolWeekByDateNew(cal);
+            week = schoolWeek.getWeek();
         }
         mav.addObject("week", week);
 

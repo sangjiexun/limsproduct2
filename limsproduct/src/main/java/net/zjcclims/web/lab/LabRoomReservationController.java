@@ -593,9 +593,10 @@ public class LabRoomReservationController<JsonResult> {
     @RequestMapping("/LabRoomReservation/findRestStations")
     public Integer findRestStations(HttpServletRequest request, @RequestParam Integer labRoomId) throws ParseException {
         //获取日期及开始结束时间
-        String reservationTimeS = request.getParameter("reservationTime");
-        String startTimeS = request.getParameter("startTime");
-        String endTimeS = request.getParameter("endTime");
+        String reservationTimeS = request.getParameter("lendingTime");
+        String reservationTime = request.getParameter("reservationTime");
+        String startTimeS = reservationTime.split("-")[0];
+        String endTimeS = reservationTime.split("-")[1];
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date reservationTimeDate = sdf.parse(reservationTimeS);
         SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
@@ -669,9 +670,13 @@ public class LabRoomReservationController<JsonResult> {
     @RequestMapping("/LabRoomReservation/saveLabRoomReservationTeacher")
     public String saveLabRoomReservationTeacher(HttpServletRequest request, @RequestParam Integer labRoomId) throws ParseException, NoSuchAlgorithmException {
         //获取日期及开始结束时间
-        String reservationTimeS = request.getParameter("reservationTime");
-        String startTimeS = request.getParameter("startTime");
-        String endTimeS = request.getParameter("endTime");
+//        String reservationTimeS = request.getParameter("reservationTime");
+        String reservationTimeS = request.getParameter("lendingTime");
+        String reservationTime = request.getParameter("reservationTime");
+        String startTimeS = reservationTime.split("-")[0];
+        String endTimeS = reservationTime.split("-")[1];
+//        String startTimeS = request.getParameter("startTime");
+//        String endTimeS = request.getParameter("endTime");
         String reason = request.getParameter("reason");
         String students = request.getParameter("students");
         String userRole = request.getParameter("userRole");
