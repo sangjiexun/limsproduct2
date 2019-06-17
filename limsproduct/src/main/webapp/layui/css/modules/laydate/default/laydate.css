@@ -405,7 +405,8 @@ html #layuicss-laydate {
 }
 
 .layui-laydate .layui-this {
-	background-color: #5fb878!important;
+	/*background-color: #5fb878!important;*/
+	background-color: #5fb878;
 	color: #fff!important
 }
 

@@ -35,6 +35,10 @@
         .layui-input {
             display: inline;
         }
+		.layui-laydate .layui-this {
+			background-color: #409eff!important;
+			color: #fff!important;
+		}
     </style>
     <script type="text/javascript">
         layui.use('laydate', function(){
