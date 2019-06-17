@@ -392,29 +392,37 @@
   //查询剩余工位数
  function findRestStations(){
 	//console.log($("input[name='reservationtime']") .val());
-	 if($("input[name='reservationtime']") .val() == ""){
+//	 if($("input[name='reservationtime']") .val() == ""){
+	 if($("input[name='lendingTime']") .val() == ""){
 		 alert("请选择日期");
 		 return false;
 	 }
-	 if($("#starttime").val()){
-	 }else{
-		 alert("请选择开始时间");
-		 return false;
-	 }
-	 if($("#endtime").val()){
-	 }else{
-		 alert("请选择结束时间");
-		 return false;
-	 }
-	 if($("#starttime").val() > $("#endtime").val()){
-		 alert("开始时间不可大于结束时间");
-		 return false;
-	 }
+     if ($("#reservationTime").val()) {
+     } else {
+         alert("请选择开始时间");
+         return false;
+     }
+//	 if($("#starttime").val()){
+//	 }else{
+//		 alert("请选择开始时间");
+//		 return false;
+//	 }
+//	 if($("#endtime").val()){
+//	 }else{
+//		 alert("请选择结束时间");
+//		 return false;
+//	 }
+//	 if($("#starttime").val() > $("#endtime").val()){
+//		 alert("开始时间不可大于结束时间");
+//		 return false;
+//	 }
 	 
 	 var myData = {
-		 'reservationTime':$("input[name='reservationtime']") .val(),
-		 'startTime':$("#starttime").val(),
-		 'endTime':$("#endtime").val()
+//		 'reservationTime':$("input[name='reservationtime']") .val(),
+//		 'startTime':$("#starttime").val(),
+//		 'endTime':$("#endtime").val()
+         'lendingTime': $("input[name='lendingTime']").val(),
+         'reservationTime': $("#reservationTime").val()
 	 }
 	 var labRoomId = document.getElementById("labRoom").value;
 	 $.ajax({
@@ -659,6 +667,7 @@ function cancel(){
 							<select class="chzn-select" name="reservationTime" id="reservationTime" style="" multiple>
 
 							</select>
+                            <a onclick="findRestStations()">查询</a>
 						</td>
 					</tr>
 					<tr>
