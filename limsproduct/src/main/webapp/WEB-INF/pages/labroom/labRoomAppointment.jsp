@@ -32,7 +32,10 @@
     <script type="text/javascript">
 
         function onChangeDate() {
-            if ($("#labRoom").val() != "请选择") {
+            if($("#labRoom").val() == ""){
+                alert("请先填写实验室名称")
+            }
+            if ($("#labRoom").val() != "") {
                 if ($("#lendingTime").val() != "") {
                     $.ajax({
                         url:"${pageContext.request.contextPath}/labRoomLending/checkConflict",

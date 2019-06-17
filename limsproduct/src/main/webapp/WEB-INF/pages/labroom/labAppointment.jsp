@@ -24,7 +24,32 @@
     <script src="${pageContext.request.contextPath}/js/jquery-easyui/jquery.easyui.min.js" type="text/javascript"></script>
   <script src="${pageContext.request.contextPath}/js/jquery-easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
   <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
-  
+	<script type="text/javascript" src="${pageContext.request.contextPath}/js/My97DatePicker/WdatePicker.js"></script>
+
+	<script type="text/javascript">
+
+        function onChangeDate() {
+            if($("#labRoom").val() == ""){
+                alert("请先填写实验室名称")
+            }
+            if ($("#labRoom").val() != "") {
+                if ($("#lendingTime").val() != "") {
+                    $.ajax({
+                        url:"${pageContext.request.contextPath}/labRoomLending/checkConflict",
+                        type:"POST",
+                        data:{
+                            labRoom: $("#labRoom").val(),
+                            lendingTime: $("#lendingTime").val()
+                        },
+                        success:function (data) {
+                            $("#reservationTime").html(data);
+                            $("#reservationTime").trigger("liszt:updated");
+                        }
+                    });
+                }
+            }
+        }
+	</script>
   <script type="text/javascript">
   //取消查询
   function cancel(){
@@ -609,21 +634,32 @@ function cancel(){
 							</select>
 						</td>
 						<th>选择日期</th>
-						<td>
-							<input  class="easyui-datebox"  id="reservationTime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>
-						<span>
+						<%--<td>--%>
+							<%--<input  class="easyui-datebox"  id="reservationTime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>--%>
+						<%--<span>--%>
+							<%--<font class="space"></font>--%>
+						<%--预约开始时间&nbsp;:--%>
+							<%--<input  class="easyui-timespinner"  id="starttime" name="starttime" type="text"  style="width:80px;"--%>
+    <%--required="required" />--%>
+						<%--<font class="space"></font>--%>
+						<%--预约结束时间&nbsp;:--%>
+							<%--<input  class="easyui-timespinner"  id="endtime" name="endtime"  type="text" style="width:80px;"--%>
+    <%--required="required"/>--%>
+							<%--<a onclick="findRestStations()">查询</a>--%>
+						<%--</span>--%>
+							<%--&lt;%&ndash;<font style="color: red">请选择准确时间以查询剩余的工位数量</font>--%>
+						<%--&ndash;%&gt;</td>--%>
+						<td colspan="3">
+							<input class="Wdate" id="lendingTime" name="lendingTime" type="text"
+								   value="<fmt:formatDate value="${labReservation.lendingTime.time}" pattern="yyyy-MM-dd"/>"
+								   onclick="WdatePicker({minDate:'%y-%M-{%d}',dateFmt:'yyyy-MM-dd',onpicked:function(){onChangeDate();}})" />
+								<%--<input  class="easyui-datebox"  id="reservationTime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>--%>
 							<font class="space"></font>
-						预约开始时间&nbsp;:
-							<input  class="easyui-timespinner"  id="starttime" name="starttime" type="text"  style="width:80px;"
-    required="required" />
-						<font class="space"></font>
-						预约结束时间&nbsp;:
-							<input  class="easyui-timespinner"  id="endtime" name="endtime"  type="text" style="width:80px;"
-    required="required"/>
-							<a onclick="findRestStations()">查询</a>
-						</span>
-							<%--<font style="color: red">请选择准确时间以查询剩余的工位数量</font>
-						--%></td>
+							预约时间&nbsp;:
+							<select class="chzn-select" name="reservationTime" id="reservationTime" style="" multiple>
+
+							</select>
+						</td>
 					</tr>
 					<tr>
 					<c:if test="${user.userRole ne 0 }">
@@ -972,23 +1008,32 @@ function cancel(){
 						    	 } */
 						    	//更改标志位
 						    	flag = 1;
-						    	 if($("input[name='reservationtime']") .val() == ""){
-						    		 alert("请选择日期");
-						    		 flag = 0;
-						    		 return false;
-						    	 }
-						    	 if($("#starttime").val()){
-						    	 }else{
-						    		 alert("请选择开始时间");
-						    		 flag = 0;
-						    		 return false;
-						    	 }
-						    	 if($("#endtime").val()){
-						    	 }else{
-						    		 alert("请选择结束时间");
-						    		 flag = 0;
-						    		 return false;
-						    	 }
+//						    	 if($("input[name='reservationtime']") .val() == ""){
+//						    		 alert("请选择日期");
+//						    		 flag = 0;
+//						    		 return false;
+//						    	 }
+//						    	 if($("#starttime").val()){
+//						    	 }else{
+//						    		 alert("请选择开始时间");
+//						    		 flag = 0;
+//						    		 return false;
+//						    	 }
+//						    	 if($("#endtime").val()){
+//						    	 }else{
+//						    		 alert("请选择结束时间");
+//						    		 flag = 0;
+//						    		 return false;
+//						    	 }
+                                if ($("input[name='lendingTime']").val() == "") {
+                                    alert("请选择日期");
+                                    return false;
+                                }
+                                if ($("#reservationTime").val()) {
+                                } else {
+                                    alert("请选择开始时间");
+                                    return false;
+                                }
 						    	 var obj = document.getElementById("usingObj").value;
 						    	 if(obj == 1){
 						    	 	if($("#students").val() == ""){
@@ -1004,7 +1049,9 @@ function cancel(){
 						    	 }
 
 						    	 var myData = {
-						    		 'reservationTime':$("input[name='reservationtime']") .val(),
+//						    		 'reservationTime':$("input[name='reservationtime']") .val(),
+                                     'reservationTime': $("#reservationTime").val(),
+                                     'lendingTime': $("input[name='lendingTime']").val(),
 						    		 'startTime':$("#starttime").val(),
 						    		 'endTime':$("#endtime").val(),
 						    		 'reason':$("#reason").val(),
@@ -1030,7 +1077,7 @@ function cancel(){
                                         }else if(data=="reserved"){
                                             alert("预约失败，实验室已被预约");
                                         }else if(data=="success"){
-						    				alert("预约成功！");
+						    				alert("预约信息已提交等待审核…");
 						    				flag = 0;
 						    				var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
 						                    parent.layer.close(index);//关闭弹窗
