@@ -3517,7 +3517,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 		List<LabRoomAgent> labRoomAgents = labRoomAgentDAO.executeQuery(sql);
 		// 遍历
 		for (LabRoomAgent agent : labRoomAgents) {
-			String hql = "{call proc_agent_info_for_iot(" + app_id + ",'"+null+"','"+ agent.getHardwareIp() +"',"+ agent.getCDictionary().getId() +")}";
+			String hql = "{call proc_agent_info_for_iot(" + app_id + ",'"+app_type+"','"+ agent.getHardwareIp() +"',"+ agent.getCDictionary().getId() +")}";
 			Query query =entityManager.createNativeQuery(hql);
 			List<Object[]> objects=query.getResultList();
 			List<AgentIOT> agentIOTS = new ArrayList<>();
