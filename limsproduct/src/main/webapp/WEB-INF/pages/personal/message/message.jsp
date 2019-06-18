@@ -282,7 +282,7 @@
 <%--</div>--%>
 
 
-
+<c:if test="${PROJECT_NAME} eq 'shjulims' ">
 <div class="right-content">
 
 	<div id="TabbedPanels1" class="TabbedPanels">
@@ -400,6 +400,7 @@
 		</div>
 	</div>
 </div>
+</c:if>
 <!-- 下拉框的js -->
 <script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>

@@ -177,19 +177,18 @@ public class CommonController<JsonResult> {
 				}
 			}
 		}
-		if (session.getAttribute("authorityName") == null && auths.toString().contains("SUPERADMIN")) {
-			changeRole("SUPERADMIN");
-			session.setAttribute("authorityName", "系统管理员");
-			session.setAttribute("selected_role", "ROLE_SUPERADMIN");
-		} else if (session.getAttribute("authorityName") == null) {
-			changeRole(authorityDAO.findAuthorityById(id).getAuthorityName());
-			session.setAttribute("authorityName", authorityDAO.findAuthorityById(id).getCname());
-			session.setAttribute("selected_role", "ROLE_" + authorityDAO.findAuthorityById(id).getAuthorityName());
-		}
+//		if (session.getAttribute("authorityName") == null && auths.toString().contains("SUPERADMIN")) {
+//			changeRole("SUPERADMIN");
+//			session.setAttribute("authorityName", "系统管理员");
+//			session.setAttribute("selected_role", "ROLE_SUPERADMIN");
+//		} else if (session.getAttribute("authorityName") == null) {
+//			changeRole(authorityDAO.findAuthorityById(id).getAuthorityName());
+//			session.setAttribute("authorityName", authorityDAO.findAuthorityById(id).getCname());
+//			session.setAttribute("selected_role", "ROLE_" + authorityDAO.findAuthorityById(id).getAuthorityName());
+//		}
 		/*
 		 * 角色判断：如果具有老师权限则默认为老师，如果没有教师权限则默认为学生
 		*/
-		String sss = session.getAttribute("selected_role").toString();
 //		if(session.getAttribute("selected_role")!=null) {
 ////			// 切换角色后不需要重置权限
 ////		}else if(auths.toString().contains("TEACHER")){
@@ -199,19 +198,32 @@ public class CommonController<JsonResult> {
 ////		}else if(auths.toString().contains("SUPERADMIN")){
 ////			session.setAttribute("selected_role", "ROLE_SUPERADMIN");
 ////		}
+        //用户多个身份登录的角色优先级顺序：院系级管理员（实验中心主任）、实验室管理员、教师（学生）
 		if(session.getAttribute("selected_role")!=null) {
 			// 切换角色后不需要重置权限
 		}else if(auths.toString().contains("ACADEMYLEVELM")){
-			session.setAttribute("selected_role", "ROLE_ACADEMYLEVELM");
-		}else if(auths.toString().contains("EXCENTERDIRECTOR")){
-			session.setAttribute("selected_role", "ROLE_EXCENTERDIRECTOR");
-		}else if(auths.toString().contains("LABMANAGER")){
-			session.setAttribute("selected_role", "ROLE_LABMANAGER");
-		} else if(auths.toString().contains("TEACHER")){
+            session.setAttribute("authorityName","院系级系统管理员");
+            session.setAttribute("selected_role", "ROLE_ACADEMYLEVELM");
+        }else if(auths.toString().contains("EXCENTERDIRECTOR")){
+            session.setAttribute("authorityName","实验中心主任");
+            session.setAttribute("selected_role", "ROLE_EXCENTERDIRECTOR");
+        }else if(auths.toString().contains("LABMANAGER")){
+            session.setAttribute("authorityName","实验室管理员");
+            session.setAttribute("selected_role", "ROLE_LABMANAGER");
+        }else if(auths.toString().contains("TEACHER")){
+            session.setAttribute("authorityName","教师");
             session.setAttribute("selected_role", "ROLE_TEACHER");
-        } else if(auths.toString().contains("STUDENT")){
-            session.setAttribute("selected_role", "ROLE_STUDENT");
-        }
+        }else if(auths.toString().contains("STUDENT")){
+            session.setAttribute("authorityName","学生");
+			session.setAttribute("selected_role", "ROLE_STUDENT");
+		}
+
+		if (session.getAttribute("authorityName") == null) {
+			changeRole(authorityDAO.findAuthorityById(id).getAuthorityName());
+			session.setAttribute("authorityName", authorityDAO.findAuthorityById(id).getCname());
+			session.setAttribute("selected_role", "ROLE_" + authorityDAO.findAuthorityById(id).getAuthorityName());
+		}
+        String sss = session.getAttribute("selected_role").toString();
 		
 		//将当前登录人放到session中
 		session.setAttribute("loginUser", user);

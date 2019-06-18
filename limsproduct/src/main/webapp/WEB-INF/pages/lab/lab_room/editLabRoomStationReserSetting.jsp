@@ -49,7 +49,7 @@ function cancel(){
 </style>
 <script>
     //定义全局变量
-    var needAudit="${device.CDictionaryByIsStationAudit.id}";//预约是否需要审核
+    var needAudit="${isAudit1}";//预约是否需要审核
     var needtutor="${needtutor}";//是否需要系主任审核
     var labRoomWorker="${labRoomWorker}";//可预约工位数
     var needAppointment = "${isAppointment}";//是否需要预约

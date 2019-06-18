@@ -881,8 +881,8 @@ public class LabRoomReservationController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("tage", tage);
         mav.addObject("isAudit", isaudit);
-        if(request.getParameter("auditStatus")!=null){
-            mav.addObject("auditStatus",request.getParameter("auditStatus"));
+        if(labRoomStationReservation.getResult()!=null){
+            mav.addObject("auditStatus",labRoomStationReservation.getResult());
         }else {
             mav.addObject("auditStatus",2);
         }
