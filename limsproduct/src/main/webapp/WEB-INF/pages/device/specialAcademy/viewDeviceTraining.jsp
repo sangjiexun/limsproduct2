@@ -76,7 +76,7 @@ function joinTrainingRest(){//将labRoomId deviceNumber deviceName page传递到
 		eMail=eMail.replace(/\#/g,"[Geng6Shang]");//将特殊字符"#"转化为[Geng6Shang]
 		eMail=eMail.replace(/\&/g,"[Geng7Shang]");//将特殊字符"&"转化为[Geng7Shang]
 		eMail=eMail.replace(/\=/g,"[Geng8Shang]");//将特殊字符"="转化为[Geng8Shang]
-		eMail=eMail.replace(/\./g,"[Geng9Shang]");//将特殊字符"."转化为[Geng9Shang]
+		//eMail=eMail.replace(/\./g,"[Geng9Shang]");//将特殊字符"."转化为[Geng9Shang]
 		var url = "${pageContext.request.contextPath}/device/joinTrainingRest/" + ${labRoomId} + "/" + ${deviceNumber} + "/" + "${deviceName}" +"/"+${username}+ "/"+${page}+"/" + trainingId +"/" + telephone +"/" + eMail+"/"+"${schoolDevice_allowAppointment}";
 		//alert(url);
 		window.location.href=url;
