@@ -423,9 +423,15 @@
 	 }
      if ($("#reservationTime").val()) {
      } else {
-         alert("请选择开始时间");
+         alert("请选择时间");
          return false;
      }
+     if (document.getElementById("labRoom").value) {
+     } else {
+         alert("请选择实验室");
+         return false;
+     }
+
 //	 if($("#starttime").val()){
 //	 }else{
 //		 alert("请选择开始时间");
