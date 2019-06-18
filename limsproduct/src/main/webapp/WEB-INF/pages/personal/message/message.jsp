@@ -282,7 +282,7 @@
 <%--</div>--%>
 
 
-<c:if test="${PROJECT_NAME} eq 'shjulims' ">
+<c:if test="${isHide==0}">
 <div class="right-content">
 
 	<div id="TabbedPanels1" class="TabbedPanels">
