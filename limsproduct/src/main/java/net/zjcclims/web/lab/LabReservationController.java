@@ -1514,11 +1514,11 @@ public class LabReservationController<JsonResult> {
     }
 
     /****************************************************************************
-     * @Description：实验室管理---保存工位预约开放设置:开放范围、开放对象
+     * @Description：实验室管理---删除工位预约开放设置:开放范围、开放对象
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationOpenSetting", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/deleteLabRoomStationOpenSetting", method = RequestMethod.GET)
     @ResponseBody
     public String deleteLabRoomStationOpenSetting(Integer labRoomId,String academyNumber){
         StringBuffer sqlDeleted = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + "and l.academyNumber="+academyNumber+" and l.type = 2");
