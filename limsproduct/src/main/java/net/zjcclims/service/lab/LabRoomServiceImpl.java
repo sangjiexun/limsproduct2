@@ -3517,7 +3517,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 		List<LabRoomAgent> labRoomAgents = labRoomAgentDAO.executeQuery(sql);
 		// 遍历
 		for (LabRoomAgent agent : labRoomAgents) {
-			String hql = "{call proc_agent_info_for_iot(" + app_id + ",'"+app_type+"','"+ agent.getHardwareIp() +"',"+ agent.getCDictionary().getId() +")}";
+			String hql = "{call proc_agent_info_for_iot('"+ agent.getHardwareIp() +"',"+ agent.getCDictionary().getId() +")}";
 			Query query =entityManager.createNativeQuery(hql);
 			List<Object[]> objects=query.getResultList();
 			List<AgentIOT> agentIOTS = new ArrayList<>();
@@ -3540,7 +3540,12 @@ public class LabRoomServiceImpl implements LabRoomService {
 			String json = jsonObject.toString();
 			String serverIp = agent.getCommonServer().getServerIp() + ":" + agent.getCommonServer().getServerSn();
 			try {
-				String url="http://"+ serverIp + "/reservation/iot/guard/" + agent.getHardwareIp() + "/regcard";
+				String url = "";
+				if (agent.getCDictionary().getId()==548) {
+					url = "http://"+ serverIp +"/reservation/iot/acldoor/" + agent.getHardwareIp() + "/regcard";
+				} else {
+					url = "http://"+ serverIp + "/reservation/iot/guard/" + agent.getHardwareIp() + "/regcard";
+				}
 				System.out.println("接口调用地址:" + url);
 				HttpClientUtil.doPostJson(url, json);
 			}catch (Exception e){
