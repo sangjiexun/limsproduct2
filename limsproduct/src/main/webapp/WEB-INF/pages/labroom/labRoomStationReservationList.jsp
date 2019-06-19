@@ -156,26 +156,37 @@ var s=${isAudit};
                                     <c:if test="${auditStatus == 2}">
                                         <option value="2" selected>审核中</option>
                                         <option value="1">审核通过</option>
-                                        <option value="3">未审核</option>
+                                        <%--<option value="3">未审核</option>--%>
                                         <option value="4">审核拒绝</option>
+                                        <option value="5">所有</option>
                                     </c:if>
                                     <c:if test="${auditStatus == 1}">
                                         <option value="2">审核中</option>
                                         <option value="1" selected>审核通过</option>
-                                        <option value="3">未审核</option>
+                                        <%--<option value="3">未审核</option>--%>
                                         <option value="4">审核拒绝</option>
+                                        <option value="5">所有</option>
                                     </c:if>
-                                    <c:if test="${auditStatus == 3}">
+                                    <%--<c:if test="${auditStatus == 3}">
                                         <option value="2">审核中</option>
                                         <option value="1">审核通过</option>
                                         <option value="3" selected>未审核</option>
                                         <option value="4">审核拒绝</option>
-                                    </c:if>
+                                        <option value="5">所有</option>
+                                    </c:if>--%>
                                     <c:if test="${auditStatus == 4}">
                                         <option value="2">审核中</option>
                                         <option value="1">审核通过</option>
-                                        <option value="3">未审核</option>
+                                        <%--<option value="3">未审核</option>--%>
                                         <option value="4" selected>审核拒绝</option>
+                                        <option value="5">所有</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 5}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <%--<option value="3">未审核</option>--%>
+                                        <option value="4">审核拒绝</option>
+                                        <option value="5" selected>所有</option>
                                     </c:if>
                                 </form:select>
                             </li>

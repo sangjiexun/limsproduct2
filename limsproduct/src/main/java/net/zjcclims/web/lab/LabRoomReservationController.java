@@ -895,7 +895,11 @@ public class LabRoomReservationController<JsonResult> {
         if(labRoomStationReservation.getResult()!=null){
             mav.addObject("auditStatus",labRoomStationReservation.getResult());
         }else {
-            mav.addObject("auditStatus",2);
+            if(isaudit==2){  //我的预约页面默认所有
+                mav.addObject("auditStatus",5);
+            }else {      //我的审核页面默认审核中
+                mav.addObject("auditStatus",2);
+            }
         }
 
 //        mav.addObject("isGraded", shareService.getAuditOrNot("LabRoomStationGradedOrNot"));

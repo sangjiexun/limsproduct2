@@ -627,11 +627,21 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 * @date 2017-09-25
 	 *************************************************************************************/
 	public List<LabRoomStationReservation> findLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit) {
-		String sql = "select l from LabRoomStationReservation l where 1=1 ";
+		String sql = "select distinct l from LabRoomStationReservation l where 1=1 ";
 		if(labRoomStationReservation.getResult()!=null){
-		    sql += " and l.result ="+ labRoomStationReservation.getResult();
+		    if(labRoomStationReservation.getResult()==2){   //审核中包括未审核状态
+                sql += " and (l.result = 2 or l.result = 3)";
+            }else if(labRoomStationReservation.getResult()==5){    //所有
+		        //do nothing
+		    }else {
+                sql += " and l.result ="+ labRoomStationReservation.getResult();
+            }
         }else{
-            sql += " and l.result = 2";
+		    if(isAudit == 2){        //我的预约页面默认所有
+		        //do nothing
+            }else {               //我的审核页面默认审核中
+                sql += " and (l.result = 2 or l.result = 3)";
+            }
         }
 		if(labRoomStationReservation.getLabRoom() != null){
 			if (labRoomStationReservation.getLabRoom().getLabRoomName() != null && !labRoomStationReservation.getLabRoom().getLabRoomName().equals("")) {

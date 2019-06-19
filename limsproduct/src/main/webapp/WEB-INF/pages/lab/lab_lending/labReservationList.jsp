@@ -174,7 +174,7 @@ $(function(){
 							<td>${current.lendingUserPhone}</td>
 							<td>${current.lendingReason}</td>
 							<c:if test="${auditState.get(i.count-1)==-2 }">
-								<td>无审核记录</td>
+								<td>审核通过</td>
 							</c:if>
                         	<c:if test="${auditState.get(i.count-1)==-1 }">
                         		<td>审核通过</td>
@@ -192,7 +192,7 @@ $(function(){
 									<a href="${pageContext.request.contextPath}/labRoomLending/checkButton?id=${current.id}&tage=${tage}&state=${current.buttonMark}&page=${page}">查看</a>
 								</c:if>
                         	 <c:if test="${current.buttonMark eq 0}">
-						     	 <a href="${pageContext.request.contextPath}/labRoomLending/checkButton?id=${current.id}&tage=${tage}&state=${current.buttonMark}&page=${page}">查看</a>
+						     	 <a href="${pageContext.request.contextPath}/labRoomLending/checkButton?id=${current.id}&tage=${tage}&state=${current.buttonMark}&page=${page}">审核</a>
 						     </c:if>
 						     <c:if test="${current.buttonMark eq 1}">
 						     	 <a href="${pageContext.request.contextPath}/labRoomLending/checkButton?id=${current.id}&tage=${tage}&state=${current.buttonMark}&page=${page}">导师审核</a>
