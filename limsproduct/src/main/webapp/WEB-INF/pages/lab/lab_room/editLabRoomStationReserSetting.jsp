@@ -46,6 +46,9 @@ function cancel(){
     .chzn-choices {
         border: none!important;
     }
+	.content-double {
+		overflow: visible;
+	}
 </style>
 <script>
     //定义全局变量
@@ -292,6 +295,62 @@ function cancel(){
             }
         })
     }
+    function add(openFlag) {
+        if (openFlag == 0) {
+            var selectedAuthority = $("#selectedAuthority").val();
+            var selectedSchoolAcademy = $("#selectedSchoolAcademy").val();
+            if(selectedAuthority == null){
+                alert("请选择开放对象!");
+                return false;
+			}
+			if(selectedSchoolAcademy == null){
+                alert("请选择开放范围!");
+                return false;
+			}
+            addRecord(selectedAuthority,selectedSchoolAcademy,openFlag)
+        }
+    }
+    function addRecord(selectedAuthority,selectedSchoolAcademy,openFlag) {
+        var myData = {
+            "academies": selectedSchoolAcademy,
+            "authorities": selectedAuthority,
+            "labRoomId": ${labRoomId},
+        };
+        $.ajax({
+            url: "${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting",
+            type: 'POST',
+            async: false,
+            data: myData,
+            success: function (data) {//AJAX查询成功
+                if (openFlag == 0) {
+//                    var open = "空";
+//                    if (openRankResult == 1) {
+//                        open = "全部";
+//                    }
+//                    if (openRankResult == 2) {
+//                        open = "B级及以上";
+//                    }
+//                    if (openRankResult == 3) {
+//                        open = "A级";
+//                    }
+                    var a_tag = '<td><a href="javascript:void(0);"  onclick="deleteRecordByConfigOpenTimeUid(&quot;' + selectedSchoolAcademy + '&quot;)"></a></td>';
+                    var td =
+                        "<td>" + selectedAuthority + "</td>" +
+                        "<td>" + selectedSchoolAcademy + "</td>";
+                    var str = '<tr></tr>';
+                    var $str = $(str);
+                    $str.append($(td));
+                    $str.append($(a_tag));
+                    $("#openSet").append($str);
+                    //清空选择框的内容
+                    document.getElementById("selectedAuthority").value = "";
+                    document.getElementById("selectedSchoolAcademy").value = "";
+
+
+                }
+            }
+        });
+    }
 function closeMyWindow(){
     var index=parent.layer.getFrameIndex(window.name);
     parent.layer.close(index);
@@ -441,39 +500,39 @@ margin-left:3px;
 						</td>
 					</tr>
 				</c:forEach>
-                <tr>
-                    <td>开放范围</td>
-                    <td >
-                        <select class="chzn-select" multiple id="selectedSchoolAcademy"
-                                name="selectedSchoolAcademy">
-                            <c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
-                                <c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">
-                                    <option value="${schoolAcademy.academyNumber}"
-                                            selected>${schoolAcademy.academyName}</option>
-                                </c:if>
-                                <c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">
-                                    <option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
-                                </c:if>
-                            </c:forEach>
-                        </select>
-                    </td>
-                </tr>
-                <td>开放对象</td>
-                <td >
-                    <select class="chzn-select" multiple id="selectedAuthority"
-                            name="selectedAuthority">
-                        <c:forEach items="${authorityList}" var="authority" varStatus="i">
-                            <c:if test="${selectedAuthorities.contains(authority)}">
-                                <option value="${authority.authorityName}"
-                                        selected>${authority.cname}</option>
-                            </c:if>
-                            <c:if test="${!selectedAuthorities.contains(authority)}">
-                                <option value="${authority.authorityName}">${authority.cname}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                </td>
-                </tr>
+                <%--<tr>--%>
+                    <%--<td>开放范围</td>--%>
+                    <%--<td >--%>
+                        <%--<select class="chzn-select" multiple id="selectedSchoolAcademy"--%>
+                                <%--name="selectedSchoolAcademy">--%>
+                            <%--<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">--%>
+                                <%--<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+                                    <%--<option value="${schoolAcademy.academyNumber}"--%>
+                                            <%--selected>${schoolAcademy.academyName}</option>--%>
+                                <%--</c:if>--%>
+                                <%--<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+                                    <%--<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>--%>
+                                <%--</c:if>--%>
+                            <%--</c:forEach>--%>
+                        <%--</select>--%>
+                    <%--</td>--%>
+                <%--</tr>--%>
+                <%--<td>开放对象</td>--%>
+                <%--<td >--%>
+                    <%--<select class="chzn-select" multiple id="selectedAuthority"--%>
+                            <%--name="selectedAuthority">--%>
+                        <%--<c:forEach items="${authorityList}" var="authority" varStatus="i">--%>
+                            <%--<c:if test="${selectedAuthorities.contains(authority)}">--%>
+                                <%--<option value="${authority.authorityName}"--%>
+                                        <%--selected>${authority.cname}</option>--%>
+                            <%--</c:if>--%>
+                            <%--<c:if test="${!selectedAuthorities.contains(authority)}">--%>
+                                <%--<option value="${authority.authorityName}">${authority.cname}</option>--%>
+                            <%--</c:if>--%>
+                        <%--</c:forEach>--%>
+                    <%--</select>--%>
+                <%--</td>--%>
+                <%--</tr>--%>
 			<%--<tr id="allowSecurityAccess">
 				<td>是否需要安全准入:</td>
 				<td>
@@ -498,6 +557,9 @@ margin-left:3px;
 			</table>
 			</div>
 			</form:form>
+				<div style="width: 50px; margin: 20px auto">
+					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="保存">
+				</div>
 				<%--<div class="TabbedPanels" id="selectAcademy">--%>
 					<%--<table class="tab_lab" style="margin:10px 0 0;">--%>
 						<%--<tr>--%>
@@ -519,10 +581,56 @@ margin-left:3px;
 						<%--</tr>--%>
 					<%--</table>--%>
 				<%--</div>--%>
-				<div style="width: 50px; margin: 20px auto">
-					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="确定">
+				<div class="title">
+					<div id="title2">开放设置</div>
+					<%--<a class="btn btn-new"  onclick="newAcAndAuth()" >增加</a>--%>
 				</div>
-			</div>
+				<div class="content-double">
+					<table id="openSet">
+						<thead>
+						<tr>
+							<th>开放对象</th>
+							<th>开放范围</th>
+							<th>操作</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>
+								<select class="chzn-select" multiple id="selectedAuthority"
+										name="selectedAuthority">
+									<c:forEach items="${authorityList}" var="authority" varStatus="i">
+										<%--<c:if test="${selectedAuthorities.contains(authority)}">--%>
+											<%--<option value="${authority.authorityName}"--%>
+													<%--selected>${authority.cname}</option>--%>
+										<%--</c:if>--%>
+										<%--<c:if test="${!selectedAuthorities.contains(authority)}">--%>
+											<option value="${authority.authorityName}">${authority.cname}</option>
+										<%--</c:if>--%>
+									</c:forEach>
+								</select>
+							</td>
+							<td>
+								<select class="chzn-select" multiple id="selectedSchoolAcademy"
+										name="selectedSchoolAcademy">
+									<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
+										<%--<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}"--%>
+													<%--selected>${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+										<%--<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
+										<%--</c:if>--%>
+									</c:forEach>
+								</select>
+							</td>
+							<td>
+								<a href="javascript:void(0);" onclick="add(0)";>保存</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+
 		</div>
 	  </div>
 	  		<input type="hidden" id="labRoomId" value="${labRoomId }">
