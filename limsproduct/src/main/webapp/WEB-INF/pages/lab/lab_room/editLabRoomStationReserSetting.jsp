@@ -317,23 +317,13 @@ function cancel(){
             "labRoomId": ${labRoomId},
         };
         $.ajax({
-            url: "${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting",
+            url: "${pageContext.request.contextPath}/device/saveLabRoomStationOpenSetting",
             type: 'POST',
             async: false,
             data: myData,
             success: function (data) {//AJAX查询成功
                 if (openFlag == 0) {
-//                    var open = "空";
-//                    if (openRankResult == 1) {
-//                        open = "全部";
-//                    }
-//                    if (openRankResult == 2) {
-//                        open = "B级及以上";
-//                    }
-//                    if (openRankResult == 3) {
-//                        open = "A级";
-//                    }
-                    var a_tag = '<td><a href="javascript:void(0);"  onclick="deleteRecordByConfigOpenTimeUid(&quot;' + selectedSchoolAcademy + '&quot;)"></a></td>';
+                    var a_tag = '<td><a href="javascript:void(0);"  onclick="deleteOAA(&quot;' + selectedSchoolAcademy + '&quot;)"></a></td>';
                     var td =
                         "<td>" + selectedAuthority + "</td>" +
                         "<td>" + selectedSchoolAcademy + "</td>";
@@ -350,6 +340,29 @@ function cancel(){
                 }
             }
         });
+    }
+    function deleteOAA(academyNumber,obj) {
+        var labRoomId = ${labRoomId};
+        $.ajax({
+            url: "${pageContext.request.contextPath}/device/deleteLabRoomStationOpenSetting?labRoomId="+labRoomId+"&academyNumber="+academyNumber,
+            type: 'GET',
+            async: false,
+            success: function (data) {//AJAX查询成功
+                var tr = this.getRowObj(obj);
+                if(tr != null){
+                    tr.parentNode.removeChild(tr);
+                }
+            }
+        });
+    }
+
+    function getRowObj(obj){
+        var i = 0;
+        while(obj.tagName.toLowerCase() != "tr"){
+            obj = obj.parentNode;
+            if(obj.tagName.toLowerCase() == "table")return null;
+        }
+        return obj;
     }
 function closeMyWindow(){
     var index=parent.layer.getFrameIndex(window.name);
@@ -628,6 +641,15 @@ margin-left:3px;
 								<a href="javascript:void(0);" onclick="add(0)";>保存</a>
 							</td>
 						</tr>
+                        <c:forEach items="${openAcademyAndAuthorities}" var="oaa">
+                            <tr>
+                                <td>${oaa[2]}</td>
+                                <td>${oaa[1]}</td>
+                                <td>
+                                    <a href="javascript:void(0);" onclick="deleteOAA(${oaa[0]},this)";>删除</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
 					</table>
 				</div>
 
