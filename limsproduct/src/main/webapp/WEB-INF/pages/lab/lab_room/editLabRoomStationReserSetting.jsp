@@ -321,7 +321,7 @@ function cancel(){
             type: 'POST',
             async: false,
             data: myData,
-            success: function (data) {//AJAX查询成功
+            success: function (data) {
                 if (openFlag == 0) {
                     var a_tag = '<td><a href="javascript:void(0);"  onclick="deleteOAA(&quot;' + selectedSchoolAcademy + '&quot;)"></a></td>';
                     var td =
@@ -347,11 +347,15 @@ function cancel(){
             url: "${pageContext.request.contextPath}/device/deleteLabRoomStationOpenSetting?labRoomId="+labRoomId+"&academyNumber="+academyNumber,
             type: 'GET',
             async: false,
-            success: function (data) {//AJAX查询成功
-                var tr = this.getRowObj(obj);
-                if(tr != null){
-                    tr.parentNode.removeChild(tr);
-                }
+            success: function (data) {
+				if(data == "success"){
+                    var tr = this.getRowObj(obj);
+                    if(tr != null){
+                        tr.parentNode.removeChild(tr);
+                    }
+				}else if(data == "error"){
+					alert("请求错误!");
+				}
             }
         });
     }
