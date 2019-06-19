@@ -2192,9 +2192,11 @@ public class MaterialServiceImpl implements MaterialService {
                     assetCabinetWarehouseRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
                 }
                 assetCabinetWarehouseRecordDAO.store(assetCabinetWarehouseRecord);
+                return cabinetId.toString()+"-"+warehouseId.toString();
+            }else{
+                return cabinetId.toString();
             }
-            return cabinetId.toString()+"-"+warehouseId.toString();
-           }
+        }
     }
 
     /**
