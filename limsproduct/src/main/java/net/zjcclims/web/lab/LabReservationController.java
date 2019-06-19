@@ -14,6 +14,7 @@ import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.Labreservationlist;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.SelectDTO;
 import net.gvsun.lims.vo.labRoom.ParamLabSettingVO;
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.constant.CommonConstantInterface;
@@ -1069,24 +1070,29 @@ public class LabReservationController<JsonResult> {
         List<Object[]> openAcademyAndAuthorities = new ArrayList<>();
         String academy = "";
         String authorities = "";
-        for(int i =0,len=openUpAcademies.size();i<len;i++){
+        for(int i=0,len=openUpAcademies.size();i<len;i++){
             LabOpenUpAcademy labOpenUpAcademy = openUpAcademies.get(i);
-            academy = labOpenUpAcademy.getAcademyNumber();
+            if(i==0){
+                academy = labOpenUpAcademy.getAcademyNumber();
+            }
             if(!academy.equals(labOpenUpAcademy.getAcademyNumber())){  //下一个学院
                 Object[] o = new Object[3];
                 o[0] = academy;
                 o[1] = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(academy).getAcademyName();
+                authorities = authorities.substring(0, authorities.length() - 1);
                 o[2] = authorities;
                 openAcademyAndAuthorities.add(o);
                 academy = labOpenUpAcademy.getAcademyNumber();
+                authorities = ""  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
             }else {             //同一个学院  叠加开放对象
-                authorities = authorities + "," + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname();
+                authorities = authorities  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
             }
             //如果是最后一个添加
             if(i == len-1){
                 Object[] o = new Object[3];
                 o[0] = academy;
                 o[1] = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(academy).getAcademyName();
+                authorities = authorities.substring(0, authorities.length() - 1);
                 o[2] = authorities;
                 openAcademyAndAuthorities.add(o);
             }
@@ -1339,46 +1345,6 @@ public class LabReservationController<JsonResult> {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
         String status = "success";
 
-        // 保存开放学院/开放对象
-        Set<SchoolAcademy> schoolAcademies = new HashSet<>();
-        //先删除
-        Set<LabOpenUpAcademy>openUpAcademies = labOpenUpAcademyDAO.findLabOpenUpAcademyBylabRoomIdAndType(labRoomId,2);
-        for(LabOpenUpAcademy labOpenUpAcademy :openUpAcademies){
-            labOpenUpAcademyDAO.remove(labOpenUpAcademy);
-        }
-        String[] academies = paramLabSettingVO.getAcademies();
-        String[] authorities = paramLabSettingVO.getAuthorities();
-        if (academies != null && academies.length != 0 && !"-1".equals(academies[0])) {
-            for (String s : academies) {
-                if(s.equals("-2")) {//全校
-                    Set<SchoolAcademy>schoolAcademySet = schoolAcademyDAO.findAllSchoolAcademys();
-                    for(SchoolAcademy schoolAcademy :schoolAcademySet){
-                        LabOpenUpAcademy labOpenUpAcademy = new LabOpenUpAcademy();
-                        labOpenUpAcademy.setLabRoomId(labRoomId);
-                        labOpenUpAcademy.setType(2);
-                        labOpenUpAcademy.setAcademyNumber(schoolAcademy.getAcademyNumber());
-                        if (authorities != null && authorities.length != 0 && !"-1".equals(authorities[0])) {
-                            for (String a : authorities) {
-                                labOpenUpAcademy.setAuthorityName(a);
-                                labOpenUpAcademyDAO.store(labOpenUpAcademy);
-                            }
-                        }
-                    }
-                    break;
-                }else {
-                    LabOpenUpAcademy labOpenUpAcademy = new LabOpenUpAcademy();
-                    labOpenUpAcademy.setLabRoomId(labRoomId);
-                    labOpenUpAcademy.setType(2);
-                    labOpenUpAcademy.setAcademyNumber(s);
-                    if (authorities != null && authorities.length != 0 && !"-1".equals(authorities[0])) {
-                        for (String a : authorities) {
-                            labOpenUpAcademy.setAuthorityName(a);
-                            labOpenUpAcademyDAO.store(labOpenUpAcademy);
-                        }
-                    }
-                }
-            }
-        }
         //demo
         String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
         int needAudit = -1;
@@ -1451,13 +1417,13 @@ public class LabReservationController<JsonResult> {
     }
 
     /****************************************************************************
-     * @Description：实验室管理---保存工位预约开放设置
+     * @Description：实验室管理---保存工位预约开放设置:开放范围、开放对象
      * @Author：Hezhaoyi
      * 2019-6-3
      ****************************************************************************/
-    @RequestMapping(value = "/device/saveLabRoomStationReserSetting", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/saveLabRoomStationOpenSetting", method = RequestMethod.POST)
     @ResponseBody
-    public String saveLabRoomStationOpenSetting(@RequestBody ParamLabSettingVO paramLabSettingVO) {
+    public SelectDTO saveLabRoomStationOpenSetting(@RequestBody ParamLabSettingVO paramLabSettingVO) {
         // id对应的实验分室
         int labRoomId = paramLabSettingVO.getLabRoomId();
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
@@ -1465,12 +1431,15 @@ public class LabReservationController<JsonResult> {
 
         // 保存开放学院/开放对象
         Set<SchoolAcademy> schoolAcademies = new HashSet<>();
-        //先删除
-        Set<LabOpenUpAcademy>openUpAcademies = labOpenUpAcademyDAO.findLabOpenUpAcademyBylabRoomIdAndType(labRoomId,2);
-        for(LabOpenUpAcademy labOpenUpAcademy :openUpAcademies){
-            labOpenUpAcademyDAO.remove(labOpenUpAcademy);
-        }
         String[] academies = paramLabSettingVO.getAcademies();
+        for(String academy:academies){
+            StringBuffer sqlDeleted = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + "and l.academyNumber="+academy+" and l.type = 2");
+            List<LabOpenUpAcademy>openUpAcademyListDeleted = entityManager.createQuery(sqlDeleted.toString()).getResultList();
+            for(LabOpenUpAcademy labOpenUpAcademy :openUpAcademyListDeleted){
+                labOpenUpAcademyDAO.remove(labOpenUpAcademy);
+            }
+        }
+
         String[] authorities = paramLabSettingVO.getAuthorities();
         if (academies != null && academies.length != 0 && !"-1".equals(academies[0])) {
             for (String s : academies) {
@@ -1503,10 +1472,62 @@ public class LabReservationController<JsonResult> {
                 }
             }
         }
+        //ajax返回页面开放设置的数据
+        SelectDTO selectDTO = new SelectDTO();
 
-        return status;
+        StringBuffer sql = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + " and l.type = 2");
+
+        List<LabOpenUpAcademy>openUpAcademyList = entityManager.createQuery(sql.toString()).getResultList();
+        List<Object[]> openAcademyAndAuthorities = new ArrayList<>();
+        String academy = "";
+        String authority = "";
+        for(int i=0,len=openUpAcademyList.size();i<len;i++){
+            LabOpenUpAcademy labOpenUpAcademy = openUpAcademyList.get(i);
+            if(i==0){
+                academy = labOpenUpAcademy.getAcademyNumber();
+            }
+            if(!academy.equals(labOpenUpAcademy.getAcademyNumber())){  //下一个学院
+                Object[] o = new Object[3];
+                o[0] = academy;
+                o[1] = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(academy).getAcademyName();
+                authority = authority.substring(0, authority.length() - 1);
+                o[2] = authority;
+                openAcademyAndAuthorities.add(o);
+                academy = labOpenUpAcademy.getAcademyNumber();
+                authority = ""  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+            }else {             //同一个学院  叠加开放对象
+                authority = authority  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+            }
+            //如果是最后一个添加
+            if(i == len-1){
+                Object[] o = new Object[3];
+                o[0] = academy;
+                o[1] = schoolAcademyDAO.findSchoolAcademyByAcademyNumber(academy).getAcademyName();
+                authority = authority.substring(0, authority.length() - 1);
+                o[2] = authority;
+                openAcademyAndAuthorities.add(o);
+            }
+        }
+        selectDTO.setResults(openAcademyAndAuthorities);
+
+        return selectDTO;
     }
 
+    /****************************************************************************
+     * @Description：实验室管理---保存工位预约开放设置:开放范围、开放对象
+     * @Author：Hezhaoyi
+     * 2019-6-3
+     ****************************************************************************/
+    @RequestMapping(value = "/device/saveLabRoomStationOpenSetting", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteLabRoomStationOpenSetting(Integer labRoomId,String academyNumber){
+        StringBuffer sqlDeleted = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + "and l.academyNumber="+academyNumber+" and l.type = 2");
+        List<LabOpenUpAcademy>openUpAcademyListDeleted = entityManager.createQuery(sqlDeleted.toString()).getResultList();
+        for(LabOpenUpAcademy labOpenUpAcademy :openUpAcademyListDeleted){
+            labOpenUpAcademyDAO.remove(labOpenUpAcademy);
+        }
+        return "success";
+    }
 	/****************************************************************************
 	 * @功能：设置-实验室图片
 	 * @作者：孙虎
