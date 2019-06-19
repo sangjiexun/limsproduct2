@@ -319,22 +319,27 @@ function cancel(){
         $.ajax({
             url: "${pageContext.request.contextPath}/device/saveLabRoomStationOpenSetting",
             type: 'POST',
+            data:  JSON.stringify(myData),
+            contentType: "application/json;charset=UTF-8",
             async: false,
-            data: myData,
             success: function (data) {
                 if (openFlag == 0) {
-                    var a_tag = '<td><a href="javascript:void(0);"  onclick="deleteOAA(&quot;' + selectedSchoolAcademy + '&quot;)"></a></td>';
-                    var td =
-                        "<td>" + selectedAuthority + "</td>" +
-                        "<td>" + selectedSchoolAcademy + "</td>";
-                    var str = '<tr></tr>';
-                    var $str = $(str);
-                    $str.append($(td));
-                    $str.append($(a_tag));
-                    $("#openSet").append($str);
+                    $("#openSet tr:gt(1)").remove();
+                    var str='';
+                    for(var i=0;i<data.results.length;i++){
+                        str +="<tr>"+
+                            "<td>" + data.results[i][2] + "</td>" +
+                            "<td>" + data.results[i][1] + "</td>"+
+                            "<td><a href='javascript:void(0);'  onclick='deleteOAA(&quot;" + data.results[i][0] + "&quot,this)'>删除</a></td>"+
+                            "</tr>";
+                    }
+
+                    $("#openSet").append(str);
                     //清空选择框的内容
-                    document.getElementById("selectedAuthority").value = "";
-                    document.getElementById("selectedSchoolAcademy").value = "";
+                    $("#selectedAuthority").val("");
+                    $("#selectedAuthority").trigger("liszt:updated");
+                    $("#selectedSchoolAcademy").val("");
+                    $("#selectedSchoolAcademy").trigger("liszt:updated");
 
 
                 }
@@ -349,7 +354,7 @@ function cancel(){
             async: false,
             success: function (data) {
 				if(data == "success"){
-                    var tr = this.getRowObj(obj);
+                    var tr = getRowObj(obj);
                     if(tr != null){
                         tr.parentNode.removeChild(tr);
                     }
@@ -622,6 +627,7 @@ margin-left:3px;
 													<%--selected>${authority.cname}</option>--%>
 										<%--</c:if>--%>
 										<%--<c:if test="${!selectedAuthorities.contains(authority)}">--%>
+                                        <%--<option value="">请选择</option>--%>
 											<option value="${authority.authorityName}">${authority.cname}</option>
 										<%--</c:if>--%>
 									</c:forEach>
@@ -635,9 +641,10 @@ margin-left:3px;
 											<%--<option value="${schoolAcademy.academyNumber}"--%>
 													<%--selected>${schoolAcademy.academyName}</option>--%>
 										<%--</c:if>--%>
-										<%--<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+										<c:if test="${schoolAcademy.academyName!='跨学科'}">
+                                        <%--<option value="">请选择</option>--%>
 											<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
-										<%--</c:if>--%>
+										</c:if>
 									</c:forEach>
 								</select>
 							</td>
@@ -650,7 +657,7 @@ margin-left:3px;
                                 <td>${oaa[2]}</td>
                                 <td>${oaa[1]}</td>
                                 <td>
-                                    <a href="javascript:void(0);" onclick="deleteOAA(${oaa[0]},this)";>删除</a>
+                                    <a href="javascript:void(0);" onclick="deleteOAA('${oaa[0]}',this)";>删除</a>
                                 </td>
                             </tr>
                         </c:forEach>

@@ -698,7 +698,7 @@ function cancel(){
 
 							<%--</select>--%>
                             <input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">
-                            <a onclick="findRestStations()">查询</a>
+                            <a onclick="findRestStations()">查询（点击查询，查看可预约工位数）</a>
 						</td>
 					</tr>
 					<tr>
