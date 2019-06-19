@@ -263,14 +263,16 @@ function opendoor(agentId){
 }
 // 新版物联-远程开门
     function openDoorNew(agentId, doorIndex) {
-            $.post('${pageContext.request.contextPath}/labRoom/openDoorNew?agentId='+agentId+'&doorIndex='+doorIndex,function(data){  //serialize()序列化
-                    if(data=="success"){
-                            alert("门禁已经打开");
-                        }else{
-                            alert("开门失败，请检查当网络连接或者再试一次。");
-                        }
-                });
-        }
+		$.post('${pageContext.request.contextPath}/labRoom/openDoorNew?agentId='+agentId+'&doorIndex='+doorIndex,function(data){  //serialize()序列化
+			if(data=="success"){
+				alert("门禁已经打开");
+			} else if (data=="noAuth") {
+				alert("抱歉，您无权操作!");
+			} else{
+				alert("开门失败，请检查当网络连接或者再试一次。");
+			}
+		});
+	}
 // 班牌开门
 function opendoor_scr(agentId){
     $.ajax({

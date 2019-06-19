@@ -1,6 +1,7 @@
 package net.zjcclims.dao;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 
 import net.zjcclims.domain.SchoolWeek;
@@ -51,6 +52,19 @@ public interface SchoolWeekDAO extends JpaDao<SchoolWeek> {
 	 */
 
 	public SchoolWeek findSchoolWeekByWeekAndWeekdayAndTerm(Integer week, Integer weekday,Integer termId, int startResult, int maxRows) throws DataAccessException;
+	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+
+	public SchoolWeek findSchoolWeekByDateNew(Calendar date) throws DataAccessException;
+
+	/**
+	 * JPQL Query - findSchoolWeekByWeekday
+	 *
+	 */
+
+	public SchoolWeek findSchoolWeekByDateNew(Calendar date, int startResult, int maxRows) throws DataAccessException;
 	/**
 	 * JPQL Query - findAllSchoolWeeks
 	 *

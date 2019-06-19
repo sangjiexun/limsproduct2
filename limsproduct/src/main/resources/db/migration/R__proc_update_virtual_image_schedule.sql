@@ -159,6 +159,7 @@ AND end_class = end_class_vis;
 
 INSERT INTO virtual_image_schedule (
 	appointment_id,
+	course_no,
 	virtual_image_id,
 	term,
 	start_week,
@@ -174,6 +175,7 @@ INSERT INTO virtual_image_schedule (
 VALUES
 	(
 		appointment_id_vis,
+		course_no_vis,
 		virtual_image_id_vis,
 		term_vis,
 		start_week_vis,

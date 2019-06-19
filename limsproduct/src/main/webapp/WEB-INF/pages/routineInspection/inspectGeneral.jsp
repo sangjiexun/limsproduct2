@@ -39,8 +39,16 @@
                 if ($("#newSafetyManagement").val() == "" || $("#newSafetyManagement").val() == null) {
                     alert("安全管理情况未填写！")
                 } else {
-                    document.queryForm2.action = "${pageContext.request.contextPath}/routineInspection/newRoutineInspection?genre=2 ";
-                    document.queryForm2.submit();
+                    if ($("#newCheckContent").val().length>500){
+                        alert("日常管理最多可以写500字哦")
+                    }else {
+                        if ($("#newSafetyManagement").val().length>500){
+                            alert("安全管理最多可以写500字哦")
+                        }else {
+                        document.queryForm2.action = "${pageContext.request.contextPath}/routineInspection/newRoutineInspection?genre=2 ";
+                        document.queryForm2.submit();
+                        }
+                    }
                 }
             }
         }
@@ -291,6 +299,7 @@
                                     <div style=" float:left">
                                         <textarea id="newCheckContent" required="required" rows="20" cols="60"
                                                   path="checkContent" name="checkContent"></textarea>
+                                        <%--maxlength="500" onchange="this.value.substring(0,500)" onkeydown="this.value.substring(0,500)" onkeyup="this.value.substring(0,500)"--%>
                                     </div>
                                 </td>
                                 <td colspan="3">

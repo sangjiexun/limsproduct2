@@ -1813,7 +1813,7 @@ public class VirtualServiceImpl implements VirtualService {
      *************************************************************************************/
     @Override
     public void saveDesktopIDs(String courseID, String virtualImageID, String[] desktopIDs, String courseStartTime, String courseEndTime) {
-        String formatSQL = "INSERT INTO virtual_image_reservation(virtual_image, machine_id, course_id, start_time, end_time,username) VALUE(%s, %s, '%s', '%s', '%s' ,null)";
+        String formatSQL = "INSERT INTO virtual_image_reservation(virtual_image, machine_id, course_id, start_time, end_time,username) VALUE('%s', %s, '%s', '%s', '%s' ,null)";
         for (String desktopID : desktopIDs) {
             Query nativeQuery = entityManager.createNativeQuery(String.format(formatSQL, virtualImageID, desktopID, courseID, courseStartTime, courseEndTime));
             nativeQuery.executeUpdate();

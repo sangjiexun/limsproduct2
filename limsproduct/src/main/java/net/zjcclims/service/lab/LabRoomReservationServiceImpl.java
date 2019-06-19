@@ -248,7 +248,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 * update Hezhaoyi 2019-6-12
 	 *************************************************************************************/
 	public List<LabRoom> findLabRoomStationBypage(LabRoom labRoom, int currpage, int pageSize, String acno,HttpServletRequest request) {
-        StringBuffer sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
+        StringBuffer sql = new StringBuffer("select distinct l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
         sql.append(" where l.labRoomActive=1 and l.id = loua.labRoomId and lrc.labRoomId = l.id");
         if (pConfig.PROJECT_NAME.equals("zjcclims")) {
             sql = new StringBuffer("select l from LabRoom l,LabOpenUpAcademy loua,LabRelevantConfig lrc");
@@ -285,10 +285,19 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
             sql.append(" and l in (select l from LabRoomDevice d,LabRoom l where d.labRoom.id=l.id and d.schoolDevice.deviceName like'%"+labRoom.getLabRoonAbbreviation()+"%')" );
 
         }
+		User user = shareService.getUser();
+		Set<Authority> authorities = user.getAuthorities();
 		if(acno!=null && !acno.equals("-1")){// 20190506全校
-			// 开放范围
-            sql.append(" and (loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2");
+			// 开放范围/开放对象
+            sql.append(" and (");
+            sql.append(" ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2 and loua.authorityName = 'ALL')");
+            for(Authority authority : authorities){
+                sql.append(" or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2 and loua.authorityName = '" + authority.getAuthorityName() + "')");
+            }
+            sql.append(")");
 		}
+
+
 		return labRoomDAO.executeQuery(sql.toString(),(currpage-1)*pageSize,pageSize);
 	}
 

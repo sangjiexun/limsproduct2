@@ -384,6 +384,12 @@ public class UserController {
 		mav.addObject("str", str);
 		mav.addObject("user", user);
 		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		if(pConfig.PROJECT_NAME.equals("shjulims")){   //若是上交大项目隐去个人消息
+			mav.addObject("isHide",1);
+		}else{
+			mav.addObject("isHide",0);
+		}
+
 		// 获得当前角色
 		String role = (String) request.getSession().getAttribute("authorityName");
 		mav.addObject("role", role);

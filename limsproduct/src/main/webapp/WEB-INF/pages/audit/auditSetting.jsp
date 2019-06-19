@@ -30,6 +30,9 @@
             saveConfirmAuthority(2);
             saveConfirmAuthority(3);
             </c:if>
+            <c:if test="${businessName eq 'EquipmentLendingAudit'}">
+            saveConfirmAuthority(4)
+            </c:if>
             var auditLevel = $("#auditLevel").val();
             for (var i = auditLevel; i < $("#AuditLevels").children().size(); i++) {
                 $($("#AuditLevels").children().get(i)).find("select").val("-2");
@@ -125,6 +128,11 @@
                     authName: $("#record").val(),
                     saveType: "RepairRecord"
                 }
+            } else if (type == 4) {
+                data = {
+                    authName: $("#return").val(),
+                    saveType:"EquipmentReturn"
+                }
             }
             $.ajax({
                 url: "../audit/saveConfirmAuthority",
@@ -140,6 +148,8 @@
                         alert("保存填写权限失败！");
                     } else if (type == 3) {
                         alert("保存入账权限失败！");
+                    } else if (type == 4) {
+                        alert("保存归还权限失败！")
                     }
                 }
             });
@@ -235,6 +245,9 @@
             </li>
             <li class="TabbedPanelsTab" id="s12" onclick="changeTag(12)"><a
                     href="${pageContext.request.contextPath}/audit/auditSetting?flag=12">取消预约审核设置</a>
+            </li>
+            <li class="TabbedPanelsTab" id="s13" onclick="changeTag(13)"><a
+                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=13">设备借用审核设置</a>
             </li>
         </ul>
         <div class="TabbedPanelsContentGroup">
@@ -436,6 +449,31 @@
                                 </td>
                             </tr>
                 </c:if>
+                <c:if test="${businessName eq 'EquipmentLendingAudit'}">
+                    <tr>
+                                <th>确认权限</th>
+                                <td>
+                                    <span id="returnSpan">
+                                            <label>归还：</label>
+                                            <div style="display: inline-block;margin-left: 0;"
+                                                 class="layui-input-block">
+                                    <select name="return" id="return">
+                                            <option value="">请选择</option>
+                                        <c:forEach items="${authorities}" var="a" varStatus="i">
+                                            <c:if test="${returnVal eq a.authorityName}">
+                                                <option value="${a.authorityName}" selected>${a.cname}</option>
+                                            </c:if>
+                                            <c:if test="${acceptanceVal ne a.authorityName}">
+                                                <option value="${a.authorityName}">${a.cname}</option>
+                                            </c:if>
+                                        </c:forEach>
+                                    </select>
+                                                <label><span style="color: red;">此处为全校设置，请谨慎修改</span> </label>
+                                            </div>
+                                        </span>
+                                </td>
+                    </tr>
+                </c:if>
                         </span>
                     </table>
                     <div class="popup_btns">
@@ -519,6 +557,28 @@
                     </table>
             </div>
             </c:if>
+                <c:if test="${businessName eq 'EquipmentLendingAudit'}">
+                    <div class="content-box" >
+                        <div class="title">
+                            已保存设备借用审核确认权限
+                            <label><span style="color: red;">此处为全校设置，请谨慎修改</span> </label>
+                        </div>
+                        <table>
+                            <tr>
+                                <th><span style="color: blue">归还权限：</span></th>
+                                <td>
+                                    <c:forEach items="${authorities}" var="a" varStatus="i">
+                                        <c:if test="${returnVal eq a.authorityName}">
+                                            <option value="${a.authorityName}" selected>${a.cname}</option>
+                                        </c:if>
+                                    </c:forEach>
+                                </td>
+
+
+                            </tr>
+                        </table>
+                    </div>
+                </c:if>
         </div>
     </div>
 </div>
@@ -534,7 +594,7 @@
         });
         // 原来的判断修改为如下
         // 标签栏数量，增加标签栏时需修改此值
-        var titleNum = 12;
+        var titleNum = 13;
         // 遍历所有标签栏修改样式
         for (var i = 1; i <= titleNum; i++) {
             if($.cookie("auditSettingTag") == i){

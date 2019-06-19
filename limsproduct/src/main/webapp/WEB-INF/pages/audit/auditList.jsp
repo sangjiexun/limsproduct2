@@ -59,7 +59,7 @@
                     <font style="color: red">注：从左往右按级别审核，只有前一级审核通过，后面才可以审核！每一级审核完成后不可更改结果！！</font>
                     <div class="tool-box">
                         <form:form name="form">
-                            <input type="button" onclick="window.history.go(-1)" value="返回">
+                            <%--<input type="button" onclick="window.history.go(-1)" value="返回">--%>
                             <input type="hidden" id="businessType" value="${businessType}" />
                             <input type="hidden" id="businessAppUid" value="${businessAppUid}" />
                         </form:form>

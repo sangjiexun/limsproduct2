@@ -802,4 +802,12 @@ public interface ShareService {
 	 * @author 陈乐为 2019年5月28日
 	 */
 	public void deleteSerialNumber(@RequestParam String uuid);
+
+	/**
+	 * Description 判断当前登录人是否有远程开门权限
+	 * @param lab_id
+	 * @return
+	 * @author 陈乐为 2019年6月17日
+	 */
+	public boolean getAuthToOpenDoor(Integer lab_id);
 }

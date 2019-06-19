@@ -27,7 +27,7 @@
   <tbody>
   <tr>
       <th>
-         <font color="#FF0000">用户名或密码错误。请重新认证。</font>
+         <font color="#FF0000">请用正确的身份登陆...</font>
          <a href="${pageContext.request.contextPath}/pages/logout-front-redirect.jsp" target="_parent">退出 </a> 
       </th>
   </tr>

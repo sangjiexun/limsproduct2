@@ -133,6 +133,24 @@ public class AuditSettingController<JsonResult> {
             businessName = "CancelLabRoomReservation";
             businessType = projectName + businessName;
             allType = 1;
+        }else if (flag == 13){
+            businessName = "EquipmentLendingAudit";
+            businessType = projectName + businessName;
+
+            // 获取所有权限
+            Set<Authority> authorities = authorityDAO.findAllAuthoritys();
+            map.put("authorities", authorities);
+            // 获取原有的确认权限
+            Map<String, String> params = new HashMap<>();
+            //获取原有的归还权限
+            params.put("businessType", projectName + "EquipmentReturn");
+            String res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel",params);
+            JSONObject j = JSONObject.parseObject(res);
+            if(j.getJSONArray("data").size() != 0) {
+                map.put("returnVal", j.getJSONArray("data").getJSONObject(0).getString("authId"));
+            }
+
+
         }
         map.put("businessName", businessName);
         map.put("allType", allType);
