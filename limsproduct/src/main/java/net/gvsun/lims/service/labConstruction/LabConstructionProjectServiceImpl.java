@@ -878,8 +878,13 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         // 项目名称
         sonProject.setProjectName(sonProjectDTO.getProjectName());
         // 指定学院
-        Set<SchoolAcademy> schoolAcademies = new HashSet<>();
+        /*Set<SchoolAcademy> schoolAcademies = new HashSet<>();
         for(String academyNumber: sonProjectDTO.getAcademyNumber().split(",")) {
+            schoolAcademies.add(shareService.findSchoolAcademyByPrimaryKey(academyNumber));
+        }
+        sonProject.setSchoolAcademies(schoolAcademies);*/
+        Set<SchoolAcademy> schoolAcademies = new HashSet<>();
+        for(String academyNumber: sonProjectDTO.getAcademyNumbers()) {
             schoolAcademies.add(shareService.findSchoolAcademyByPrimaryKey(academyNumber));
         }
         sonProject.setSchoolAcademies(schoolAcademies);
