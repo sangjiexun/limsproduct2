@@ -18,6 +18,9 @@ DECLARE course_no_vis VARCHAR (255);
 DECLARE virtual_image_id_vis VARCHAR (255);
 
 
+DECLARE virtual_image_name_vis VARCHAR (255);
+
+
 DECLARE term_vis INT (11);
 
 
@@ -52,6 +55,7 @@ DECLARE app_cursor CURSOR FOR SELECT
 	join_table.id,
 	join_table.course_no,
 	join_table.virtual_image_id,
+	join_table.virtual_image_name,
 	join_table.term,
 	timetable_appointment_same_number.start_week AS start_week,
 	timetable_appointment_same_number.end_week AS end_week,
@@ -66,11 +70,13 @@ LEFT JOIN (
 		timetable_appointment.id AS id,
 		timetable_appointment.course_no AS course_no,
 		timetable_appointment.virtual_image_id AS virtual_image_id,
+		virtual_image.`name` AS virtual_image_name,
 		timetable_appointment.weekday AS weekday,
 		timetable_appointment.term AS term
 	FROM
 		timetable_appointment
 	LEFT JOIN school_course ON timetable_appointment.course_no = school_course.course_no
+	LEFT JOIN virtual_image ON timetable_appointment.virtual_image_id = virtual_image.id
 	WHERE
 		timetable_appointment.course_no IS NOT NULL
 	AND virtual_image_id IS NOT NULL
@@ -123,6 +129,7 @@ LOOP
 	FETCH app_cursor INTO appointment_id_vis,
 	course_no_vis,
 	virtual_image_id_vis,
+	virtual_image_name_vis,
 	term_vis,
 	start_week_vis,
 	end_week_vis,
@@ -161,6 +168,7 @@ INSERT INTO virtual_image_schedule (
 	appointment_id,
 	course_no,
 	virtual_image_id,
+	virtual_image_name,
 	term,
 	start_week,
 	end_week,
@@ -177,6 +185,7 @@ VALUES
 		appointment_id_vis,
 		course_no_vis,
 		virtual_image_id_vis,
+		virtual_image_name_vis,
 		term_vis,
 		start_week_vis,
 		end_week_vis,

@@ -236,6 +236,7 @@ public class AuditController<JsonResult> {
                     labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
             if(nextAuthName.equals("pass")){   //审核通过，设置该条预约记录的状态值为审核通过
                 labRoomStationReservation.setResult(1);
+                labRoomStationReservation.setState(6);
                 labRoomStationReservationDAO.store(labRoomStationReservation);
                 labRoomStationReservationDAO.flush();
             }else if(nextAuthName.equals("fail")){         //审核拒绝

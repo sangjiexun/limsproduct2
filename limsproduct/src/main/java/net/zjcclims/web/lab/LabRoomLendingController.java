@@ -1026,14 +1026,19 @@ public class LabRoomLendingController<JsonResult> {
                         }
                     }
                 }else{
-                    labReservations.get(i).setButtonMark(0);
+                    if(isaudit == 2){   //关联页面按钮  我的预约页面 查看按钮
+                        labReservations.get(i).setButtonMark(-1);
+                    }else {           //我的审核页面 审核按钮
+                        labReservations.get(i).setButtonMark(0);
+                    }
                 }
                 Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
-                Calendar theDay = labReservations.get(i).getLendingTime();
-                theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));
-                theDay.set(Calendar.MINUTE, theTime.get(Calendar.MINUTE));
-                isBeforeTime[i] = currentTime.before(theDay);
-
+                if(theTime!=null){
+                    Calendar theDay = labReservations.get(i).getLendingTime();
+                    theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));
+                    theDay.set(Calendar.MINUTE, theTime.get(Calendar.MINUTE));
+                    isBeforeTime[i] = currentTime.before(theDay);
+                }
             }
 //            totalRecords = labReservations.size();
             mav.addObject("isBeforeTime", isBeforeTime);
