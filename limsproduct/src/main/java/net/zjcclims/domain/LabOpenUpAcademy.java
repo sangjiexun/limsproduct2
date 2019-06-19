@@ -42,6 +42,12 @@ public class LabOpenUpAcademy implements Serializable {
     String academyNumber;
     /*
      * */
+    @Column(name = "authority_name")
+    @Basic(fetch = FetchType.EAGER)
+    @XmlElement
+    String authorityName;
+    /*
+     * */
     @Column(name = "type")
     @Basic(fetch = FetchType.EAGER)
     @XmlElement
@@ -76,6 +82,14 @@ public class LabOpenUpAcademy implements Serializable {
 
     public void setAcademyNumber(String academyNumber) {
         this.academyNumber = academyNumber;
+    }
+
+    public String getAuthorityName() {
+        return authorityName;
+    }
+
+    public void setAuthorityName(String authorityName) {
+        this.authorityName = authorityName;
     }
 
     public Integer getType() {

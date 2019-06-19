@@ -220,6 +220,16 @@ function cancel(){
         if( needAppointmentSave == 0){
             academies = ["-1"];
         }
+
+        var authorities = $("#selectedAuthority").val();
+
+        if(authorities == undefined || authorities.length == 0){
+            authorities = ["-1"];
+        }
+        if( needAppointmentSave == 0){
+            authorities = ["-1"];
+        }
+
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 for (var j = 1; j < 3; j++) {
@@ -257,6 +267,7 @@ function cancel(){
             "needAudit": needAudit1,
             "realAllAudits": realAllAudits,
             "academies": academies,
+            "authorities":authorities,
             "labRoomWorker": labRoomWorker,
         });
         $.ajax({
@@ -446,6 +457,22 @@ margin-left:3px;
                             </c:forEach>
                         </select>
                     </td>
+                </tr>
+                <td>开放对象</td>
+                <td >
+                    <select class="chzn-select" multiple id="selectedAuthority"
+                            name="selectedAuthority">
+                        <c:forEach items="${authorityList}" var="authority" varStatus="i">
+                            <c:if test="${selectedAuthorities.contains(authority)}">
+                                <option value="${authority.authorityName}"
+                                        selected>${authority.cname}</option>
+                            </c:if>
+                            <c:if test="${!selectedAuthorities.contains(authority)}">
+                                <option value="${authority.authorityName}">${authority.cname}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
+                </td>
                 </tr>
 			<%--<tr id="allowSecurityAccess">
 				<td>是否需要安全准入:</td>

@@ -11,6 +11,7 @@ public class ParamLabSettingVO implements Serializable{
     private Integer needAudit;
     private String[] realAllAudits;
     private String[] academies;
+    private String[] authorities;
     private Integer labRoomWorker;
 
     public Integer getLabRoomId() {
@@ -67,6 +68,14 @@ public class ParamLabSettingVO implements Serializable{
 
     public void setAcademies(String[] academies) {
         this.academies = academies;
+    }
+
+    public String[] getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(String[] authorities) {
+        this.authorities = authorities;
     }
 
     public Integer getLabRoomWorker() {
