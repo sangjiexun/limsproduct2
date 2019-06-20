@@ -810,4 +810,12 @@ public interface ShareService {
 	 * @author 陈乐为 2019年6月17日
 	 */
 	public boolean getAuthToOpenDoor(Integer lab_id);
+
+	/**
+	 * Description 判断业务日期是否为当天
+	 * @param app_date
+	 * @return
+	 * @author 陈乐为 2019-6-20
+	 */
+	public boolean theSameDay(Date app_date);
 }

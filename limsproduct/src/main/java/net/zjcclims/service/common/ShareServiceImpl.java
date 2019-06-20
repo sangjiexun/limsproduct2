@@ -3124,4 +3124,25 @@ System.out.println("二维码路径："+url);
 		return str;
 	}
 
+	/**
+	 * Description 判断业务日期是否为当天
+	 * @param app_date
+	 * @return
+	 * @author 陈乐为 2019-6-20
+	 */
+	public boolean theSameDay(Date app_date) {
+		Boolean bln = false;
+		Calendar calendar = Calendar.getInstance();
+		// 把当前时间的时、分、秒、毫秒置成零，则为当前日期
+		calendar.set(Calendar.MILLISECOND,0);
+		calendar.set(Calendar.SECOND,0);
+		calendar.set(Calendar.MINUTE,0);
+		calendar.set(Calendar.HOUR_OF_DAY,0);
+		// 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+		if(calendar.getTime().equals(app_date)) {
+			bln = true;
+		}
+		return bln;
+	}
+
 }

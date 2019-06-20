@@ -242,14 +242,9 @@ public class AuditController<JsonResult> {
                 labRoomStationReservationDAO.store(labRoomStationReservation);
                 labRoomStationReservationDAO.flush();
                 // 判断当天预约--下发权限
-                Calendar calendar = Calendar.getInstance();
-                // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
-                calendar.set(Calendar.MILLISECOND,0);
-                calendar.set(Calendar.SECOND,0);
-                calendar.set(Calendar.MINUTE,0);
-                calendar.set(Calendar.HOUR_OF_DAY,0);
+                Boolean bln = shareService.theSameDay(labRoomStationReservation.getReservation().getTime());
                 // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
-                if(calendar.getTime().equals(labRoomStationReservation.getReservation().getTime())) {
+                if(bln) {
                     labRoomService.sendAgentInfoTodayToIOT(labRoomStationReservation.getLabRoom().getId());
                 }
             }else if(nextAuthName.equals("fail")){         //审核拒绝
