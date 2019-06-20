@@ -25,10 +25,12 @@ layui.use(['laypage', 'layer', 'table', 'element','form','laydate','upload'], fu
     laydate.render({
         elem: '#beginTime'
         ,type: 'datetime'
+        ,trigger: 'click'
     });
     laydate2.render({
         elem: '#endTime'
         ,type: 'datetime'
+        ,trigger: 'click'
     });
     $.ajax({
         url: contextPath + '/lims/api/material/editAssetsReceive?id='+id,
