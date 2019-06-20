@@ -510,17 +510,6 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
             JSONObject jsonObjectCurStage0 = jsonArrayCurStage.getJSONObject(0);
             Integer level = jsonObjectCurStage0.getIntValue("level");
             if(level == -1){// 审核通过
-                // 判断当天预约--下发权限
-                Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
-                // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
-                if(bln) {
-                    if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
-                        HttpClientUtil.doGet("http://10.50.20.100:85/setplan");
-                    } else {
-                        labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
-//                        labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
-                    }
-                }
                 TimetableAppointment timetableAppointment = new TimetableAppointment();
                 timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);
                 timetableAppointment.setCreatedDate(Calendar.getInstance());
