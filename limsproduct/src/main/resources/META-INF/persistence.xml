@@ -132,18 +132,12 @@
       			<class>net.zjcclims.domain.AssetCabinetWarehouseAccess</class>
 				<class>net.zjcclims.domain.AssetCabinetWarehouseRecord</class>
       			<class>net.zjcclims.domain.AssetReceive</class>
-      			<class>net.zjcclims.domain.AssetReceiveAudit</class>
-      			<class>net.zjcclims.domain.AssetReceiveAllocation</class>
       			<class>net.zjcclims.domain.AssetCabinetWarehouse</class>
-      			<class>net.zjcclims.domain.AssetOpenLog</class>
       			<class>net.zjcclims.domain.AssetApp</class>
       			<class>net.zjcclims.domain.AssetCabinet</class>
-      			<class>net.zjcclims.domain.AssetAppAudit</class>
       			<class>net.zjcclims.domain.Asset</class>
       			<class>net.zjcclims.domain.AssetReceiveRecord</class>
       			<class>net.zjcclims.domain.AssetCabinetWarehouseAccessRecord</class>
-      			<class>net.zjcclims.domain.AssetAdjustRecord</class>
-      			<class>net.zjcclims.domain.AssetAppDate</class>
       			<class>net.zjcclims.domain.IotSharePowerOpentime</class>
       			<class>net.zjcclims.domain.LabWorkerTraining</class>
       			<class>net.zjcclims.domain.WkFolder</class>

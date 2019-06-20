@@ -1300,7 +1300,7 @@ public class LabReservationController<JsonResult> {
 	 * @功能：实验室管理---保存实验室设置
 	 * @作者：孙虎
 	 ****************************************************************************/
-	@RequestMapping(value = "/device/saveLabRoomSettingRest/{appointment}/{realAllAudits}", method = RequestMethod.POST)
+	@RequestMapping(value = "/device/saveLabRoomSettingRest", method = RequestMethod.POST)
 	@ResponseBody
 	public String saveLabRoomSettingRest(@RequestBody ParamLabSettingVO paramLabSettingVO) {
 		// id对应的实验分室

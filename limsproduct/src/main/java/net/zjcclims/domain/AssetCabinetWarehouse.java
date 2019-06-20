@@ -77,18 +77,7 @@ public class AssetCabinetWarehouse implements Serializable {
 	@XmlElement
 	Integer assetCabinetId;
 
-	
-	/**
-	 */
-	@OneToMany(mappedBy = "assetCabinetWarehouse", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetOpenLog> assetOpenLogs;
-	
-	/**
-	 */
-	@OneToMany(mappedBy = "assetCabinetWarehouse", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAllocation> assetReceiveAllocations;
+
 	
 	/**
 	 */
@@ -151,37 +140,7 @@ public class AssetCabinetWarehouse implements Serializable {
 		this.assetCabinetId = assetCabinetId;
 	}
 
-	/**
-	 */
-	public void setAssetReceiveAllocations(Set<AssetReceiveAllocation> assetReceiveAllocations) {
-		this.assetReceiveAllocations = assetReceiveAllocations;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAllocation> getAssetReceiveAllocations() {
-		if (assetReceiveAllocations == null) {
-			assetReceiveAllocations = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>();
-		}
-		return assetReceiveAllocations;
-	}
-
-	/**
-	 */
-	public void setAssetOpenLogs(Set<AssetOpenLog> assetOpenLogs) {
-		this.assetOpenLogs = assetOpenLogs;
-	}
-
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetOpenLog> getAssetOpenLogs() {
-		if (assetOpenLogs == null) {
-			assetOpenLogs = new java.util.LinkedHashSet<net.zjcclims.domain.AssetOpenLog>();
-		}
-		return assetOpenLogs;
-	}
 	/**
 	 */
 	public void setAssetCabinetWarehouseAccessRecords(Set<AssetCabinetWarehouseAccessRecord> assetCabinetWarehouseAccessRecords) {
@@ -211,8 +170,6 @@ public class AssetCabinetWarehouse implements Serializable {
 		setWarehouseCode(that.getWarehouseCode());
 		setWarehouseName(that.getWarehouseName());
 		setAssetCabinetId(that.getAssetCabinetId());
-		setAssetReceiveAllocations(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>(that.getAssetReceiveAllocations()));
-		setAssetOpenLogs(new java.util.LinkedHashSet<net.zjcclims.domain.AssetOpenLog>(that.getAssetOpenLogs()));
 		setAssetCabinetWarehouseAccessRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccessRecord>(that.getAssetCabinetWarehouseAccessRecords()));
 	}
 

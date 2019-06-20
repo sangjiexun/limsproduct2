@@ -210,11 +210,7 @@ public class AssetApp implements Serializable {
 	@XmlTransient
 	User userBySecondAuditUser;
 
-	/**
-	 */
-	@OneToMany(mappedBy = "assetApp", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetAppAudit> assetAppAudits;
+
 	/**
 	 */
 	@OneToMany(mappedBy = "assetApp", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
@@ -524,21 +520,7 @@ public class AssetApp implements Serializable {
 		return operationItem;
 	}
 
-	/**
-	 */
-	public void setAssetAppAudits(Set<AssetAppAudit> assetAppAudits) {
-		this.assetAppAudits = assetAppAudits;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetAppAudit> getAssetAppAudits() {
-		if (assetAppAudits == null) {
-			assetAppAudits = new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppAudit>();
-		}
-		return assetAppAudits;
-	}
 
 	/**
 	 */
@@ -577,7 +559,6 @@ public class AssetApp implements Serializable {
 		setMem(that.getMem());
 		setUser(that.getUser());
 		setOperationItem(that.getOperationItem());
-		setAssetAppAudits(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppAudit>(that.getAssetAppAudits()));
 		setAssetAppRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppRecord>(that.getAssetAppRecords()));
 		setCourseNo(that.getCourseNo());
 	}

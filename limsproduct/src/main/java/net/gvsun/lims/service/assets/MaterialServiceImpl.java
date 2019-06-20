@@ -1077,8 +1077,7 @@ public class MaterialServiceImpl implements MaterialService {
             }
             assetReceiveRecord.setAssetReceive(assetReceiveDAO.findAssetReceiveById(Integer.parseInt(assetsApplyItemDTO.getAppId())));
             assetReceiveRecord.setAsset(assetDAO.findAssetByPrimaryKey(Integer.parseInt(assetsApplyItemDTO.getAssetsId())));
-            BigDecimal bd=new BigDecimal(assetsApplyItemDTO.getQuantity().toString());
-            assetReceiveRecord.setQuantity(bd);
+            assetReceiveRecord.setQuantity(assetsApplyItemDTO.getQuantity());
             if(assetsApplyItemDTO.getCabinet() != null) {
                 assetReceiveRecord.setCabinetId(Integer.parseInt(assetsApplyItemDTO.getCabinet()));
             }

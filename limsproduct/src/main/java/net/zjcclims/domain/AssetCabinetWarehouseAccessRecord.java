@@ -90,17 +90,9 @@ public class AssetCabinetWarehouseAccessRecord implements Serializable {
 	@XmlTransient
 	AssetCabinetWarehouseAccess assetCabinetWarehouseAccess;
 
-	/**
-	 */
-	@OneToMany(mappedBy = "assetCabinetWarehouseAccessRecord", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetAdjustRecord> assetAdjustRecords;
+
 	
-	/**
-	 */
-	@OneToMany(mappedBy = "assetCabinetWarehouseAccessRecord", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAllocation> assetReceiveAllocations;
+
 	
 	/**
 	 */
@@ -190,37 +182,9 @@ public class AssetCabinetWarehouseAccessRecord implements Serializable {
 		return assetCabinetWarehouseAccess;
 	}
 
-	/**
-	 */
-	public void setAssetAdjustRecords(Set<AssetAdjustRecord> assetAdjustRecords) {
-		this.assetAdjustRecords = assetAdjustRecords;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetAdjustRecord> getAssetAdjustRecords() {
-		if (assetAdjustRecords == null) {
-			assetAdjustRecords = new java.util.LinkedHashSet<net.zjcclims.domain.AssetAdjustRecord>();
-		}
-		return assetAdjustRecords;
-	}
 	
-	/**
-	 */
-	public void setAssetReceiveAllocations(Set<AssetReceiveAllocation> assetReceiveAllocations) {
-		this.assetReceiveAllocations = assetReceiveAllocations;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAllocation> getAssetReceiveAllocations() {
-		if (assetReceiveAllocations == null) {
-			assetReceiveAllocations = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>();
-		}
-		return assetReceiveAllocations;
-	}
 	
 	/**
 	 */
@@ -252,7 +216,7 @@ public class AssetCabinetWarehouseAccessRecord implements Serializable {
 		setAsset(that.getAsset());
 		setAssetCabinetWarehouse(that.getAssetCabinetWarehouse());
 		setAssetCabinetWarehouseAccess(that.getAssetCabinetWarehouseAccess());
-		setAssetAdjustRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAdjustRecord>(that.getAssetAdjustRecords()));
+
 	}
 
 	/**
