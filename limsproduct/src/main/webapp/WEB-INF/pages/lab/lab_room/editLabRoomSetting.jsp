@@ -181,11 +181,11 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
             }
         }
     }
-    var academies = $("#selectedSchoolAcademy").val();
-
-    if(academies == undefined || academies.length == 0){
-        academies = ["-1"];
-    }
+    // var academies = $("#selectedSchoolAcademy").val();
+    //
+    // if(academies == undefined || academies.length == 0){
+    //     academies = ["-1"];
+    // }
 	if(needLoan==""){
     	needLoan1=-1;
     }
@@ -218,7 +218,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
     // }
     if(appointment1==1) {
         document.getElementById("isAudit").style.display = "";
-        document.getElementById("selectAcademy").style.display="";
+        // document.getElementById("selectAcademy").style.display="";
         document.getElementById("allowSecurityAccess").style.display="";
     }
     if(appointment1==1 && needAudit==""){
@@ -283,7 +283,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
     //alert(needAllowSecurityAccess);
 	$.ajax({
 		url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needLoan1+"/"
-				+ needAudit1+ "/"+needAllowSecurityAccess1+"/" +appointment1+"/"+realAllAudits+"/"+academies,
+				+ needAudit1+ "/"+needAllowSecurityAccess1+"/" +appointment1+"/"+realAllAudits,
 		type:'GET',
 		async:false,
 		error:function (request){
@@ -316,7 +316,7 @@ $(document).ready(function(){
         // document.getElementById("labManager").style.display = "None";
         // document.getElementById("trainingCenterDirector").style.display = "None";
         // document.getElementById("trainingDepartmentDirrector").style.display = "None";
-        document.getElementById("selectAcademy").style.display="None";
+        //document.getElementById("selectAcademy").style.display="None";
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
@@ -326,7 +326,7 @@ $(document).ready(function(){
 //        document.getElementById("trainingType").style.display = "None";
     } else {
         document.getElementById("isAudit").style.display = "";
-        document.getElementById("selectAcademy").style.display="";
+        //document.getElementById("selectAcademy").style.display="";
         if (${isAudit==2} || ${empty isAudit}) {//是否需要审核联动
             // document.getElementById("manager").style.display="None";
             // document.getElementById("teacher").style.display = "None";
@@ -384,7 +384,7 @@ $("#needAudit1").change(function(){
 $("#appointment1").change(function(){
 	document.getElementById("allowSecurityAccess").style.display="";
 	document.getElementById("isAudit").style.display="";
-    document.getElementById("selectAcademy").style.display="";
+    //document.getElementById("selectAcademy").style.display="";
 	if(${isAudit==2} || ${empty isAudit})
     {//是否需要审核联动
         // document.getElementById("teacher").style.display="None";
@@ -444,7 +444,7 @@ $(document).ready(function(){
 	$("#appointment2").change(function(){
 		document.getElementById("allowSecurityAccess").style.display="None";
 		document.getElementById("isAudit").style.display="None";
-        document.getElementById("selectAcademy").style.display="None";
+        //document.getElementById("selectAcademy").style.display="None";
 		// document.getElementById("labManager").style.display="None";
 		// document.getElementById("dean").style.display="None";
 		// document.getElementById("trainingCenterDirector").style.display="None";

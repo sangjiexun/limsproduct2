@@ -1612,7 +1612,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 * @date 2018.11.28
 	 *************************************************************************************/
 	public List<LabRoom> findLabRoomReservation(LabRoom labRoom, int currpage, int pageSize, String acno,HttpServletRequest request){
-		String hql = "select distinct l from LabRoom l where 1=1 and l.labRoomReservation=1 and l.labRoomActive=1";
+		String hql = "select distinct l from LabRoom l,LabOpenUpAcademy loua where l.id = loua.labRoomId and l.labRoomReservation=1 and l.labRoomActive=1";
 		if (labRoom.getLabRoomName() != null && !labRoom.getLabRoomName().equals("")) {
 			hql += " and  (l.labRoomName like '%" + labRoom.getLabRoomName() + "%'  or l.labRoomNumber like '%"
 					+ labRoom.getLabRoomName() + "%')";
@@ -1643,11 +1643,23 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if(pConfig.PROJECT_NAME.equals("zjcclims") && (request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN"))){
 			hql += " and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')";
 		}
-		if(acno!=null && !acno.equals("-1")){
-
-            // 开放范围
-            hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))";
-			hql +=" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
+//		if(acno!=null && !acno.equals("-1")){
+//
+//            // 开放范围
+//            hql += " and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))";
+//			hql +=" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
+//		}
+		User user = shareService.getUser();
+		Set<Authority> authorities = user.getAuthorities();
+		if(acno!=null && !acno.equals("-1")){// 20190506全校
+			// 开放范围/开放对象
+			hql += " and (";
+			hql += " ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = 'ALL')";
+			for(Authority authority : authorities){
+				hql += " or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = '" + authority.getAuthorityName() + "')";
+			}
+			hql += ")";
+            hql +=" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";
 		}
 		return labRoomDAO.executeQuery(hql,(currpage-1)*pageSize,pageSize);
 	}

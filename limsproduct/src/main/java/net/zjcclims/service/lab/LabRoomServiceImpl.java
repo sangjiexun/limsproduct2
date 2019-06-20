@@ -2594,7 +2594,8 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @author 廖文辉 2018-08-27
 	 */
 	public List<LabRoom> findLabRoom(String acno, HttpServletRequest request) {
-		StringBuffer hql = new StringBuffer("select l from LabRoom l where 1=1");
+		StringBuffer hql = new StringBuffer("select distinct l from LabRoom l,LabOpenUpAcademy loua");
+        hql.append(" where l.id = loua.labRoomId");
 /* 		if(acno!=null && !acno.equals("-1")){
 			hql.append(" and l.labCenter.schoolAcademy.academyNumber='"+ acno +"'");
 		}*/
@@ -2604,9 +2605,21 @@ public class LabRoomServiceImpl implements LabRoomService {
 				(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN"))) {
 			hql.append(" and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')");
 		}
-		if (acno != null && !acno.equals("-1")) {
-			// 开放范围{20190506为全校}
-			hql.append(" and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))");
+//		if (acno != null && !acno.equals("-1")) {
+//			// 开放范围{20190506为全校}
+//			hql.append(" and l in (select l from LabRoom l join l.openSchoolAcademies openSAs where (openSAs.academyNumber = '" + acno + "' or openSAs.academyNumber='20190506'))");
+//			hql.append(" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ");
+//		}
+		User user = shareService.getUser();
+		Set<Authority> authorities = user.getAuthorities();
+		if(acno!=null && !acno.equals("-1")){// 20190506全校
+			// 开放范围/开放对象
+			hql.append(" and (");
+			hql.append(" ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = 'ALL')");
+			for(Authority authority : authorities){
+				hql.append(" or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = '" + authority.getAuthorityName() + "')");
+			}
+			hql.append(")");
 			hql.append(" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ");
 		}
 		List<LabRoom> labRooms = labRoomDAO.executeQuery(hql.toString(), 0, -1);
