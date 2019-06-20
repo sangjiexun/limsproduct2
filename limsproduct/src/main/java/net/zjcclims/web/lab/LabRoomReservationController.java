@@ -2913,14 +2913,10 @@ public class LabRoomReservationController<JsonResult> {
             String firstAuthName = jsonObject6.getString("result");
             // 审核通过推数据
             if(auditNumber == -1){
-                Calendar calendar = Calendar.getInstance();
-                // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
-                calendar.set(Calendar.MILLISECOND,0);
-                calendar.set(Calendar.SECOND,0);
-                calendar.set(Calendar.MINUTE,0);
-                calendar.set(Calendar.HOUR_OF_DAY,0);
+                // 判断当天预约--下发权限
+                Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
                 // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
-                if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
+                if(bln) {
                     labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
 //                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
                 }
@@ -3158,14 +3154,9 @@ public class LabRoomReservationController<JsonResult> {
             labReservation.setTimetableAppointment(timetableAppointment);
             labReservationDAO.store(labReservation);
             //推送排课表&下发物联名单
-            Calendar calendar = Calendar.getInstance();
-            // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
-            calendar.set(Calendar.MILLISECOND,0);
-            calendar.set(Calendar.SECOND,0);
-            calendar.set(Calendar.MINUTE,0);
-            calendar.set(Calendar.HOUR_OF_DAY,0);
+            Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
             // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
-            if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
+            if(bln) {
                 labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
 //                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
             }
