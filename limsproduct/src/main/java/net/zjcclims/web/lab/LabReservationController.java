@@ -1017,6 +1017,7 @@ public class LabReservationController<JsonResult> {
         mav.addObject("schoolAcademyList", schoolAcademies);
         Set<Authority> authorityList = authorityDAO.findAllAuthoritys();
         Authority authorityAll = new Authority();
+        authorityAll.setId(-1);
         authorityAll.setAuthorityName("ALL");
         authorityAll.setCname("全部");
         authorityList.add(authorityAll);
@@ -1043,19 +1044,19 @@ public class LabReservationController<JsonResult> {
 				o[2] = authorities;
 				openAcademyAndAuthorities.add(o);
 				academy = labOpenUpAcademy.getAcademyNumber();
-				if(labOpenUpAcademy.getAuthorityName()!=null){
-                    if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
+				if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
                         authorities = ""  + "全部" +",";
                     }else {
-                        authorities = ""  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                        authorities = ""  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
                     }
                 }
 			}else {             //同一个学院  叠加开放对象
-                if(labOpenUpAcademy.getAuthorityName()!=null){
-                    if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
                         authorities = authorities  + "全部" +",";
                     }else {
-                        authorities = authorities  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                        authorities = authorities  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
                     }
                 }
 			}
@@ -1094,6 +1095,7 @@ public class LabReservationController<JsonResult> {
 //		工位预约type为2
         Set<Authority> authorityList = authorityDAO.findAllAuthoritys();
         Authority authorityAll = new Authority();
+        authorityAll.setId(-1);
         authorityAll.setAuthorityName("ALL");
         authorityAll.setCname("全部");
         authorityList.add(authorityAll);
@@ -1120,16 +1122,20 @@ public class LabReservationController<JsonResult> {
                 o[2] = authorities;
                 openAcademyAndAuthorities.add(o);
                 academy = labOpenUpAcademy.getAcademyNumber();
-                if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
-                    authorities = ""  + "全部" +",";
-                }else {
-                    authorities = ""  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
+                        authorities = ""  + "全部" +",";
+                    }else {
+                        authorities = ""  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
+                    }
                 }
             }else {             //同一个学院  叠加开放对象
-                if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
-                    authorities = authorities  + "全部" +",";
-                }else {
-                    authorities = authorities  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
+                        authorities = authorities  + "全部" +",";
+                    }else {
+                        authorities = authorities  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
+                    }
                 }
             }
             //如果是最后一个
@@ -1496,9 +1502,9 @@ public class LabReservationController<JsonResult> {
                         labOpenUpAcademy.setLabRoomId(labRoomId);
                         labOpenUpAcademy.setType(1);
                         labOpenUpAcademy.setAcademyNumber(schoolAcademy.getAcademyNumber());
-                        if (authorities != null && authorities.length != 0 && !"-1".equals(authorities[0])) {
+                        if (authorities != null && authorities.length != 0 ) {
                             for (String a : authorities) {
-                                labOpenUpAcademy.setAuthorityName(a);
+                                labOpenUpAcademy.setAuthorityId(Integer.valueOf(a));
                                 labOpenUpAcademyDAO.store(labOpenUpAcademy);
                             }
                         }
@@ -1509,9 +1515,9 @@ public class LabReservationController<JsonResult> {
                     labOpenUpAcademy.setLabRoomId(labRoomId);
                     labOpenUpAcademy.setType(1);
                     labOpenUpAcademy.setAcademyNumber(s);
-                    if (authorities != null && authorities.length != 0 && !"-1".equals(authorities[0])) {
+                    if (authorities != null && authorities.length != 0 ) {
                         for (String a : authorities) {
-                            labOpenUpAcademy.setAuthorityName(a);
+                            labOpenUpAcademy.setAuthorityId(Integer.valueOf(a));
                             labOpenUpAcademyDAO.store(labOpenUpAcademy);
                         }
                     }
@@ -1542,19 +1548,19 @@ public class LabReservationController<JsonResult> {
                 o[2] = authority;
                 openAcademyAndAuthorities.add(o);
                 academy = labOpenUpAcademy.getAcademyNumber();
-                if(labOpenUpAcademy.getAuthorityName()!=null){
-                    if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
                         authority = ""  + "全部" +",";
                     }else {
-                        authority = ""  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                        authority = ""  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
                     }
                 }
             }else {             //同一个学院  叠加开放对象
-                if(labOpenUpAcademy.getAuthorityName()!=null){
-                    if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
                         authority = authority  + "全部" +",";
                     }else {
-                        authority = authority  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                        authority = authority  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
                     }
                 }
             }
@@ -1608,9 +1614,9 @@ public class LabReservationController<JsonResult> {
                         labOpenUpAcademy.setLabRoomId(labRoomId);
                         labOpenUpAcademy.setType(2);
                         labOpenUpAcademy.setAcademyNumber(schoolAcademy.getAcademyNumber());
-                        if (authorities != null && authorities.length != 0 && !"-1".equals(authorities[0])) {
+                        if (authorities != null && authorities.length != 0) {
                             for (String a : authorities) {
-                                labOpenUpAcademy.setAuthorityName(a);
+                                labOpenUpAcademy.setAuthorityId(Integer.valueOf(a));
                                 labOpenUpAcademyDAO.store(labOpenUpAcademy);
                             }
                         }
@@ -1621,9 +1627,9 @@ public class LabReservationController<JsonResult> {
                     labOpenUpAcademy.setLabRoomId(labRoomId);
                     labOpenUpAcademy.setType(2);
                     labOpenUpAcademy.setAcademyNumber(s);
-                    if (authorities != null && authorities.length != 0 && !"-1".equals(authorities[0])) {
+                    if (authorities != null && authorities.length != 0) {
                         for (String a : authorities) {
-                            labOpenUpAcademy.setAuthorityName(a);
+                            labOpenUpAcademy.setAuthorityId(Integer.valueOf(a));
                             labOpenUpAcademyDAO.store(labOpenUpAcademy);
                         }
                     }
@@ -1654,16 +1660,20 @@ public class LabReservationController<JsonResult> {
                 o[2] = authority;
                 openAcademyAndAuthorities.add(o);
                 academy = labOpenUpAcademy.getAcademyNumber();
-                if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
-                    authority = ""  + "全部" +",";
-                }else {
-                    authority = ""  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
+                        authority = ""  + "全部" +",";
+                    }else {
+                        authority = ""  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
+                    }
                 }
             }else {             //同一个学院  叠加开放对象
-                if(labOpenUpAcademy.getAuthorityName().equals("ALL")){
-                    authority = authority  + "全部" +",";
-                }else {
-                    authority = authority  + authorityDAO.findAuthorityByName(labOpenUpAcademy.getAuthorityName()).getCname() +",";
+                if(labOpenUpAcademy.getAuthorityId()!=null){
+                    if(labOpenUpAcademy.getAuthorityId()==-1){
+                        authority = authority  + "全部" +",";
+                    }else {
+                        authority = authority  + authorityDAO.findAuthorityById(labOpenUpAcademy.getAuthorityId()).getCname() +",";
+                    }
                 }
             }
             //如果是最后一个添加

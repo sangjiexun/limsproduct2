@@ -2615,9 +2615,9 @@ public class LabRoomServiceImpl implements LabRoomService {
 		if(acno!=null && !acno.equals("-1")){// 20190506全校
 			// 开放范围/开放对象
 			hql.append(" and (");
-			hql.append(" ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = 'ALL')");
+			hql.append(" ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityId = -1)");
 			for(Authority authority : authorities){
-				hql.append(" or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = '" + authority.getAuthorityName() + "')");
+				hql.append(" or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityId = " + authority.getId() + ")");
 			}
 			hql.append(")");
 			hql.append(" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ");
