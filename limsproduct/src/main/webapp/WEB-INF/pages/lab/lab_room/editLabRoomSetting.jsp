@@ -281,10 +281,23 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
         //trainType1 = -1;
     //}
     //alert(needAllowSecurityAccess);
+    var data1 = JSON.stringify({
+        "labRoomId": ${labRoomId},
+        "page": ${page},
+        "type": ${type},
+        "isAppointment": appointment1,
+        "needAudit": needAudit1,
+        "realAllAudits": realAllAudits,
+        "needAllowSecurityAccess": needAllowSecurityAccess1,
+        "needLoan":needLoan1,
+    });
 	$.ajax({
-		url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needLoan1+"/"
-				+ needAudit1+ "/"+needAllowSecurityAccess1+"/" +appointment1+"/"+realAllAudits,
-		type:'GET',
+		<%--url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needLoan1+"/"--%>
+				<%--+ needAudit1+ "/"+needAllowSecurityAccess1+"/" +appointment1+"/"+realAllAudits,--%>
+        url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest",
+        type:'POST',
+        data:data1,
+        contentType: "application/json;charset=UTF-8",
 		async:false,
 		error:function (request){
 			alert('请求错误!');
