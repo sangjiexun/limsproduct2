@@ -2921,7 +2921,7 @@ public class LabRoomReservationController<JsonResult> {
                 calendar.set(Calendar.HOUR_OF_DAY,0);
                 // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
                 if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
-                    labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
+                    labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
 //                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
                 }
                 TimetableAppointment timetableAppointment = new TimetableAppointment();
@@ -3062,18 +3062,6 @@ public class LabRoomReservationController<JsonResult> {
                     }
             }
         }else {
-            //推送排课表&下发物联名单
-            Calendar calendar = Calendar.getInstance();
-            // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
-            calendar.set(Calendar.MILLISECOND,0);
-            calendar.set(Calendar.SECOND,0);
-            calendar.set(Calendar.MINUTE,0);
-            calendar.set(Calendar.HOUR_OF_DAY,0);
-            // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
-            if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
-                labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
-//                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
-            }
             TimetableAppointment timetableAppointment = new TimetableAppointment();
             timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);
             timetableAppointment.setCreatedDate(Calendar.getInstance());
@@ -3169,6 +3157,18 @@ public class LabRoomReservationController<JsonResult> {
             labReservation.setAuditStage(6);//审核通过
             labReservation.setTimetableAppointment(timetableAppointment);
             labReservationDAO.store(labReservation);
+            //推送排课表&下发物联名单
+            Calendar calendar = Calendar.getInstance();
+            // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
+            calendar.set(Calendar.MILLISECOND,0);
+            calendar.set(Calendar.SECOND,0);
+            calendar.set(Calendar.MINUTE,0);
+            calendar.set(Calendar.HOUR_OF_DAY,0);
+            // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+            if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
+                labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
+//                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+            }
             return "noAudit";
         }
         successOrNotResult = "success";

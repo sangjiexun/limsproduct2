@@ -2055,7 +2055,7 @@ public class LabRoomController<JsonResult> {
     @RequestMapping("/refreshPerm")
     public @ResponseBody
     String refreshPerm(@RequestParam Integer roomId) {
-        return labRoomService.sendAgentInfoTodayToIOT(roomId, "refresh", roomId);
+        return labRoomService.sendAgentInfoTodayToIOT(roomId);
 //        return labRoomService.sendRefreshInterfaceByJWT(roomId);
     }
 

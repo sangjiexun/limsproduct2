@@ -13,6 +13,8 @@ public class ParamLabSettingVO implements Serializable{
     private String[] academies;
     private String[] authorities;
     private Integer labRoomWorker;
+    private Integer needLoan;
+    private Integer needAllowSecurityAccess;
 
     public Integer getLabRoomId() {
         return labRoomId;
@@ -84,5 +86,21 @@ public class ParamLabSettingVO implements Serializable{
 
     public void setLabRoomWorker(Integer labRoomWorker) {
         this.labRoomWorker = labRoomWorker;
+    }
+
+    public Integer getNeedLoan() {
+        return needLoan;
+    }
+
+    public void setNeedLoan(Integer needLoan) {
+        this.needLoan = needLoan;
+    }
+
+    public Integer getNeedAllowSecurityAccess() {
+        return needAllowSecurityAccess;
+    }
+
+    public void setNeedAllowSecurityAccess(Integer needAllowSecurityAccess) {
+        this.needAllowSecurityAccess = needAllowSecurityAccess;
     }
 }

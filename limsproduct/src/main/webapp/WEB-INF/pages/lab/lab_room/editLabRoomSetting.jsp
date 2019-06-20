@@ -34,14 +34,21 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
 <!-- 下拉的样式结束 -->
 
-
+	<link href="${pageContext.request.contextPath}/static_limsproduct/css/global_static.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/Calendar.js"></script>
 <script type="text/javascript">
 function cancel(){
 	window.location.href="${pageContext.request.contextPath}/device/listLabRoomDevice?page=1";
 }
 </script>
-
+	<style type="text/css">
+		.chzn-choices {
+			border: none!important;
+		}
+		.content-double {
+			overflow: visible;
+		}
+	</style>
 <script>
 //定义全局变量
 var appointment = "${device.labRoomReservation}";//是否允许预约
@@ -174,11 +181,11 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
             }
         }
     }
-    var academies = $("#selectedSchoolAcademy").val();
-
-    if(academies == undefined || academies.length == 0){
-        academies = ["-1"];
-    }
+    // var academies = $("#selectedSchoolAcademy").val();
+    //
+    // if(academies == undefined || academies.length == 0){
+    //     academies = ["-1"];
+    // }
 	if(needLoan==""){
     	needLoan1=-1;
     }
@@ -211,7 +218,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
     // }
     if(appointment1==1) {
         document.getElementById("isAudit").style.display = "";
-        document.getElementById("selectAcademy").style.display="";
+        // document.getElementById("selectAcademy").style.display="";
         document.getElementById("allowSecurityAccess").style.display="";
     }
     if(appointment1==1 && needAudit==""){
@@ -274,10 +281,23 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
         //trainType1 = -1;
     //}
     //alert(needAllowSecurityAccess);
+    var data1 = JSON.stringify({
+        "labRoomId": ${labRoomId},
+        "page": ${page},
+        "type": ${type},
+        "isAppointment": appointment1,
+        "needAudit": needAudit1,
+        "realAllAudits": realAllAudits,
+        "needAllowSecurityAccess": needAllowSecurityAccess1,
+        "needLoan":needLoan1,
+    });
 	$.ajax({
-		url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needLoan1+"/"
-				+ needAudit1+ "/"+needAllowSecurityAccess1+"/" +appointment1+"/"+realAllAudits+"/"+academies,
-		type:'GET',
+		<%--url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needLoan1+"/"--%>
+				<%--+ needAudit1+ "/"+needAllowSecurityAccess1+"/" +appointment1+"/"+realAllAudits,--%>
+        url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest",
+        type:'POST',
+        data:data1,
+        contentType: "application/json;charset=UTF-8",
 		async:false,
 		error:function (request){
 			alert('请求错误!');
@@ -309,7 +329,7 @@ $(document).ready(function(){
         // document.getElementById("labManager").style.display = "None";
         // document.getElementById("trainingCenterDirector").style.display = "None";
         // document.getElementById("trainingDepartmentDirrector").style.display = "None";
-        document.getElementById("selectAcademy").style.display="None";
+        //document.getElementById("selectAcademy").style.display="None";
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
@@ -319,7 +339,7 @@ $(document).ready(function(){
 //        document.getElementById("trainingType").style.display = "None";
     } else {
         document.getElementById("isAudit").style.display = "";
-        document.getElementById("selectAcademy").style.display="";
+        //document.getElementById("selectAcademy").style.display="";
         if (${isAudit==2} || ${empty isAudit}) {//是否需要审核联动
             // document.getElementById("manager").style.display="None";
             // document.getElementById("teacher").style.display = "None";
@@ -377,7 +397,7 @@ $("#needAudit1").change(function(){
 $("#appointment1").change(function(){
 	document.getElementById("allowSecurityAccess").style.display="";
 	document.getElementById("isAudit").style.display="";
-    document.getElementById("selectAcademy").style.display="";
+    //document.getElementById("selectAcademy").style.display="";
 	if(${isAudit==2} || ${empty isAudit})
     {//是否需要审核联动
         // document.getElementById("teacher").style.display="None";
@@ -437,7 +457,7 @@ $(document).ready(function(){
 	$("#appointment2").change(function(){
 		document.getElementById("allowSecurityAccess").style.display="None";
 		document.getElementById("isAudit").style.display="None";
-        document.getElementById("selectAcademy").style.display="None";
+        //document.getElementById("selectAcademy").style.display="None";
 		// document.getElementById("labManager").style.display="None";
 		// document.getElementById("dean").style.display="None";
 		// document.getElementById("trainingCenterDirector").style.display="None";
@@ -452,6 +472,84 @@ $(document).ready(function(){
 		//document.getElementById("isAuditTimeLimit").style.display="None";
 	});
 	});
+function add(openFlag) {
+    if (openFlag == 0) {
+        var selectedAuthority = $("#selectedAuthority").val();
+        var selectedSchoolAcademy = $("#selectedSchoolAcademy").val();
+        if(selectedAuthority == null){
+            alert("请选择开放对象!");
+            return false;
+        }
+        if(selectedSchoolAcademy == null){
+            alert("请选择开放范围!");
+            return false;
+        }
+        addRecord(selectedAuthority,selectedSchoolAcademy,openFlag)
+    }
+}
+function addRecord(selectedAuthority,selectedSchoolAcademy,openFlag) {
+    var myData = {
+        "academies": selectedSchoolAcademy,
+        "authorities": selectedAuthority,
+        "labRoomId": ${labRoomId},
+    };
+    $.ajax({
+        url: "${pageContext.request.contextPath}/device/saveLabRoomOpenSetting",
+        type: 'POST',
+        data:  JSON.stringify(myData),
+        contentType: "application/json;charset=UTF-8",
+        async: false,
+        success: function (data) {
+            if (openFlag == 0) {
+                $("#openSet tr:gt(1)").remove();
+                var str='';
+                for(var i=0;i<data.results.length;i++){
+                    str +="<tr>"+
+                        "<td>" + data.results[i][2] + "</td>" +
+                        "<td>" + data.results[i][1] + "</td>"+
+                        "<td><a href='javascript:void(0);'  onclick='deleteOAA(&quot;" + data.results[i][0] + "&quot,this)'>删除</a></td>"+
+                        "</tr>";
+                }
+
+                $("#openSet").append(str);
+                //清空选择框的内容
+                $("#selectedAuthority").val("");
+                $("#selectedAuthority").trigger("liszt:updated");
+                $("#selectedSchoolAcademy").val("");
+                $("#selectedSchoolAcademy").trigger("liszt:updated");
+
+
+            }
+        }
+    });
+}
+function deleteOAA(academyNumber,obj) {
+    var labRoomId = ${labRoomId};
+    $.ajax({
+        url: "${pageContext.request.contextPath}/device/deleteLabRoomOpenSetting?labRoomId="+labRoomId+"&academyNumber="+academyNumber,
+        type: 'GET',
+        async: false,
+        success: function (data) {
+            if(data == "success"){
+                var tr = getRowObj(obj);
+                if(tr != null){
+                    tr.parentNode.removeChild(tr);
+                }
+            }else if(data == "error"){
+                alert("请求错误!");
+            }
+        }
+    });
+}
+
+function getRowObj(obj){
+    var i = 0;
+    while(obj.tagName.toLowerCase() != "tr"){
+        obj = obj.parentNode;
+        if(obj.tagName.toLowerCase() == "table")return null;
+    }
+    return obj;
+}
 function closeMyWindow(){
     var index=parent.layer.getFrameIndex(window.name);
     parent.layer.close(index);
@@ -664,29 +762,89 @@ margin-left:3px;
 			</table>
 			</div>
 			</form:form>
-				<div class="TabbedPanels" id="selectAcademy">
-					<table class="tab_lab" style="margin:10px 0 0;">
+				<%--<div class="TabbedPanels" id="selectAcademy">--%>
+					<%--<table class="tab_lab" style="margin:10px 0 0;">--%>
+						<%--<tr>--%>
+							<%--<th>开放范围</th>--%>
+							<%--<td width="90%">--%>
+								<%--<select class="chzn-select" multiple id="selectedSchoolAcademy"--%>
+										<%--name="selectedSchoolAcademy">--%>
+									<%--<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">--%>
+										<%--<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}"--%>
+													<%--selected>${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+										<%--<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+											<%--<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+									<%--</c:forEach>--%>
+								<%--</select>--%>
+							<%--</td>--%>
+						<%--</tr>--%>
+					<%--</table>--%>
+				<%--</div>--%>
+				<div style="width: 50px; margin: 20px auto">
+					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="保存">
+				</div>
+				<div class="title">
+					<div id="title2">开放设置</div>
+					<%--<a class="btn btn-new"  onclick="newAcAndAuth()" >增加</a>--%>
+				</div>
+				<div class="content-double">
+					<table id="openSet">
+						<thead>
 						<tr>
+							<th>开放对象</th>
 							<th>开放范围</th>
-							<td width="90%">
+							<th>操作</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>
+								<select class="chzn-select" multiple id="selectedAuthority"
+										name="selectedAuthority">
+									<c:forEach items="${authorityList}" var="authority" varStatus="i">
+										<%--<c:if test="${selectedAuthorities.contains(authority)}">--%>
+										<%--<option value="${authority.authorityName}"--%>
+										<%--selected>${authority.cname}</option>--%>
+										<%--</c:if>--%>
+										<%--<c:if test="${!selectedAuthorities.contains(authority)}">--%>
+										<%--<option value="">请选择</option>--%>
+										<option value="${authority.authorityName}">${authority.cname}</option>
+										<%--</c:if>--%>
+									</c:forEach>
+								</select>
+							</td>
+							<td>
 								<select class="chzn-select" multiple id="selectedSchoolAcademy"
 										name="selectedSchoolAcademy">
 									<c:forEach items="${schoolAcademyList}" var="schoolAcademy" varStatus="i">
-										<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">
-											<option value="${schoolAcademy.academyNumber}"
-													selected>${schoolAcademy.academyName}</option>
-										</c:if>
-										<c:if test="${!selectedSchoolAcademies.contains(schoolAcademy)}">
+										<%--<c:if test="${selectedSchoolAcademies.contains(schoolAcademy)}">--%>
+										<%--<option value="${schoolAcademy.academyNumber}"--%>
+										<%--selected>${schoolAcademy.academyName}</option>--%>
+										<%--</c:if>--%>
+										<c:if test="${schoolAcademy.academyName!='跨学科'}">
+											<%--<option value="">请选择</option>--%>
 											<option value="${schoolAcademy.academyNumber}">${schoolAcademy.academyName}</option>
 										</c:if>
 									</c:forEach>
 								</select>
 							</td>
+							<td>
+								<a href="javascript:void(0);" onclick="add(0)";>保存</a>
+							</td>
 						</tr>
+						<c:forEach items="${openAcademyAndAuthorities}" var="oaa">
+						<tr>
+							<td>${oaa[2]}</td>
+							<td>${oaa[1]}</td>
+							<td>
+								<a href="javascript:void(0);" onclick="deleteOAA('${oaa[0]}',this)";>删除</a>
+							</td>
+						</tr>
+						</c:forEach>
 					</table>
-				</div>
-				<div style="width: 50px; margin: 20px auto">
-					<input type="button" onclick="saveDeviceSettingRest(${device.id});" value="确定">
 				</div>
 			</div>
 		</div>
