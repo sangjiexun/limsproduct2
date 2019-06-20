@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -757,10 +758,7 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setName(o[0]!=null?o[0].toString():null);
             materialListDTO.setType(o[1]!=null?o[1].toString():null);
             materialListDTO.setUnit(o[2]!=null?o[2].toString():null);
-            //原数据库表定义类型为decimal,先做截取处理
-            String amount=o[3].toString();
-            String amount1=amount.substring(0,amount.length()-3);
-            materialListDTO.setAmount(Integer.parseInt(amount1));
+            materialListDTO.setAmount(o[3]!=null?Integer.parseInt(o[3].toString()):null);
             if(o[8]!=null) {
                 materialListDTO.setCabinet(o[4] != null ? o[4].toString()+"-"+o[8].toString() : null);
             }else{
@@ -888,10 +886,7 @@ public class MaterialServiceImpl implements MaterialService {
             materialListDTO.setFactory(o[1]!=null?o[1].toString():null);
             materialListDTO.setType(o[2]!=null?o[2].toString():null);
             materialListDTO.setUnit(o[3]!=null?o[3].toString():null);
-            //原数据库表定义类型为decimal,先做截取处理
-            String amount=o[4].toString();
-            String amount1=amount.substring(0,amount.length()-3);
-            materialListDTO.setAmount(Integer.parseInt(amount1));
+            materialListDTO.setAmount(o[4]!=null?Integer.parseInt(o[4].toString()):null);
             materialListDTO.setPrice(o[5]!=null?o[5].toString():null);
             materialListDTO.setTotalPrice(o[6]!=null?Double.parseDouble(o[6].toString()):null);
             if(o[7]!=null){
@@ -1622,10 +1617,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetsApplyItemDTO.setName(o[1]!=null?o[1].toString():null);//物资名称
             assetsApplyItemDTO.setType(o[2]!=null?o[2].toString():null);//物资型号
             assetsApplyItemDTO.setUnit(o[3]!=null?o[3].toString():null);//单位
-            //原数据库表定义类型为decimal,先做截取处理
-            String quantity=o[4].toString();
-            String quantity1=quantity.substring(0,quantity.length()-3);
-            assetsApplyItemDTO.setQuantity(Integer.parseInt(quantity1));//数量
+            assetsApplyItemDTO.setQuantity(o[4]!=null?Integer.parseInt(o[4].toString()):null);//数量
             assetsApplyItemDTO.setCabinet(o[5]!=null?o[5].toString():null);//物品柜
             assetsApplyItemDTO.setAmount(o[6]!=null?o[6].toString():null);//剩余数量
             assetsApplyItemDTO.setFactory(o[7]!=null?o[7].toString():null);//物品柜
@@ -1857,11 +1849,11 @@ public class MaterialServiceImpl implements MaterialService {
                 if(Integer.parseInt(o[5].toString())==0) {//余料归还
                     assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[3].toString()));
                 }else{//领用归还
-                    assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+                    assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString()));
                 }
             }else{//领用
                 assetCabinetAccessRecord.setType("Receive");
-                assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+                assetCabinetAccessRecord.setQuantity(Integer.parseInt(o[1].toString()));
             }
             assetCabinetAccessRecord.setRemainQuantity(assetCabinetRecord.getStockNumber());
             assetCabinetAccessRecord.setUsername(shareService.getUser().getUsername());//登录人为入库人
@@ -1882,11 +1874,11 @@ public class MaterialServiceImpl implements MaterialService {
                     if(Integer.parseInt(o[5].toString())==0) {//余料归还
                         assetCabinetWarehouseAccess.setCabinetQuantity(Integer.parseInt(o[3].toString()));
                     }else{//领用归还
-                        assetCabinetWarehouseAccess.setCabinetQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+                        assetCabinetWarehouseAccess.setCabinetQuantity(Integer.parseInt(o[1].toString()));
                     }
                 }else{//领用
                     assetCabinetWarehouseAccess.setType("Receive");
-                    assetCabinetWarehouseAccess.setCabinetQuantity(Integer.parseInt(o[1].toString().substring(0,o[1].toString().length()-3)));
+                    assetCabinetWarehouseAccess.setCabinetQuantity(Integer.parseInt(o[1].toString()));
                 }
                 assetCabinetWarehouseAccess.setRemainQuantity(assetCabinetRecord.getStockNumber());
                 assetCabinetWarehouseAccess.setManager(shareService.getUser().getUsername());//登录人为入库人
@@ -1983,6 +1975,16 @@ public class MaterialServiceImpl implements MaterialService {
         StringBuffer sql = new StringBuffer("select c from AssetReceiveRecord c where c.assetReceive.id= "+receiveId );
         List<AssetReceiveRecord> assetReceiveRecordList=assetReceiveRecordDAO.executeQuery(sql.toString());
         return assetReceiveRecordList;
+    }
+    /**
+     * 根据申领ID获取所有申领物资是否需要归还状态
+     *
+     * @author 吴奇臻 2019-6-20
+     */
+    public int findAssetsClassificationReturnStatusByAssetsReceive(Integer receiveId){
+        String sql="select ac.is_need_return from asset_classification ac LEFT JOIN asset_receive ar on ar.category_id=ac.id where 1=1 and ar.id="+receiveId;
+        Query query=entityManager.createNativeQuery(sql);
+        return Integer.parseInt(query.getSingleResult().toString());
     }
     /**
      * 根据物资类别判断是否需要进行归还流程
@@ -2786,10 +2788,7 @@ public class MaterialServiceImpl implements MaterialService {
         List<Object[]>objects=query.getResultList();
         for(int i=0;i<objects.size();i++){
             AssetCabinetRecord assetCabinetRecord=this.findAssetsCabinetRecordByCabinetAndAssets(Integer.parseInt(objects.get(i)[1].toString()),Integer.parseInt(objects.get(i)[2].toString()));
-            //原数据库表定义类型为decimal,先做截取处理
-            String quantity=objects.get(i)[0].toString();
-            String quantity1=quantity.substring(0,quantity.length()-3);
-            assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+Integer.parseInt(quantity1));
+            assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+Integer.parseInt(objects.get(i)[0].toString()));
             assetCabinetRecordDAO.store(assetCabinetRecord);
         }
     }
