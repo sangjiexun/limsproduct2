@@ -1,9 +1,9 @@
--- 功能：获取门禁/电控的下发信息
--- 作者：陈乐为 2019年6月11日
+-- 功能：获取当天门禁/电控设备的全量下发信息
+-- 作者：陈乐为 2019-6-20
 DROP PROCEDURE if exists `proc_agent_info_for_iot`;
 DELIMITER ;;
 
-CREATE DEFINER = `root`@`%` PROCEDURE `proc_agent_info_for_iot`(IN `hardware_ip` varchar(40),IN `hardware_type` int)
+CREATE DEFINER = `root`@`%` PROCEDURE `proc_agent_info_for_iot`(IN `lab_id` int,IN `hardware_ip` varchar(40),IN `hardware_type` int)
 BEGIN
 	#Routine body goes here...
 	IF hardware_type=548 THEN
@@ -22,7 +22,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lra.lab_room_id
 		JOIN view_user vu ON vu.username=lra.username
 		JOIN `user` ur ON ur.username=vu.username
-		WHERE lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
 		###################实验室管理员结束######################
 		###################排课上课教师开始######################
 		UNION
@@ -42,7 +42,7 @@ BEGIN
 		JOIN timetable_teacher_related ttr ON ttr.appointment_id=tat.appointment_id
 		JOIN `user` ur ON ur.username=ttr.teacher
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND ta.timetable_style<>7
 		###################排课上课教师结束######################
 		###################实验室预约人开始######################
@@ -61,7 +61,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lres.lab_room
 		JOIN `user` ur ON ur.username=lres.contacts
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lres.audit_stage=6
 		###################实验室预约人结束######################
 		###################工位预约人开始########################
@@ -79,7 +79,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lrsr.lab
 		JOIN `user` ur ON ur.username=lrsr.username
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lrsr.state=6 AND TO_DAYS(lrsr.reservation_time)=TO_DAYS(NOW())
 		###################工位预约人结束########################
 		###################设备预约人开始########################
@@ -98,7 +98,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lrd.lab_room_id
 		JOIN `user` ur ON ur.username=lrdr.reserve_user
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lrdr.`status`=615 AND TO_DAYS(SUBSTRING(lrdr.begintime,1,10))=TO_DAYS(NOW());
 		###################设备预约人结束########################
 		##########################################门禁结束###########################################
@@ -120,7 +120,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lra.lab_room_id
 		JOIN view_user vu ON vu.username=lra.username
 		JOIN `user` ur ON ur.username=vu.username
-		WHERE lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
 		############实验室电控结束############
 		##########实验室设备电控开始##########
 		UNION
@@ -138,7 +138,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.id=lrd.agent_id
 		JOIN view_user vu ON vu.username=lra.username
 		JOIN `user` ur ON ur.username=vu.username
-		WHERE lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
 		##########实验室设备电控结束##########
 		###################实验室管理员结束######################
 		###################排课上课教师开始######################
@@ -159,7 +159,7 @@ BEGIN
 		JOIN timetable_teacher_related ttr ON ttr.appointment_id=tat.appointment_id
 		JOIN `user` ur ON ur.username=ttr.teacher
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND ta.timetable_style<>7
 		###################排课上课教师结束######################
 		###################实验室预约人开始######################
@@ -178,7 +178,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lres.lab_room
 		JOIN `user` ur ON ur.username=lres.contacts
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lres.audit_stage=6
 		###################实验室预约人结束######################
 		###################工位预约人开始########################
@@ -196,7 +196,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lrsr.lab
 		JOIN `user` ur ON ur.username=lrsr.username
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lrsr.state=6 AND TO_DAYS(lrsr.reservation_time)=TO_DAYS(NOW())
 		###################工位预约人结束########################
 		###################设备预约人开始########################
@@ -216,7 +216,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.id=lrd.agent_id
 		JOIN `user` ur ON ur.username=lrdr.reserve_user
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lrdr.`status`=615 AND TO_DAYS(SUBSTRING(lrdr.begintime,1,10))=TO_DAYS(NOW())
 		############设备电控结束############
 		############门禁电控开始############
@@ -235,7 +235,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.lab_room_id=lrd.lab_room_id
 		JOIN `user` ur ON ur.username=lrdr.reserve_user
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
 		AND lrdr.`status`=615 AND TO_DAYS(SUBSTRING(lrdr.begintime,1,10))=TO_DAYS(NOW())
 		############门禁电控结束############
 		###################设备预约人结束########################
@@ -254,7 +254,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.id=lrd.agent_id
 		JOIN `user` ur ON ur.username=lrd.manager_user
 		JOIN view_user vu ON vu.username=ur.username
-		WHERE lrg.hardware_ip=hardware_ip;
+		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip;
 		###################设备管理员结束########################
 		##########################################电控结束###########################################
 	END IF;
