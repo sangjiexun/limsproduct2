@@ -633,6 +633,14 @@ public class MaterialController {
         assetReceive.setStatus(5);//确认归还
         Calendar calendar=Calendar.getInstance();
         assetReceive.setEndDate(calendar);//更新结束时间为归还时间
+        //如果是领用流程，在此时默认归还全部数量
+        int isNeedReturn=materialService.findAssetsClassificationReturnStatusByAssetsReceive(id);
+        if(isNeedReturn==1) {
+            List<AssetReceiveRecord> assetReceiveRecords = materialService.findAssetsReceiveRecordByAssetsReceive(id);
+            for (AssetReceiveRecord assetReceiveRecord : assetReceiveRecords) {
+                materialService.saveReturnAssetsRemain(assetReceiveRecord.getQuantity(), assetReceiveRecord.getId());
+            }
+        }
         //更新库存并生成领用
         materialService.saveAssetsCabinetRecordFromReceive(id);
         assetReceiveDAO.store(assetReceive);

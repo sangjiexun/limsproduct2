@@ -226,12 +226,12 @@ function cancel(){
 
         var authorities = $("#selectedAuthority").val();
 
-        if(authorities == undefined || authorities.length == 0){
-            authorities = ["-1"];
-        }
-        if( needAppointmentSave == 0){
-            authorities = ["-1"];
-        }
+        // if(authorities == undefined || authorities.length == 0){
+        //     authorities = ["-1"];
+        // }
+        // if( needAppointmentSave == 0){
+        //     authorities = ["-1"];
+        // }
 
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
@@ -628,7 +628,7 @@ margin-left:3px;
 										<%--</c:if>--%>
 										<%--<c:if test="${!selectedAuthorities.contains(authority)}">--%>
                                         <%--<option value="">请选择</option>--%>
-											<option value="${authority.authorityName}">${authority.cname}</option>
+											<option value="${authority.id}">${authority.cname}</option>
 										<%--</c:if>--%>
 									</c:forEach>
 								</select>

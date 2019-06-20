@@ -290,9 +290,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if(acno!=null && !acno.equals("-1")){// 20190506全校
 			// 开放范围/开放对象
             sql.append(" and (");
-            sql.append(" ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2 and loua.authorityName = 'ALL')");
+            sql.append(" ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2 and loua.authorityId = -1)");
             for(Authority authority : authorities){
-                sql.append(" or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2 and loua.authorityName = '" + authority.getAuthorityName() + "')");
+                sql.append(" or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 2 and loua.authorityId = '" + authority.getId() + "')");
             }
             sql.append(")");
 		}
@@ -1654,9 +1654,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if(acno!=null && !acno.equals("-1")){// 20190506全校
 			// 开放范围/开放对象
 			hql += " and (";
-			hql += " ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = 'ALL')";
+			hql += " ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityId = -1)";
 			for(Authority authority : authorities){
-				hql += " or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityName = '" + authority.getAuthorityName() + "')";
+				hql += " or ((loua.academyNumber = '" + acno + "' or loua.academyNumber='20190506') and loua.type = 1 and loua.authorityId = " + authority.getId() + ")";
 			}
 			hql += ")";
             hql +=" order by case when l.labCenter.schoolAcademy.academyNumber='" + acno + "' then 0 else 1 end ";

@@ -395,6 +395,12 @@ public interface MaterialService {
      * @author 吴奇臻 2019-4-18
      */
     List<AssetReceiveRecord> findAssetsReceiveRecordByAssetsReceive(Integer receiveId);
+    /**
+     * 根据申领ID获取所有申领物资是否需要归还状态
+     *
+     * @author 吴奇臻 2019-6-20
+     */
+    int findAssetsClassificationReturnStatusByAssetsReceive(Integer receiveId);
 
     /**
      * 根据物资类别判断是否需要进行归还流程

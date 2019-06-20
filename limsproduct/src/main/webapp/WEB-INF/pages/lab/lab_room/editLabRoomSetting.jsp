@@ -811,7 +811,7 @@ margin-left:3px;
 										<%--</c:if>--%>
 										<%--<c:if test="${!selectedAuthorities.contains(authority)}">--%>
 										<%--<option value="">请选择</option>--%>
-										<option value="${authority.authorityName}">${authority.cname}</option>
+										<option value="${authority.id}">${authority.cname}</option>
 										<%--</c:if>--%>
 									</c:forEach>
 								</select>
