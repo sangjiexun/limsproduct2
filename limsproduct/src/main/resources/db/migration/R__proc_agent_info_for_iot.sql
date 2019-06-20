@@ -62,7 +62,7 @@ BEGIN
 		JOIN `user` ur ON ur.username=lres.contacts
 		JOIN view_user vu ON vu.username=ur.username
 		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
-		AND lres.audit_stage=6
+		AND lres.audit_stage=6 AND TO_DAYS(NOW())=TO_DAYS(lres.lending_time)
 		###################实验室预约人结束######################
 		###################工位预约人开始########################
 		UNION
@@ -80,7 +80,7 @@ BEGIN
 		JOIN `user` ur ON ur.username=lrsr.username
 		JOIN view_user vu ON vu.username=ur.username
 		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
-		AND lrsr.state=6 AND TO_DAYS(lrsr.reservation_time)=TO_DAYS(NOW())
+		AND lrsr.result=1 AND TO_DAYS(lrsr.reservation_time)=TO_DAYS(NOW())
 		###################工位预约人结束########################
 		###################设备预约人开始########################
 		UNION
@@ -179,7 +179,7 @@ BEGIN
 		JOIN `user` ur ON ur.username=lres.contacts
 		JOIN view_user vu ON vu.username=ur.username
 		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
-		AND lres.audit_stage=6
+		AND lres.audit_stage=6 AND TO_DAYS(NOW())=TO_DAYS(lres.lending_time)
 		###################实验室预约人结束######################
 		###################工位预约人开始########################
 		UNION
@@ -197,7 +197,7 @@ BEGIN
 		JOIN `user` ur ON ur.username=lrsr.username
 		JOIN view_user vu ON vu.username=ur.username
 		WHERE lrg.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip
-		AND lrsr.state=6 AND TO_DAYS(lrsr.reservation_time)=TO_DAYS(NOW())
+		AND lrsr.result=1 AND TO_DAYS(lrsr.reservation_time)=TO_DAYS(NOW())
 		###################工位预约人结束########################
 		###################设备预约人开始########################
 		############设备电控开始############

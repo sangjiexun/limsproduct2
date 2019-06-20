@@ -15,6 +15,7 @@ import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomLendingService;
 import net.zjcclims.service.lab.LabRoomReservationService;
+import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ public class AuditController<JsonResult> {
     private LabRoomLendingService labRoomLendingService;
     @Autowired
     private LabRoomStationReservationDAO labRoomStationReservationDAO;
+    @Autowired private LabRoomService labRoomService;
 
     @RequestMapping("/auditList")
     public ModelAndView auditList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
@@ -239,6 +241,17 @@ public class AuditController<JsonResult> {
                 labRoomStationReservation.setState(6);
                 labRoomStationReservationDAO.store(labRoomStationReservation);
                 labRoomStationReservationDAO.flush();
+                // 判断当天预约--下发权限
+                Calendar calendar = Calendar.getInstance();
+                // 把当前时间的时、分、秒、毫秒置成零，则为当前日期
+                calendar.set(Calendar.MILLISECOND,0);
+                calendar.set(Calendar.SECOND,0);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.HOUR_OF_DAY,0);
+                // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+                if(calendar.getTime().equals(labRoomStationReservation.getReservation().getTime())) {
+                    labRoomService.sendAgentInfoTodayToIOT(labRoomStationReservation.getLabRoom().getId());
+                }
             }else if(nextAuthName.equals("fail")){         //审核拒绝
                 labRoomStationReservation.setResult(4);
                 labRoomStationReservationDAO.store(labRoomStationReservation);

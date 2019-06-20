@@ -3515,12 +3515,10 @@ public class LabRoomServiceImpl implements LabRoomService {
 	/**
 	 * Description 发送iot下发权限的信息
 	 * @param lab_id 实验室id
-	 * @param app_type 业务类型{labRes:实验室预约，devRes:设备预约，staRes:工位预约}
-	 * @param app_id
 	 * @return
 	 * @author 陈乐为 2019年6月11日
 	 */
-	public String sendAgentInfoTodayToIOT(Integer lab_id, String app_type, Integer app_id) {
+	public String sendAgentInfoTodayToIOT(Integer lab_id) {
 		// 实验室的门禁、实验室电源控制器、设备电源控制器
 		String sql = "select agent from LabRoomAgent agent left join agent.labRoomDevices device where 1=1 ";
 		sql += " and (agent.labRoom.id=" + lab_id +" or device.labRoom.id=" + lab_id +")";

@@ -519,7 +519,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                     if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
                         HttpClientUtil.doGet("http://10.50.20.100:85/setplan");
                     } else {
-                        labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
+                        labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
 //                        labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
                     }
                 }

@@ -313,7 +313,7 @@ public class LabRoomLendingController<JsonResult> {
             calendar.set(Calendar.HOUR_OF_DAY,0);
             // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
             if(calendar.getTime().equals(labReservation.getLendingTime().getTime())) {
-                labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId(), "lab_res", labReservation.getId());
+                labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
 //                labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
             }
             TimetableAppointment timetableAppointment = new TimetableAppointment();
