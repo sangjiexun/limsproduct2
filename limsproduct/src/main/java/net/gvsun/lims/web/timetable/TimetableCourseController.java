@@ -10,6 +10,7 @@ import net.zjcclims.domain.*;
 import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
+import net.zjcclims.service.timetable.TimetableBatchService;
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
@@ -76,6 +77,7 @@ public class TimetableCourseController<JsonResult> {
     private AuditSerialNumberDAO auditSerialNumberDAO;
     @Autowired
     private VirtualService virtualService;
+    @Autowired private TimetableBatchService timetableBatchService;
     /************************************************************
      * @初始化WebDataBinder，这个WebDataBinder用于填充被@InitBinder注释的处理 方法的command和form对象
      *
@@ -913,6 +915,42 @@ public class TimetableCourseController<JsonResult> {
             return result;
         }
         return new int[0];
+    }
+
+    /**
+     * Description 获取课程的批次信息
+     * @param course_no
+     * @return
+     * @author 陈乐为 2019年6月18日
+     */
+    @RequestMapping("/batchManageList")
+    public ModelAndView batchManageList(String course_no) {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("course_no", course_no);
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+
+        mav.setViewName("lims/timetable/self/batchManageList.jsp");
+        return mav;
+    }
+
+    /**
+     * Description 分组学生名单列表
+     * @param group_id
+     * @return
+     * @author 陈乐为 2019-6-20
+     */
+    @RequestMapping("/adjustGroupStudent")
+    public ModelAndView adjustGroupStudent(Integer group_id) {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("group_id", group_id);
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+
+        // 同一批次的小组
+        TimetableGroup group = timetableGroupDAO.findTimetableGroupByPrimaryKey(group_id);
+        mav.addObject("groups", timetableBatchService.findTimetableGroupsByBatchId(group.getTimetableBatch().getId()));
+
+        mav.setViewName("lims/timetable/self/adjustGroupStudent.jsp");
+        return mav;
     }
 
 }

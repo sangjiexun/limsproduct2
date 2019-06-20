@@ -318,7 +318,11 @@ function getTimetablePlanView() {
             width: "11%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "<br>(" + row.courseNumber + ")";
+                var result = row.courseName + "<br>(" + row.courseNumber + ")<br>";
+                if (row.timetableStyle == 6 && row.baseActionAuthDTO.addActionAuth) {
+                    result += "<a href='javascript:;' class='btn btn-xs green' onclick=\"selfBatchManage('" + row.selfId + "')\" ><span class='glyphicon glyphicon-edit'>批/组管理</span></a>&nbsp;";
+                }
+                return result;
             }
         }, {
             title: "所属学院",
@@ -1036,6 +1040,22 @@ function auditTimetable(termId, courseNo) {
         shadeClose: true,
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/auditTimetable?termId='+termId.toString()+'&businessAppUid=' + courseNo.toString()+'&businessType='+businessType+'&businessUid='+businessUid,
+        end: function () {
+            refreshBootstrapTable();
+        }
+    });
+    layer.full(index);
+}
+
+// 获取课程的批组信息
+function selfBatchManage(self_id) {
+    var index = layer.open({
+        type : 2,
+        title : '批/组管理',
+        maxmin : true,
+        shadeClose : true,
+        area: ['1100px', '500px'],
+        content: contextPath + '/lims/timetable/course/batchManageList?course_no='+self_id,
         end: function () {
             refreshBootstrapTable();
         }
