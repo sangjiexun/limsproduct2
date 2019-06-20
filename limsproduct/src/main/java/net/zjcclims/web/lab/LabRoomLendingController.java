@@ -1456,9 +1456,22 @@ public class LabRoomLendingController<JsonResult> {
     public String saveLabCenterManagerAuditforlabRoomlend(@RequestParam int id, int tage, int state, Integer page, String auditResult, String remark,
                                                           @ModelAttribute("selected_academy") String acno) throws NoSuchAlgorithmException {
         LabReservation labReservation = labReservationDAO.findLabReservationById(id);
-        LabReservationAudit labReservationAudit = new LabReservationAudit();
-        labReservationAudit.setResult(auditResult);
+//        LabReservationAudit labReservationAudit = new LabReservationAudit();
+//        labReservationAudit.setResult(auditResult);
         labReservation = labRoomLendingService.saveAuditResult(labReservation, auditResult, remark, acno);
+        if (labReservation.getAuditStage()==6) {
+            // 判断当天预约--下发权限
+            Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
+            // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+            if(bln) {
+                if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+                    HttpClientUtil.doGet("http://10.50.20.100:85/setplan");
+                } else {
+                    labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
+//                        labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                }
+            }
+        }
         return "success";
     }
 

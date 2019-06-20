@@ -2913,13 +2913,6 @@ public class LabRoomReservationController<JsonResult> {
             String firstAuthName = jsonObject6.getString("result");
             // 审核通过推数据
             if(auditNumber == -1){
-                // 判断当天预约--下发权限
-                Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
-                // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
-                if(bln) {
-                    labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
-//                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
-                }
                 TimetableAppointment timetableAppointment = new TimetableAppointment();
                 timetableAppointment.setTimetableStyle(ConstantInterface.TIMETABLE_STYLE_LAB_RESERVATION);
                 timetableAppointment.setCreatedDate(Calendar.getInstance());
@@ -3012,9 +3005,16 @@ public class LabRoomReservationController<JsonResult> {
                 timetableAppointment.setTimetableLabRelateds(timetableLabRelateds);
                 timetableAppointmentDAO.flush();
                 //更新预约状态
-//                    labReservation.setAuditStage(6);//审核通过
+                labReservation.setAuditStage(6);//审核通过
                 labReservation.setTimetableAppointment(timetableAppointment);
                 labReservationDAO.store(labReservation);
+                // 判断当天预约--下发权限
+                Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
+                // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
+                if(bln) {
+                    labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
+//                    labRoomService.sendRefreshInterfaceByJWT(labReservation.getLabRoom().getId());
+                }
             }
             //给审核人发送消息
             //第一级审核人
