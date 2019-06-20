@@ -56,7 +56,7 @@
             <%--申领审核--%>
             <div class="layui-row" >
                 <div class="layui-col-lg12">
-                    <label class="layui-form-label lable">申领审核层级设置</label>
+                    <label class="layui-form-label lable">申购审核层级设置</label>
                 </div>
             </div>
             <div class="layui-row">

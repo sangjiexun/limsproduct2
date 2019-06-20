@@ -710,21 +710,8 @@ public class User implements Serializable {
 	java.util.Set<net.zjcclims.domain.AssetReceive> assetReceives;
 
 
-	/**
-	 */
-	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetAdjustRecord> assetAdjustRecords;
-	/**
-	 */
-	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetAppAudit> assetAppAudits;
-	/**
-	 */
-	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAudit> assetReceiveAudits;
+
+
 
 	/**
 	 */
@@ -1211,53 +1198,15 @@ public class User implements Serializable {
 
 
 
-	/**
-	 */
-	public void setAssetAdjustRecords(Set<AssetAdjustRecord> assetAdjustRecords) {
-		this.assetAdjustRecords = assetAdjustRecords;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetAdjustRecord> getAssetAdjustRecords() {
-		if (assetAdjustRecords == null) {
-			assetAdjustRecords = new java.util.LinkedHashSet<net.zjcclims.domain.AssetAdjustRecord>();
-		}
-		return assetAdjustRecords;
-	}
 
-	/**
-	 */
-	public void setAssetAppAudits(Set<AssetAppAudit> assetAppAudits) {
-		this.assetAppAudits = assetAppAudits;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetAppAudit> getAssetAppAudits() {
-		if (assetAppAudits == null) {
-			assetAppAudits = new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppAudit>();
-		}
-		return assetAppAudits;
-	}
 
-	/**
-	 */
-	public void setAssetReceiveAudits(Set<AssetReceiveAudit> assetReceiveAudits) {
-		this.assetReceiveAudits = assetReceiveAudits;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAudit> getAssetReceiveAudits() {
-		if (assetReceiveAudits == null) {
-			assetReceiveAudits = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAudit>();
-		}
-		return assetReceiveAudits;
-	}
+
+
+
+
 
 	/**
 	 */

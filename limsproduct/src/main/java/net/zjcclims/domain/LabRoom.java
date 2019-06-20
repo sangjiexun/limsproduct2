@@ -524,11 +524,7 @@ public class LabRoom implements Serializable {
 	@OneToMany(mappedBy = "labRoom", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
 	@XmlElement(name = "", namespace = "")
 	java.util.Set<net.zjcclims.domain.AssetCabinet> assetCabinets;
-	/**
-	 */
-	@OneToMany(mappedBy = "labRoom", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAudit> assetReceiveAudits;
+
 	/**
 	 */
 	@OneToMany(mappedBy = "labRoom", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
@@ -1629,21 +1625,7 @@ public class LabRoom implements Serializable {
 		return CDictionaryByLabRoomSort;
 	}
 
-	/**
-	 */
-	public void setAssetReceiveAudits(Set<AssetReceiveAudit> assetReceiveAudits) {
-		this.assetReceiveAudits = assetReceiveAudits;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAudit> getAssetReceiveAudits() {
-		if (assetReceiveAudits == null) {
-			assetReceiveAudits = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAudit>();
-		}
-		return assetReceiveAudits;
-	}
 
 	/**
 	 */

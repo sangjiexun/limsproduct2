@@ -233,11 +233,7 @@ public class Asset implements Serializable {
 		this.qrCode = qrCode;
 	}
 
-	/**
-	 */
-	@OneToMany(mappedBy = "asset", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAllocation> assetReceiveAllocations;
+
 	
 	/**
 	 */
@@ -257,9 +253,6 @@ public class Asset implements Serializable {
 	@XmlElement(name = "", namespace = "")
 	java.util.Set<net.zjcclims.domain.AssetCabinetWarehouseAccessRecord> assetCabinetWarehouseAccessRecords;
 
-	@OneToMany(mappedBy = "asset", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetAdjustRecord> assetAdjustRecords;
 
 	@OneToMany(mappedBy = "asset", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
 	@XmlElement(name = "", namespace = "")
@@ -564,22 +557,6 @@ public class Asset implements Serializable {
 
 	/**
 	 */
-	public void setAssetReceiveAllocations(Set<AssetReceiveAllocation> assetReceiveAllocations) {
-		this.assetReceiveAllocations = assetReceiveAllocations;
-	}
-
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAllocation> getAssetReceiveAllocations() {
-		if (assetReceiveAllocations == null) {
-			assetReceiveAllocations = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>();
-		}
-		return assetReceiveAllocations;
-	}
-
-	/**
-	 */
 	public void setAssetCabinetWarehouseAccessRecords(Set<AssetCabinetWarehouseAccessRecord> assetCabinetWarehouseAccessRecords) {
 		this.assetCabinetWarehouseAccessRecords = assetCabinetWarehouseAccessRecords;
 	}
@@ -626,20 +603,7 @@ public class Asset implements Serializable {
 		}
 		return assetReceiveRecords;
 	}
-	
-	public void setAssetAdjustRecords(Set<AssetAdjustRecord> assetAdjustRecords) {
-		this.assetAdjustRecords = assetAdjustRecords;
-	}
 
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetAdjustRecord> getAssetAdjustRecords() {
-		if (assetAdjustRecords == null) {
-			assetAdjustRecords = new java.util.LinkedHashSet<net.zjcclims.domain.AssetAdjustRecord>();
-		}
-		return assetAdjustRecords;
-	}
 
 	public Set<ItemAssets> getAssetsByItemAssets() {
 		return assetsByItemAssets;
@@ -675,11 +639,9 @@ public class Asset implements Serializable {
 		setLevel(that.getLevel());
 		setPingyin(that.getPingyin());
 		setMem(that.getMem());
-		setAssetReceiveAllocations(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>(that.getAssetReceiveAllocations()));
 		setAssetAppRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAppRecord>(that.getAssetAppRecords()));
 		setAssetReceiveRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveRecord>(that.getAssetReceiveRecords()));
 		setAssetCabinetWarehouseAccessRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetCabinetWarehouseAccessRecord>(that.getAssetCabinetWarehouseAccessRecords()));
-		setAssetAdjustRecords(new java.util.LinkedHashSet<net.zjcclims.domain.AssetAdjustRecord>(that.getAssetAdjustRecords()));
 		setAssetsByItemAssets(new java.util.LinkedHashSet<>(that.getAssetsByItemAssets()));
 	}
 

@@ -77,10 +77,10 @@ public class AssetReceiveRecord implements Serializable {
 	 * 
 	 */
 
-	@Column(name = "quantity", scale = 2, precision = 11)
+	@Column(name = "quantity")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
-	BigDecimal quantity;
+	Integer quantity;
 	
 	@Column(name = "if_public")
 	@Basic(fetch = FetchType.EAGER)
@@ -114,11 +114,7 @@ public class AssetReceiveRecord implements Serializable {
 	@JoinColumns({ @JoinColumn(name = "receive_id", referencedColumnName = "id") })
 	@XmlTransient
 	AssetReceive assetReceive;
-	/**
-	 */
-	@OneToMany(mappedBy = "assetReceiveRecord", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	@XmlElement(name = "", namespace = "")
-	java.util.Set<net.zjcclims.domain.AssetReceiveAllocation> assetReceiveAllocations;
+
 
 	/**
 	 */
@@ -181,22 +177,14 @@ public class AssetReceiveRecord implements Serializable {
 		this.ifPublic = ifPublic;
 	}
 
-	/**
-	 * ��������
-	 * 
-	 */
-	public void setQuantity(BigDecimal quantity) {
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
-	/**
-	 * ��������
-	 * 
-	 */
-	public BigDecimal getQuantity() {
-		return this.quantity;
-	}
-	
 	public Integer getAllocationStatus() {
 		return allocationStatus;
 	}
@@ -241,21 +229,6 @@ public class AssetReceiveRecord implements Serializable {
 		return assetReceive;
 	}
 
-	/**
-	 */
-	public void setAssetReceiveAllocations(Set<AssetReceiveAllocation> assetReceiveAllocations) {
-		this.assetReceiveAllocations = assetReceiveAllocations;
-	}
-
-	/**
-	 */
-	@JsonIgnore
-	public Set<AssetReceiveAllocation> getAssetReceiveAllocations() {
-		if (assetReceiveAllocations == null) {
-			assetReceiveAllocations = new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>();
-		}
-		return assetReceiveAllocations;
-	}
 
 	/**
 	 */
@@ -272,7 +245,6 @@ public class AssetReceiveRecord implements Serializable {
 		setQuantity(that.getQuantity());
 		setAsset(that.getAsset());
 		setAssetReceive(that.getAssetReceive());
-		setAssetReceiveAllocations(new java.util.LinkedHashSet<net.zjcclims.domain.AssetReceiveAllocation>(that.getAssetReceiveAllocations()));
 	}
 
 	/**
