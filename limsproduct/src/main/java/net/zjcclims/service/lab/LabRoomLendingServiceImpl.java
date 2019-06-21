@@ -470,7 +470,15 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
 
         String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         // 业务转流水号，保存并返回流水号
-        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
+        String businessAppUid = "";
+        if(shareService.getSerialNumber(labReservation.getId().toString(), businessType)=="fail"){
+            //没有流水单号就是用预约id用作业务id
+            businessAppUid = labReservation.getId().toString();
+        }else {
+            businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
+            //有流水单号用流水单号做业务id
+        }
+//        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("businessType", businessType);
