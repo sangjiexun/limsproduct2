@@ -227,7 +227,7 @@ public class LabRoomController<JsonResult> {
                 labRoomVO.setId(labroom.getId());
                 labRoomVO.setLabRoomNumber(labroom.getLabRoomNumber());
                 labRoomVO.setLabRoomName(labroom.getLabRoomName());
-                if(labroom.getFloorNo()!=null){
+                if(labroom.getFloorNo()!=null && labroom.getSystemBuild()!=null){
                     labRoomVO.setBuildFloor(labroom.getSystemBuild().getBuildName()+labroom.getFloorNo());
                 }
                 if(labroom.getLabCenter()!=null){

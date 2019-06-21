@@ -892,7 +892,7 @@ public class LabRoomLendingController<JsonResult> {
     @RequestMapping("/labReservationList")
     public ModelAndView labReserveList(
             @ModelAttribute LabReservation labReservation, Integer page, Integer isaudit, Integer tage,
-            @ModelAttribute("selected_academy") String acno) {
+            @ModelAttribute("selected_academy") String acno,HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
@@ -903,8 +903,8 @@ public class LabRoomLendingController<JsonResult> {
         int pageSize = 15;// 每页15条记录
         int totalRecords = 0;
         // 根据分页信息查询出来的记录
-        List<LabReservation> labReservations = labReservationService.findAlllabReservation(labReservation, page, pageSize, tage, isaudit);
-        totalRecords = labReservationService.findAlllabReservation(labReservation, 0, 0, tage, isaudit).size();
+        List<LabReservation> labReservations = labReservationService.findAlllabReservation(labReservation, page, pageSize, tage, isaudit,request);
+        totalRecords = labReservationService.findAlllabReservation(labReservation, 0, 0, tage, isaudit,request).size();
         List<Integer> auditState = new ArrayList<>();
         List<String> auditShow = new ArrayList<>();
         //判断所处审核阶段，关联到前端的按钮
@@ -913,11 +913,25 @@ public class LabRoomLendingController<JsonResult> {
             currentTime.add(Calendar.HOUR, Integer.parseInt(pConfig.advanceCancelTime));
             boolean[] isBeforeTime = new boolean[labReservations.size()];
             for (int i = 0; i < labReservations.size(); i++) {
+                //首先设置页面关联按钮
+                if(isaudit == 2){   //关联页面按钮  我的预约页面 查看按钮
+                    labReservations.get(i).setButtonMark(-1);
+                }else {           //我的审核页面 审核按钮
+                    labReservations.get(i).setButtonMark(0);
+                }
                 // 获取当前审核状态
                 Map<String, String> params2 = new HashMap<>();
                 String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservations.get(i).getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
                 // 业务转流水号，保存并返回流水号
-                String businessAppUid = shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType);
+                String businessAppUid = "";
+                if(shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType)=="fail"){
+                    //没有流水单号就是用预约id用作业务id
+                    businessAppUid = labReservations.get(i).getId().toString();
+                }else {
+                    businessAppUid = shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType);
+                    //有流水单号用流水单号做业务id
+                }
+//                String businessAppUid = shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType);
                 params2.put("businessType", businessType);
                 params2.put("businessAppUid", businessAppUid);
                 String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
@@ -929,6 +943,9 @@ public class LabRoomLendingController<JsonResult> {
                     if(jsonArray != null) {
                         JSONObject jsonObject3 = jsonArray.getJSONObject(0);
                         auditNumber = labRoomService.getAuditNumber(labReservations.get(i).getLabRoom(), jsonObject3.getIntValue("level"));
+                        if(jsonObject3.getIntValue("level")==-1){            //审核通过更新为查看按钮
+                            labReservations.get(i).setButtonMark(-1);
+                        }
                         auditState.add(jsonObject3.getIntValue("level"));
                     }
                 }else{
@@ -967,7 +984,7 @@ public class LabRoomLendingController<JsonResult> {
                 mav.addObject("auditShow", auditShow);
 
                 //先初始化为0
-                labReservations.get(i).setButtonMark(0);
+//                labReservations.get(i).setButtonMark(0);
                 if (auditNumber != null) {
                     //教师审核阶段
                     if (auditNumber == 1) {
@@ -1020,12 +1037,6 @@ public class LabRoomLendingController<JsonResult> {
                                 }
                             }
                         }
-                    }
-                }else{
-                    if(isaudit == 2){   //关联页面按钮  我的预约页面 查看按钮
-                        labReservations.get(i).setButtonMark(-1);
-                    }else {           //我的审核页面 审核按钮
-                        labReservations.get(i).setButtonMark(0);
                     }
                 }
                 Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
@@ -1513,7 +1524,15 @@ public class LabRoomLendingController<JsonResult> {
         Map<String, String> allParams = new HashMap<>();
         String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         // 业务转流水号，保存并返回流水号
-        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
+        String businessAppUid = "";
+        if(shareService.getSerialNumber(labReservation.getId().toString(), businessType)=="fail"){
+            //没有流水单号就是用预约id用作业务id
+            businessAppUid = labReservation.getId().toString();
+        }else {
+            businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
+            //有流水单号用流水单号做业务id
+        }
+//        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
         allParams.put("businessType", businessType);
         allParams.put("businessAppUid", businessAppUid);
         allParams.put("businessUid", labReservation.getLabRoom().getId().toString());

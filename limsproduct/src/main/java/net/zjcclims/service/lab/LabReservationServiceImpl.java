@@ -1088,122 +1088,228 @@ public class LabReservationServiceImpl implements LabReservationService {
 	 *@author：张愉
 	 *@date:2017-09-30
 	 ****************************************************************************/
-	public List<LabReservation> findAlllabReservation(LabReservation labReservation, Integer page, int pageSize,int tage,int isaudit) {
+	public List<LabReservation> findAlllabReservation(LabReservation labReservation, Integer page, int pageSize,int tage,int isaudit,HttpServletRequest request) {
 		String sql = "select l from LabReservation l where 1=1 ";
 		if(labReservation.getLabRoom()!= null && labReservation.getLabRoom().getLabRoomName() != null){
 			sql +=" and (l.labRoom.labRoomName like '%"+labReservation.getLabRoom().getLabRoomName()+"%'";
 			sql +=" or l.labRoom.labRoomNumber like '%"+labReservation.getLabRoom().getLabRoomName()+"%')";
 		}
-        SimpleGrantedAuthority sga = (SimpleGrantedAuthority) SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator().next();
+
+		String authorityName=request.getSession().getAttribute("selected_role").toString();
+
+		//取不到用户当前登录的角色权限-切换 hezhaoyi 2019-6-21
+//        SimpleGrantedAuthority sga = (SimpleGrantedAuthority) SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator().next();
 		//新加需求，是我的审核还是我的预约，isAudit  1审核2预约
-		if(isaudit == 1){
-			//实训部主任、实训教训秘书	权限可以看到所有
-			if (sga.getAuthority().indexOf("ROLE_PREEXTEACHING") != -1 || sga.getAuthority().indexOf("ROLE_PRESECTEACHING") != -1){
-				
-			}else{
-				// qun 判断 登陆者是不是超级管理员，实验教务 是的话下边权限不能进入
-				int qun = 0;
-				// shareService.getUser().getAuthorities().toString().indexOf(str)
-				// 实验室超级管理员，实验教务,选择实验室中心的所有
-				if (sga.getAuthority().indexOf("ROLE_SUPERADMIN") != -1
-						|| sga.getAuthority()
-								.indexOf("ROLE_EXPERIMENTALTEACHING") != -1) {
-					qun++;
-					String num = "";
-					for (LabRoom iterable_element : labRoomDAO.findAllLabRooms()) {
-							num += iterable_element.getId() + ",";
-					}
-					if (num != "") {
-						sql += " and l.labRoom.id in (" + num.substring(0, num.length() - 1) + " ) ";
-					}
-				}
-				// shi 判断登陆者 不是超级管理员，实验教务， 是不是实验室中心主任， 是的话下边权限不能进入
-				int shi = 0;
-				// 实验室中心主任，看到该中心下 自己实验室下边的实验室预约
-				if (qun == 0
-						&& (sga.getAuthority()
-								.indexOf("ROLE_EXCENTERDIRECTOR") != -1||sga.getAuthority()
-								.indexOf("ROLE_DEPARTMENTHEADER") != -1||sga.getAuthority()
-								.indexOf("ROLE_COLLEGELEADER") != -1||sga.getAuthority()
-								.indexOf("ROLE_ASSETMANAGEMENT") != -1
-								)) {
-					//ROLE_DEPARTMENTHEAD,ROLE_COLLEGELEADER,ROLE_ASSETMANAGEMENT为贺子龙  2015-11-28  新增
-					shi++;
-					String wq = "";
-					for (LabCenter iter : shareService.getUser().getLabCentersForCenterManager()) {
-							for (LabRoom ite : iter.getLabRooms()) {
-								wq += ite.getId() + ",";
-							}
-					}
-					if (wq != "") {
-						sql += " and l.labRoom.id in (" + wq.substring(0, wq.length() - 1) + " ) ";
-					}
-					;
+//		if(isaudit == 1){
+//			//实训部主任、实训教训秘书	权限可以看到所有
+//			if (sga.getAuthority().indexOf("ROLE_PREEXTEACHING") != -1 || sga.getAuthority().indexOf("ROLE_PRESECTEACHING") != -1){
+//
+//			}else{
+//				// qun 判断 登陆者是不是超级管理员，实验教务 是的话下边权限不能进入
+//				int qun = 0;
+//				// shareService.getUser().getAuthorities().toString().indexOf(str)
+//				// 实验室超级管理员，实验教务,选择实验室中心的所有
+//				if (sga.getAuthority().indexOf("ROLE_SUPERADMIN") != -1
+//						|| sga.getAuthority()
+//								.indexOf("ROLE_EXPERIMENTALTEACHING") != -1) {
+//					qun++;
+//					String num = "";
+//					for (LabRoom iterable_element : labRoomDAO.findAllLabRooms()) {
+//							num += iterable_element.getId() + ",";
+//					}
+//					if (num != "") {
+//						sql += " and l.labRoom.id in (" + num.substring(0, num.length() - 1) + " ) ";
+//					}
+//				}
+//				// shi 判断登陆者 不是超级管理员，实验教务， 是不是实验室中心主任， 是的话下边权限不能进入
+//				int shi = 0;
+//				// 实验室中心主任，看到该中心下 自己实验室下边的实验室预约
+//				if (qun == 0
+//						&& (sga.getAuthority()
+//								.indexOf("ROLE_EXCENTERDIRECTOR") != -1||sga.getAuthority()
+//								.indexOf("ROLE_DEPARTMENTHEADER") != -1||sga.getAuthority()
+//								.indexOf("ROLE_COLLEGELEADER") != -1||sga.getAuthority()
+//								.indexOf("ROLE_ASSETMANAGEMENT") != -1
+//								)) {
+//					//ROLE_DEPARTMENTHEAD,ROLE_COLLEGELEADER,ROLE_ASSETMANAGEMENT为贺子龙  2015-11-28  新增
+//					shi++;
+//					String wq = "";
+//					for (LabCenter iter : shareService.getUser().getLabCentersForCenterManager()) {
+//							for (LabRoom ite : iter.getLabRooms()) {
+//								wq += ite.getId() + ",";
+//							}
+//					}
+//					if (wq != "") {
+//						sql += " and l.labRoom.id in (" + wq.substring(0, wq.length() - 1) + " ) ";
+//					}
+//					;
+//
+//				}
+//				// guan 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，是不是实验室管理员 是的话下边权限不能进入
+//				int guan = 0;
+//				// 实验室管理员
+//				if (qun == 0
+//						&& shi == 0
+//						&& sga.getAuthority()
+//								.indexOf("ROLE_LABMANAGER") != -1) {
+//					guan++;
+//					String sql1 = "select r from LabRoomAdmin r where r.user.username like '"
+//							+ shareService.getUser().getUsername() + "'";
+//					List<LabRoomAdmin> labRoomAdmin = labRoomAdminDAO.executeQuery(sql1, 0, 3);
+//					if (labRoomAdmin.size() > 0) {
+//						sql += " and l.labRoom.id in (select r.labRoom.id from LabRoomAdmin r where r.user.username like '"
+//								+ shareService.getUser().getUsername() + "')";
+//					}
+//				}
+//				// 判断登陆者 不是超级管理员，实验教务, 不是实验室中心主任，是不是实验室管理员 是的话下边权限不能进入
+//				// System.out.println("---qun--"+qun+"---shi---"+shi+"---guan---"+guan);
+//
+//				// 老师和学生sga.getAuthority().indexOf("ROLE_STUDENT")
+//				// != -1 ||
+//				// sga.getAuthority().indexOf("ROLE_TEACHER")
+//				// != -1
+//				// xi 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，不是实验室管理员 ,是不是系主任，是的话下边权限不能进入
+//				int xi = 0;
+//				if (qun == 0 && shi == 0 && guan == 0 && (sga.getAuthority()
+//						.indexOf("ROLE_CFO") != -1 || SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()
+//						.indexOf("ROLE_ASSISTANT") != -1)) {
+//					xi++;
+//					if(shareService.getUser().getSchoolAcademy() != null){
+//						sql += " and l.user.schoolAcademy.academyNumber='" + shareService.getUser().getSchoolAcademy().getAcademyNumber() + "' ";
+//					}else{
+//						sql += " and l.id = -1";
+//					}
+//				}
+//				// 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，不是实验室管理员 ,不是系主任
+//				if (qun == 0 && shi == 0 && guan == 0 && xi ==0 && !sga.getAuthority().contains("ROLE_TEACHER")) {
+//					sql += " and l.id = -1";
+//				}else if(sga.getAuthority().contains("ROLE_TEACHER")){
+//					sql += " and l.teacher = '" + shareService.getUserDetail().getUsername() + "'";
+//				}
+//			}
+//		}else{
+//			sql += " and l.user.username='" + shareService.getUser().getUsername() + "' ";
+//		}
+//
+//		// 1审核通过
+//		if (tage == 1) {
+//			sql += " and l.auditResults=1";
+//		}
+//		// 2审核中
+//		if (tage == 2) {
+//			sql += " and l.auditResults=2";
+//		}
+//		// 3未审核
+//		if (tage == 3) {
+//			sql += " and l.auditResults=3";
+//		}
+//		// 4审核拒绝
+//		if (tage == 4) {
+//			sql += " and l.auditResults=4";
+//		}
+//		sql += " order by l.id desc";
 
-				}
-				// guan 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，是不是实验室管理员 是的话下边权限不能进入
-				int guan = 0;
-				// 实验室管理员
-				if (qun == 0
-						&& shi == 0
-						&& sga.getAuthority()
-								.indexOf("ROLE_LABMANAGER") != -1) {
-					guan++;
-					String sql1 = "select r from LabRoomAdmin r where r.user.username like '"
-							+ shareService.getUser().getUsername() + "'";
-					List<LabRoomAdmin> labRoomAdmin = labRoomAdminDAO.executeQuery(sql1, 0, 3);
-					if (labRoomAdmin.size() > 0) {
-						sql += " and l.labRoom.id in (select r.labRoom.id from LabRoomAdmin r where r.user.username like '"
-								+ shareService.getUser().getUsername() + "')";
-					}
-				}
-				// 判断登陆者 不是超级管理员，实验教务, 不是实验室中心主任，是不是实验室管理员 是的话下边权限不能进入
-				// System.out.println("---qun--"+qun+"---shi---"+shi+"---guan---"+guan);
+        if(isaudit == 1){
+            //实训部主任、实训教训秘书	权限可以看到所有
+            if (authorityName.equals("ROLE_PREEXTEACHING") || authorityName.equals("ROLE_PRESECTEACHING")){
 
-				// 老师和学生sga.getAuthority().indexOf("ROLE_STUDENT")
-				// != -1 ||
-				// sga.getAuthority().indexOf("ROLE_TEACHER")
-				// != -1
-				// xi 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，不是实验室管理员 ,是不是系主任，是的话下边权限不能进入
-				int xi = 0;
-				if (qun == 0 && shi == 0 && guan == 0 && (sga.getAuthority()
-						.indexOf("ROLE_CFO") != -1 || SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()
-						.indexOf("ROLE_ASSISTANT") != -1)) {
-					xi++;
-					if(shareService.getUser().getSchoolAcademy() != null){
-						sql += " and l.user.schoolAcademy.academyNumber='" + shareService.getUser().getSchoolAcademy().getAcademyNumber() + "' ";
-					}else{
-						sql += " and l.id = -1";
-					}
-				}
-				// 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，不是实验室管理员 ,不是系主任
-				if (qun == 0 && shi == 0 && guan == 0 && xi ==0 && !sga.getAuthority().contains("ROLE_TEACHER")) {
-					sql += " and l.id = -1";
-				}else if(sga.getAuthority().contains("ROLE_TEACHER")){
-					sql += " and l.teacher = '" + shareService.getUserDetail().getUsername() + "'";
-				}
-			}
-		}else{
-			sql += " and l.user.username='" + shareService.getUser().getUsername() + "' ";
-		}
-		
-		// 1审核通过
-		if (tage == 1) {
-			sql += " and l.auditResults=1";
-		}
-		// 2审核中
-		if (tage == 2) {
-			sql += " and l.auditResults=2";
-		}
-		// 3未审核
-		if (tage == 3) {
-			sql += " and l.auditResults=3";
-		}
-		// 4审核拒绝
-		if (tage == 4) {
-			sql += " and l.auditResults=4";
-		}
-		sql += " order by l.id desc";
+            }else{
+                // qun 判断 登陆者是不是超级管理员，实验教务 是的话下边权限不能进入
+                int qun = 0;
+                // shareService.getUser().getAuthorities().toString().indexOf(str)
+                // 实验室超级管理员，实验教务,选择实验室中心的所有
+                if (authorityName.equals("ROLE_SUPERADMIN")
+                        || authorityName.equals("ROLE_EXPERIMENTALTEACHING")) {
+                    qun++;
+                    String num = "";
+                    for (LabRoom iterable_element : labRoomDAO.findAllLabRooms()) {
+                        num += iterable_element.getId() + ",";
+                    }
+                    if (num != "") {
+                        sql += " and l.labRoom.id in (" + num.substring(0, num.length() - 1) + " ) ";
+                    }
+                }
+                // shi 判断登陆者 不是超级管理员，实验教务， 是不是实验室中心主任， 是的话下边权限不能进入
+                int shi = 0;
+                // 实验室中心主任，看到该中心下 自己实验室下边的实验室预约
+                if (qun == 0
+                        && (authorityName.equals("ROLE_EXCENTERDIRECTOR")||authorityName.equals("ROLE_DEPARTMENTHEADER")
+                        ||authorityName.equals("ROLE_COLLEGELEADER") ||authorityName.equals("ROLE_ASSETMANAGEMENT")
+                )) {
+                    //ROLE_DEPARTMENTHEAD,ROLE_COLLEGELEADER,ROLE_ASSETMANAGEMENT为贺子龙  2015-11-28  新增
+                    shi++;
+                    String wq = "";
+                    for (LabCenter iter : shareService.getUser().getLabCentersForCenterManager()) {
+                        for (LabRoom ite : iter.getLabRooms()) {
+                            wq += ite.getId() + ",";
+                        }
+                    }
+                    if (wq != "") {
+                        sql += " and l.labRoom.id in (" + wq.substring(0, wq.length() - 1) + " ) ";
+                    }
+                    ;
+
+                }
+                // guan 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，是不是实验室管理员 是的话下边权限不能进入
+                int guan = 0;
+                // 实验室管理员
+                if (qun == 0
+                        && shi == 0
+                        && authorityName.equals("ROLE_LABMANAGER")) {
+                    guan++;
+                    String sql1 = "select r from LabRoomAdmin r where r.user.username like '"
+                            + shareService.getUser().getUsername() + "'";
+                    List<LabRoomAdmin> labRoomAdmin = labRoomAdminDAO.executeQuery(sql1, 0, 3);
+                    if (labRoomAdmin.size() > 0) {
+                        sql += " and l.labRoom.id in (select r.labRoom.id from LabRoomAdmin r where r.user.username like '"
+                                + shareService.getUser().getUsername() + "')";
+                    }
+                }
+                // 判断登陆者 不是超级管理员，实验教务, 不是实验室中心主任，是不是实验室管理员 是的话下边权限不能进入
+                // System.out.println("---qun--"+qun+"---shi---"+shi+"---guan---"+guan);
+
+                // 老师和学生sga.getAuthority().indexOf("ROLE_STUDENT")
+                // != -1 ||
+                // sga.getAuthority().indexOf("ROLE_TEACHER")
+                // != -1
+                // xi 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，不是实验室管理员 ,是不是系主任，是的话下边权限不能进入
+                int xi = 0;
+                if (qun == 0 && shi == 0 && guan == 0 && (authorityName.equals("ROLE_CFO") || authorityName.equals("ROLE_ASSISTANT") )) {
+                    xi++;
+                    if(shareService.getUser().getSchoolAcademy() != null){
+                        sql += " and l.user.schoolAcademy.academyNumber='" + shareService.getUser().getSchoolAcademy().getAcademyNumber() + "' ";
+                    }else{
+                        sql += " and l.id = -1";
+                    }
+                }
+                // 判断登陆者 不是超级管理员，实验教务 不是实验室中心主任，不是实验室管理员 ,不是系主任
+                if (qun == 0 && shi == 0 && guan == 0 && xi ==0 && !authorityName.equals("ROLE_TEACHER")) {
+                    sql += " and l.id = -1";
+                }else if(authorityName.equals("ROLE_TEACHER")){
+                    sql += " and l.teacher = '" + shareService.getUserDetail().getUsername() + "'";
+                }
+            }
+        }else{
+            sql += " and l.user.username='" + shareService.getUser().getUsername() + "' ";
+        }
+
+        // 1审核通过
+        if (tage == 1) {
+            sql += " and l.auditResults=1";
+        }
+        // 2审核中
+        if (tage == 2) {
+            sql += " and l.auditResults=2";
+        }
+        // 3未审核
+        if (tage == 3) {
+            sql += " and l.auditResults=3";
+        }
+        // 4审核拒绝
+        if (tage == 4) {
+            sql += " and l.auditResults=4";
+        }
+        sql += " order by l.id desc";
 		return labReservationDAO.executeQuery(sql,(page-1)*pageSize,pageSize);		
 	}
 	/****************************************************************************
