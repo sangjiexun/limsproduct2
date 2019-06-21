@@ -278,7 +278,7 @@ public interface LabReservationService {
 	 *@author：张愉
 	 *@date:2017-09-30
 	 ****************************************************************************/
-	public List<LabReservation> findAlllabReservation(LabReservation labReservation, Integer page, int pageSize,int tage,int isaudit);
+	public List<LabReservation> findAlllabReservation(LabReservation labReservation, Integer page, int pageSize,int tage,int isaudit,HttpServletRequest request);
 	/****************************************************************************
 	 * 功能：查询信誉登记纪录by username
 	 * 作者：周志辉
