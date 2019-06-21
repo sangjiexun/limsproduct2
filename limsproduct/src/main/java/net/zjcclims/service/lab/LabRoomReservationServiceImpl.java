@@ -1816,7 +1816,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		labRoomStationReservation.setEndTime(endTime);
 		SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(reservationTime);
 		labRoomStationReservation.setSchoolTerm(schoolTerm);
-		labRoomStationReservation.setUser(shareService.getUserDetail());
+		User user = shareService.getUserDetail();
+		labRoomStationReservation.setUser(user);
 		labRoomStationReservation.setStationCount(array.length);
 
 		CDictionary status = shareService.getCDictionaryByCategory("lab_room_station_reservation_user_role", userRole);
@@ -1903,22 +1904,55 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				JSONObject o = currArray.getJSONObject(0);
 				curStage = o.getIntValue("level");
 				curAuthName = o.getString("result");
-			}
+                //不需要教师审核的部分，创建一条审核数据，更新审核等级
+                if (curStage == 1 && "TEACHER".equals(curAuthName)) {
+                    //如果第一级是教师审核则判断当前预约人是否有教师权限，有则教师权限审核通过
+                    Set<Authority> authorities = user.getAuthorities();
+                    boolean flag = false;
+                    for(Authority authority:authorities){
+                        if(authority.getAuthorityName().equals("TEACHER")){
+                            flag = true;
+                        }
+                    }
+                    if(flag == true){
+                        Map<String, String> params1 = new HashMap<>();
+                        params1.put("businessType", businessType);
+                        params1.put("businessAppUid", businessAppUid);
+                        params1.put("businessUid", labRoom.getId().toString());
+                        params1.put("result", "pass");
+                        params1.put("info", "不是学生不需要导师审核");
+                        params1.put("username", user.getUsername());
+                        String s3 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params1);
+                        JSONObject jsonObject4 = JSON.parseObject(s3);
+                        String status3 = jsonObject4.getString("status");
+                        if (status3.equals("fail")) {
+                            return;
+                        }
+                    }
+                }
+            }
+            Message message = new Message();
+            String content = "";
             if(curAuthName.equals("pass")){             //审核通过
                 labRoomStationReservation.setResult(1);   //设置该预约记录审核通过
+            }else {
+                List<User> nextUsers = this.getNextAuditUser(curAuthName, businessAppUid,businessType);
+                Calendar date1 = Calendar.getInstance();
+                message.setSendUser(shareService.getUserDetail().getCname());
+                message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
+                message.setCond(0);
+                message.setTitle("实验室工位预约审核");
+                content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=" + businessUid + "&businessAppUid=" + businessAppUid + "\">审核</a>";
+                message.setContent(content);
+                message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
+                message.setCreateTime(date1);
+                for(User user1: nextUsers){
+                    message.setTage(2);
+                    shareService.sendMsg(user1, message);
+                }
             }
 
-			List<User> nextUsers = this.getNextAuditUser(curAuthName, businessAppUid,businessType);
-			Message message = new Message();
-			Calendar date1 = Calendar.getInstance();
-			message.setSendUser(shareService.getUserDetail().getCname());
-			message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
-			message.setCond(0);
-			message.setTitle("实验室工位预约审核");
-			String content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=" + businessUid + "&businessAppUid=" + businessAppUid + "\">审核</a>";
-			message.setContent(content);
-			message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
-			message.setCreateTime(date1);
+
 			//是否是一级实验室
 			//if (labRoom.getLabRoomLevel() == 1) {
 			//产生实验室管理员的消息
@@ -1928,10 +1962,6 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 //					shareService.sendMsg(labRoomAdmin.getUser(), message);
 //				}
 //			}
-			for(User user: nextUsers){
-					message.setTage(2);
-					shareService.sendMsg(user, message);
-			}
 			// 给预约人发消息
 			message.setTitle("实验室工位预约提交成功");
 			content = "<a onclick='changeMessage(this)' href=\"../auditing/auditList?businessType=" + businessType + "&businessUid=" + businessUid + "&businessAppUid=" + businessAppUid + "\">点击查看</a>";
