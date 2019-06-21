@@ -9,13 +9,36 @@
   <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
   <script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
   <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/static/font/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css" media="all">
+	<script src="${pageContext.request.contextPath}/layui/layui.js"></script>
+	<script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/layer.js" type="text/javascript"></script>
+	<script src="${pageContext.request.contextPath}/js/layer-v2.2/layer/extend/layer.ext.js" type="text/javascript"></script>
 <script langauge="javascript">
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //时间范围选择
+        laydate.render({
+            elem: '#reservationTime'
+            ,type: 'time'
+            ,range: true //或 range: '~' 来自定义分割字符
+            ,trigger : 'click'
+        });
+    });
 	function subform(gourl){ 
 		 form.action=gourl;
 		 form.submit();
 	}
 </script> 
 <style type="text/css">
+	.layui-input {
+		display: inline;
+	}
+	.layui-laydate .layui-this {
+		background-color: #409eff!important;
+		color: #fff!important;
+	}
+    .layui-laydate-list.laydate-time-list > li{width:50% !important;}
+    .layui-laydate-list.laydate-time-list > li:last-child{display:none !important;}
 	.f40{
 		font-size:40px;
 	}
@@ -72,18 +95,19 @@
 						<td><font style="color: red">请选择准确时间以查询剩余的工位数量</font></td>
 						<th>选择日期</th>
 						<td>
-							<input  class="easyui-datebox"  id="reservationtime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>
+							<input  class="easyui-datebox"  id="lendingTime" name="lendingTime"  type="text"  onclick="new Calendar().show(this);"/>
 						</td>
-						<th>预约开始时间</th>
+						<th>预约时间</th>
 						<td>
-							<input  class="easyui-timespinner"  id="starttime" name="starttime" type="text"  style="width:80px;"
-    required="required" />
+							<%--<input  class="easyui-timespinner"  id="starttime" name="starttime" type="text"  style="width:80px;"--%>
+    <%--required="required" />--%>
+								<input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">
 						</td>
-						<th>预约结束时间</th>
-						<td>
-							<input  class="easyui-timespinner"  id="endtime" name="endtime"  type="text" style="width:80px;"
-    required="required"/>
-						</td> 
+						<%--<th>预约结束时间</th>--%>
+						<%--<td>--%>
+							<%--<input  class="easyui-timespinner"  id="endtime" name="endtime"  type="text" style="width:80px;"--%>
+    <%--required="required"/>--%>
+						<%--</td> --%>
 						<td><a onclick="findRestStations(${labRoom.id})">查询</a></td>
 					</tr>
 								
@@ -135,29 +159,40 @@ var flag = 0;
   //查询剩余工位数
  function findRestStations(labRoomId){
 	//console.log($("input[name='reservationtime']") .val());
-	 if($("input[name='reservationtime']") .val() == ""){
-		 alert("请选择日期");
-		 return false;
-	 }
-	 if($("#starttime").val()){
-	 }else{
-		 alert("请选择开始时间");
-		 return false;
-	 }
-	 if($("#endtime").val()){
-	 }else{
-		 alert("请选择结束时间");
-		 return false;
-	 }
-	 if($("#starttime").val() > $("#endtime").val()){
-		 alert("开始时间不可大于结束时间");
-		 return false;
-	 }
-	 
+//	 if($("input[name='reservationtime']") .val() == ""){
+//		 alert("请选择日期");
+//		 return false;
+//	 }
+     if($("input[name='lendingTime']") .val() == ""){
+         alert("请选择日期");
+         return false;
+     }
+//	 if($("#starttime").val()){
+//	 }else{
+//		 alert("请选择开始时间");
+//		 return false;
+//	 }
+//	 if($("#endtime").val()){
+//	 }else{
+//		 alert("请选择结束时间");
+//		 return false;
+//	 }
+//	 if($("#starttime").val() > $("#endtime").val()){
+//		 alert("开始时间不可大于结束时间");
+//		 return false;
+//	 }
+//
+     if ($("#reservationTime").val()) {
+     } else {
+         alert("请选择时间");
+         return false;
+     }
 	 var myData = {
-		 'reservationTime':$("input[name='reservationtime']") .val(),
-		 'startTime':$("#starttime").val(),
-		 'endTime':$("#endtime").val()
+//		 'reservationTime':$("input[name='reservationtime']") .val(),
+//		 'startTime':$("#starttime").val(),
+//		 'endTime':$("#endtime").val()
+         'lendingTime': $("input[name='lendingTime']").val(),
+         'reservationTime': $("#reservationTime").val()
 	 }
 	 $.ajax({
 		type: "POST",
