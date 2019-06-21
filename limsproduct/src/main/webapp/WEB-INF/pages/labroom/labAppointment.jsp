@@ -39,7 +39,10 @@
 			background-color: #409eff!important;
 			color: #fff!important;
 		}
-    </style>
+		.layui-laydate-list.laydate-time-list > li{width:50% !important;}
+		.layui-laydate-list.laydate-time-list > li:last-child{display:none !important;}
+
+	</style>
     <script type="text/javascript">
         layui.use('laydate', function(){
             var laydate = layui.laydate;

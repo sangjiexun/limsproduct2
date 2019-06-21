@@ -37,6 +37,8 @@
 		background-color: #409eff!important;
 		color: #fff!important;
 	}
+    .layui-laydate-list.laydate-time-list > li{width:50% !important;}
+    .layui-laydate-list.laydate-time-list > li:last-child{display:none !important;}
 	.f40{
 		font-size:40px;
 	}
