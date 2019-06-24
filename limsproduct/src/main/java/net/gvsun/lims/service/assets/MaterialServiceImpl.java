@@ -317,6 +317,9 @@ public class MaterialServiceImpl implements MaterialService {
         if(authorityName.equals("ROLE_TEACHER")){
             sql+=" and aa.app_user = '"+username+"'";//教师只看自己
         }
+        if(authorityName.equals("ROLE_LABMANAGER")){
+            sql+=" and aa.academy_number = '"+user.getSchoolAcademy().getAcademyNumber()+"'";//实验室管理员看自己学院
+        }
         if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
             List<Integer> centerIds=this.getCenterIDListFormUsername(username);
             sql+=" and ( ";
@@ -403,6 +406,9 @@ public class MaterialServiceImpl implements MaterialService {
         if(authorityName.equals("ROLE_TEACHER")){
             sql+=" and ass.username = '"+username+"'";//教师只看自己
         }
+        if(authorityName.equals("ROLE_LABMANAGER")){
+            sql+=" and ass.academy_number = '"+user.getSchoolAcademy().getAcademyNumber()+"'";//实验室管理员看自己学院
+        }
         if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
             List<Integer> centerIds=this.getCenterIDListFormUsername(username);
             sql+=" and ( ";
@@ -488,6 +494,9 @@ public class MaterialServiceImpl implements MaterialService {
         String username=user.getUsername();//用户编号
         if(authorityName.equals("ROLE_TEACHER")){
             sql+=" and ar.app_user = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_LABMANAGER")){
+            sql+=" and ar.academy_number = '"+user.getSchoolAcademy().getAcademyNumber()+"'";//实验室管理员看自己学院
         }
         if(authorityName.equals("ROLE_EXCENTERDIRECTOR")){//中心主任只看跟自己所负责中心的数据
             List<Integer> centerIds=this.getCenterIDListFormUsername(username);
@@ -1344,6 +1353,9 @@ public class MaterialServiceImpl implements MaterialService {
             assetReceive.setCategoryId(Integer.parseInt(assetsReceiveDTO.getGoodsCategory()));//保存物资类别
             if(assetsReceiveDTO.getDepartment()!=null&&!assetsReceiveDTO.getDepartment().equals("")) {
                 assetReceive.setCenterId(Integer.parseInt(assetsReceiveDTO.getDepartment()));//保存中心
+            }
+            if(assetsReceiveDTO.getAcademyNumber()!=null&&!assetsReceiveDTO.getAcademyNumber().equals("")) {
+                assetReceive.setAcademyNumber(assetsReceiveDTO.getAcademyNumber());//保存学院编号
             }
             if(assetsReceiveDTO.getId()!=null&&!assetsReceiveDTO.getId().equals("")) {
                 SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");

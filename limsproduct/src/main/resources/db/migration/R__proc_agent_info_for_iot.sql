@@ -138,7 +138,7 @@ BEGIN
 		JOIN lab_room_agent lrg ON lrg.id=lrd.agent_id
 		JOIN view_user vu ON vu.username=lra.username
 		JOIN `user` ur ON ur.username=vu.username
-		WHERE lrd.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip AND (lra.type_id=1 OR lra.type_id=2)
+		WHERE lrd.lab_room_id=lab_id AND lrg.hardware_ip=hardware_ip AND lra.type_id=1
 		##########实验室设备电控结束##########
 		###################实验室管理员结束######################
 		###################排课上课教师开始######################

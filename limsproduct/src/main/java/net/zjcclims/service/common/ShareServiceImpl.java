@@ -2887,7 +2887,7 @@ System.out.println("二维码路径："+url);
 		JSONObject jsonObject = JSONObject.parseObject(str);
 		if("success".equals(jsonObject.getString("status"))) {
 			status = jsonObject.getString("data");
-			if (status.equals("\"1\"")) {
+			if (status.equals("\"yes\"")) {
 				return true;
 			} else return false;
 		}else{
