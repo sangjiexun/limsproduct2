@@ -2687,7 +2687,15 @@ public class LabRoomController<JsonResult> {
                 }
             }
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
-                if (flag) {
+                //判断是否需要选择导师
+                boolean isTeacher = false;
+                Set<Authority>authorities = user.getAuthorities();
+                for(Authority authority :authorities){
+                    if(authority.getAuthorityName().equals("TEACHER")){
+                        isTeacher = true;
+                    }
+                }
+                if (flag && !isTeacher) {
                     data = "needTutor";
                 } else {
                     data = "noNeedTutor";
