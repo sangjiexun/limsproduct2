@@ -201,6 +201,11 @@ public class AssetReceive implements Serializable {
 	@XmlElement
 	Integer centerId;
 
+	@Column(name = "academy_number")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String academyNumber;
+
 	@Column(name = "cur_audit_level")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
@@ -312,6 +317,14 @@ public class AssetReceive implements Serializable {
 
 	public void setCenterId(Integer centerId) {
 		this.centerId = centerId;
+	}
+
+	public String getAcademyNumber() {
+		return academyNumber;
+	}
+
+	public void setAcademyNumber(String academyNumber) {
+		this.academyNumber = academyNumber;
 	}
 
 	/**
