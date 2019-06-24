@@ -542,9 +542,12 @@ function initBootstrapTable() {
                         return result;
                     }
                 }],
+                onPostBody: function (index, row, $detail) {
+                    $("#table_list").bootstrapTable('expandAllRows');
+                },
                 onExpandRow: function (index, row, $detail) {
                     InitSubTable(index, row, $detail);
-                }
+                },
             });
         };
         return oTableInit;
