@@ -255,6 +255,137 @@ public class CommonController<JsonResult> {
 	}
 
 	/****************************************************************************
+	 * 功能：系统默认的url 作者：李小龙
+     * update Hezhaoyi 2019-6-24
+	 ****************************************************************************/
+	@RequestMapping("/testSecurity")
+	public ModelAndView testSecurity(HttpSession session, ModelMap modelMap, HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("PROJECT_NAME",pConfig.PROJECT_NAME);
+
+		mav.addObject("annexManage",pConfig.annexManage);
+		mav.addObject("softManage",pConfig.softManage);
+		mav.addObject("baseManage",pConfig.baseManage);
+		mav.addObject("jobReservation", pConfig.jobReservation);
+		mav.addObject("deviceLend", pConfig.deviceLend);
+		mav.addObject("stationNum",pConfig.stationNum);
+		mav.addObject("userOperation",pConfig.userOperation);
+		mav.addObject("showroom",pConfig.showroom);
+		mav.addObject("yuntai",pConfig.yuntai);
+		mav.addObject("labAddAdim",pConfig.labAddAdim);
+		// 学校代码
+		mav.addObject("schoolCode", pConfig.schoolCode);
+		mav.addObject("cmsAccess", pConfig.cmsAccess);
+		session.setAttribute("cmsUrl", pConfig.cmsUrl);
+		session.setAttribute("cmsSiteUrl", pConfig.cmsSiteUrl);
+		session.setAttribute("backToCms", pConfig.backToCms);
+		session.setAttribute("cms",pConfig.cms);
+		session.setAttribute("PROJECT_NAME",pConfig.PROJECT_NAME);
+
+//
+//		// 当前登录人
+		User user = shareService.getUser();
+		mav.addObject("user", user);
+		String acno;
+		// 默认学院
+		if(user.getSchoolAcademy()!=null && user.getSchoolAcademy().getAcademyNumber()!=null) {
+			modelMap.addAttribute("selected_academy", user.getSchoolAcademy().getAcademyNumber());
+			mav.addObject("academy", user.getSchoolAcademy());
+			acno = user.getSchoolAcademy().getAcademyNumber();
+		}else {
+			modelMap.addAttribute("selected_academy", "-1");
+			acno = "-1";
+		}
+//		//权限管理
+		String authority = "";
+		int i = 0;
+		int id = 1;
+		Set<Authority> auths = user.getAuthorities();//得到登陆者所拥有的所有权限
+		for (Authority a : auths) {
+			if (a.getType() >= i) {
+				authority = a.getCname();
+				i = a.getType();
+				id=a.getId();
+			}
+		}
+//		mav.addObject("authority", authority);
+		Cookie[] cookies = request.getCookies(); //获取cookie数组
+		if(cookies != null) {
+			int isuser = 0;
+			for (Cookie cookie : cookies) {//遍历cookie数组
+				if(cookie.getName().equals("username")) {
+					if(cookie.getValue().equals(user.getUsername())){
+						isuser = 1;
+						break;
+					}
+				}
+			}
+			if(isuser == 1) {
+				for (Cookie cookie : cookies) {//遍历cookie数组
+					if (cookie.getName().equals("authorityId")) {
+						session.setAttribute("authorityName", authorityDAO.findAuthorityById(Integer.parseInt(cookie.getValue())).getCname());
+						session.setAttribute("selected_role", "ROLE_" + authorityDAO.findAuthorityById(Integer.parseInt(cookie.getValue())).getAuthorityName());
+						break;
+					}
+				}
+			}
+		}
+		//用户多个身份登录的角色优先级顺序：院系级管理员（实验中心主任）、实验室管理员、教师（学生）
+		if(session.getAttribute("selected_role")!=null) {
+			// 切换角色后不需要重置权限
+		}else if(auths.toString().contains("ACADEMYLEVELM")){
+			session.setAttribute("authorityName","院系级系统管理员");
+			session.setAttribute("selected_role", "ROLE_ACADEMYLEVELM");
+		}else if(auths.toString().contains("EXCENTERDIRECTOR")){
+			session.setAttribute("authorityName","实验中心主任");
+			session.setAttribute("selected_role", "ROLE_EXCENTERDIRECTOR");
+		}else if(auths.toString().contains("LABMANAGER")){
+			session.setAttribute("authorityName","实验室管理员");
+			session.setAttribute("selected_role", "ROLE_LABMANAGER");
+		}else if(auths.toString().contains("TEACHER")){
+			session.setAttribute("authorityName","教师");
+			session.setAttribute("selected_role", "ROLE_TEACHER");
+		}else if(auths.toString().contains("STUDENT")){
+			session.setAttribute("authorityName","学生");
+			session.setAttribute("selected_role", "ROLE_STUDENT");
+		}
+
+		if (session.getAttribute("authorityName") == null) {
+			changeRole(authorityDAO.findAuthorityById(id).getAuthorityName());
+			session.setAttribute("authorityName", authorityDAO.findAuthorityById(id).getCname());
+			session.setAttribute("selected_role", "ROLE_" + authorityDAO.findAuthorityById(id).getAuthorityName());
+		}
+		String sss = session.getAttribute("selected_role").toString();
+
+		//将当前登录人放到session中
+		session.setAttribute("loginUser", user);
+		session.setAttribute("messageNum", messageService.countmessage( ));
+
+		// 权限等级
+		// 获取当前系统权限
+		String auth = session.getAttribute("selected_role").toString();
+		// 获取权限英文
+		auth = auth.split("_")[1];
+		// 根据名称查找对象
+		Authority autho = authorityDAO.findAuthorityByName(auth);
+		// 返回权限等级
+		session.setAttribute("auth_level", autho.getType());
+
+		//菜单权限
+		acno = auth.equals("SUPERADMIN")?"-1":acno;
+		List<SystemMenu> myParentNode = systemMenuService.getSystemMenuByNoParent(auth, acno);
+		Map<String, List<SystemMenu>> myChildrenNode = systemMenuService.getSystemMenuByParent1(auth, acno);
+		if(myParentNode.size() == 0){
+			myParentNode = systemMenuService.getSystemMenuByNoParent(auth, "-1");
+			myChildrenNode = systemMenuService.getSystemMenuByParent1(auth, "-1");
+		}
+		mav.addObject("myParentNode", myParentNode);
+		mav.addObject("myChildrenNode", myChildrenNode);
+
+        mav.setViewName("redirect:/pages/security/dist/views/index.html");
+        return mav;
+	}
+	/****************************************************************************
 	 * 功能：选择前往的中心 作者：李小龙
 	 ****************************************************************************/
 	@RequestMapping("/checkCenter")
