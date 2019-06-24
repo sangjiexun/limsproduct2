@@ -203,9 +203,9 @@
                     <label class="button_above">
                         <font>您好!&nbsp;${sessionScope.authorityName}<i class="icon-user-2"></i>${user.cname}</font>
                     	<%--<a class="button icon-envelope-alt fa-home" href="${sessionScope.cmsUrl}" title="门户首页"></a>--%>
-                    	<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_LABORATORYMAINTENANCE">
-                    		<a class="button icon-envelope-alt fa-university" href="${sessionScope.cmsSiteUrl}" title="网站管理"></a>
-                    	</sec:authorize>
+                    	<%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_LABORATORYMAINTENANCE">--%>
+                    		<%--<a class="button icon-envelope-alt fa-university" href="${sessionScope.cmsSiteUrl}" title="网站管理"></a>--%>
+                    	<%--</sec:authorize>--%>
                         <c:if test="${sessionScope.selected_role ne 'ROLE_STUDENT'}">
                             <a class="button icon-envelope-alt fa-slideshare" href="javascript:void(0);" onclick="changeRole()" title="切换角色"></a>
                         </c:if>
