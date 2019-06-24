@@ -638,7 +638,7 @@ function cancel(){
 	<ul class="TabbedPanelsTabGroup" style="margin-bottom:10px;">
 		<li class="TabbedPanelsTab selected" id="s1">
 			<a href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationList?currpage=1"><spring:message
-					code="all.trainingRoom.station"/>预约</a><%--实验室--%></li>
+					code="left.training.appointment"/></a><%--实验室--%></li>
 		<li class="TabbedPanelsTab" id="s2"><a
 				href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=2">我的申请</a>
 		</li>
