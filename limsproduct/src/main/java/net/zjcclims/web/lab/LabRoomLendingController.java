@@ -1039,7 +1039,12 @@ public class LabRoomLendingController<JsonResult> {
                         }
                     }
                 }
-                Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
+//                Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
+                Calendar theTime = Calendar.getInstance();
+                Set<LabReservationTimeTable>labReservationTimeTables = labReservations.get(i).getLabReservationTimeTables();
+                for(LabReservationTimeTable labReservationTimeTable:labReservationTimeTables){
+                    theTime = labReservationTimeTable.getStartTime();
+                }
                 if(theTime!=null){
                     Calendar theDay = labReservations.get(i).getLendingTime();
                     theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));

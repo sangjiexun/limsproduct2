@@ -1928,6 +1928,18 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                         if (status3.equals("fail")) {
                             return;
                         }
+                        //重新查询审核状态
+						s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+						jsonObject = JSON.parseObject(s);
+						statusStr = jsonObject.getString("status");
+						if(!statusStr.equals("success")){
+							return;
+						}
+						JSONArray currArray1 = jsonObject.getJSONArray("data");
+						if (currArray1 != null && currArray1.size() > 0) {
+							JSONObject o1 = currArray1.getJSONObject(0);
+							curAuthName = o1.getString("result");
+						}
                     }
                 }
             }
