@@ -318,7 +318,7 @@ function getTimetablePlanView() {
             width: "11%",
             sortable: true,
             formatter: function (value, row, index) {
-                var result = row.courseName + "<br>(" + row.courseNumber + ")<br>";
+                var result = row.courseName + "<br>(" + row.courseNumber + ")<br>"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")"+"<br/>";
                 if (row.timetableStyle == 6 && row.baseActionAuthDTO.addActionAuth) {
                     result += "<a href='javascript:;' class='btn btn-xs green' onclick=\"selfBatchManage('" + row.selfId + "')\" ><span class='glyphicon glyphicon-edit'>批/组管理</span></a>&nbsp;";
                 }
@@ -565,7 +565,7 @@ function getTimetableMangerView() {
             width: "8%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "(" + row.courseNumber + ")";
+                return row.courseName + "(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
             }
         }, {
             title: "所属学院",
@@ -825,7 +825,7 @@ function getTimetableHistoryView() {
             width: "5%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "<br/>(" + row.courseNumber + ")";
+                return row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
             }
         },  {
             title: "已排课表",
