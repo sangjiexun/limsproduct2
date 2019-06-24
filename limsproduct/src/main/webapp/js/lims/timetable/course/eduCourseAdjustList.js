@@ -354,7 +354,7 @@ function getSeflMangerView() {
             width: "7%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "(" + row.courseNumber + ")";
+                return row.courseName + "(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
             }
         }, {
             title: "所属学院",
@@ -608,7 +608,7 @@ function getTimetableMangerView() {
             width: "7%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "<br/>(" + row.courseNumber + ")";
+                return row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
             }
         }, {
             title: "所属学院",
@@ -865,7 +865,7 @@ function getTimetableAdjustHistoryView() {
             width: "5%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "<br/>(" + row.courseNumber + ")";
+                return row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
             }
         },  {
             title: "已排课表",
@@ -1039,7 +1039,7 @@ function getTimetableSuspendHistoryView() {
             width: "5%",
             sortable: true,
             formatter: function (value, row, index) {
-                return row.courseName + "<br/>(" + row.courseNumber + ")";
+                return row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
             }
         },  {
             title: "已排课表",
