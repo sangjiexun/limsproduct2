@@ -76,4 +76,12 @@ public interface SchoolCourseInfoService {
 	 * @日期：2018-01-10
 	 *************************************************************************************/
 	public List<SchoolCourseInfo> findSchoolCourseInfo(int flag);
+
+	/**
+	 * Description 保存自主课程
+	 * @param courseInfo
+	 * @author 陈乐为 2019-6-24
+	 */
+	@Transactional
+	public void saveSchoolCourseInfoForSelf(SchoolCourseInfo courseInfo);
 }

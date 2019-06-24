@@ -100,7 +100,7 @@
 						</c:if>
 					</select>
 					<label for="courseNumber"></label><br>
-					<a href="${pageContext.request.contextPath}/timetable/newSchoolCourseInfo">新建课程</a>
+					<a href="${pageContext.request.contextPath}/timetable/newSchoolCourseInfo" onclick="newSchoolCourseInfo(); return false;">新建课程</a>
 				</td>
 			</tr>
 
