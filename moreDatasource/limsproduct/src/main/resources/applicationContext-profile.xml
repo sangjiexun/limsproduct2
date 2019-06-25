@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- 产品版本 -->
+	<beans profile="limsproduct">
+		<context:property-placeholder location="classpath:config/limsproduct/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 浙江建设版本 -->
+	<beans profile="zjcclims">
+		<context:property-placeholder location="classpath:config/zjcclims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 成都中医药版本 -->
+	<beans profile="chdlims">
+		<context:property-placeholder location="classpath:config/chdlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 金陵机电版本 -->
+	<beans profile="jitlims">
+		<context:property-placeholder location="classpath:config/jitlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 南京中医药版本 -->
+	<beans profile="nucmylims">
+		<context:property-placeholder location="classpath:config/nucmylims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 江苏理工版本 -->
+	<beans profile="jsutlims">
+		<context:property-placeholder location="classpath:config/jsutlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+	<!-- 上交版本 -->
+	<beans profile="shjulims">
+		<context:property-placeholder location="classpath:config/shjulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 复旦版本 -->
+	<beans profile="fdulims">
+		<context:property-placeholder location="classpath:config/fdulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 金陵软件版本 -->
+	<beans profile="jitsoft">
+		<context:property-placeholder location="classpath:config/jitsoft/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 江南大学版本 -->
+	<beans profile="jnulims">
+		<context:property-placeholder location="classpath:config/jnulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 南京**医学院版本 -->
+	<beans profile="njykyxylims">
+		<context:property-placeholder location="classpath:config/njykyxylims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 版本 -->
+	<beans profile="shjulims">
+		<context:property-placeholder location="classpath:config/shjulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 上海中医药版本 -->
+	<beans profile="symclims">
+		<context:property-placeholder location="classpath:config/symclims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 天津工业版本 -->
+	<beans profile="tjpulims">
+		<context:property-placeholder location="classpath:config/tjpulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 东莞版本 -->
+	<beans profile="dgptlims">
+		<context:property-placeholder location="classpath:config/dgptlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 成都版本 -->
+	<beans profile="sbsltims">
+		<context:property-placeholder location="classpath:config/sbsltims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 升达版本 -->
+	<beans profile="sdulims">
+		<context:property-placeholder location="classpath:config/sdulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 徐州医科版本 -->
+	<beans profile="xzyxy">
+		<context:property-placeholder location="classpath:config/xzyxy/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 盐城工学院版本 -->
+	<beans profile="ycitlims">
+		<context:property-placeholder location="classpath:config/ycitlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 上海中医药版本 -->
+	<beans profile="tcmlims">
+		<context:property-placeholder location="classpath:config/tcmlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 苏大材化部版本 -->
+	<beans profile="chblims">
+		<context:property-placeholder location="classpath:config/chblims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 上海中医药版本 -->
+	<beans profile="tcmlims">
+		<context:property-placeholder location="classpath:config/tcmlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 复旦大学基础医学院版本 -->
+	<beans profile="fbmulims">
+		<context:property-placeholder location="classpath:config/fbmulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 西北大学版本 -->
+	<beans profile="nwulims">
+		<context:property-placeholder location="classpath:config/nwulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 农林版本 -->
+	<beans profile="shafc">
+		<context:property-placeholder location="classpath:config/shafc/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+	
+	<!-- 浙江外国语版本 -->
+	<beans profile="zisulims">
+		<context:property-placeholder location="classpath:config/zisulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 南京邮电 -->
+	<beans profile="njuptlims">
+			<context:property-placeholder location="classpath:config/njuptlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 锦州医学院 -->
+	<beans profile="jzmulims">
+		<context:property-placeholder location="classpath:config/jzmulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 浙江机电版本 -->
+	<beans profile="zimelims">
+		<context:property-placeholder location="classpath:config/zimelims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 苏大医学部版本 -->
+	<beans profile="medlims">
+		<context:property-placeholder location="classpath:config/medlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 哈工大深圳版本 -->
+	<beans profile="hitszlims">
+		<context:property-placeholder location="classpath:config/hitszlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 宁德一中版本 -->
+	<beans profile="ndyzlims">
+		<context:property-placeholder location="classpath:config/ndyzlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+</beans>
