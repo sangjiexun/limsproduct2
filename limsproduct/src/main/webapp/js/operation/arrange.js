@@ -131,8 +131,8 @@ $(document).ready(function () {
                                 if($("#type").val() == 0 || $("#type").val() == 1) {
                                     var startDate = $("#startTime").val();
                                     var endDate = $("#endTime").val();
-                                    startDate = startDate.replace(" ", "T");
-                                    endDate = endDate.replace(" ", "T");
+                                    startDate = startDate.substring(0,10);
+                                    endDate = endDate.substring(0, 10);
                                     var arr = new Object();
                                     arr.selfId = selfId;
                                     arr.batchName = "无";

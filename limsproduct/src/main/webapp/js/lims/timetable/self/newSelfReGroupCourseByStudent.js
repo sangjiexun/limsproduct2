@@ -214,7 +214,7 @@ $(document).ready(function () {
                 formatter: function (value, row, index) {
                     var result = "";
                     if (row.baseActionAuthDTO.selectGroupActionAuth) {
-                        if (currDate > startDate && currDate < endDate&&selected!=1) {
+                        if (currDate >= startDate && currDate <= endDate&&selected!=1) {
                             result += "<div style=\"height:20px;\"><a href='javascript:;' class='btn btn-xs red' title='编辑'  onclick=\"selectBatchGroup(" + row.id + ")\" ><span class='glyphicon glyphicon-plus'>选定</span>&nbsp;";
                         } else if(row.selected==1){
                             result +="已选定"

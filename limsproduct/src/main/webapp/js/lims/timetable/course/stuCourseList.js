@@ -171,8 +171,10 @@ function getTimetablePlanView() {
                         }else {
                             if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 1) {
                                 gp += "<span style='color: blue'>已选定</span>";
-                            } else {
+                            } else if (currDate > endDate) {
                                 gp += "<span style='color: red'>已结束</span>";
+                            } else if (currDate < startDate) {
+                                gp += "<span style='color: blue'>未开始</span>";
                             }
                         }
                         gp += "</td></tr>";
