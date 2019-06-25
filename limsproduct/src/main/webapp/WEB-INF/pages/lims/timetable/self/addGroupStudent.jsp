@@ -30,7 +30,7 @@
             type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/bootstrap/bootstrap3-editable/js/bootstrap-editable.js"></script>
     <script src="${pageContext.request.contextPath}/bootstrap/bootstrap-table/extensions/editable/bootstrap-table-editable.js"></script>
-    <script src="${pageContext.request.contextPath}/js/lims/timetable/self/adjustGroupStudent.js"
+    <script src="${pageContext.request.contextPath}/js/lims/timetable/self/addGroupStudent.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <style>
@@ -58,19 +58,7 @@
                     <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
 
                     <div style="width:100%;">
-                        <input id="adjustButton" class='btn btn-xs red' onclick="adjustToGroup(); return false;" type="button" value="调整分组">
-                        <input id="addButton" class='btn btn-xs red' onclick="addGroupStudent(${group_id}); return false;" type="button" value="添加学生">
-                        <input id="deleteButton" class='btn btn-xs red' onclick="deleteFromGroup(); return false;" type="button" value="批量删除">
-                    </div>
-                    <div>调出至分组：
-                        <c:forEach items="${groups}" var="group">
-                            <c:if test="${group.id eq group_id}">
-                                <input type="radio" name="ifselect" value="${group.id}" disabled/>&nbsp;${group.groupName}(当前)
-                            </c:if>
-                            <c:if test="${group.id ne group_id}">
-                                <input type="radio" name="ifselect" value="${group.id}" />&nbsp;${group.groupName}
-                            </c:if>
-                        </c:forEach>
+                        <input id="addButton" class='btn btn-xs red' onclick="addToGroup(); return false;" type="button" value="确定">
                     </div>
                     <table id="table_list" style="text-align: left;"></table>
                 </div>
