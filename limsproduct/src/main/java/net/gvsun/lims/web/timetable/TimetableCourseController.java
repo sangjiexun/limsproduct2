@@ -464,6 +464,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
         mav.addObject("adjustStatus",request.getParameter("adjustStatus"));
+        mav.addObject("groupId", request.getParameter("groupId"));
 
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
         mav.setViewName("lims/timetable/course/adjustEduReTimetableCourse.jsp");

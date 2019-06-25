@@ -433,7 +433,7 @@ function getSeflMangerView(pageNumber) {
                                     operation ="<font>停课中</font><br>";
                                 }else if(authName == 'ROLE_TEACHER') {// 教师
                                     if(isAdjust == 1 || isAdjust == 0){
-                                        operation += "<button  onclick=\"doEduReCourse("+ timetableDTOs[i].sameNumberId +"," + j +",'" + timetableDTOs[i].selfId + "', '" + row.timetableStyle + "')\" ><span class='glyphicon glyphicon-edit'>调课</span></button>&nbsp;";
+                                        operation += "<button  onclick=\"doEduReCourse("+ timetableDTOs[i].sameNumberId +"," + j +",'" + timetableDTOs[i].selfId + "', '" + row.timetableStyle + "',"+ timetableDTOs[i].groupId +")\" ><span class='glyphicon glyphicon-edit'>调课</span></button>&nbsp;";
                                     }
                                     if(isAdjust == 2 || isAdjust == 0){
                                         operation += "<button  onclick=\"suspendTimetable("+row.timetableStyle+","+timetableDTOs[i].sameNumberId+","+j +")\" ><span class='glyphicon glyphicon-ok'>停课</span></button>&nbsp;";
@@ -689,7 +689,7 @@ function getTimetableMangerView(pageNumber) {
                                     isAdjust = 2;
                                 }else if(authName == 'ROLE_TEACHER') {// 教师
                                     if(isAdjust == 1 || isAdjust == 0){
-                                        operation += "<button  onclick=\"doEduReCourse("+ timetableDTOs[i].sameNumberId +"," + j +",'" + row.courseNo + "', '" + row.timetableStyle + "')\" ><span class='glyphicon glyphicon-edit'>调课</span></button>&nbsp;";
+                                        operation += "<button  onclick=\"doEduReCourse("+ timetableDTOs[i].sameNumberId +"," + j +",'" + row.courseNo + "', '" + row.timetableStyle + "',"+ timetableDTOs[i].groupId +")\" ><span class='glyphicon glyphicon-edit'>调课</span></button>&nbsp;";
                                     }
                                     if(isAdjust == 2 || isAdjust == 0){
                                         operation += "<button  onclick=\"suspendTimetable("+row.timetableStyle+","+timetableDTOs[i].sameNumberId+","+j+")\" ><span class='glyphicon glyphicon-ok'>停课</span></button>&nbsp;";
@@ -1181,7 +1181,7 @@ function getTimetableSuspendHistoryView(pageNumber) {
 /*
 *修改二次不分批排课弹出窗口
 */
-function doEduReCourse(sameNumberId,week,courseNo, timeStyle) {
+function doEduReCourse(sameNumberId,week,courseNo, timeStyle, groupId) {
     term = $("#term").val();
     //调课标记位
     adjustStatus = 1;
@@ -1196,7 +1196,7 @@ function doEduReCourse(sameNumberId,week,courseNo, timeStyle) {
         closeBtn:0,
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/adjustEduReTimetableCourse?currpage=1&flag=0&timetableStyle=' + timeStyle + '&courseNo=' + courseNo + "&term=" + term
-        + '&tableAppId=' + 0+ '&sameNumberId=' + sameNumberId+ '&adjustStatus='+adjustStatus+ '&week='+week,
+        + '&tableAppId=' + 0+ '&sameNumberId=' + sameNumberId+ '&adjustStatus='+adjustStatus+ '&week='+week+'&groupId='+groupId,
         end: function () {
             refreshBootstrapTable();
         }
