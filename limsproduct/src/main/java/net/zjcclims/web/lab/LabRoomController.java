@@ -227,8 +227,8 @@ public class LabRoomController<JsonResult> {
                 labRoomVO.setId(labroom.getId());
                 labRoomVO.setLabRoomNumber(labroom.getLabRoomNumber());
                 labRoomVO.setLabRoomName(labroom.getLabRoomName());
-                if(labroom.getFloorNo()!=null && labroom.getSystemBuild()!=null){
-                    labRoomVO.setBuildFloor(labroom.getSystemBuild().getBuildName()+labroom.getFloorNo());
+                if(labroom.getSystemBuild()!=null && labroom.getFloorNo()!=null){
+                    labRoomVO.setBuildFloor(labroom.getSystemBuild().getBuildName()+labroom.getFloorNo()+"楼");
                 }
                 if(labroom.getLabCenter()!=null){
                     labRoomVO.setCenterName(labroom.getLabCenter().getCenterName());
@@ -2687,7 +2687,15 @@ public class LabRoomController<JsonResult> {
                 }
             }
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
-                if (flag) {
+                //判断是否需要选择导师
+                boolean isTeacher = false;
+                Set<Authority>authorities = user.getAuthorities();
+                for(Authority authority :authorities){
+                    if(authority.getAuthorityName().equals("TEACHER")){
+                        isTeacher = true;
+                    }
+                }
+                if (flag && !isTeacher) {
                     data = "needTutor";
                 } else {
                     data = "noNeedTutor";

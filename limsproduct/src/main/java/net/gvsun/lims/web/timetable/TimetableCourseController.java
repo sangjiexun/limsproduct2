@@ -940,9 +940,10 @@ public class TimetableCourseController<JsonResult> {
      * @author 陈乐为 2019-6-20
      */
     @RequestMapping("/adjustGroupStudent")
-    public ModelAndView adjustGroupStudent(Integer group_id) {
+    public ModelAndView adjustGroupStudent(String course_no, Integer group_id) {
         ModelAndView mav = new ModelAndView();
         mav.addObject("group_id", group_id);
+        mav.addObject("course_no", course_no);
         mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
 
         // 同一批次的小组
@@ -950,6 +951,24 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("groups", timetableBatchService.findTimetableGroupsByBatchId(group.getTimetableBatch().getId()));
 
         mav.setViewName("lims/timetable/self/adjustGroupStudent.jsp");
+        return mav;
+    }
+
+    /**
+     * Description 学生名单管理--添加学生--未分组学生列表
+     * @param course_no
+     * @param group_id
+     * @return
+     * @author 陈乐为 2019-6-25
+     */
+    @RequestMapping("/addGroupStudent")
+    public ModelAndView addGroupStudent(String course_no, Integer group_id) {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("group_id", group_id);
+        mav.addObject("course_no", course_no);
+        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+
+        mav.setViewName("lims/timetable/self/addGroupStudent.jsp");
         return mav;
     }
 

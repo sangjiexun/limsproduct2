@@ -1039,7 +1039,12 @@ public class LabRoomLendingController<JsonResult> {
                         }
                     }
                 }
-                Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
+//                Calendar theTime = labReservations.get(i).getLabReservationTimeTables().iterator().next().getStartTime();
+                Calendar theTime = Calendar.getInstance();
+                Set<LabReservationTimeTable>labReservationTimeTables = labReservations.get(i).getLabReservationTimeTables();
+                for(LabReservationTimeTable labReservationTimeTable:labReservationTimeTables){
+                    theTime = labReservationTimeTable.getStartTime();
+                }
                 if(theTime!=null){
                     Calendar theDay = labReservations.get(i).getLendingTime();
                     theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));
@@ -1470,7 +1475,7 @@ public class LabRoomLendingController<JsonResult> {
 //        LabReservationAudit labReservationAudit = new LabReservationAudit();
 //        labReservationAudit.setResult(auditResult);
         labReservation = labRoomLendingService.saveAuditResult(labReservation, auditResult, remark, acno);
-        if (labReservation.getAuditStage()==6) {
+        if (labReservation.getAuditStage()!=null && labReservation.getAuditStage()==6) {
             // 判断当天预约--下发权限
             Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
             // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求

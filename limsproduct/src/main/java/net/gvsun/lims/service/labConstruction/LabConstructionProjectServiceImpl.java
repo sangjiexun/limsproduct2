@@ -1094,7 +1094,14 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         labConstructionProjectAuditNewDAO.store(audit);
         // 上传信息流程线保存
         LabConstructionProjectAuditNew auditNext = new LabConstructionProjectAuditNew();
-        auditNext.setStage(auditResult == 1 ? grandsonProject.getStage() + 1 : grandsonProject.getStage());
+        //auditNext.setStage(auditResult == 1 ? grandsonProject.getStage() + 1 : grandsonProject.getStage());
+        if (auditResult==1){
+           grandsonProject.setStage(grandsonProject.getStage()+1);
+        }else {
+            grandsonProject.setStage(grandsonProject.getStage());
+        }
+        //audit.setStage(grandsonProject.getStage());
+        auditNext.setStage(grandsonProject.getStage());
         auditNext.setResult(0);
         auditNext.setLabConstructionGrandsonProject(grandsonProject);
         String uploadName = shareService.findUserByUsername(grandsonProject.getCreateUser()).getCname();

@@ -363,7 +363,7 @@
 								<td>${curr.labRoomName}</td>
 								<%--<td><c:if test="${curr.floorNo ne null}">${curr.systemBuild.buildName}(${curr.floorNo}楼)</c:if>
 									<c:if test="${curr.floorNo eq null || curr.floorNo eq ''}"></c:if></td>--%>
-								<td>${curr.buildFloor}楼</td>
+								<td>${curr.buildFloor}</td>
 								<td>${curr.centerName}</td>
 								<c:if test="${project eq 'zjcclims'}">
 									<td>

@@ -1515,4 +1515,49 @@ public class TimetableAdminController<JsonResult> {
     	mav.setViewName("timetable/allTimetableAppointment/allTimetableAppointment.jsp");
     	return mav;
 	}
+
+	/**
+	 * Description 新建自主课程
+	 * @param acno
+	 * @return
+	 * @author 陈乐为 2019年6月13日
+	 */
+	@RequestMapping("/timetable/newSchoolCourseInfoForSelf")
+	public ModelAndView newSchoolCourseInfoForSelf(@ModelAttribute("selected_academy") String acno) {
+		ModelAndView mav = new ModelAndView();
+
+		//当前登录人所在学院
+		User user = shareService.getUserDetail();
+		SchoolAcademy schoolAcademy = user.getSchoolAcademy();
+		mav.addObject("schoolAcademy", schoolAcademy);
+
+		// 课程编号
+		int course_no = schoolCourseInfoService.getSelfSchoolCourseInfoTotalRecords();
+		mav.addObject("course_number", "self-"+ acno +"-"+ course_no);
+		mav.setViewName("timetable/schoolCourseManager/editSchoolCourseInfoForSelf.jsp");
+		return mav;
+	}
+
+	/**
+	 * Description 保存自主课程
+	 * @return
+	 * @author 陈乐为 2019-6-24
+	 */
+	@ResponseBody
+	@RequestMapping("/timetable/saveSchoolCourseInfoForSelf")
+	public String saveSchoolCourseInfoForSelf(@ModelAttribute("selected_academy") String acno, String courseName, String courseNumber) {
+		SchoolCourseInfo courseInfo = new SchoolCourseInfo();
+		courseInfo.setCourseName(courseName);
+		courseInfo.setCourseNumber(courseNumber);
+		courseInfo.setAcademyNumber(acno);
+		courseInfo.setCreatedAt(Calendar.getInstance());
+		courseInfo.setUpdatedAt(Calendar.getInstance());
+		courseInfo.setFlag(1);
+		courseInfo.setSchoolMajor(null);
+		courseInfo.setSchoolTerms(null);
+		courseInfo.setUsers(null);
+		// 保存
+		schoolCourseInfoService.saveSchoolCourseInfoForSelf(courseInfo);
+		return "success";
+	}
 }

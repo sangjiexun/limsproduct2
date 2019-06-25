@@ -570,7 +570,9 @@ public class OpenOperationItemController<JsonResult> {
 	public String submitOperationItemLims(HttpServletRequest request,@ModelAttribute OperationItem operationItem,int page, @ModelAttribute("selected_academy") String acno){
 		OperationItem oItem = new OperationItem();
 		oItem = operationService.submitOperationItem(operationItem, acno);
-		this.saveWarehousing(oItem.getId());
+		if (oItem.getItemAssets()!=null && oItem.getItemAssets().size()>0) {
+			this.saveWarehousing(oItem.getId());
+		}
 		return "redirect:/openOperationItem/listOpenOperationItem?currpage="+page+"&status=1&orderBy=9";
 	}
 

@@ -236,13 +236,14 @@ function saveTimetableGroupNumbers(groupId, numbers) {
 
 // 查看、调整小组学生名单页面
 function adjustGroupStudent(group_id) {
+    var course_no = $("#course_no").val();
     var index = layer.open({
         type : 2,
         title : '分组名单管理',
         maxmin : true,
         shadeClose : true,
         area: ['600px', '400px'],
-        content: contextPath + '/lims/timetable/course/adjustGroupStudent?group_id='+ group_id,
+        content: contextPath + '/lims/timetable/course/adjustGroupStudent?course_no='+course_no+'&group_id='+ group_id,
         end: function () {
             getSelfBatchManageView();
         }

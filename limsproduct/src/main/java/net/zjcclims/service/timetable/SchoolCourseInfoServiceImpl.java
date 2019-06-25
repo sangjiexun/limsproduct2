@@ -240,4 +240,15 @@ public class SchoolCourseInfoServiceImpl implements SchoolCourseInfoService {
 		sql+=" and u.courseType="+flag;
 		return schoolCourseInfoDAO.executeQuery(sql);
 	}
+
+	/**
+	 * Description 保存自主课程
+	 * @param courseInfo
+	 * @author 陈乐为 2019-6-24
+	 */
+	@Transactional
+	public void saveSchoolCourseInfoForSelf(SchoolCourseInfo courseInfo) {
+		schoolCourseInfoDAO.store(courseInfo);
+		schoolCourseInfoDAO.flush();
+	}
 }

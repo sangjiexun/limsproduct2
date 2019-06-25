@@ -4,7 +4,7 @@ var url ="";
 
 $(document).ready(function () {
     zuulUrl = $("#zuulServerUrl").val()+contextPath+"/timetable/";
-    getGroupStudentView();
+    getOtherGroupStudentView();
 });
 
 //得到查询的参数
@@ -15,10 +15,13 @@ function queryParams(params) {
     return arrs;
 };
 
-function getGroupStudentView() {
+// 添加学生
+function getOtherGroupStudentView() {
+    var group_id = $("#group_id").val();
+    var course_no = $("#course_no").val();
     $("#table_list").bootstrapTable('destroy');
     //初始化表格,动态从服务器加载数据
-    var url = zuulUrl + "api/timetable/manage/apiGroupStudentList";
+    var url = zuulUrl + "api/timetable/manage/apiOtherGroupStudentList?group_id=" + group_id + "&course_no=" + course_no;
     $("#table_list").bootstrapTable({
         //使用get请求到服务器获取数据
         method: "post",
@@ -32,7 +35,7 @@ function getGroupStudentView() {
         },
         //设置为undefined可以获取pageNumber，pageSize，searchText，sortName，sortOrder
         //设置为limit可以获取limit, offset, search, sort, order
-        queryParams: queryParams,
+        // queryParams: queryParams,
         //表格显示条纹
         striped: true,
         cache: false,
@@ -97,9 +100,11 @@ function getGroupStudentView() {
                 return row.academyName;
             }
         }, {
-            title: "",
-            width: "1%",
-            field: "empty",
+            title: "组别",
+            width: "10%",
+            formatter: function (value, row, index) {
+                return "未分组";
+            }
         }]
     });
 
@@ -107,14 +112,8 @@ function getGroupStudentView() {
     $("#table_list").bootstrapTable('expandRow', 1);
 }
 
-// 调整分组
-function adjustToGroup() {
-    var in_group = $('input[name="ifselect"]:checked').val();
-    // 验证是否选择调进的小组
-    if (in_group == null || in_group == '') {
-        layer.msg("请选择调进的分组!", { icon: 1 });
-        return false;
-    }
+// 添加到当前分组
+function addToGroup() {
     // 验证是否选择学生
     var selected = $('#table_list').bootstrapTable('getSelections');
     var ids = new Array();
@@ -122,15 +121,14 @@ function adjustToGroup() {
         ids[i] = selected[i].username;
     }
     if (ids == null || ids.length == 0) {
-        layer.msg("请选择需要调出的学生!", { icon: 1 });
+        layer.msg("请选择需要添加的学生!", { icon: 1 });
         return false;
     }
-    if (confirm('是否确认调整？')) {
+    if (confirm('是否确认添加？')) {
         // 保存调整后的学生名单
         var arr = new Object();
         arr.students = ids;
-        arr.groupId = $("#group_id").val();
-        arr.inGroupId = in_group;
+        arr.inGroupId = $("#group_id").val();
         var arrs = JSON.stringify(arr);
 
         $.ajax({
@@ -140,7 +138,7 @@ function adjustToGroup() {
             dataType: "json",
             data: arrs,
             success : function(data,status) {
-                layer.msg("名单调整成功!",{
+                layer.msg("名单添加成功!",{
                     icon: 1
                 });
             },
@@ -150,66 +148,8 @@ function adjustToGroup() {
                 });
             },
             complete: function () {
-                getGroupStudentView();
-            }
-        });
-    }
-}
-
-// 添加学生
-function addGroupStudent(group_id) {
-    var course_no = $("#course_no").val();
-    var index = layer.open({
-        type : 2,
-        title : '添加学生',
-        maxmin : true,
-        shadeClose : true,
-        area: ['600px', '400px'],
-        content: contextPath + '/lims/timetable/course/addGroupStudent?course_no='+course_no+'&group_id='+ group_id,
-        end: function () {
-            getGroupStudentView();
-        }
-    });
-    layer.full(index);
-}
-
-// 批量删除
-function deleteFromGroup() {
-    // 验证是否选择学生
-    var selected = $('#table_list').bootstrapTable('getSelections');
-    var ids = new Array();
-    for (var i=0;i<selected.length;i++){
-        ids[i] = selected[i].username;
-    }
-    if (ids == null || ids.length == 0) {
-        layer.msg("请选择需要删除的学生!", { icon: 1 });
-        return false;
-    }
-    if (confirm('是否确认删除？')) {
-        // 保存调整后的学生名单
-        var arr = new Object();
-        arr.students = ids;
-        arr.groupId = $("#group_id").val();
-        var arrs = JSON.stringify(arr);
-
-        $.ajax({
-            url: zuulUrl + "api/timetable/manage/apiSaveAdjustGroupStudent",
-            type: "post",
-            contentType: "application/json",
-            dataType: "json",
-            data: arrs,
-            success : function(data,status) {
-                layer.msg("名单删除成功!",{
-                    icon: 1
-                });
-            },
-            error: function () {
-                layer.msg("后台出了点问题，请重试!",{
-                    icon: 6
-                });
-            },
-            complete: function () {
-                getGroupStudentView();
+                var index=parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
             }
         });
     }

@@ -318,3 +318,21 @@ function getSchoolClassesUser(classNumber){
         }
     });
 }
+
+// 新建课程
+function newSchoolCourseInfo() {
+    var url = contextPath + '/timetable/newSchoolCourseInfoForSelf';
+    var index = layer.open({
+        type: 2,
+        title: '新建课程',
+        maxmin: true,
+        shadeClose: true,
+        area: ['600px', '500px'],
+        content: url,
+        end: function () {
+            // refreshBootstrapTable();
+        }
+    });
+    layer.full(index);
+
+}
