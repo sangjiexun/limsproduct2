@@ -4,6 +4,7 @@ var zuulUrl ="";
 var businessType = "";// 审核参数
 var businessUid = "-1";
 var historyFlag = 0;
+var timetableFlag = 0;
 $(document).ready(function () {
     // 页面参数传递
     businessType = $("#businessType").val();
@@ -242,11 +243,23 @@ function refreshBootstrapTable() {
     params.ajaxOptions.headers.Authorization =getJWTAuthority();
     params.url = url;
     params.silent=true;
-    $("#table_list").bootstrapTable('refresh', params);
+    var pageNumber = params.pageNumber;
+    // $("#table_list").bootstrapTable('refresh', params);
+    if(timetableFlag == 1){
+        getTimetablePlanView(pageNumber);
+    }else if(timetableFlag == 2){
+        getTimetableMangerView(pageNumber)
+    }else if(timetableFlag == 3){
+        getTimetableHistoryView(pageNumber)
+    }
 }
 // 排课视图中不保留调课完成后的管理类操作
-function getTimetablePlanView() {
+function getTimetablePlanView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
     historyFlag = 0;
+    timetableFlag = 1;
     $("#allRadio").prop("checked",true);
     document.cookie = "selfType=PLAN";
     //初始化表格,动态从服务器加载数据
@@ -284,7 +297,7 @@ function getTimetablePlanView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -483,17 +496,24 @@ function getTimetablePlanView() {
         params.silent=true;
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
+    $("#search").keydown("input", function (event) {
         var params = $("#table_list").bootstrapTable('getOptions');
         params.ajaxOptions.headers.Authorization =getJWTAuthority();
         params.silent=true;
-        $("#table_list").bootstrapTable('refresh', params);
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
+        // $("#table_list").bootstrapTable('refresh', params);
     })
 
 }
 // 管理发布视图中不保留调课完成前的排课操作
-function getTimetableMangerView() {
+function getTimetableMangerView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
     historyFlag = 0;
+    timetableFlag = 2;
     $("#allRadio").prop("checked",true);
     document.cookie = "selfType=MANAGE";
     $("#table_list").bootstrapTable('destroy');
@@ -531,7 +551,7 @@ function getTimetableMangerView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -748,14 +768,20 @@ function getTimetableMangerView() {
         var params = $("#table_list").bootstrapTable('getOptions')
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
-        var params = $("#table_list").bootstrapTable('getOptions')
-        $("#table_list").bootstrapTable('refresh', params);
+    $("#search").keydown("input", function (event) {
+        var params = $("#table_list").bootstrapTable('getOptions');
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
+        // $("#table_list").bootstrapTable('refresh', params);
     })
 }
-function getTimetableHistoryView() {
-
+function getTimetableHistoryView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
     historyFlag = 1;
+    timetableFlag = 3;
     //初始化表格,动态从服务器加载数据
     $("#table_list").bootstrapTable('destroy');
     var url = zuulUrl + "/api/timetable/common/apiTimetableHistory";
@@ -791,7 +817,7 @@ function getTimetableHistoryView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -928,12 +954,15 @@ function getTimetableHistoryView() {
     $("#table_list").bootstrapTable('expandRow', 1);
 
     $("#term").on("change", function () {
-        var params = $("#table_list").bootstrapTable('getOptions')
+        var params = $("#table_list").bootstrapTable('getOptions');
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
-        var params = $("#table_list").bootstrapTable('getOptions')
-        $("#table_list").bootstrapTable('refresh', params);
+    $("#search").keydown("input", function (event) {
+        var params = $("#table_list").bootstrapTable('getOptions');
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
+        // $("#table_list").bootstrapTable('refresh', params);
     })
 }
 

@@ -75,7 +75,7 @@
             <div class="site-content">
                 <div>
                     <div id="toolbar">
-                        <form class="form-inline">
+                        <div class="form-inline">
                             <input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
                             <div class="form-group">
                                 <label class="sr-only" for="product_line">选择学期</label>
@@ -100,7 +100,7 @@
                                 <label class="sr-only" for="msg_type">综合查询</label>
                                 <div class="input-group">
                                     <div class="input-group-addon">综合查询</div>
-                                    <input type="text" id="search" name="search" value="" placeholder="多字段查询">
+                                    <input type="text" id="search" name="search" value="" placeholder="按回车查询">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -120,7 +120,7 @@
                                     <input type="radio" name="view_radio"  onclick="getTimetableMangerView()" checked="checked" value="manager">管理发布视图
                                 </c:if>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <table id="table_list" style="text-align: left;"></table>
                 </div>

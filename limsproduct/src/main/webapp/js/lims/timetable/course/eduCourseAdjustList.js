@@ -2,6 +2,7 @@ var contextPath = $("meta[name='contextPath']").attr("content");
 var urlSelf = $('#zuulServerUrl').val()+"api/timetable/self/apiSelfCourseManageByPage";
 var urlCourse =$('#zuulServerUrl').val()+"api/school/apiEduSchoolCourseByPage";
 var zuulUrl ="";
+var timetableFlag =0;
 $(document).ready(function () {
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     urlSelf = zuulUrl+"api/timetable/self/apiSelfCourseManageByPage";
@@ -279,11 +280,25 @@ function refreshBootstrapTable() {
     params.ajaxOptions.headers.Authorization =getJWTAuthority();
     params.url = url;
     params.silent=true;
-    $("#table_list").bootstrapTable('refresh', params);
+    var pageNumber = params.pageNumber;
+    // $("#table_list").bootstrapTable('refresh', params);
+    if(timetableFlag == 1){
+        getSeflMangerView(pageNumber);
+    }else if(timetableFlag == 2){
+        getTimetableMangerView(pageNumber)
+    }else if(timetableFlag == 3){
+        getTimetableAdjustHistoryView(pageNumber)
+    }else if(timetableFlag == 4){
+        getTimetableSuspendHistoryView(pageNumber)
+    }
 
 }
 // 排课视图中不保留调课完成后的管理类操作
-function getSeflMangerView() {
+function getSeflMangerView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
+    timetableFlag = 1;
     document.cookie = "adjustType=SELF";
     $("#table_list").bootstrapTable('destroy');
     //初始化表格,动态从服务器加载数据
@@ -320,7 +335,7 @@ function getSeflMangerView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -530,13 +545,20 @@ function getSeflMangerView() {
         var params = $("#table_list").bootstrapTable('getOptions')
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
+    $("#search").keydown("input", function (event) {
         var params = $("#table_list").bootstrapTable('getOptions')
-        $("#table_list").bootstrapTable('refresh', params);
+        // $("#table_list").bootstrapTable('refresh', params);
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
     })
 }
 
-function getTimetableMangerView() {
+function getTimetableMangerView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
+    timetableFlag = 2;
     //获取jwt认证，获取token
     //getJWTAuthority();
     document.cookie = "adjustType=COURSE";
@@ -574,7 +596,7 @@ function getTimetableMangerView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -784,17 +806,23 @@ function getTimetableMangerView() {
         params.silent=true;
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
+    $("#search").keydown("input", function (event) {
         var params = $("#table_list").bootstrapTable('getOptions');
         params.ajaxOptions.headers.Authorization =getJWTAuthority();
         params.silent=true;
-        $("#table_list").bootstrapTable('refresh', params);
+        // $("#table_list").bootstrapTable('refresh', params);
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
     })
 }
 
 
-function getTimetableAdjustHistoryView() {
-
+function getTimetableAdjustHistoryView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
+    timetableFlag = 3;
     document.cookie = "adjustType=ADJUST_HISTORY";
     //初始化表格,动态从服务器加载数据
     $("#table_list").bootstrapTable('destroy');
@@ -831,7 +859,7 @@ function getTimetableAdjustHistoryView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -962,13 +990,19 @@ function getTimetableAdjustHistoryView() {
         var params = $("#table_list").bootstrapTable('getOptions')
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
+    $("#search").keydown("input", function (event) {
         var params = $("#table_list").bootstrapTable('getOptions')
-        $("#table_list").bootstrapTable('refresh', params);
+        // $("#table_list").bootstrapTable('refresh', params);
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
     })
 }
-function getTimetableSuspendHistoryView() {
-
+function getTimetableSuspendHistoryView(pageNumber) {
+    if(pageNumber == null){
+        pageNumber = 1;
+    }
+    timetableFlag = 4;
     document.cookie = "adjustType=SUSPEND_HISTORY";
     //初始化表格,动态从服务器加载数据
     $("#table_list").bootstrapTable('destroy');
@@ -1005,7 +1039,7 @@ function getTimetableSuspendHistoryView() {
         //每页显示的记录数
         pageSize: 15,
         //当前第几页
-        pageNumber: 1,
+        pageNumber: pageNumber,
         //记录数可选列表
         pageList: [5, 10, 15, 20, 25],
         //是否启用查询
@@ -1136,9 +1170,12 @@ function getTimetableSuspendHistoryView() {
         var params = $("#table_list").bootstrapTable('getOptions')
         $("#table_list").bootstrapTable('refresh', params);
     })
-    $("#search").on("input", function () {
+    $("#search").keydown("input", function (event) {
         var params = $("#table_list").bootstrapTable('getOptions')
-        $("#table_list").bootstrapTable('refresh', params);
+        // $("#table_list").bootstrapTable('refresh', params);
+        if (event.keyCode==13){
+            $("#table_list").bootstrapTable('refresh', params);
+        }
     })
 }
 /*
