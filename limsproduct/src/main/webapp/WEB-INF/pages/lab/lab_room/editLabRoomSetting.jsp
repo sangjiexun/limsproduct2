@@ -289,7 +289,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
         "needAudit": needAudit1,
         "realAllAudits": realAllAudits,
         "needAllowSecurityAccess": needAllowSecurityAccess1,
-        "flag": #{flag},
+        "flag": ${flag},
 //        "needLoan":needLoan1,
     });
 	$.ajax({
