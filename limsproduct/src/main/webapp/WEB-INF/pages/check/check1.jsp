@@ -129,7 +129,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -155,7 +155,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -181,7 +181,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}"> 
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" /> 
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -207,7 +207,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -233,7 +233,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}"> 
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" /> 
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -259,7 +259,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}"> 
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" /> 
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -285,7 +285,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -311,7 +311,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -337,7 +337,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -363,7 +363,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}"> 
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" /> 
 				  	 <tr> 
 				      <td>${curr.no}</td>
@@ -389,7 +389,7 @@
 					  <td></td>
 				    </tr>
 			  	</c:if>
-			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">  
+			  	<c:if test="${curr.noThree != '0' && curr.noTwo != null && curr.noTwo != ''}">
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>

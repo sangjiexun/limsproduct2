@@ -169,9 +169,10 @@ public class LabSecurityCheckServiceImpl implements LabSecurityCheckService {
         String hql = "select a from SDictionary a where 1=1";
         //筛选类别
         hql += "and a.category like" + "'" + category + "'";
-        hql += "and a.typeDictionary like" + "'" + 3 + "'";
+        hql += "and a.typeDictionary between" + "'" + 2 + "'" + "and" + "'" + 3 + "'";
+        /*hql += "and a.typeDictionary like" + "'" + 3 + "'";*/
         hql += "order by a.noTwo,a.noThree";
-        return sDictionaryDAO.executeQuery(hql);
+        return sDictionaryDAO.executeQuery(hql,0,-1);
     }
 
     /*********************************************************************
