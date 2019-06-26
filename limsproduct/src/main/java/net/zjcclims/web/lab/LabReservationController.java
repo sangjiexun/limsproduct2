@@ -957,7 +957,6 @@ public class LabReservationController<JsonResult> {
 		//培训形式隐去
         /*List<CDictionary> CTrainingTypes = shareService.getCDictionaryData("c_training_type");
 		mav.addObject("CTrainingTypes", CTrainingTypes);*/
-		mav.setViewName("/lab/lab_room/editLabRoomSetting.jsp");
 		mav.addObject("type",type);
 		if(labRoom.getLabRoomReservation() != null){
 			mav.addObject("allowAppointment", labRoom.getLabRoomReservation());
@@ -984,19 +983,32 @@ public class LabReservationController<JsonResult> {
 		JSONObject jsonObject = JSON.parseObject(s);
 		String status = jsonObject.getString("status");
 		Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
+		//一级审核的时候页面显示
+        boolean flag = false;
 		if (auditConfigs != null && auditConfigs.size() != 0) {
-			for (int i = 0; i < auditConfigs.size(); i++) {
+            if(auditConfigs.size()==1){
+                flag = true;
+                String[] sc = ((String) auditConfigs.get(1)).split(":");
+                String authLevelOne = authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname()+"审核";
+                mav.addObject("authLevelOne",authLevelOne);
+            }else {
+                for (int i = 0; i < auditConfigs.size(); i++) {
 //				mav.addObject(showAuditLevelName[i],
 //						((String) auditConfigs.get(i + 1)).contains(RSWITCH[0]) ? 1 : 2);
-				String[] sc = ((String) auditConfigs.get(i + 1)).split(":");
-				authNames.add(authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname());
-				needAllAudits.add(sc[0]);
-				needAllAuditStatus.add(sc[1].equals(RSWITCH[0]) ? 1 : 2);
-			}
+                    String[] sc = ((String) auditConfigs.get(i + 1)).split(":");
+                    authNames.add(authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname());
+                    needAllAudits.add(sc[0]);
+                    needAllAuditStatus.add(sc[1].equals(RSWITCH[0]) ? 1 : 2);
+                }
+                mav.addObject("needAllAudits", needAllAudits);
+                mav.addObject("needAllAuditStatus", needAllAuditStatus);
+                mav.addObject("authNames", authNames);
+            }
 		}
-		mav.addObject("needAllAudits", needAllAudits);
-		mav.addObject("needAllAuditStatus", needAllAuditStatus);
-		mav.addObject("authNames", authNames);
+		mav.addObject("flag",flag);
+//		mav.addObject("needAllAudits", needAllAudits);
+//		mav.addObject("needAllAuditStatus", needAllAuditStatus);
+//		mav.addObject("authNames", authNames);
 		mav.addObject("device", labRoom);
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("page", currpage);
@@ -1015,7 +1027,24 @@ public class LabReservationController<JsonResult> {
         // 开放范围/开放对象  实验室type = 1
         List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
         mav.addObject("schoolAcademyList", schoolAcademies);
-        Set<Authority> authorityList = authorityDAO.findAllAuthoritys();
+        Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
+        List<Authority> authorityArrayList = new ArrayList<>();
+        for(Authority authority:authorities1){
+            authorityArrayList.add(authority);
+        }
+        List<Authority> authorityList = new ArrayList<>();
+        //开放对象选择顺序调整：学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
+        authorityList.add(authorityArrayList.get(0));  //学生
+        authorityList.add(authorityArrayList.get(1));  //教师
+        authorityList.add(authorityArrayList.get(4));  //实验室管理员
+        authorityList.add(authorityArrayList.get(5));  //院系级管理员
+        authorityList.add(authorityArrayList.get(3));  //实验中心主任
+        authorityList.add(authorityArrayList.get(9));  //超级管理员
+        for(int i = 0,len = authorityArrayList.size();i<len;i++){
+            if(i!=0 && i!=1 && i!=4 && i!=5 && i!=3 && i!=9){
+                authorityList.add(authorityArrayList.get(i));
+            }
+        }
         Authority authorityAll = new Authority();
         authorityAll.setId(-1);
         authorityAll.setAuthorityName("ALL");
@@ -1073,6 +1102,7 @@ public class LabReservationController<JsonResult> {
 			}
 		}
 		mav.addObject("openAcademyAndAuthorities",openAcademyAndAuthorities);
+		mav.setViewName("/lab/lab_room/editLabRoomSetting.jsp");
 
 		return mav;
 	}
@@ -1093,7 +1123,24 @@ public class LabReservationController<JsonResult> {
 		List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
 		mav.addObject("schoolAcademyList", schoolAcademies);
 //		工位预约type为2
-        Set<Authority> authorityList = authorityDAO.findAllAuthoritys();
+        Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
+        List<Authority> authorityArrayList = new ArrayList<>();
+        for(Authority authority:authorities1){
+            authorityArrayList.add(authority);
+        }
+        List<Authority> authorityList = new ArrayList<>();
+        //开放对象选择顺序调整：学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
+        authorityList.add(authorityArrayList.get(0));  //学生
+        authorityList.add(authorityArrayList.get(1));  //教师
+        authorityList.add(authorityArrayList.get(4));  //实验室管理员
+        authorityList.add(authorityArrayList.get(5));  //院系级管理员
+        authorityList.add(authorityArrayList.get(3));  //实验中心主任
+        authorityList.add(authorityArrayList.get(9));  //超级管理员
+        for(int i = 0,len = authorityArrayList.size();i<len;i++){
+            if(i!=0 && i!=1 && i!=4 && i!=5 && i!=3 && i!=9){
+                authorityList.add(authorityArrayList.get(i));
+            }
+        }
         Authority authorityAll = new Authority();
         authorityAll.setId(-1);
         authorityAll.setAuthorityName("ALL");
@@ -1168,16 +1215,30 @@ public class LabReservationController<JsonResult> {
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
         Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
+        //一级审核的时候页面显示
+        boolean flag = false;
         if (auditConfigs != null && auditConfigs.size() != 0) {
-            for (int i = 0; i < auditConfigs.size(); i++) {
+            if(auditConfigs.size()==1){
+                flag = true;
+                String[] sc = ((String) auditConfigs.get(1)).split(":");
+                String authLevelOne = authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname()+"审核";
+                mav.addObject("authLevelOne",authLevelOne);
+            }else {
+                for (int i = 0; i < auditConfigs.size(); i++) {
 //				mav.addObject(showAuditLevelName[i],
 //						((String) auditConfigs.get(i + 1)).contains(RSWITCH[0]) ? 1 : 2);
-                String[] sc = ((String) auditConfigs.get(i + 1)).split(":");
-                authNames.add(authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname());
-                needAllAudits.add(sc[0]);
-                needAllAuditStatus.add(sc[1].equals(RSWITCH[0]) ? 1 : 2);
+                    String[] sc = ((String) auditConfigs.get(i + 1)).split(":");
+                    authNames.add(authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname());
+                    needAllAudits.add(sc[0]);
+                    needAllAuditStatus.add(sc[1].equals(RSWITCH[0]) ? 1 : 2);
+                }
+                mav.addObject("needAllAudits", needAllAudits);
+                mav.addObject("needAllAuditStatus", needAllAuditStatus);
+                mav.addObject("authNames", authNames);
             }
         }
+        mav.addObject("flag",flag);
+
         //是否允许预约
         LabRelevantConfig labRelevantConfigIsApp = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
         if (labRelevantConfigIsApp !=null ) {
@@ -1192,9 +1253,9 @@ public class LabReservationController<JsonResult> {
         }else {
 			mav.addObject("isAudit1",null);
 		}
-        mav.addObject("needAllAudits", needAllAudits);
-        mav.addObject("needAllAuditStatus", needAllAuditStatus);
-        mav.addObject("authNames", authNames);
+//        mav.addObject("needAllAudits", needAllAudits);
+//        mav.addObject("needAllAuditStatus", needAllAuditStatus);
+//        mav.addObject("authNames", authNames);
         mav.addObject("device", labRoom);
         mav.addObject("labRoomId", labRoomId);
         mav.addObject("page", currpage);
@@ -1311,52 +1372,88 @@ public class LabReservationController<JsonResult> {
 	public String saveLabRoomSettingRest(@RequestBody ParamLabSettingVO paramLabSettingVO) {
 		// id对应的实验分室
 		LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(paramLabSettingVO.getLabRoomId());
-		if (paramLabSettingVO.getNeedLoan() != -1) {
-			labRoom.setCDictionaryByAllowLending(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedLoan()));
+		if (paramLabSettingVO.getNeedAudit() != -1) {
+//			labRoom.setCDictionaryByAllowLending(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedLoan()));
 			labRoom.setCDictionaryByIsAudit(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedAudit()));
 		}
 		String status = "success";
 
-		//demo
-        String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
-		if (!"0".equals(realAllAudits[0])) {
-			String[] RSWITCH = {"on", "off"};
-			String rConfig = "";
-			Map<String, String> params = new HashMap<>();
-			String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
-			params.put("businessUid", labRoom.getId().toString());
-			for (int i = 0; i < realAllAudits.length; i++) {
-				rConfig += realAllAudits[i].equals("1") && paramLabSettingVO.getNeedAudit() != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
-			}
-			params.put("businessUid", labRoom.getId().toString());
-			params.put("config", rConfig);
-			params.put("businessType", pConfig.PROJECT_NAME + businessType);
-			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
-			JSONObject jsonObject = JSON.parseObject(s);
-			status = jsonObject.getString("status");
-			JSONArray jsonArray = jsonObject.getJSONArray("data");
-		}
-		if (paramLabSettingVO.getNeedAudit() != -1) {
-			labRoom.setCDictionaryByIsAudit(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedAudit()));
-			//实验室预约设置为不需要审核时将审核服务审核层级关闭
-            if(paramLabSettingVO.getNeedAudit() == 622){
+        if(paramLabSettingVO.isFlag()){
+            if (paramLabSettingVO.getNeedAudit() != -1) {
+                labRoom.setCDictionaryByIsAudit(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedAudit()));
+                //实验室预约设置为不需要审核时将审核服务审核层级关闭
+                if(paramLabSettingVO.getNeedAudit() == 622){
+                    String[] RSWITCH = {"on", "off"};
+                    String offConfig = "";
+                    Map<String, String> params = new HashMap<>();
+                    String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                    params.put("businessUid", labRoom.getId().toString());
+                    offConfig += RSWITCH[1] + ",";
+                    params.put("businessUid", labRoom.getId().toString());
+                    params.put("config", offConfig);
+                    params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    status = jsonObject.getString("status");
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                }else {
+                    String[] RSWITCH = {"on", "off"};
+                    String offConfig = "";
+                    Map<String, String> params = new HashMap<>();
+                    String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                    params.put("businessUid", labRoom.getId().toString());
+                    offConfig += RSWITCH[0] + ",";
+                    params.put("businessUid", labRoom.getId().toString());
+                    params.put("config", offConfig);
+                    params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    status = jsonObject.getString("status");
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                }
+            }
+        }else {
+            String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
+            if (!"0".equals(realAllAudits[0])) {
                 String[] RSWITCH = {"on", "off"};
-                String offConfig = "";
+                String rConfig = "";
                 Map<String, String> params = new HashMap<>();
                 String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
                 params.put("businessUid", labRoom.getId().toString());
                 for (int i = 0; i < realAllAudits.length; i++) {
-                    offConfig += RSWITCH[1] + ",";
+                    rConfig += realAllAudits[i].equals("1") && paramLabSettingVO.getNeedAudit() != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
                 }
                 params.put("businessUid", labRoom.getId().toString());
-                params.put("config", offConfig);
+                params.put("config", rConfig);
                 params.put("businessType", pConfig.PROJECT_NAME + businessType);
                 String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
                 JSONObject jsonObject = JSON.parseObject(s);
                 status = jsonObject.getString("status");
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
             }
-		}
+            if (paramLabSettingVO.getNeedAudit() != -1) {
+                labRoom.setCDictionaryByIsAudit(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedAudit()));
+                //实验室预约设置为不需要审核时将审核服务审核层级关闭
+                if(paramLabSettingVO.getNeedAudit() == 622){
+                    String[] RSWITCH = {"on", "off"};
+                    String offConfig = "";
+                    Map<String, String> params = new HashMap<>();
+                    String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+                    params.put("businessUid", labRoom.getId().toString());
+                    for (int i = 0; i < realAllAudits.length; i++) {
+                        offConfig += RSWITCH[1] + ",";
+                    }
+                    params.put("businessUid", labRoom.getId().toString());
+                    params.put("config", offConfig);
+                    params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    status = jsonObject.getString("status");
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                }
+            }
+        }
+		//demo
 		if (paramLabSettingVO.getNeedAllowSecurityAccess() != -1) {
 			labRoom.setCDictionaryByAllowSecurityAccess(cDictionaryDAO.findCDictionaryById(paramLabSettingVO.getNeedAllowSecurityAccess()));
 		}
@@ -1396,28 +1493,100 @@ public class LabReservationController<JsonResult> {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
         String status = "success";
 
-        //demo
-        String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
+
         int needAudit = -1;
         if(paramLabSettingVO.getNeedAudit()!=null){
             needAudit = paramLabSettingVO.getNeedAudit();
         }
-        if (!"0".equals(realAllAudits[0])) {
-            String[] RSWITCH = {"on", "off"};
-            String rConfig = "";
-            Map<String, String> params = new HashMap<>();
-            String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-            params.put("businessUid", labRoom.getId().toString());
-            for (int i = 0; i < realAllAudits.length; i++) {
-                rConfig += realAllAudits[i].equals("1") && needAudit != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
+        if(paramLabSettingVO.isFlag()){
+            if (needAudit != -1) {
+                LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
+                if(labRelevantConfigIsAudit == null){
+                    labRelevantConfigIsAudit = new LabRelevantConfig();
+                    labRelevantConfigIsAudit.setLabRoomId(labRoomId);
+                    labRelevantConfigIsAudit.setConfigCategory("lab_station_is_appointment_audit");
+                }
+                labRelevantConfigIsAudit.setSetItem(needAudit);
+                labRelevantConfigDAO.store(labRelevantConfigIsAudit);
+
+                //labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
+                if(needAudit == 0){
+                    String[] RSWITCH = {"on", "off"};
+                    String offConfig = "";
+                    Map<String, String> params = new HashMap<>();
+                    String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+                    params.put("businessUid", labRoom.getId().toString());
+                    offConfig += RSWITCH[1] + ",";
+                    params.put("config", offConfig);
+                    params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    status = jsonObject.getString("status");
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                }else {
+                    String[] RSWITCH = {"on", "off"};
+                    String offConfig = "";
+                    Map<String, String> params = new HashMap<>();
+                    String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+                    params.put("businessUid", labRoom.getId().toString());
+                    offConfig += RSWITCH[0] + ",";
+                    params.put("config", offConfig);
+                    params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    status = jsonObject.getString("status");
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                }
             }
-            params.put("config", rConfig);
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
-            JSONObject jsonObject = JSON.parseObject(s);
-            status = jsonObject.getString("status");
-            JSONArray jsonArray = jsonObject.getJSONArray("data");
+        }else {
+            //demo
+            String[] realAllAudits = paramLabSettingVO.getRealAllAudits();
+            if (!"0".equals(realAllAudits[0])) {
+                String[] RSWITCH = {"on", "off"};
+                String rConfig = "";
+                Map<String, String> params = new HashMap<>();
+                String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+                params.put("businessUid", labRoom.getId().toString());
+                for (int i = 0; i < realAllAudits.length; i++) {
+                    rConfig += realAllAudits[i].equals("1") && needAudit != -1 ? RSWITCH[0] + "," : RSWITCH[1] + ",";
+                }
+                params.put("config", rConfig);
+                params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                JSONObject jsonObject = JSON.parseObject(s);
+                status = jsonObject.getString("status");
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+            }
+            if (needAudit != -1) {
+                LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
+                if(labRelevantConfigIsAudit == null){
+                    labRelevantConfigIsAudit = new LabRelevantConfig();
+                    labRelevantConfigIsAudit.setLabRoomId(labRoomId);
+                    labRelevantConfigIsAudit.setConfigCategory("lab_station_is_appointment_audit");
+                }
+                labRelevantConfigIsAudit.setSetItem(needAudit);
+                labRelevantConfigDAO.store(labRelevantConfigIsAudit);
+
+                //labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
+                if(needAudit == 0){
+                    String[] RSWITCH = {"on", "off"};
+                    String offConfig = "";
+                    Map<String, String> params = new HashMap<>();
+                    String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+                    params.put("businessUid", labRoom.getId().toString());
+                    for (int i = 0; i < realAllAudits.length; i++) {
+                        offConfig += RSWITCH[1] + ",";
+                    }
+                    params.put("config", offConfig);
+                    params.put("businessType", pConfig.PROJECT_NAME + businessType);
+                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    status = jsonObject.getString("status");
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                }
+            }
         }
+
 
         int isAppointment = paramLabSettingVO.getIsAppointment();
         if(isAppointment != -1){
@@ -1431,34 +1600,6 @@ public class LabReservationController<JsonResult> {
             labRelevantConfigDAO.store(labRelevantConfigIsApp);
         }
 
-        if (needAudit != -1) {
-            LabRelevantConfig labRelevantConfigIsAudit = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment_audit");
-            if(labRelevantConfigIsAudit == null){
-                labRelevantConfigIsAudit = new LabRelevantConfig();
-                labRelevantConfigIsAudit.setLabRoomId(labRoomId);
-                labRelevantConfigIsAudit.setConfigCategory("lab_station_is_appointment_audit");
-            }
-            labRelevantConfigIsAudit.setSetItem(needAudit);
-            labRelevantConfigDAO.store(labRelevantConfigIsAudit);
-
-            //labRoom.setCDictionaryByIsStationAudit(cDictionaryDAO.findCDictionaryById(needAudit));
-            if(needAudit == 0){
-                String[] RSWITCH = {"on", "off"};
-                String offConfig = "";
-                Map<String, String> params = new HashMap<>();
-                String businessType = "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-                params.put("businessUid", labRoom.getId().toString());
-                for (int i = 0; i < realAllAudits.length; i++) {
-                    offConfig += RSWITCH[1] + ",";
-                }
-                params.put("config", offConfig);
-                params.put("businessType", pConfig.PROJECT_NAME + businessType);
-                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessAuditConfigs", params);
-                JSONObject jsonObject = JSON.parseObject(s);
-                status = jsonObject.getString("status");
-                JSONArray jsonArray = jsonObject.getJSONArray("data");
-            }
-        }
         //可预约工位数
         if(paramLabSettingVO.getLabRoomWorker()!=null){
             labRoom.setLabRoomWorker(paramLabSettingVO.getLabRoomWorker());
