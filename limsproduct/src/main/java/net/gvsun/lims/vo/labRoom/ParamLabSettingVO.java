@@ -15,6 +15,7 @@ public class ParamLabSettingVO implements Serializable{
     private Integer labRoomWorker;
     private Integer needLoan;
     private Integer needAllowSecurityAccess;
+    private boolean flag;
 
     public Integer getLabRoomId() {
         return labRoomId;
@@ -102,5 +103,13 @@ public class ParamLabSettingVO implements Serializable{
 
     public void setNeedAllowSecurityAccess(Integer needAllowSecurityAccess) {
         this.needAllowSecurityAccess = needAllowSecurityAccess;
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(boolean flag) {
+        this.flag = flag;
     }
 }
