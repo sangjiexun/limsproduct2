@@ -21,7 +21,6 @@
       
     <!--配置外部文件  -->
 	<context:property-placeholder location="classpath:*.properties" ignore-unresolvable="true"/>
-	<context:property-placeholder location="classpath:config/*/*.properties" ignore-unresolvable="true"/>
       
 	<!-- ******************************************************************** -->
 	<!-- Scan for service layer annotated beans -->
