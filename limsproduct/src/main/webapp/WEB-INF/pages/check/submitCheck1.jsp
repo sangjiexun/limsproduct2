@@ -465,7 +465,7 @@
 				  	 <tr> 
 				      <td>${curr.no}</td>
 					  <td>${curr.name}</td>
-					  <%--<c:if test="${result[radioNo-1] == '1'}">
+					  <c:if test="${result[radioNo-1] == '1'}">
 					  <td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
 					  <td><input type="radio" name="result${radioNo}" value="3"></td>
@@ -480,11 +480,10 @@
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
 					  <td><input type="radio" name="result${radioNo}" value="3" checked="checked"></td>
 					  </c:if>
-				    --%>
-				    <td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
+				    <%--<td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
 					  <td><input type="radio" name="result${radioNo}" value="3"></td>
-				    </tr>
+				    --%></tr>
 			  	</c:if>
 		  </c:forEach>	
 	  </tbody>
@@ -506,7 +505,7 @@
 			  	 <c:set var="radioNo" value="${radioNo+1}" />
 				  	 <tr> 
 				      <td>${curr.no}</td>
-					  <td>${curr.name}</td><%--
+					  <td>${curr.name}</td>
 					  <c:if test="${result[radioNo-1] == '1'}">
 					  <td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
@@ -522,10 +521,9 @@
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
 					  <td><input type="radio" name="result${radioNo}" value="3" checked="checked"></td>
 					  </c:if>
-				    --%>
-				      <td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
+				      <%--<td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
-					  <td><input type="radio" name="result${radioNo}" value="3"></td>
+					  <td><input type="radio" name="result${radioNo}" value="3"></td>--%>
 				    </tr>
 			  	</c:if>
 		  </c:forEach>	
@@ -549,7 +547,7 @@
 				  	 <tr> 
 				      <td>${curr.no}</td>
 					  <td>${curr.name}</td>
-					  <%--<c:if test="${result[radioNo-1] == '1'}">
+					  <c:if test="${result[radioNo-1] == '1'}">
 					  <td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
 					  <td><input type="radio" name="result${radioNo}" value="3"></td>
@@ -564,10 +562,9 @@
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
 					  <td><input type="radio" name="result${radioNo}" value="3" checked="checked"></td>
 					  </c:if>
-				    --%>
-				    <td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
+				    <%--<td><input type="radio" name="result${radioNo}" value="1" checked="checked"></td>
 					  <td><input type="radio" name="result${radioNo}" value="2"></td>
-					  <td><input type="radio" name="result${radioNo}" value="3"></td>
+					  <td><input type="radio" name="result${radioNo}" value="3"></td>--%>
 				    </tr>
 			  	</c:if>
 		  </c:forEach>	
