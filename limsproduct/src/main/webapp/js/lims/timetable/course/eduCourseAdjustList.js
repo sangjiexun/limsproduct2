@@ -99,7 +99,7 @@ function doAdjustTimetable(term, courseNo) {
         content: contextPath + '/lims/timetable/course/newEduAdjustCourse?currpage=1&flag=0&courseNo=' + courseNo + "&term=" + term
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -119,7 +119,7 @@ function startTimetable(courseNo) {
         content: contextPath + '/lims/timetable/course/newEduDirectCourse?currpage=1&flag=0&courseNo=' + courseNo
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -141,7 +141,7 @@ function newEduReNoGroupCourse(term, courseNo) {
         content: contextPath + '/lims/timetable/course/newEduReTimetableCourse?currpage=1&flag=0&timetableStyle=3&courseNo=' + courseNo + "&term=" + term
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -160,7 +160,7 @@ function newEduReGroupCourse(term, courseNo) {
         content: contextPath + '/lims/timetable/course/newEduReGroupCourse?currpage=1&flag=0&courseNo=' + courseNo + "&term=" + term + "&groupId=-1"
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -184,7 +184,7 @@ function publicTimetable(timetableStyle, courseNo, status) {
         //async: false,
         data: arrs,
         success: function (json) {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     //window.parent.location.reload();
@@ -210,7 +210,7 @@ function publicTimetableForSelf(timetableStyle, selfId, status) {
         //async: false,
         data: arrs,
         success: function (json) {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     //window.parent.location.reload();
@@ -241,7 +241,7 @@ function suspendTimetable(timetableStyle,same_number_id, week) {
         //async: false,
         data: arrs,
         success: function (json) {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     //window.parent.location.reload();
@@ -264,11 +264,36 @@ function deleteTimetable(term, courseNo) {
             success: function (json) {
             }
         });
-        refreshBootstrapTable();
+        refreshBootstrapTableLayer();
     }
 }
 
 function refreshBootstrapTable() {
+    var url = "";
+    var view_radio =$("input[name='view_radio']:checked").val();
+    if (view_radio=="course") {
+        url = zuulUrl + "api/school/apiEduSchoolCourseByPage";
+    }else{
+        url = zuulUrl + "api/timetable/self/apiSelfCourseManageByPage";
+    }
+    var params = $("#table_list").bootstrapTable('getOptions')
+    params.ajaxOptions.headers.Authorization =getJWTAuthority();
+    params.url = url;
+    params.silent=true;
+    var pageNumber = params.pageNumber;
+    $("#table_list").bootstrapTable('refresh', params);
+    // if(timetableFlag == 1){
+    //     getSeflMangerView(pageNumber);
+    // }else if(timetableFlag == 2){
+    //     getTimetableMangerView(pageNumber)
+    // }else if(timetableFlag == 3){
+    //     getTimetableAdjustHistoryView(pageNumber)
+    // }else if(timetableFlag == 4){
+    //     getTimetableSuspendHistoryView(pageNumber)
+    // }
+
+}
+function refreshBootstrapTableLayer() {
     var url = "";
     var view_radio =$("input[name='view_radio']:checked").val();
     if (view_radio=="course") {
@@ -1198,7 +1223,7 @@ function doEduReCourse(sameNumberId,week,courseNo, timeStyle, groupId) {
         content: contextPath + '/lims/timetable/course/adjustEduReTimetableCourse?currpage=1&flag=0&timetableStyle=' + timeStyle + '&courseNo=' + courseNo + "&term=" + term
         + '&tableAppId=' + 0+ '&sameNumberId=' + sameNumberId+ '&adjustStatus='+adjustStatus+ '&week='+week+'&groupId='+groupId,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -1279,7 +1304,7 @@ function auditTimetable(courseNo, businessType, businessUid, timetableStyle) {
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/auditTimetable?businessAppUid=' + courseNo.toString()+'&businessType='+businessType+'&businessUid='+businessUid+'&timetableStyle='+timetableStyle,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);

@@ -93,7 +93,7 @@ function newSelfReNoGroupCourse(term, selfId) {
         content: contextPath + '/lims/timetable/self/newSelfReTimetableCourse?currpage=1&flag=0&timetableStyle=5&selfId=' + selfId + "&term=" + term
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -112,7 +112,7 @@ function newSelfReGroupCourse(term, selfId) {
         content: contextPath + '/lims/timetable/self/newSelfReGroupCourse?currpage=1&flag=0&selfId=' + selfId + "&term=" + term + "&groupId=-1"
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -131,7 +131,7 @@ function newSelfCourse(selfId) {
         area: ['1100px', '500px'],
         content: url,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -155,7 +155,7 @@ function publicTimetable(timetableStyle, selfId, status) {
             //refreshBootstrapTable();
         }
     });
-    refreshBootstrapTable();
+    refreshBootstrapTableLayer();
 }
 
 function deleteTimetable(term, selfId) {
@@ -175,7 +175,7 @@ function deleteTimetable(term, selfId) {
             success: function (json) {
             }
         });
-        refreshBootstrapTable();
+        refreshBootstrapTableLayer();
     }
 }
 
@@ -195,7 +195,7 @@ function deleteTimetableSelfCourse(selfId) {
             success: function (json) {
             }
         });
-        refreshBootstrapTable();
+        refreshBootstrapTableLayer();
     }
 }
 
@@ -219,11 +219,41 @@ function deleteTimetableByBySameNumberId(sameNumberId) {
                 return false;
             }
         });
-        refreshBootstrapTable();
+        refreshBootstrapTableLayer();
     }
 }
 
 function refreshBootstrapTable() {
+    var url = "";
+    var view_radio =$("input[name='view_radio']:checked").val();
+    if(historyFlag == 1){
+        if (view_radio=="timetable") {
+            getTimetablePlanView();
+        }else{
+            getTimetableMangerView();
+        }
+        historyFlag = 0;
+    }
+    if (view_radio=="timetable") {
+        url = zuulUrl + "api/timetable/self/apiSelfCourseListByPage";
+    }else{
+        url = zuulUrl + "api/timetable/self/apiSelfCourseManageByPage";
+    }
+    var params = $("#table_list").bootstrapTable('getOptions')
+    params.ajaxOptions.headers.Authorization =getJWTAuthority();
+    params.url = url;
+    params.silent=true;
+    var pageNumber = params.pageNumber;
+    $("#table_list").bootstrapTable('refresh', params);
+    // if(timetableFlag == 1){
+    //     getTimetablePlanView(pageNumber);
+    // }else if(timetableFlag == 2){
+    //     getTimetableMangerView(pageNumber)
+    // }else if(timetableFlag == 3){
+    //     getTimetableHistoryView(pageNumber)
+    // }
+}
+function refreshBootstrapTableLayer() {
     var url = "";
     var view_radio =$("input[name='view_radio']:checked").val();
     if(historyFlag == 1){
@@ -1070,7 +1100,7 @@ function auditTimetable(termId, courseNo) {
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/auditTimetable?termId='+termId.toString()+'&businessAppUid=' + courseNo.toString()+'&businessType='+businessType+'&businessUid='+businessUid,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -1086,7 +1116,7 @@ function selfBatchManage(self_id) {
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/batchManageList?course_no='+self_id,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
