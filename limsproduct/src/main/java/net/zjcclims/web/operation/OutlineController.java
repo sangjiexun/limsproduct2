@@ -192,6 +192,7 @@ public class OutlineController<JsonResult> {
     public ModelAndView checkout(@RequestParam int idKey) {
         ModelAndView mav = new ModelAndView();
         mav.addObject("infor", operationService.getoperationoutlineinfor(idKey));
+        mav.addObject("courseObjectiveList",operationService.getOperationOutlineCourseObjectives(idKey));
         mav.setViewName("outline/viewOutline.jsp");
         return mav;
     }

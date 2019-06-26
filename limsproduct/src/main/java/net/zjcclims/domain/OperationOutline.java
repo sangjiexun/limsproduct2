@@ -183,6 +183,11 @@ public class OperationOutline implements Serializable {
 	@XmlElement
 	String outlineCourseTeachingTargetOver;
 
+	@Column(name = "course_hour")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	BigDecimal courseHour;
+
 	@Column(name = "theory_course_hour")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
@@ -193,6 +198,33 @@ public class OperationOutline implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	BigDecimal experimentCourseHour;
+
+	@Column(name = "computer_course_hour")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	BigDecimal computerCourseHour;
+
+	@Column(name = "exercise_course_hour")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	BigDecimal exerciseCourseHour;
+
+	@Column(name = "teach_method", columnDefinition = "TEXT")
+	@Basic(fetch = FetchType.EAGER)
+	@Lob
+	@XmlElement
+	String teachMethod;
+
+	@Column(name = "course_appraise", columnDefinition = "TEXT")
+	@Basic(fetch = FetchType.EAGER)
+	@Lob
+	@XmlElement
+	String courseAppraise;
+
+	@Column(name = "auditor")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String auditor;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({ @JoinColumn(name = "first_courses", referencedColumnName = "course_number") })
@@ -629,6 +661,54 @@ public class OperationOutline implements Serializable {
 	 */
 	public void setCDictionarys(Set<CDictionary> CDictionarys) {
 		this.CDictionarys = CDictionarys;
+	}
+
+	public BigDecimal getCourseHour() {
+		return courseHour;
+	}
+
+	public void setCourseHour(BigDecimal courseHour) {
+		this.courseHour = courseHour;
+	}
+
+	public BigDecimal getComputerCourseHour() {
+		return computerCourseHour;
+	}
+
+	public void setComputerCourseHour(BigDecimal computerCourseHour) {
+		this.computerCourseHour = computerCourseHour;
+	}
+
+	public BigDecimal getExerciseCourseHour() {
+		return exerciseCourseHour;
+	}
+
+	public void setExerciseCourseHour(BigDecimal exerciseCourseHour) {
+		this.exerciseCourseHour = exerciseCourseHour;
+	}
+
+	public String getTeachMethod() {
+		return teachMethod;
+	}
+
+	public void setTeachMethod(String teachMethod) {
+		this.teachMethod = teachMethod;
+	}
+
+	public String getCourseAppraise() {
+		return courseAppraise;
+	}
+
+	public void setCourseAppraise(String courseAppraise) {
+		this.courseAppraise = courseAppraise;
+	}
+
+	public String getAuditor() {
+		return auditor;
+	}
+
+	public void setAuditor(String auditor) {
+		this.auditor = auditor;
 	}
 
 	/**
