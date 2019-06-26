@@ -113,6 +113,8 @@
       			<class>net.zjcclims.domain.COperationOutlineCredit</class>
       			<class>net.zjcclims.domain.OperationOutline</class>
 				<class>net.zjcclims.domain.OperationOutlineCourse</class>
+				<class>net.zjcclims.domain.OperationOutlineCourseObjective</class>
+				<class>net.zjcclims.domain.OperationOutlineCourseObjectiveRelated</class>
       			<class>net.zjcclims.domain.OperItemAudit</class>
       			<class>net.zjcclims.domain.NDeviceAuditRecord</class>
       			<class>net.zjcclims.domain.NDevicePurchase</class>
@@ -265,10 +267,8 @@
 			<class>net.zjcclims.domain.ItemAssets</class>
 			<class>net.zjcclims.domain.ItemLabUsers</class>
 			<class>net.zjcclims.domain.ItemOpenTeacher</class>
-
-
-			<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		</persistence-unit>
+            <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        </persistence-unit>
 
 	
 </persistence>

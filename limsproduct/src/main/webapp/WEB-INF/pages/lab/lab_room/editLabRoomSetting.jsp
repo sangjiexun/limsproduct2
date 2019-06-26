@@ -52,7 +52,7 @@ function cancel(){
 <script>
 //定义全局变量
 var appointment = "${device.labRoomReservation}";//是否允许预约
-var needLoan="${device.CDictionaryByAllowLending.id}";//是否允许出借
+//var needLoan="${device.CDictionaryByAllowLending.id}";//是否允许出借
 var needAudit="${device.CDictionaryByIsAudit.id}";//预约是否需要审核
 var needtutor="${needtutor}";//是否需要系主任审核
 var needdean="${needdean}";//是否需要系主任审核
@@ -90,12 +90,12 @@ $(document).ready(function(){
     $("#appointment2").click(function () {
         appointment = $("#appointment2").val();
     });
-	$("#needLoan1").click(function(){
-		needLoan=$("#needLoan1").val();
-	});
-	$("#needLoan2").click(function(){
-		needLoan=$("#needLoan2").val();
-	});
+	// $("#needLoan1").click(function(){
+	// 	needLoan=$("#needLoan1").val();
+	// });
+	// $("#needLoan2").click(function(){
+	// 	needLoan=$("#needLoan2").val();
+	// });
 	$("#needtutor1").click(function(){
 		needtutor=$("#needtutor1").val();
 	});
@@ -160,7 +160,7 @@ $(document).ready(function(){
 
 //保存参数设置
 function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName page传递到后台
-	var needLoan1=needLoan;//是否允许出借
+//	var needLoan1=needLoan;//是否允许出借
     var appointment1 = appointment;//是否允许预约
 	var needAudit1=needAudit;//预约是否需要审核
 	var needtutor1=needtutor;//是否需要导师审核
@@ -186,9 +186,9 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
     // if(academies == undefined || academies.length == 0){
     //     academies = ["-1"];
     // }
-	if(needLoan==""){
-    	needLoan1=-1;
-    }
+    // if(needLoan==""){
+    // 	needLoan1=-1;
+    // }
     if(!needAllAudits[0]) {
         realAllAudits = [0];
     }
@@ -255,7 +255,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
     //}
 
     if( appointment == 2){
-        needAudit1 = -1;
+//        needAudit1 = -1;
         needtutor1 = -1;
         needdean1 = -1;
         trainingCenterDirector1 = -1;
@@ -289,7 +289,8 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
         "needAudit": needAudit1,
         "realAllAudits": realAllAudits,
         "needAllowSecurityAccess": needAllowSecurityAccess1,
-        "needLoan":needLoan1,
+        "flag": ${flag},
+//        "needLoan":needLoan1,
     });
 	$.ajax({
 		<%--url:"${pageContext.request.contextPath}/device/saveLabRoomSettingRest/" + "${labRoomId}" + "/"+"${page}"+"/"+"${type}"+"/"+needLoan1+"/"--%>
@@ -320,7 +321,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
 //是否需要审核的联动
 $(document).ready(function(){
         document.getElementById("isAudit").style.display="";
-    if (${allowAppointment==2} || ${empty isAudit}) {//是否可以预约联动
+    if (${allowAppointment==2}) {//是否可以预约联动
         //document.getElementById("allowLending").style.display = "None";
         document.getElementById("isAudit").style.display = "None";
         // document.getElementById("manager").style.display="None";
@@ -347,6 +348,7 @@ $(document).ready(function(){
             // document.getElementById("dean").style.display = "None";
             // document.getElementById("trainingCenterDirector").style.display = "None";
             // document.getElementById("trainingDepartmentDirrector").style.display = "None";
+             document.getElementById("1staudit").style.display = "None";
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "None";
@@ -382,6 +384,7 @@ $("#needAudit1").change(function(){
 	// document.getElementById("labManager").style.display="";
 	// document.getElementById("trainingCenterDirector").style.display="";
 	// document.getElementById("trainingDepartmentDirrector").style.display="";
+    document.getElementById("1staudit").style.display = "";
     if(needAllAudits[0]) {
         for (var i = 0; i < needAllAudits.length; i++) {
             document.getElementById(needAllAudits[i]).style.display = "";
@@ -440,6 +443,7 @@ $(document).ready(function(){
 		// document.getElementById("labManager").style.display="None";
 		// document.getElementById("trainingCenterDirector").style.display="None";
 		// document.getElementById("trainingDepartmentDirrector").style.display="None";
+        document.getElementById("1staudit").style.display = "None";
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
@@ -649,14 +653,14 @@ margin-left:3px;
 					<form:form action="${pageContext.request.contextPath}/device/saveDeviceSetting" method="post" modelAttribute="device">
 					<div class="new-classroom">
 			<table id="radioTable">
-			<tr id="allowLending">
-				<td><%--${device.CDictionaryByTrainType.id }--%>是否允许借用:</td>
-				<td>
-				<c:forEach items="${CActives}" var="active" varStatus="i">
-				<form:radiobutton path="CDictionaryByAllowLending.id" value="${active.id}" id="needLoan${i.count}" /><label for="needLoan${i.count}">${active.CName}</label>
-				</c:forEach>										
-				</td>
-			</tr>
+			<%--<tr id="allowLending">--%>
+				<%--<td>&lt;%&ndash;${device.CDictionaryByTrainType.id }&ndash;%&gt;是否允许借用:</td>--%>
+				<%--<td>--%>
+				<%--<c:forEach items="${CActives}" var="active" varStatus="i">--%>
+				<%--<form:radiobutton path="CDictionaryByAllowLending.id" value="${active.id}" id="needLoan${i.count}" /><label for="needLoan${i.count}">${active.CName}</label>--%>
+				<%--</c:forEach>										--%>
+				<%--</td>--%>
+			<%--</tr>--%>
 
 				<tr id="allowAppointment">
 					<td>是否允许预约:</td>
@@ -680,6 +684,13 @@ margin-left:3px;
 				</c:forEach>
 				</td>
 			</tr>
+				<c:if test="${flag == true}">
+					<tr id="1staudit">
+						<td>${authLevelOne}</td>
+						<td></td>
+					</tr>
+				</c:if>
+				<c:if test="${flag == false}">
 				<c:forEach items="${needAllAudits}" var="needAllAudit" varStatus="i">
 					<tr id="${needAllAudit}">
 						<td>是否需要${authNames[i.count-1]}审核:</td>
@@ -691,6 +702,7 @@ margin-left:3px;
 						</td>
 					</tr>
 				</c:forEach>
+				</c:if>
 			<%--<tr id="teacher">--%>
 				<%--<td>是否需要导师审核:</td>--%>
                 <%--<td>--%>

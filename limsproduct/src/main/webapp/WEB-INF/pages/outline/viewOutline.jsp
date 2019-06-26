@@ -56,6 +56,22 @@
                                     <td><c:forEach items="${infor.CDictionarys}" var="a">${a.CName}/</c:forEach></td>
                                 </tr>
                                 <tr>
+                                    <th>课程学时</th>
+                                    <td>${infor.courseHour}</td>
+                                    <th>讲课学时</th>
+                                    <td>${infor.theoryCourseHour}</td>
+                                </tr>
+                                <tr>
+                                    <th>实验学时</th>
+                                    <td>${infor.experimentCourseHour}</td>
+                                    <th>上机学时</th>
+                                    <td>${infor.computerCourseHour}</td>
+                                </tr>
+                                <tr>
+                                    <th>习题学时</th>
+                                    <td>${infor.exerciseCourseHour}</td>
+                                </tr>
+                                <tr>
                                     <th>后续课程</th>
                                     <td>${infor.schoolCourseInfoByFollowUpCourses.courseName}</td>
                                     <th>先修课程</th>
@@ -76,6 +92,11 @@
                                 <tr><td>${infor.coursesAdvice}</td></tr>
                                 <tr><th>课程任务和教学目标</th></tr>
                                 <tr><td>${infor.outlineCourseTeachingTarget}</td></tr>
+                                <c:forEach items="${courseObjectiveList}" var="o">
+                                    <tr>
+                                        <td>${o.objectiveName}:${o.objectiveContent}</td>
+                                    </tr>
+                                </c:forEach>
                             </table>
                         </fieldset>
                         <fieldset class="introduce-box">
@@ -84,6 +105,20 @@
                                 <tr><th>（一）课程基本内容</th></tr>
                                 <tr><td>${infor.basicContentCourse}</td></tr>
                                 <tr><th>（二）课程基本要求</th></tr>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程教学方法</legend>
+                            <table>
+                                <tr><th>课程教学方法详情</th></tr>
+                                <tr><td>${infor.teachMethod}</td></tr>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程考核方法</legend>
+                            <table>
+                                <tr><th>课程考核方法详情</th></tr>
+                                <tr><td>${infor.courseAppraise}</td></tr>
                             </table>
                         </fieldset>
                         <fieldset class="introduce-box">
@@ -132,6 +167,15 @@
                                         </tr>
                                     </c:forEach>
                                 </table>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>审核信息</legend>
+                            <table>
+                                <th>大纲撰写人</th>
+                                <td>${infor.user.cname}</td>
+                                <th>大纲审核人</th>
+                                <td>${infor.auditor}</td>
                             </table>
                         </fieldset>
                     </div>

@@ -1,6 +1,5 @@
 var contextPath = $("meta[name='contextPath']").attr("content");
 var urlPlan = $('#zuulServerUrl').val()+"api/school/apiSchoolCourseListByPage";
-var urlManager =$('#zuulServerUrl').val()+"api/school/apiEduSchoolCourseByPage";
 var zuulUrl ="";
 var audit = false;// 排课是否需要审核
 var businessType = "";// 审核参数
@@ -13,19 +12,8 @@ $(document).ready(function () {
 
     zuulUrl =$("#zuulServerUrl").val()+contextPath+"/timetable/";
     urlPlan = zuulUrl+"api/school/apiSchoolCourseListByPage";
-    urlManager =zuulUrl+"api/school/apiEduSchoolCourseByPage";
     document.cookie = "term=NONE";// 判断默认学期
-    c_start=document.cookie.indexOf("itype=");
-    c_end=document.cookie.indexOf(";",c_start);
-    var itype =document.cookie.substring(c_start,c_end);
-    if(itype.split("=")[1]=='PLAN'){
-        getTimetablePlanView();
-    }else if(itype.split("=")[1]=='MANAGE'){
-        getTimetableMangerView();
-    }else{
-        document.cookie = "itype=COURSE";
-        getTimetablePlanView();
-    }
+    getTimetablePlanView();
 });
 
 //得到查询的参数
@@ -232,7 +220,6 @@ function deleteTimetable(term, courseNo) {
             success: function (json) {
             }
         });
-        // refreshBootstrapTable();
         refreshBootstrapTableLayer();
     }
 }
@@ -257,7 +244,6 @@ function deleteTimetableByBySameNumberId(sameNumberId) {
                 return false;
             }
         });
-        // refreshBootstrapTable();
         refreshBootstrapTableLayer();
     }
 }
@@ -265,72 +251,15 @@ function deleteTimetableByBySameNumberId(sameNumberId) {
 function refreshBootstrapTable() {
     var url = "";
     if(historyFlag == 1){
-        var view_radio =$("input[name='view_radio']:checked").val();
-        if (view_radio=="timetable") {
-            getTimetablePlanView();
-        }else{
-            getTimetableMangerView();
-        }
+        getTimetablePlanView();
         historyFlag = 0;
     }
-    var view_radio =$("input[name='view_radio']:checked").val();
-    if (view_radio=="timetable") {
-        url = zuulUrl + "api/school/apiSchoolCourseListByPage";
-    }else{
-        url = zuulUrl + "api/school/apiEduSchoolCourseByPage";
-    }
+    url = zuulUrl + "api/school/apiSchoolCourseListByPage";
     var params = $("#table_list").bootstrapTable('getOptions')
     params.ajaxOptions.headers.Authorization =getJWTAuthority();
     params.url = url;
     params.silent=true;
-    // params.pageNumber=2;
-    var pageNumber = params.pageNumber;
     $("#table_list").bootstrapTable('refresh', params);
-    // $("#table_list").bootstrapTable("refreshOptions",{pageNumber:pageNumber,url:url})
-    // if(timetableFlag == 1){
-    //     getTimetablePlanView(pageNumber);
-    // }else if(timetableFlag == 2){
-    //     getTimetableMangerView(pageNumber)
-    // }else if(timetableFlag == 3){
-    //     getTimetableHistoryView(pageNumber)
-    // }
-
-
-}
-function refreshBootstrapTableLayer() {
-    var url = "";
-    if(historyFlag == 1){
-        var view_radio =$("input[name='view_radio']:checked").val();
-        if (view_radio=="timetable") {
-            getTimetablePlanView();
-        }else{
-            getTimetableMangerView();
-        }
-        historyFlag = 0;
-    }
-    var view_radio =$("input[name='view_radio']:checked").val();
-    if (view_radio=="timetable") {
-        url = zuulUrl + "api/school/apiSchoolCourseListByPage";
-    }else{
-        url = zuulUrl + "api/school/apiEduSchoolCourseByPage";
-    }
-    var params = $("#table_list").bootstrapTable('getOptions')
-    params.ajaxOptions.headers.Authorization =getJWTAuthority();
-    params.url = url;
-    params.silent=true;
-    // params.pageNumber=2;
-    var pageNumber = params.pageNumber;
-    // $("#table_list").bootstrapTable('refresh', params);
-    // $("#table_list").bootstrapTable("refreshOptions",{pageNumber:pageNumber,url:url})
-    if(timetableFlag == 1){
-        getTimetablePlanView(pageNumber);
-    }else if(timetableFlag == 2){
-        getTimetableMangerView(pageNumber)
-    }else if(timetableFlag == 3){
-        getTimetableHistoryView(pageNumber)
-    }
-
-
 }
 // 排课视图中不保留调课完成后的管理类操作
 function getTimetablePlanView(pageNumber) {
@@ -341,7 +270,6 @@ function getTimetablePlanView(pageNumber) {
     timetableFlag = 1;
     $("#allRadio").prop("checked",true);
     //获取jwt认证，获取token
-    document.cookie = "itype=PLAN";
     //初始化表格,动态从服务器加载数据
     $("#table_list").bootstrapTable('destroy');
     $("#table_list").bootstrapTable({
@@ -411,7 +339,6 @@ function getTimetablePlanView(pageNumber) {
             width: "8%",
             sortable: true,
             formatter: function (value, row, index) {
-                /*var result = row.courseName + "<br/>(" + row.courseNumber + ")";*/
                 var result = row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
                 if (row.timetableStyle == 4 && row.baseActionAuthDTO.addActionAuth) {
                     result += "<a href='javascript:;' class='btn btn-xs green' onclick=\"courseBatchManage('" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>批/组管理</span></a>&nbsp;";
@@ -423,12 +350,7 @@ function getTimetablePlanView(pageNumber) {
             field: "academyName",
             width: "5%",
             sortable: true
-        }/*, {
-            title: "班级信息",
-            field: "classInfo",
-            width: "5%",
-            sortable: true
-        }*/, {
+        }, {
             title: "课程计划",
             field: "coursePlan",
             width: "20%",
@@ -453,294 +375,6 @@ function getTimetablePlanView(pageNumber) {
             formatter: function (value, row, index) {
                 var rt = "";
                 var timetableDTOs = row.timetableDTOs;
-                if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                    rt += '<table border="1"><tr><td width="12%">批/组</td><td width="8%">星期</td><td width="8%">节次</td><td width="8%">周次</td><td width="20%">实验室</td><td width="10%">授课教师</td><td width="10%">实验项目</td><td width="6%">选课类型</td><td width="10%">选课时间</td><td width="6%">名单</td></tr>';
-                }
-                if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                    rt += '<table border="1"><tr><td width="7%">星期</td><td width="13%">节次</td><td width="15%">周次</td><td width="30%">实验室</td><td width="15%">授课教师</td><td width="20%">实验项目</td></tr>';
-                }
-                var count = Number(0);
-                for (var i = 0, len = timetableDTOs.length; i < len; i++) {
-                    if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
-                        var startDate = new Date(timetableDTOs[i].startDate);
-                        var endDate = new Date(timetableDTOs[i].endDate);
-                        var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
-                        var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
-                        var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
-                        rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
-                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
-                            rt += timetableDTOs[i].endClass;
-                        } else {
-                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
-                        }
-                        rt += "</td><td>";
-                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
-                            rt += timetableDTOs[i].endWeek;
-                        } else {
-                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
-                        }
-                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers +"/" + timetableDTOs[i].tutors + "</td><td>" + timetableDTOs[i].items + "</td><td>";
-                        if (timetableDTOs[i].ifSelect == 0) {
-                            rt += "系统分配";
-                        } else if (timetableDTOs[i].ifSelect == 1) {
-                            rt += "学生自选";
-                        }
-                        rt += "</td><td>" + startDate.toLocaleDateString() + "~" + endDate.toLocaleDateString();
-                        rt += "</td><td>" + result + "</td></tr>";
-                        rt += "<tr id=" + group_div_reality + " style=\"display: none;\"></tr>"
-                    }
-                    if (timetableDTOs.length > 0&&row.timetableStyle!=4&&row.timetableStyle!=6) {
-                        rt += "<tr><td>" + timetableDTOs[i].weekday + "</td><td>";
-                        if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
-                            rt += timetableDTOs[i].endClass;
-                        } else {
-                            rt += timetableDTOs[i].startClass + "-" + timetableDTOs[i].endClass;
-                        }
-                        rt += "</td><td>";
-                        if (timetableDTOs[i].startWeek == timetableDTOs[i].endWeek) {
-                            rt += timetableDTOs[i].endWeek;
-                        } else {
-                            rt += timetableDTOs[i].startWeek + "-" + timetableDTOs[i].endWeek;
-                        }
-                        rt += "</td><td>" + timetableDTOs[i].labInfo + "</td><td>" + timetableDTOs[i].teachers +"/" + timetableDTOs[i].tutors + "</td><td>" + timetableDTOs[i].items + "</td></tr>";
-                    }
-                }
-                if (timetableDTOs.length > 0) {
-                    rt += '</table>';
-                }
-
-                return rt;
-            }
-        }, {
-            title: "上课教师",
-            field: "cname",
-            width: "5%",
-            sortable: true,
-            formatter: function (value, row, index) {
-                return row.cname + "(" + row.username + ")";
-            }
-        }, {
-            title: "学生/班级",
-            field: "student",
-            width: "5%",
-            formatter: function (value, row, index) {
-                var result = "";
-                result = "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"schoolCourseStudents(" + row.termId + ",'" + row.courseNo + "')\" >名单(" + row.student + ")</a><br>";
-                result += row.classInfo;
-                return result;
-            }
-        }, {
-            title: "操作",
-            width: "15%",
-            field: "empty",
-            formatter: function (value, row, index) {
-                var id = value;
-                var result = "";
-                if (row.timetableStatus == 1) {
-                    result += "排课已发布<br>";
-                    if (row.baseActionAuthDTO.selectGroupActionAuth && row.timetableStyle == 4) {
-                        if (row.isSelect == 1) {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-check'>学生选课</span></a>&nbsp;";
-                        } else {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-check'>查看选课</span></a>&nbsp;";
-                        }
-                    }
-                    /*如果未授权*/
-                } else if (!row.baseActionAuthDTO.addActionAuth && !row.baseActionAuthDTO.deleteActionAuth && !row.baseActionAuthDTO.updateActionAuth && !row.baseActionAuthDTO.publicActionAuth) {
-                    result += "<b>操作未授权</b>";
-                } else if (row.timetableStatus == 0) {
-                    if (row.baseActionAuthDTO.addActionAuth) {
-                        result += "<table>";
-                        if (row.schoolCourseDetailDTOs.length > 0 && row.schoolCourseDetailDTOs[0].weekday > 0) {
-                            result += "<tr><td height=\"25px\">"
-                            if(eduDirect)
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"startTimetable('" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>直接排课</span></a>&nbsp;";
-                            if(eduAjust)
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"doAdjustTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>调整排课</span></a>&nbsp;";
-                            result += "</td></tr>";
-                        }
-                        result += "<tr><td height=\"25px\">";
-                        if(eduBatch)
-                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReNoGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>不分批排</span></a>&nbsp;";
-                        if(eduNoBatch)
-                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>分批排课</span></a>&nbsp;";
-                        // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
-                        result += "</td></tr></table>";
-                    }
-                } else if (row.timetableStatus == 2) {
-                    result += row.auditors;
-                    // 此时审核服务表中已经有记录，删除排课无法同时删除审核设置，暂时隐藏
-                    // if (row.baseActionAuthDTO.publicActionAuth) {
-                        // result += "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"publicTimetable(1,'" + row.courseNo + "',1)\" ><span class='glyphicon glyphicon-ok'>发布排课</span></a>&nbsp;";
-                        // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"deleteTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-remove'>删除排课</span></a>&nbsp;";
-                    // }
-                }else if(row.timetableStatus == 3) {
-                    result += "待发布";
-                }else if(row.timetableStatus == 4) {
-                    result += "审核未通过";
-                }else if(row.timetableStatus == 5) {
-                    result += row.auditors;
-                } else if (row.timetableStatus == 10) {
-                    if (row.baseActionAuthDTO.addActionAuth) {
-                        result += "<table><tr><td height=\"25px\">";
-                        if (row.timetableStyle == 2) {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"doAdjustTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>继续调课</span></a>&nbsp;";
-                        } else if (row.timetableStyle == 3) {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReNoGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>不分批调</span></a>&nbsp;";
-                        } else if (row.timetableStyle == 4) {
-                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>分批调整</span></a>&nbsp;";
-                        }
-                        if (row.timetableStyle != 1) {
-                            if(auditOrNot) {
-                                // 需要审核
-                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable(1,'" + row.courseNo + "',2)\" ><span class='glyphicon glyphicon-check'>排课完成</span></a></td></tr>&nbsp;";
-                            }else{
-                                // 不需要审核
-                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable(1,'" + row.courseNo + "',3)\" ><span class='glyphicon glyphicon-check'>排课完成</span></a></td></tr>&nbsp;";
-                            }
-                            result += "<tr><td height=\"25px\"><div style=\"height:20px;\"><a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"deleteTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-remove'>删除排课</span></a></div>&nbsp;";
-                            // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
-                        }
-                        result += "</td></tr></table>";
-                    }
-                }
-                return result;
-            }
-        }]
-    });
-    //默认展开
-    $("#table_list").bootstrapTable('expandRow', 1);
-
-    $("#term").on("change", function () {
-        var params = $("#table_list").bootstrapTable('getOptions')
-        params.ajaxOptions.headers.Authorization =getJWTAuthority();
-        params.silent=true;
-        $("#table_list").bootstrapTable('refresh', params);
-    })
-    $("#search").keydown("input", function (event) {
-        var params = $("#table_list").bootstrapTable('getOptions')
-        params.ajaxOptions.headers.Authorization =getJWTAuthority();
-        params.silent=true;
-        if (event.keyCode==13){
-            $("#table_list").bootstrapTable('refresh', params);
-        }
-        // $("#table_list").bootstrapTable('refresh', params);
-    })
-
-}
-
-function getTimetableMangerView(pageNumber) {
-    if(pageNumber == null){
-        pageNumber = 1;
-    }
-    historyFlag = 0;
-    timetableFlag = 2;
-    $("#allRadio").prop("checked",true);
-    //获取jwt认证，获取token
-    //getJWTAuthority();
-    document.cookie = "itype=MANAGE";
-    $("#table_list").bootstrapTable('destroy');
-    //初始化表格,动态从服务器加载数据
-    $("#table_list").bootstrapTable({
-        //使用get请求到服务器获取数据
-        method: "post",
-        //必须设置，不然request.getParameter获取不到请求参数
-        contentType: 'application/json;charset=utf-8',
-        dataType: 'json',
-        //获取数据的Servlet地址
-        url: urlManager,
-        ajaxOptions:{
-            headers: {Authorization: getJWTAuthority()}
-        },
-        //设置为undefined可以获取pageNumber，pageSize，searchText，sortName，sortOrder
-        //设置为limit可以获取limit, offset, search, sort, order
-        queryParams: queryParams,
-        //表格显示条纹
-        striped: true,
-        cache: false,
-        toolbar: "#toolbar",
-        //启动分页
-        pagination: true,
-        //是否启用排序
-        sortable: true,
-        silentSort: true,
-        //排序方式
-        //sortOrder: "asc",
-        //sortName: 'courseName',
-        //是否显示所有的列（选择显示的列）
-        showColumns: true,
-        showRefresh: true,
-        //每页显示的记录数
-        pageSize: 15,
-        //当前第几页
-        pageNumber: pageNumber,
-        //记录数可选列表
-        pageList: [5, 10, 15, 20, 25],
-        //是否启用查询
-        search: false,
-        searchAlign: 'left',
-        //是否启用详细信息视图
-        detailView: false,
-        //表示服务端请求
-        sidePagination: "server",
-        //设置为undefined可以获取pageNumber，pageSize，searchText，sortName，sortOrder
-        //设置为limit可以获取limit, offset, search, sort, order
-        queryParamsType: "limit",
-        //json数据解析
-        responseHandler: function (res) {
-            return {
-                "rows": res.rows,
-                "total": res.total
-            };
-        },
-        //数据列
-        columns: [{
-            //field: 'Number',//可不加
-            title: '序号',//标题  可不加
-            width: "3%",
-            formatter: function (value, row, index) {
-                return index + 1;
-            }
-        }, {
-            title: "课程信息",
-            field: "courseNumber",
-            width: "7%",
-            sortable: true,
-            formatter: function (value, row, index) {
-                return row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";
-                /*var result = row.courseName + "<br/>(" + row.courseNumber + ")"+"<br/>教学班编号"+"<br/>(" + row.courseNo + ")";*/
-            }
-        }, {
-            title: "所属学院",
-            field: "academyName",
-            width: "6%",
-            sortable: true
-        }, {
-            title: "课程计划",
-            field: "coursePlan",
-            width: "17%",
-            formatter: function (value, row, index) {
-                var rt = '<table border="1"><tr><td width="20%">星期</td><td width="20%">节次</td><td width="20%">周次</td><td width="40%">实验室</td></tr>';
-                var schoolCourseDetailDTOs = row.schoolCourseDetailDTOs;
-                var count = Number(0);
-                for (var i = 0, len = schoolCourseDetailDTOs.length; i < len; i++) {
-                    if (schoolCourseDetailDTOs[i].weekday == 0) {
-                        return "";
-                    }
-                    //rt += schoolCourseDetailDTOs[i].coursePlan + "<br>";
-                    rt += "<tr><td>" + schoolCourseDetailDTOs[i].weekday + "</td><td>" + schoolCourseDetailDTOs[i].startClass + "-" + schoolCourseDetailDTOs[i].endClass + "</td><td>" + schoolCourseDetailDTOs[i].startWeek + "-" + schoolCourseDetailDTOs[i].endWeek + "</td><td>" + schoolCourseDetailDTOs[i].labInfo + "</td></tr>";
-                }
-                rt += '</table>';
-                return rt;
-            }
-        }, {
-            title: "已排课表",
-            field: "timetableDTOs",
-            width: "31%",
-            formatter: function (value, row, index) {
-                var rt = "";
-                var tLength =0;
-                var timetableDTOs = row.timetableDTOs;
                 var tlength = 0;
                 if(timetableDTOs!=null){
                     tlength = timetableDTOs.length;
@@ -761,7 +395,6 @@ function getTimetableMangerView(pageNumber) {
                     rt += "</tr>";
                 }
                 /**子表数据**/
-                var count = Number(0);
                 for (var i = 0, len = tlength; i < len; i++) {
                     if (timetableDTOs.length > 0&&(row.timetableStyle==4||row.timetableStyle==6)) {
                         var startDate = new Date(timetableDTOs[i].startDate);
@@ -820,30 +453,51 @@ function getTimetableMangerView(pageNumber) {
                 return rt;
             }
         }, {
-            title: "学生名单",
+            title: "上课教师",
+            field: "cname",
+            width: "5%",
+            sortable: true,
+            formatter: function (value, row, index) {
+                return row.cname + "(" + row.username + ")";
+            }
+        }, {
+            title: "学生/班级",
             field: "student",
             width: "5%",
             formatter: function (value, row, index) {
-
                 var result = "";
-                result = "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"schoolCourseStudents(" + row.termId + ",'" + row.courseNo + "')\" >名单(" + row.student + ")</a>";
+                result = "<a href='javascript:;' class='btn btn-xs green' title='查看'  onclick=\"schoolCourseStudents(" + row.termId + ",'" + row.courseNo + "')\" >名单(" + row.student + ")</a><br>";
+                result += row.classInfo;
                 return result;
             }
         }, {
             title: "操作",
             width: "15%",
             field: "empty",
-            // 管理发布视图中不保留调课完成前的排课操作
             formatter: function (value, row, index) {
                 var id = value;
                 var result = "";
                 if (row.timetableStatus == 1) {
-                    result += "排课已发布";
-                    if (row.baseActionAuthDTO.selectGroupActionAuth && row.timetableStyle == 4 && row.isSelect != 1) {
-                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-check'>查看选课</span></a>&nbsp;";
-                    }
+                    result += "排课已发布<br>";
                 } else if (row.timetableStatus == 0) {
-                    result += "无排课记录";
+                    if (row.baseActionAuthDTO.addActionAuth) {
+                        result += "<table>";
+                        if (row.schoolCourseDetailDTOs.length > 0 && row.schoolCourseDetailDTOs[0].weekday > 0) {
+                            result += "<tr><td height=\"25px\">"
+                            if(eduDirect)
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"startTimetable('" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>直接排课</span></a>&nbsp;";
+                            if(eduAjust)
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"doAdjustTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>调整排课</span></a>&nbsp;";
+                            result += "</td></tr>";
+                        }
+                        result += "<tr><td height=\"25px\">";
+                        if(eduBatch)
+                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReNoGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>不分批排</span></a>&nbsp;";
+                        if(eduNoBatch)
+                        result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>分批排课</span></a>&nbsp;";
+                        // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
+                        result += "</td></tr></table>";
+                    }
                 } else if (row.timetableStatus == 2 || row.timetableStatus == 5) {// 待审核 || 审核中
                     if(auditOrNot) {// 设置需要审核
                         if(row.baseActionAuthDTO.auditActionAuth) {
@@ -862,24 +516,34 @@ function getTimetableMangerView(pageNumber) {
                     }else {
                         result += "审核完成，请等待发布";
                     }
+                }else if(row.timetableStatus == 4) {
+                    result += "审核未通过";
+                }else if (row.timetableStatus == 10) {
+                    if (row.baseActionAuthDTO.addActionAuth) {
+                        result += "<table><tr><td height=\"25px\">";
+                        if (row.timetableStyle == 2) {
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"doAdjustTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>继续调课</span></a>&nbsp;";
+                        } else if (row.timetableStyle == 3) {
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReNoGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>不分批调</span></a>&nbsp;";
+                        } else if (row.timetableStyle == 4) {
+                            result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"newEduReGroupCourse(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-edit'>分批调整</span></a>&nbsp;";
+                        }
+                        if (row.timetableStyle != 1) {
+                            if(auditOrNot) {
+                                // 需要审核
+                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable(1,'" + row.courseNo + "',2)\" ><span class='glyphicon glyphicon-check'>排课完成</span></a></td></tr>&nbsp;";
+                            }else{
+                                // 不需要审核
+                                result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable(1,'" + row.courseNo + "',3)\" ><span class='glyphicon glyphicon-check'>排课完成</span></a></td></tr>&nbsp;";
+                            }
+                            result += "<tr><td height=\"25px\"><div style=\"height:20px;\"><a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"deleteTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-remove'>删除排课</span></a></div>&nbsp;";
+                            // result += "<a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"studentTimetable(" + row.termId + ",'" + row.courseNo + "')\" ><span class='glyphicon glyphicon-plus'>学生判冲</span></a>&nbsp;";
+                        }
+                        result += "</td></tr></table>";
+                    }
                 }else if (!row.baseActionAuthDTO.addActionAuth && !row.baseActionAuthDTO.deleteActionAuth && !row.baseActionAuthDTO.updateActionAuth && !row.baseActionAuthDTO.auditActionAuth && !row.baseActionAuthDTO.publicActionAuth) {
-                    result += "<b>操作未授权</b>";/*如果未授权*/
+                    result += "<b>操作未授权</b>";
                 }
-                // else if (row.timetableStatus == 10) { // （暂时保留）后台已做筛选，status=10不会出现在管理视图中，style=1为直接排课，提交后status=2
-                //     if (row.baseActionAuthDTO.addActionAuth) {
-                //         if (row.timetableStyle == 1) {
-                //             result += "<table><tr><td height=\"25px\"><a href='javascript:;' class='btn btn-xs green' title='编辑'  onclick=\"publicTimetable("+row.timetableStyle+",'" + row.courseNo + "',1)\" ><span class='glyphicon glyphicon-edit'>发布排课</span></a></td></tr></table>&nbsp;";
-                //         } else if (row.timetableStyle == 2) {
-                //         } else if (row.timetableStyle == 3) {
-                //         } else if (row.timetableStyle == 4) {
-                //         } else {
-                //             result += "<table><tr><td height=\"25px\">&nbsp;";
-                //         }
-                //         if (row.timetableStyle != 1) {
-                //
-                //         }
-                //     }
-                // }
                 return result;
             }
         }]
@@ -888,13 +552,13 @@ function getTimetableMangerView(pageNumber) {
     $("#table_list").bootstrapTable('expandRow', 1);
 
     $("#term").on("change", function () {
-        var params = $("#table_list").bootstrapTable('getOptions');
+        var params = $("#table_list").bootstrapTable('getOptions')
         params.ajaxOptions.headers.Authorization =getJWTAuthority();
         params.silent=true;
         $("#table_list").bootstrapTable('refresh', params);
     })
     $("#search").keydown("input", function (event) {
-        var params = $("#table_list").bootstrapTable('getOptions');
+        var params = $("#table_list").bootstrapTable('getOptions')
         params.ajaxOptions.headers.Authorization =getJWTAuthority();
         params.silent=true;
         if (event.keyCode==13){
@@ -902,7 +566,9 @@ function getTimetableMangerView(pageNumber) {
         }
         // $("#table_list").bootstrapTable('refresh', params);
     })
+
 }
+
 function getTimetableHistoryView(pageNumber) {
     if(pageNumber == null){
         pageNumber = 1;
@@ -1172,6 +838,25 @@ function courseBatchManage(course_no) {
         }
     });
     layer.full(index);
+}
+
+function refreshBootstrapTableLayer() {
+    var url = "";
+    if(historyFlag == 1){
+        getTimetablePlanView();
+        historyFlag = 0;
+    }
+    url = zuulUrl + "api/school/apiSchoolCourseListByPage";
+    var params = $("#table_list").bootstrapTable('getOptions')
+    params.ajaxOptions.headers.Authorization =getJWTAuthority();
+    params.url = url;
+    params.silent=true;
+    var pageNumber = params.pageNumber;
+    if(timetableFlag == 1){
+        getTimetablePlanView(pageNumber);
+    }else if(timetableFlag == 3){
+        getTimetableHistoryView(pageNumber)
+    }
 }
 
 function getJWTAuthority() {

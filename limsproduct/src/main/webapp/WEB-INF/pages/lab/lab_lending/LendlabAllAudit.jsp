@@ -84,9 +84,14 @@
     </div>
 </div>
 <script type="text/javascript">
+    var isAjax=false;
     function savelabCenterManagerAudit(){
+        if(isAjax){
+            return false;
+        }
         var auditResult = $('input:radio[name="auditResult3"]:checked').val();
         var remark = $("#remark3").val();
+        isAjax=true;
         $.ajax({
             url:"${pageContext.request.contextPath}/labRoomLending/saveLabCenterManagerAuditforlabRoomlend?id=${id}&tage=${tage}&state=${curStage }&page=${page}&auditResult="+auditResult+"&remark="+remark,
             type:"POST",

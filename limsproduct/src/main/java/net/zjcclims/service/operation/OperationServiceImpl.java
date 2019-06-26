@@ -1375,6 +1375,28 @@ public class OperationServiceImpl implements OperationService {
 		
 		return operationOutlineDAO.findOperationOutlineById(idkey);
 	}
+	/***************************************************************************************
+	 * 功能 ：查找大纲对应的课程目标
+	 * 作者：刘博越
+	 * 日期：2019-6-26
+	 **************************************************************************************/
+	@Override
+	public  List<OperationOutlineCourseObjective> getOperationOutlineCourseObjectives(int outlineId){
+		String sql="select id,operation_outline_id,objective_name,objective_content from operation_outline_course_objective " +
+				"where operation_outline_id="+outlineId;
+		Query query=entityManager.createNativeQuery(sql);
+		List<Object[]> objects=query.getResultList();
+		List<OperationOutlineCourseObjective> courseObjectives=new ArrayList<>();
+		for(Object[] o:objects){
+			OperationOutlineCourseObjective objective=new OperationOutlineCourseObjective();
+			objective.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+			objective.setOperationOutlineId(o[1]!=null?Integer.parseInt(o[1].toString()):null);
+			objective.setObjectiveName(o[2]!=null?o[2].toString():null);
+			objective.setObjectiveContent(o[3]!=null?o[3].toString():null);
+			courseObjectives.add(objective);
+		}
+		return  courseObjectives;
+	}
 	/***********************************************************************************
      * 功能 ： 查找未被大纲使用的项目卡项目卡数
      * 作者：徐文
@@ -2577,7 +2599,8 @@ public class OperationServiceImpl implements OperationService {
 	 * @author 陈乐为 2018-8-25
 	 */
 	@Override
-	public List<OperationItem> findOperationItemForLims(OperationItem item, String acno, int currpage, int pageSize) {
+	public List<OperationItem>
+	findOperationItemForLims(OperationItem item, String acno, int currpage, int pageSize) {
 		StringBuffer hql = new StringBuffer("select i from OperationItem i where 1=1");
 		if(!EmptyUtil.isObjectEmpty(item)) {// 有效传参
 			// 项目申请人
