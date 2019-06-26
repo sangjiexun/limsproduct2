@@ -289,6 +289,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
         "needAudit": needAudit1,
         "realAllAudits": realAllAudits,
         "needAllowSecurityAccess": needAllowSecurityAccess1,
+        "flag": #{flag},
 //        "needLoan":needLoan1,
     });
 	$.ajax({
@@ -320,7 +321,7 @@ function saveDeviceSettingRest(id,type){//将labRoomId deviceNumber deviceName p
 //是否需要审核的联动
 $(document).ready(function(){
         document.getElementById("isAudit").style.display="";
-    if (${allowAppointment==2} || ${empty isAudit}) {//是否可以预约联动
+    if (${allowAppointment==2}) {//是否可以预约联动
         //document.getElementById("allowLending").style.display = "None";
         document.getElementById("isAudit").style.display = "None";
         // document.getElementById("manager").style.display="None";
@@ -347,6 +348,7 @@ $(document).ready(function(){
             // document.getElementById("dean").style.display = "None";
             // document.getElementById("trainingCenterDirector").style.display = "None";
             // document.getElementById("trainingDepartmentDirrector").style.display = "None";
+             document.getElementById("1staudit").style.display = "None";
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "None";
@@ -382,6 +384,7 @@ $("#needAudit1").change(function(){
 	// document.getElementById("labManager").style.display="";
 	// document.getElementById("trainingCenterDirector").style.display="";
 	// document.getElementById("trainingDepartmentDirrector").style.display="";
+    document.getElementById("1staudit").style.display = "";
     if(needAllAudits[0]) {
         for (var i = 0; i < needAllAudits.length; i++) {
             document.getElementById(needAllAudits[i]).style.display = "";
@@ -440,6 +443,7 @@ $(document).ready(function(){
 		// document.getElementById("labManager").style.display="None";
 		// document.getElementById("trainingCenterDirector").style.display="None";
 		// document.getElementById("trainingDepartmentDirrector").style.display="None";
+        document.getElementById("1staudit").style.display = "None";
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
@@ -680,6 +684,13 @@ margin-left:3px;
 				</c:forEach>
 				</td>
 			</tr>
+				<c:if test="${flag == true}">
+					<tr id="1staudit">
+						<td>${authLevelOne}</td>
+						<td></td>
+					</tr>
+				</c:if>
+				<c:if test="${flag == false}">
 				<c:forEach items="${needAllAudits}" var="needAllAudit" varStatus="i">
 					<tr id="${needAllAudit}">
 						<td>是否需要${authNames[i.count-1]}审核:</td>
@@ -691,6 +702,7 @@ margin-left:3px;
 						</td>
 					</tr>
 				</c:forEach>
+				</c:if>
 			<%--<tr id="teacher">--%>
 				<%--<td>是否需要导师审核:</td>--%>
                 <%--<td>--%>

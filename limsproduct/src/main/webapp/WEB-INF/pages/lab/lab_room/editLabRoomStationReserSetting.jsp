@@ -86,6 +86,7 @@ function cancel(){
     })
     //是否需要审核的联动
     $(document).ready(function(){
+        document.getElementById("1staudit").style.display="None";
         document.getElementById("isAudit").style.display="None";
         document.getElementById("labRoomWorkers").style.display="None";
         if (${empty isAppointment}) {
@@ -113,6 +114,7 @@ function cancel(){
 //        document.getElementById("trainingType").style.display = "None";
             } else if(${isAudit1 == 1}){
                 document.getElementById('needAudit1').checked = true;
+                document.getElementById("1staudit").style.display="";
             } else if(${isAudit1 == 0}){
                 document.getElementById('needAudit0').checked = true;
                 if(needAllAudits[0]) {
@@ -138,6 +140,7 @@ function cancel(){
             // document.getElementById("labManager").style.display="";
             // document.getElementById("trainingCenterDirector").style.display="";
             // document.getElementById("trainingDepartmentDirrector").style.display="";
+            document.getElementById("1staudit").style.display="";
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "";
@@ -150,6 +153,7 @@ function cancel(){
             // document.getElementById("labManager").style.display="None";
             // document.getElementById("trainingCenterDirector").style.display="None";
             // document.getElementById("trainingDepartmentDirrector").style.display="None";
+            document.getElementById("1staudit").style.display="None";
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "None";
@@ -272,6 +276,7 @@ function cancel(){
             "academies": academies,
             "authorities":authorities,
             "labRoomWorker": labRoomWorker,
+            "flag": ${flag},
         });
         $.ajax({
             url:"${pageContext.request.contextPath}/device/saveLabRoomStationReserSetting",
@@ -511,6 +516,13 @@ margin-left:3px;
 				<%--</c:forEach>--%>
 				</td>
 			</tr>
+				<c:if test="${flag == true}">
+					<tr id="1staudit">
+						<td>${authLevelOne}</td>
+						<td></td>
+					</tr>
+				</c:if>
+				<c:if test="${flag == false}">
 				<c:forEach items="${needAllAudits}" var="needAllAudit" varStatus="i">
 					<tr id="${needAllAudit}">
 						<td>是否需要${authNames[i.count-1]}审核:</td>
@@ -522,6 +534,7 @@ margin-left:3px;
 						</td>
 					</tr>
 				</c:forEach>
+				</c:if>
                 <%--<tr>--%>
                     <%--<td>开放范围</td>--%>
                     <%--<td >--%>
