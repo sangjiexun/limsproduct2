@@ -171,7 +171,7 @@ function getTimetablePlanView() {
                         // 判断是否可选/退选
                         if (currDate > startDate && currDate < endDate) {
                             if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 1) {
-                                gp += "<a href='javascript:;' class='btn btn-xs red' onclick=\"dropGroupStudent(" + timetableBatchDTOS[i].timetableGroupDTOs[j].id + ")\" ><span class='glyphicon glyphicon-check'>退选</span></a>";
+                                gp += "<a href='javascript:;' class='btn btn-xs red' style='background: #CCCC33 !important;' onclick=\"dropGroupStudent(" + timetableBatchDTOS[i].timetableGroupDTOs[j].id + ")\" ><span class='glyphicon glyphicon-check'>退选</span></a>";
                             } else if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 2) {
                                 gp += "<span style='color: red'>选定组数已达上限</span>";
                             } else if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 3) {
