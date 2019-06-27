@@ -373,8 +373,37 @@ $(document).ready(function () {
     };
 
     $("#submitButton").on('click', function () {
+        var batchName = $("#batchName").val();
+        var countGroup = $("#countGroup").val();
+        var numbers = $("#numbers").val();
+        var maxGroupNum = $("#maxGroupNum").val();
         var startDate = $("input[name='startDate']").val();
         var endDate = $("input[name='endDate']").val();
+        if (batchName == null || batchName == '') {
+            layer.msg("请填写批次名称", {icon: 2});
+            return false;
+        }
+        if (countGroup == null || countGroup == '') {
+            layer.msg("请填写每批组数", {icon: 2});
+            return false;
+        }
+        if (numbers == null || numbers == '') {
+            layer.msg("请填写每组人数", {icon: 2});
+            return false;
+        }
+        if (maxGroupNum == null || maxGroupNum == '') {
+            layer.msg("请填写每人可选组数", {icon: 2});
+            return false;
+        }
+        if (startDate == null || startDate == '') {
+            layer.msg("请填写选课开始日期", {icon: 2});
+            return false;
+        }
+        if (endDate == null || endDate == '') {
+            layer.msg("请填写选课结束日期", {icon: 2});
+            return false;
+        }
+
         var arr = new Object();
         arr.selfId = $("#selfId").val();
         arr.batchName = $("#batchName").val();
@@ -383,6 +412,7 @@ $(document).ready(function () {
         arr.startDate = startDate;
         arr.endDate = endDate;
         arr.ifselect = $("input[name='ifselect']:checked").val();
+        arr.maxGroupNum = maxGroupNum;
         var arrs = JSON.stringify(arr);
         $.ajax({
             url: zuulUrl + "api/timetable/manage/apiSaveTimetableBatch",
