@@ -92,6 +92,17 @@ public class OpenOperationItemController<JsonResult> {
 		binder.registerCustomEditor(Double.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Double.class, true));
 	}
 
+	/**
+	 * Description 开放项目管理--项目列表
+	 * @param request
+	 * @param currpage
+	 * @param status
+	 * @param orderBy
+	 * @param operationItem
+	 * @param acno
+	 * @return
+	 * @author 黄保钱 2019-4-26
+	 */
 	@RequestMapping("/listOpenOperationItem")
 	public ModelAndView listOpenOperationItem(HttpServletRequest request, @RequestParam int currpage, int status, int orderBy, @ModelAttribute OperationItem operationItem, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
@@ -1187,8 +1198,8 @@ public class OpenOperationItemController<JsonResult> {
 	/************************************************************
 	 * Descriptions：自主排课管理-自主排课二次分批排课的主显示页面
 	 *
-	 * @作者：魏诚
-	 * @时间：2018-09-04
+	 * @作者：黄保钱
+	 * @时间：2019-4-24
 	 ************************************************************/
 	@RequestMapping("/newSelfReGroupTimetableCourse")
 	public ModelAndView newSelfReGroupTimetableCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
