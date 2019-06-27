@@ -118,7 +118,7 @@ var s=${isAudit};
 	<div id="navigation">
 		<ul>
 			<li><a href="javascript:void(0)">开放预约 </a></li>
-			<li class="end"><a href="javascript:void(0)"><spring:message code="all.trainingRoom.labroom" />预约</a></li>
+			<li class="end"><a href="javascript:void(0)"><spring:message code="left.station.appointment" />预约</a></li>
 		</ul>
 	</div>
 </div>

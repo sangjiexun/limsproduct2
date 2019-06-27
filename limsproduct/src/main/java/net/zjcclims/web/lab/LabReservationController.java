@@ -989,7 +989,7 @@ public class LabReservationController<JsonResult> {
             if(auditConfigs.size()==1){
                 flag = true;
                 String[] sc = ((String) auditConfigs.get(1)).split(":");
-                String authLevelOne = authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname()+"审核";
+                String authLevelOne = "此实验室预约只需要一级审核，为" + authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname()+"审核";
                 mav.addObject("authLevelOne",authLevelOne);
             }else {
                 for (int i = 0; i < auditConfigs.size(); i++) {
@@ -1221,7 +1221,7 @@ public class LabReservationController<JsonResult> {
             if(auditConfigs.size()==1){
                 flag = true;
                 String[] sc = ((String) auditConfigs.get(1)).split(":");
-                String authLevelOne = authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname()+"审核";
+                String authLevelOne = "此实验室工位预约只需要一级审核，为" + authorityDAO.findAuthorityByAuthorityName(sc[0]).iterator().next().getCname()+"审核";
                 mav.addObject("authLevelOne",authLevelOne);
             }else {
                 for (int i = 0; i < auditConfigs.size(); i++) {

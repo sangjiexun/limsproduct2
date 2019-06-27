@@ -735,7 +735,8 @@ public class LabRoomReservationController<JsonResult> {
             if (array != null) {
                 errorUsernames = labRoomReservationService.isAllStudent(array);
             }
-            if (errorUsernames.equals("") || errorUsernames.replaceAll(",", "").equals("") || !userRole.equals("2")) {//无错误编号
+            if (errorUsernames.equals("") && errorUsernames.replaceAll(",", "").equals("") &&
+                    !userRole.equals("2")) {//无错误编号
                 User user = shareService.getUserDetail();
 //                List<User> deans = shareService.findDeansByAcademyNumber(user.getSchoolAcademy());
 //                if(deans != null && deans.size() > 0) {
