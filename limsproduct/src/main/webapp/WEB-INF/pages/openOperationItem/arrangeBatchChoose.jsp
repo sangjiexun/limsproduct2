@@ -63,6 +63,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css" />
     <!-- 下拉的样式结束 -->
     <style>
+        html {
+            height: 100%
+        }
         .chzn-container{
             width: 100%!important;
         }

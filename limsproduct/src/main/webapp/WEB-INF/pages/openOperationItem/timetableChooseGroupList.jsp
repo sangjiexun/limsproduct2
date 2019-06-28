@@ -47,6 +47,9 @@
     </c:choose>
 
     <style>
+        html {
+            height: 100%;
+        }
         .fixed-table-container thead th .sortable {
             background-image: url('${pageContext.request.contextPath}/images/sort.gif');
             cursor: pointer;
