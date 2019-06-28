@@ -5,7 +5,7 @@
  * 导出信息exportxxxx 保存信息：savexxxx 
  ****************************************************************************/
 
-package net.zjcclims.web.common;
+package net.zjcclims.web.system;
 
 import net.gvsun.lims.dto.user.AuthorityDTO;
 import net.sf.json.JSONObject;
@@ -17,6 +17,7 @@ import net.zjcclims.service.dictionary.CDictionaryService;
 import net.zjcclims.service.lab.LabCenterService;
 import net.zjcclims.service.message.MessageService;
 import net.zjcclims.service.systemMenu.SystemMenuService;
+import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
