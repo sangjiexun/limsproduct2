@@ -125,7 +125,14 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                         array.push($(this).val()); //将选中的值 添加到 array中
                     }
                 })
-                window.location.href="${pageContext.request.contextPath}/operation/batchDeleteOperationItem?&array="+array+"&status=${status}";
+
+                $.ajax({
+                    url:'${pageContext.request.contextPath}/operation/batchDeleteOperationItem?&array='+array+'&status=${status}',
+                    type:'POST',
+                    success:function(){
+                        window.location.reload();
+                    }
+                });
             }else {
                 alert("请至少选择一条记录");
             }

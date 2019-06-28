@@ -410,7 +410,7 @@ public interface TimetableAppointmentService {
 	 * @return 符合条件的所有对象数量
 	 * @author 廖文辉 2018-11-2
 	 */
-	public List<Object[]> getCurrentTermTimetable(SchoolTerm schoolTerm,String acno);
+	public List<Object[]> getCurrentTermTimetable(SchoolTerm schoolTerm,String acno, String search);
 	/**
 	 * 根据当前周和学生查询课表数据
 	 * @return 符合条件的所有对象数量
