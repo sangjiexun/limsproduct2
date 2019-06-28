@@ -33,7 +33,7 @@
     <script src="${pageContext.request.contextPath}/jquery/jquery.validate.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/jquery/messages_zh.js" type="text/javascript"></script>
     <!-- 页面业务的js引用 -->
-    <script src="${pageContext.request.contextPath}/js/lims/timetable/self/newSelfReGroupTimetableCourse.js"
+    <script src="${pageContext.request.contextPath}/js/operation/timetableChoose.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <style type="text/css">
@@ -172,7 +172,10 @@
             <tr>
                 <td align=left width="12%"><h3>实验项目：</h3></td>
                 <td colspan="3">
-                    <label>${operationItem.lpName}</label>
+                    <!-- 传参，保存项目 -->
+                    <select id="items" name="items" multiple="multiple" readonly="true" ng-readonly="true">
+                        <option value ="${operationItem.id}" selected="selected">${operationItem.lpName}</option>
+                    </select>
                 </td>
             </tr>
             <tr>

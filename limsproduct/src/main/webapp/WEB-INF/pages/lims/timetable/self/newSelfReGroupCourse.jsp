@@ -96,12 +96,13 @@
                             <table style="width:100%;">
                                 <tr>
                                     <!--  <th>选择</th> -->
-                                    <th width="15%">批次名称(<font color=red>*必填</font>)</th>
+                                    <th width="10%">批次名称(<font color=red>*必填</font>)</th>
                                     <th width="10%">每批组数(<font color=red>*必填</font>)</th>
                                     <th width="10%">每组人数(<font color=red>*必填</font>)</th>
+                                    <th width="10%">每人可选组数(<font color=red>*必填</font>)</th>
                                     <th width="20%">&nbsp;&nbsp;&nbsp;选课开始日期(<font color=red>*必填</font>)</th>
                                     <th width="20%">&nbsp;&nbsp;&nbsp;选课结束日期(<font color=red>*必填</font>)</th>
-                                    <th width="25%">选课形式</th>
+                                    <th width="20%">选课形式</th>
                                 </tr>
                                 <thead>
                                 <tr>
@@ -116,6 +117,8 @@
                                     <td><input type="text" name="countGroup" id="countGroup" value="" style="width:50px;"
                                                required="required"></td>
                                     <td><input type="text" name="numbers" id="numbers" value="" style="width:50px;"
+                                               required="required"></td>
+                                    <td><input type="text" name="maxGroupNum" id="maxGroupNum" value="" style="width:50px;"
                                                required="required"></td>
                                     <td><input class="easyui-datebox" id="startDate" name="startDate" type="text"
                                                value="<fmt:formatDate value="${now}" type="both" dateStyle="long" pattern="yyyy-MM-dd" />"

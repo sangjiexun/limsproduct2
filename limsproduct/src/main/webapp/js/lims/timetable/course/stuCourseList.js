@@ -134,7 +134,7 @@ function getTimetablePlanView() {
                 var rt = "";
                 var timetableBatchDTOS = row.timetableBatchDTOS;
                 if (timetableBatchDTOS.length > 0) {
-                    rt += '<table border="1"><tr><td width="10%">批次</td><td width="10%">选课起止时间</td><td width="80%">分组信息</td></tr>';
+                    rt += '<table border="1"><tr><td width="5%">批次</td><td width="5%">每人可选组数</td><td width="10%">选课起止时间</td><td width="80%">分组信息</td></tr>';
                 }
                 var batchId = 0;
                 for (var i = 0, len = timetableBatchDTOS.length; i < len; i++) {
@@ -147,10 +147,21 @@ function getTimetablePlanView() {
                         // 遍历timetableDTO
                         var ti = "<table border='1'><tr><td>周次</td><td>星期</td><td>节次</td><td>实验室</td><td>教师</td><td>项目</td></tr>";
                         for (var t=0; t < timetableBatchDTOS[i].timetableGroupDTOs[j].timetables.length; t++) {
-                            ti += "<tr><td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startWeek +"-"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].endWeek +"</td>" +
-                                "<td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].weekday +"</td>" +
-                                "<td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startClass +"-"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].endClass +"</td>" +
-                                "<td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].labInfo +"</td><td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].teachers +"</td>" +
+                            ti += "<tr><td>";
+                            // 合并相同起止周次
+                            if (timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startWeek == timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].endWeek) {
+                                ti += timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startWeek;
+                            }else {
+                                ti += timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startWeek +"-"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].endWeek;
+                            }
+                            ti += "</td><td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].weekday +"</td><td>";
+                            // 合并相同起止节次
+                            if (timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startClass == timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].endClass) {
+                                ti += timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startClass;
+                            }else {
+                                ti += timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].startClass +"-"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].endClass;
+                            }
+                            ti += "</td><td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].labInfo +"</td><td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].teachers +"</td>" +
                                 "<td>"+ timetableBatchDTOS[i].timetableGroupDTOs[j].timetables[t].items +"</td></tr>";
                         }
                         ti += "</table>";
@@ -160,9 +171,9 @@ function getTimetablePlanView() {
                         // 判断是否可选/退选
                         if (currDate > startDate && currDate < endDate) {
                             if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 1) {
-                                gp += "<a href='javascript:;' class='btn btn-xs red' onclick=\"dropGroupStudent(" + timetableBatchDTOS[i].timetableGroupDTOs[j].id + ")\" ><span class='glyphicon glyphicon-check'>退选</span></a>";
+                                gp += "<a href='javascript:;' class='btn btn-xs red' style='background: #CCCC33 !important;' onclick=\"dropGroupStudent(" + timetableBatchDTOS[i].timetableGroupDTOs[j].id + ")\" ><span class='glyphicon glyphicon-check'>退选</span></a>";
                             } else if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 2) {
-                                gp += "-";
+                                gp += "<span style='color: red'>选定组数已达上限</span>";
                             } else if (timetableBatchDTOS[i].timetableGroupDTOs[j].selected == 3) {
                                 gp += "<span style='color: red'>名额已满</span>";
                             } else {
@@ -183,6 +194,7 @@ function getTimetablePlanView() {
 
                     if (timetableBatchDTOS.length > 0) {
                         rt += "<tr><td>" + timetableBatchDTOS[i].batchName + "</td>" +
+                            "<td>" + timetableBatchDTOS[i].maxGroupNum + "</td>" +
                             "<td>" + startDate.toLocaleDateString() + "~" + endDate.toLocaleDateString() + "</td>" +
                             "<td>" + gp + "</td></tr>";
                     }

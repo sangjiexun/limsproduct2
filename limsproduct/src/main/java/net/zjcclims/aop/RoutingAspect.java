@@ -21,7 +21,7 @@ import javax.servlet.http.Cookie;
 @Aspect
 @Component
 public class RoutingAspect {
-    @Pointcut("execution(* net..*.*(..))")
+    @Pointcut("!execution(* net.zjcclims.web.common.*.*(..)) &&execution(* net..*.*(..))")
 
     private void anyMethod(){}//定义一个切入点
 

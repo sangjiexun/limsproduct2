@@ -79,6 +79,7 @@
 		<intercept-url pattern="/checkCenter" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/tcoursesite/weike/index" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/tcoursesite/weike/courses" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/testSecurity" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
 		<intercept-url pattern="/report/teachingReport/monthRegister" access="ROLE_EXCENTERDIRECTOR,ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_ACADEMYLEVELM" />
 		

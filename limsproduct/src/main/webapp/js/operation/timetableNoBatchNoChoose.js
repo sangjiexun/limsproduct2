@@ -80,10 +80,11 @@ $(document).ready(function () {
             title: "实验项目",
             field: "items",
             width: "15%",
-            sortable: true,
+            sortable: true
+            /*,
             formatter: function (value, row, index) {
                 return $("#opName").html();
-            }
+            }*/
         }, {
             title: "操作",
             field: "empty",
@@ -334,6 +335,13 @@ $(document).ready(function () {
         width: "95%",
         placeholderOption: "first"
     });
+
+    $('#items').select2({
+        width: "95%",
+        placeholder: '请输入实验项目...',
+        placeholderOption: "first",
+    });
+    $("#items").prop("disabled", true);
 
     /*
     *二次不分批排课弹出窗口

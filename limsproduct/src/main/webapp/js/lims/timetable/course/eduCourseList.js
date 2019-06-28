@@ -248,11 +248,11 @@ function deleteTimetableByBySameNumberId(sameNumberId) {
             dataType: "json",
             type: "post",
             success: function (json) {
-                layer.msg("已删除！");
+                layer.msg("已删除!", {icon: 1});
             },
             error: function () {
                 layer.msg('后台出了点问题，请重试!', {
-                    icon: 1,
+                    icon: 5,
                 });
                 return false;
             }

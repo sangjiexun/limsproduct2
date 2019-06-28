@@ -41,7 +41,21 @@
 		}
 		.layui-laydate-list.laydate-time-list > li{width:50% !important;}
 		.layui-laydate-list.laydate-time-list > li:last-child{display:none !important;}
-
+		.class_name {
+			border: 1px solid #d0d6dc!important;
+		}
+		.class_name thead tr th{
+			border-bottom: 1px solid #e4e5e7!important;
+		}
+		.class_name tr td{
+					 border-bottom: 1px solid #cccccc!important;
+		}
+		.class_name tr:nth-child(odd) td {
+			background: #ffffff;
+		}
+		#user_body tr:last-child td {
+			text-align: center!important;
+		}
 	</style>
     <script type="text/javascript">
         layui.use('laydate', function(){
@@ -58,11 +72,15 @@
 //                    console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
                     if($("input[name='lendingTime']") .val() == ""){
                         alert("请选择日期");
+//                        $('reservationTime').val('');
+                        laydate.reset();
                         return false;
                     }
                     if (document.getElementById("labRoom").value) {
                     } else {
                         alert("请选择实验室");
+//                        $('reservationTime').val('');
+                        laydate.reset();
                         return false;
                     }
                     var myData = {
@@ -401,7 +419,7 @@
        $("#newStudents").window('close');
   }
 //ajax查询班级用户列表  
-  function getSchoolClassesUser(classNumber){ 		
+  function getSchoolClassesUser(classNumber){
   	$.ajax({
   		type: "POST",
   		url: "${pageContext.request.contextPath}/timetable/selfTimetable/getSchoolClassesUser",
@@ -653,6 +671,7 @@ function cancel(){
         .space{
         margin:0 12px 0 0;
         }
+
 </style>
 </head>
 <body> 
@@ -733,7 +752,7 @@ function cancel(){
 
 							<%--</select>--%>
                             <input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">
-                            <a onclick="findRestStations()">查询（点击查询，查看可预约工位数）</a>
+                            <%--<a onclick="findRestStations()">查询（点击查询，查看可预约工位数）</a>--%>
 						</td>
 					</tr>
 					<tr>
@@ -1032,38 +1051,58 @@ function cancel(){
 						    		data: {'classNumber':classNumber},
 						    		dataType:'json',
 						    		success:function(data){
-						    			var jslength=1;
-						    			var currLine=1;
-						    			var allLine=1;
-						    			for(var js2 in data){jslength++;}
-						    			if(jslength==0){alert("本周无课程数据");}else{}
+//						    			var jslength=1;
+//						    			var currLine=1;
+//						    			var allLine=1;
+//						    			for(var js2 in data){jslength++;}
+//						    			if(jslength==0){alert("本周无课程数据");}else{}
+//
+//						    			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td><b>选择学生</b></td><td colspan=3><input class='btn btn-primary btn-lg' type='button' onclick='putSchoolClassesUser()' value='提交'/></td></tr>";//新建html字符
+//						    			$.each(data,function(key,values){
+//						    			   if(currLine%4==0){
+//						    		           tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td><tr>";
+//						    			   }else  if(currLine%4==1){
+//						    			       tableStr = tableStr + "<tr><td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+//						    			   }else  if(currLine%4==2){
+//						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+//						    			   }else if(currLine%4==3){
+//						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+//						    			   }
+//						    			   //currLine=currLine%4;
+//						    			   jslength=jslength+1;
+//						    			   currLine = currLine +1;
+//						    			   allLine =allLine+1;
+//						    			 });
+//						    			 if(currLine%4==0){
+//						    			   tableStr = tableStr + "</table>";
+//						    			 }else if(currLine%4==1){
+//						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td><td&nbsp;></td></tr></table>";
+//						    			 }else if(currLine%4==2){
+//						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td></tr></table>";
+//						    			 }else if(currLine%4==3){
+//						    			   tableStr = tableStr + "<td>&nbsp;</td></tr></table>";
+//						    			 }
+//
+										var tableStr='<table id="my_show" class="class_name"><input class="btn btn-primary btn-lg right-btn" type="button" onclick="putSchoolClassesUser()" value="提交"/>'+
+                                            '<thead>'+
+                                            '<tr>'+
+                                            '<th style="width:10% !important">选择</th>'+
+                                            '<th style="width:45% !important">姓名</th>'+
+                                            '<th style="width:45% !important">工号</th>'+
 
-						    			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td><b>选择学生</b></td><td colspan=3><input class='btn btn-primary btn-lg' type='button' onclick='putSchoolClassesUser()' value='提交'/></td></tr>";//新建html字符
-						    			$.each(data,function(key,values){  
-						    			   if(currLine%4==0){
-						    		           tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td><tr>";
-						    			   }else  if(currLine%4==1){
-						    			       tableStr = tableStr + "<tr><td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
-						    			   }else  if(currLine%4==2){
-						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
-						    			   }else if(currLine%4==3){
-						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
-						    			   }
-						    			   //currLine=currLine%4;
-						    			   jslength=jslength+1;
-						    			   currLine = currLine +1;
-						    			   allLine =allLine+1;
-						    			 }); 
-						    			 if(currLine%4==0){
-						    			   tableStr = tableStr + "</table>";
-						    			 }else if(currLine%4==1){
-						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td><td&nbsp;></td></tr></table>";
-						    			 }else if(currLine%4==2){
-						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td></tr></table>";
-						    			 }else if(currLine%4==3){
-						    			   tableStr = tableStr + "<td>&nbsp;</td></tr></table>";
-						    			 }
-						    			
+                                            '</tr>'+
+                                            '</thead>'+
+
+                                            '<tbody id="user_body">'
+                                        $.each(data,function(key,values){
+                                            tableStr+="<tr>"+
+                                                "<td><input name='username' type='checkbox' value='" + key + "' checked='checked' /></td>"+
+                                                "<td>"+values+"</td>"+
+                                                "<td>"+key+"</td>"+
+                                                "</tr>";
+                                        });
+                                        tableStr+='</tbody>'+
+                                        '</table>';
 						    			 document.getElementById('schoolClassesUser').innerHTML=tableStr; 	
 						    		},
 						    		error:function(){

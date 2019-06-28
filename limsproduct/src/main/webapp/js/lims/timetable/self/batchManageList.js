@@ -67,17 +67,22 @@ function getSelfBatchManageView() {
         onEditableSave: function (field, row, oldValue, $el) {
             var startDate ="";
             var endDate ="";
+            var maxGroupNum = "";
             if(field=="startDate"){
                 startDate=row[field];
             }
             if(field=="endDate"){
                 endDate=row[field];
             }
+            if (field == "maxGroupNum") {
+                maxGroupNum = row[field];
+            }
             var arr = new Object();
             arr.batchId=row.id;
             arr.startDate=startDate;
             arr.endDate=endDate;
             arr.batchName="";
+            arr.maxGroupNum = maxGroupNum;
             var arrs = JSON.stringify(arr);
             $.ajax({
                 url: zuulUrl + "api/timetable/manage/apiUpdateTimetableBatch",
@@ -117,6 +122,22 @@ function getSelfBatchManageView() {
                     result = "系统分配";
                 }
                 return result;
+            }
+        }, {
+            title: "每人可选组数",
+            field: "maxGroupNum",
+            width: "5%",
+            formatter: function (value, row, index) {
+                return row.maxGroupNum;
+            },
+            editable: {
+                type: 'text',
+                mode: "inline",
+                validate: function (value) {
+                    if ($.trim(value) == '') {
+                        return '每人可选组数不能为空!';
+                    }
+                }
             }
         }, {
             title: "开始时间",

@@ -105,7 +105,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         //和本身的预约逻辑做判断
         if (labRoomStationReservations != null) {
             for (LabRoomStationReservation labRoomStationReservation : labRoomStationReservations) {//遍历该实验室已有的预约信息
-                if (labRoomStationReservation.getResult() != 4) {//筛去审核拒绝的
+                if (labRoomStationReservation.getResult()!=null && labRoomStationReservation.getResult() != 4) {//筛去审核拒绝的
                     if (labRoomStationReservation.getReservation().equals(lendingTime)) {//预约日期相同
                         if (labRoomStationReservation.getStartTime().after(endTime) ||
                                 labRoomStationReservation.getEndTime().before(startTime) ||
@@ -148,7 +148,7 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         if (labReservations != null && labReservations.size() > 0 && lendingDate != null) {
             for (LabReservation labReservation : labReservations) {
                 for(LabReservationTimeTable lrtt: labReservation.getLabReservationTimeTables()) {
-                    if (labReservation.getLendingTime().equals(lendingTime)) {//和借用日期在同一天的
+                    if (labReservation.getLendingTime()!=null && labReservation.getLendingTime().equals(lendingTime)) {//和借用日期在同一天的
                         if (lrtt.getStartTime().after(endTime) ||
                                 lrtt.getEndTime().before(startTime) ||
                                 lrtt.getStartTime().equals(endTime) ||
