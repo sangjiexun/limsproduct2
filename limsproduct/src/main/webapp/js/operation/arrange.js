@@ -141,6 +141,7 @@ $(document).ready(function () {
                                     arr.startDate = startDate;
                                     arr.endDate = endDate;
                                     arr.ifselect = 1;
+                                    arr.maxGroupNum = 1;
                                     var arrs = JSON.stringify(arr);
                                     $.ajax({
                                         url: zuulUrl + "api/timetable/manage/apiSaveTimetableBatch",
@@ -460,7 +461,7 @@ function newSelfReNoGroupCourse(term, selfId) {
 }
 
 /*
-*二次不分批排课弹出窗口
+*分批自选排课弹出窗口
 */
 function newSelfReGroupCourse(term, selfId) {
     var index = layer.open({
