@@ -1,9 +1,6 @@
 package net.zjcclims.dao;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -109,6 +106,31 @@ public class LabRoomLimitTimeDAOImpl extends AbstractJpaDao<LabRoomLimitTime>
 			return null;
 		}
 	}
+	/**
+	 * JPQL Query - findLabRoomLimitTimeByPrimaryKey
+	 *
+	 */
+	@Transactional
+	public Set<LabRoomLimitTime> findLabRoomLimitTimeBylabIdAndTermAndType(Integer id,Integer termId,Integer type) throws DataAccessException {
+
+		return findLabRoomLimitTimeBylabIdAndTermAndType(id,termId,type, -1, -1);
+	}
+
+	/**
+	 * JPQL Query - findLabRoomLimitTimeByPrimaryKey
+	 *
+	 */
+
+	@Transactional
+	public Set<LabRoomLimitTime> findLabRoomLimitTimeBylabIdAndTermAndType(Integer id,Integer termId, Integer type, int startResult, int maxRows) throws DataAccessException {
+		try {
+			Query query = createNamedQuery("findLabRoomLimitTimeBylabIdAndTermAndType", startResult, maxRows, id,termId,type);
+			return new LinkedHashSet<LabRoomLimitTime>(query.getResultList());
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+
     /**
      * JPQL Query - findLabRoomLimitTimeByPrimaryKey
      *

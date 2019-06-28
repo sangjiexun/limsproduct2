@@ -537,6 +537,7 @@ public class MySQLServiceImpl implements MySQLService {
                             labRoomLimitTime.setSchoolTerm(term);
                             // 设置标志位
                             labRoomLimitTime.setFlag(0);// 0-手动添加
+							labRoomLimitTime.setType(type); //0-实验室预约配置项 1-设备预约配置项
                             labRoomLimitTimeDAO.store(labRoomLimitTime);
                         }
                     }
@@ -560,6 +561,7 @@ public class MySQLServiceImpl implements MySQLService {
                             labRoomLimitTime.setSchoolTerm(term);
                             // 设置标志位
                             labRoomLimitTime.setFlag(0);// 0-手动添加
+							labRoomLimitTime.setType(type); //0-实验室预约配置项 1-设备预约配置项
                             labRoomLimitTimeDAO.store(labRoomLimitTime);
                         }
                     }
@@ -581,6 +583,7 @@ public class MySQLServiceImpl implements MySQLService {
                         labRoomLimitTime.setSchoolTerm(term);
                         // 设置标志位
                         labRoomLimitTime.setFlag(0);// 0-手动添加
+						labRoomLimitTime.setType(type); //0-实验室预约配置项 1-设备预约配置项
                         labRoomLimitTimeDAO.store(labRoomLimitTime);
                     }
                 }

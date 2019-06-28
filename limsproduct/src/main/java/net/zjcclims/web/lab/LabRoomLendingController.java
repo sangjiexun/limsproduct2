@@ -25,6 +25,7 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -93,6 +94,12 @@ public class LabRoomLendingController<JsonResult> {
     private LabRoomDAO labRoomDAO;
     @Autowired
     private SchoolTermDAO schoolTermDAO;
+    @Autowired
+    private ReservationSetItemDAO reservationSetItemDAO;
+    @Autowired
+    private SchoolWeekDAO schoolWeekDAO;
+    @Autowired
+    private LabRoomLimitTimeDAO labRoomLimitTimeDAO;
 
     /**
      * Description 实训室借用-实训室列表
@@ -1629,6 +1636,7 @@ public class LabRoomLendingController<JsonResult> {
      * @param acno
      * @return
      * @throws ParseException
+     * update Hezhaoyi 2019-6-28
      */
     @RequestMapping("/checkConflict")
     public @ResponseBody
@@ -1644,6 +1652,36 @@ public class LabRoomLendingController<JsonResult> {
         lendingTime.setTime(lendingTimeDate);
         StringBuilder r = new StringBuilder();
 
+        //开放时间段
+        //把时间选在周末的情况，判断实验室周末是否开放
+        boolean isOpen = true;
+        boolean isOpenTime = true;
+        SchoolWeek schoolWeek = schoolWeekDAO.findSingleSchoolWeekByDate(lendingTime);
+        int week = schoolWeek.getWeek();
+        int weekday = schoolWeek.getWeekday();
+        ReservationSetItem reservationSetItem = reservationSetItemDAO.findReservationSetItemBylabRoomIdAndType(labRoomId,0);
+
+        BigDecimal startHour = new BigDecimal(0);
+        BigDecimal endHour = new BigDecimal(0);
+        if(reservationSetItem != null){
+            if(weekday==6 || weekday==7){               //实验室周末不开放
+                if (reservationSetItem != null && reservationSetItem.getOpenInweekend() != null
+                        && reservationSetItem.getOpenInweekend() == 0) {
+                    isOpen = false;
+                }else{            //实验室周末开放，获取实验室周末开放时间段
+                    startHour = reservationSetItem.getStartHourInweekend();
+                    endHour = reservationSetItem.getEndHourInweekend();
+                }
+            }else{
+                startHour = reservationSetItem.getStartHourInweek();
+                endHour = reservationSetItem.getEndHourInweek();
+            }
+        }
+
+        boolean isLimit = true;
+        int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+        //禁用时间段
+        Set<LabRoomLimitTime> labRoomLimitTimes = labRoomLimitTimeDAO.findLabRoomLimitTimeBylabIdAndTermAndType(labRoomId,termId,0);
         List<SystemTime> systemTimes = systemTimeDAO.executeQuery("select st from SystemTime st order by st.startDate");
         Date nowDate = sdf.parse(sdf.format(new Date()));
         // 判断是否是当天
@@ -1654,7 +1692,23 @@ public class LabRoomLendingController<JsonResult> {
                 Calendar start = systemTime.getStartDate();
                 Calendar end = systemTime.getEndDate();
                 int result = labRoomLendingService.findLendingEnableOrNot(labRoomId, lendingTime, start, end, acno);
-                if(result == 1){
+                //判断是否在禁用时间段内
+                // 如果是禁用时间匹配则返回limit
+                for(LabRoomLimitTime labRoomLimitTime : labRoomLimitTimes){
+                    int startWeekOver = labRoomLimitTime.getStartweek();
+                    int endWeekOver = labRoomLimitTime.getEndweek();
+                    int WeekdayOver = labRoomLimitTime.getWeekday();
+                    int startClass = labRoomLimitTime.getStartclass();
+                    int endClass = labRoomLimitTime.getEndclass();
+                    isLimit = labRoomLendingService.judgeLabReservationIsConflict(startWeekOver,endWeekOver,WeekdayOver,startClass,endClass,week,weekday,systemTime.getSection());
+                }
+                //判断是否在开放时间段外
+                BigDecimal zero = new BigDecimal(0);
+                if(!(startHour.compareTo(zero)==0)){
+                    isOpenTime = labRoomLendingService.isOpenLabReservation(startHour,endHour,systemTime.getSection());
+                }
+
+                if(result == 1 && isOpen == true && isLimit == true && isOpenTime==true){
                     r.append("<option value='")
                             .append(sdf1.format(start.getTime()))
                             .append("-")
@@ -1672,7 +1726,22 @@ public class LabRoomLendingController<JsonResult> {
                 Calendar start = systemTime.getStartDate();
                 Calendar end = systemTime.getEndDate();
                 int result = labRoomLendingService.findLendingEnableOrNot(labRoomId, lendingTime, start, end, acno);
-                if(result == 1){
+                //判断是否在禁用时间段内
+                // 如果是禁用时间匹配则返回limit
+                for(LabRoomLimitTime labRoomLimitTime : labRoomLimitTimes){
+                    int startWeekOver = labRoomLimitTime.getStartweek();
+                    int endWeekOver = labRoomLimitTime.getEndweek();
+                    int WeekdayOver = labRoomLimitTime.getWeekday();
+                    int startClass = labRoomLimitTime.getStartclass();
+                    int endClass = labRoomLimitTime.getEndclass();
+                    isLimit = labRoomLendingService.judgeLabReservationIsConflict(startWeekOver,endWeekOver,WeekdayOver,startClass,endClass,week,weekday,systemTime.getSection());
+                }
+                //判断是否在开放时间段外
+                BigDecimal zero = new BigDecimal(0);
+                if(!(startHour.compareTo(zero)==0)){
+                    isOpenTime = labRoomLendingService.isOpenLabReservation(startHour,endHour,systemTime.getSection());
+                }
+                if(result == 1 && isOpen == true && isLimit == true && isOpenTime==true){
                     r.append("<option value='")
                             .append(sdf1.format(start.getTime()))
                             .append("-")
@@ -1704,7 +1773,6 @@ public class LabRoomLendingController<JsonResult> {
         }
         return r.toString();
     }
-
     /**
      * 实验室预约作废
      * @param labReservationId 实验室预约id

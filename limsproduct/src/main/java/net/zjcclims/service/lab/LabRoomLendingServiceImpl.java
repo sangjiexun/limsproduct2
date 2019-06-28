@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -278,6 +279,68 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         return labReservation.getId();
     }
 
+    /**
+     * Description 实验室预约禁用时间段判冲
+     * @param startWeek
+     * @param endWeek
+     * @param Weekday
+     * @param startClass
+     * @param endClass
+     * @param week
+     * @param weekday
+     * @param section
+     * @return
+     * @Author Hezhaoyi 2019-4-26
+     */
+    public boolean judgeLabReservationIsConflict(Integer startWeek,Integer endWeek,Integer Weekday,Integer startClass,Integer endClass,
+                                                 Integer week,Integer weekday,Integer section){
+
+        if((week > startWeek || week == startWeek) && (week < endWeek || week == endWeek)){
+            if((weekday == Weekday)){
+                if((section > startClass || section.equals(startClass)) && (section < endClass || section.equals(endClass))){
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+    /**
+     * Description  判断实验室预约时间在开放时间段内
+     * @param startHour
+     * @param endHour
+     * @param section
+     * @return
+     * @Author Hezhaoyi 2019-4-29
+     */
+    public boolean isOpenLabReservation(BigDecimal startHour,BigDecimal endHour,Integer section){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        DecimalFormat df=new DecimalFormat("0.00");
+        //解析节次获取起止时间
+        Date starttime = systemTimeDAO.findSingleSystemTimeBySection(section).getStartDate().getTime();
+        Date endttime = systemTimeDAO.findSingleSystemTimeBySection(section).getEndDate().getTime();
+
+        String startTime = sdf.format(starttime);
+        String endTime = sdf.format(endttime);
+        String[] start_array = startTime.replace(":", ",").split(",");
+        int startH = Integer.parseInt(start_array[0]);
+        BigDecimal startHourChoice = new BigDecimal(startH);
+        int part1 = Integer.parseInt(start_array[1]);
+        BigDecimal startM = new BigDecimal(df.format((float)part1/60));
+        startHourChoice = startHourChoice.add(startM);
+
+        String[] end_array = endTime.replace(":", ",").split(",");
+        int endH = Integer.parseInt(end_array[0]);
+        BigDecimal endHourChoice = new BigDecimal(endH);
+        int part2 = Integer.parseInt(end_array[1]);
+        BigDecimal endM = new BigDecimal(df.format((float)part2/60));
+        endHourChoice = endHourChoice.add(endM);
+
+        if(startHourChoice.compareTo(startHour) > -1 && endHourChoice.compareTo(endHour) < 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
     /**
      * Description 查询对应实训室的借用记录并分页
      *
