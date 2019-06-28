@@ -1129,11 +1129,13 @@ public class OpenOperationItemController<JsonResult> {
 						 * 1.宁德需求：不分批排
 						 * 2.分组实验，数量按照组数计算；否则按照实际上课人数计算
 						 */
-						if (pConfig.PROJECT_NAME.equals("ndyzlims") && operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {
+						if (pConfig.PROJECT_NAME.equals("ndyzlims") && operationItem.getLpSetNumber()!=null && !operationItem.getLpSetNumber().equals("")) {
+							quantity = Integer.parseInt(operationItem.getLpSetNumber());
+                        } else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {// 分组实验
 							if (operationItem.getLpSetNumber()!=null && !operationItem.getLpSetNumber().equals("")) {
 								quantity = Integer.parseInt(operationItem.getLpSetNumber());
 							}
-                        } else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {
+						} else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {// 演示实验
 							quantity = 1;
 						} else {
                             if (timetableSelfCourse.getItemPlans().iterator().next().getType() == 1 || timetableSelfCourse.getItemPlans().iterator().next().getType() == 3) {//分批自选、分批直排
