@@ -461,6 +461,25 @@ public class SystemTimeDAOImpl extends AbstractJpaDao<SystemTime> implements
 	}
 
 	/**
+	 * JPQL Query - findSystemTimeBySection
+	 */
+	@Transactional
+	public SystemTime findSingleSystemTimeBySection(Integer section) throws DataAccessException {
+
+		return findSingleSystemTimeBySection(section, -1, -1);
+	}
+
+	/**
+	 * JPQL Query - findSystemTimeBySection
+	 */
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public SystemTime findSingleSystemTimeBySection(Integer section, int startResult, int maxRows) throws DataAccessException {
+		Query query = createNamedQuery("findSystemTimeBySection", startResult, maxRows, section);
+		return (net.zjcclims.domain.SystemTime) query.getSingleResult();
+	}
+
+	/**
 	 * Used to determine whether or not to merge the entity or persist the entity when calling Store
 	 * @see store
 	 * 

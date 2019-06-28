@@ -3,6 +3,7 @@ package net.zjcclims.service.lab;
 import net.zjcclims.domain.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -30,7 +31,31 @@ public interface LabRoomLendingService {
 	 * @author 陈乐为 2017-10-10
 	 */
 	public int saveLabRoomLending(Integer labRoomId, Calendar lendingTime, String[] reservationTimes, String reason,HttpServletRequest request, Integer auditNumber) throws ParseException;
-	
+
+	/**
+	 * Description 实验室预约禁用时间段判冲
+	 * @param startWeek
+	 * @param endWeek
+	 * @param Weekday
+	 * @param startClass
+	 * @param endClass
+	 * @param week
+	 * @param weekday
+	 * @param section
+	 * @return
+	 * @Author Hezhaoyi 2019-4-26
+	 */
+	public boolean judgeLabReservationIsConflict(Integer startWeek,Integer endWeek,Integer Weekday,Integer startClass,Integer endClass,
+												 Integer week,Integer weekday,Integer section);
+	/**
+	 * Description  判断实验室预约时间在开放时间段内
+	 * @param startHour
+	 * @param endHour
+	 * @param section
+	 * @return
+	 * @Author Hezhaoyi 2019-4-29
+	 */
+	public boolean isOpenLabReservation(BigDecimal startHour, BigDecimal endHour, Integer section);
 	/**
 	 * Description 查询对应实训室的借用记录并分页
 	 * @param labRoomId

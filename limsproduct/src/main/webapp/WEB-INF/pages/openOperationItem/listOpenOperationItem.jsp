@@ -361,7 +361,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                     sessionScope.selected_role eq 'ROLE_DEPARTMENTHEADER'||
                                     sessionScope.selected_role eq 'ROLE_TEACHER'))||
                                     (!fn:contains('zjcclims',PROJECT_NAME))}">
-            <c:if test="${status eq 3}">
+            <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                 <a class="btn btn-new" href="javascript:void(0);" onclick="batchDelete();">批量删除</a>
             </c:if>
             <c:if test="${status eq 1}">
@@ -453,7 +453,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                 <table class="tb" id="my_show">
                     <thead>
                     <tr>
-                        <c:if test="${status eq 3}">
+                        <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                             <th><input id="check_all" type="checkbox" onclick="checkAll();"/></th>
                         </c:if>
                         <th><a href="javascript:void(0);" onclick="orderByNumber()";>实验编号</a></th>

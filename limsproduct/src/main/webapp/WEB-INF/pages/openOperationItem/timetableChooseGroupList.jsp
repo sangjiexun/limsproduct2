@@ -47,6 +47,9 @@
     </c:choose>
 
     <style>
+        html {
+            height: 100%;
+        }
         .fixed-table-container thead th .sortable {
             background-image: url('${pageContext.request.contextPath}/images/sort.gif');
             cursor: pointer;
@@ -94,14 +97,13 @@
                                   action="${pageContext.request.contextPath}/timetable/newTimetableGroup">
                                 <table style="width:100%;">
                                     <tr>
-                                        <!--  <th>选择</th> -->
-                                        <th width="15%">批次名称(<font color=red>*必填</font>)</th>
+                                        <th width="10%">批次名称(<font color=red>*必填</font>)</th>
                                         <th width="10%">每批组数(<font color=red>*必填</font>)</th>
                                         <th width="10%">每组人数(<font color=red>*必填</font>)</th>
+                                        <th width="10%">每人可选组数(<font color=red>*必填</font>)</th>
                                     </tr>
                                     <thead>
                                     <tr>
-                                        <!--  <th>选择</th> -->
                                         <th colspan=6 align="left">选择实验项目进行分批处理(<font
                                                 color=red>*所有分组排课完成，才能进行进行“调整完成”</font>)
                                         </th>
@@ -116,6 +118,8 @@
                                                    style="width:50px;"
                                                    required="required"></td>
                                         <td><input type="text" name="numbers" id="numbers" value="" style="width:50px;"
+                                                   required="required"></td>
+                                        <td><input type="text" name="maxGroupNum" id="maxGroupNum" value="" style="width:50px;"
                                                    required="required"></td>
                                         <input id="startDate" name="startDate" type="hidden"
                                                    value="<fmt:formatDate value="${startTime}" type="both" dateStyle="long" pattern="yyyy-MM-dd" />"/>

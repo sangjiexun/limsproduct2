@@ -228,5 +228,15 @@ public interface SystemTimeDAO extends JpaDao<SystemTime> {
 	 *
 	 */
 	public Set<SystemTime> findSystemTimeBySection(Integer section, int startResult, int maxRows) throws DataAccessException;
+	/**
+	 * JPQL Query - findSystemTimeBySection
+	 *
+	 */
+	public SystemTime findSingleSystemTimeBySection(Integer section) throws DataAccessException;
 
+	/**
+	 * JPQL Query - findSystemTimeBySection
+	 *
+	 */
+	public SystemTime findSingleSystemTimeBySection(Integer section, int startResult, int maxRows) throws DataAccessException;
 }

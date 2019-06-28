@@ -1,5 +1,6 @@
 package net.zjcclims.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import net.zjcclims.domain.LabRoomLimitTime;
@@ -42,6 +43,17 @@ public interface LabRoomLimitTimeDAO extends JpaDao<LabRoomLimitTime> {
 	 *
 	 */
 	public LabRoomLimitTime findLabRoomLimitTimeByPrimaryKey(Integer id, int startResult, int maxRows) throws DataAccessException;
+	/**
+	 * JPQL Query - findLabRoomLimitTimeByPrimaryKey
+	 *
+	 */
+	public Set<LabRoomLimitTime> findLabRoomLimitTimeBylabIdAndTermAndType(Integer id,Integer termId, Integer type) throws DataAccessException;
+
+	/**
+	 * JPQL Query - findLabRoomLimitTimeByPrimaryKey
+	 *
+	 */
+	public Set<LabRoomLimitTime> findLabRoomLimitTimeBylabIdAndTermAndType(Integer id, Integer termId, Integer type, int startResult, int maxRows) throws DataAccessException;
 
     /**
      * JPQL Query - findLabRoomLimitTimeByPrimaryKey
