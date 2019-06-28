@@ -33,7 +33,7 @@
     <script src="${pageContext.request.contextPath}/jquery/jquery.validate.js" type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/jquery/messages_zh.js" type="text/javascript"></script>
     <!-- 页面业务的js引用 -->
-    <script src="${pageContext.request.contextPath}/js/lims/timetable/self/newSelfReGroupTimetableCourse.js"
+    <script src="${pageContext.request.contextPath}/js/operation/timetableChoose.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <style type="text/css">
