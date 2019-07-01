@@ -192,7 +192,16 @@ public class OutlineController<JsonResult> {
     public ModelAndView checkout(@RequestParam int idKey) {
         ModelAndView mav = new ModelAndView();
         mav.addObject("infor", operationService.getoperationoutlineinfor(idKey));
+        //课程目标
         mav.addObject("courseObjectiveList",operationService.getOperationOutlineCourseObjectives(idKey));
+        //课程目标对应毕业需求
+        mav.addObject("ObjectiveRelatedGraduation",operationService.getOperationOutlineCourseObjectiveRelated(idKey,0));
+        //课程目标对应教学内容
+        mav.addObject("ObjectiveRelatedCourse",operationService.getOperationOutlineCourseObjectiveRelated(idKey,1));
+        //考核方法
+        mav.addObject("ObjectiveRelatedAppraise",operationService.getOperationOutlineCourseObjectiveRelated(idKey,2));
+        //课程目标达成度
+        mav.addObject("ObjectiveRelatedCompletion",operationService.getOperationOutlineCourseObjectiveRelated(idKey,3));
         mav.setViewName("outline/viewOutline.jsp");
         return mav;
     }

@@ -35,8 +35,8 @@
             <li class="TabbedPanelsTab1 selected" id="s1">
                 <a href="javascript:void(0)">实验大纲列表</a>
             </li>
-            <!-- 超管、中心主任、教师可以新建 -->
-            <c:if test="${sessionScope.selected_role eq 'ROLE_TEACHER' || sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR'}">
+            <!-- 超管、中心主任、教师、院系级管理员可以新建 -->
+            <c:if test="${sessionScope.selected_role eq 'ROLE_TEACHER' || sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR' || sessionScope.selected_role eq 'ROLE_ACADEMYLEVELM'}">
                 <a class="btn btn-new" href="${pageContext.request.contextPath}/outline/editOutline?idKey=0">新建</a>
             </c:if>
         </ul>
@@ -94,9 +94,9 @@
                                     <a href="${pageContext.request.contextPath}/outline/deleteOutline?idKey=${curr.id}" onclick="return confirm('确认删除吗？');">删除</a>
                                     <a href="${pageContext.request.contextPath}/outline/editOutline?idKey=${curr.id}">编辑</a>
                                 </c:if>
-                                <!-- 不是创建者，但是实验室中心主任和超级管理员 可以编辑或者删除 -->
+                                <!-- 不是创建者，但是实验室中心主任和超级管理员和院系级管理员可以编辑或者删除 -->
                                 <c:if test="${s.user.username != user.username}">
-                                    <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR'}">
+                                    <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR' || sessionScope.selected_role eq 'ROLE_ACADEMYLEVELM'}">
                                         <a href="${pageContext.request.contextPath}/outline/deleteOutline?idKey=${curr.id}" onclick="return confirm('确认删除吗？');">删除</a>
                                         <a href="${pageContext.request.contextPath}/outline/editOutline?idKey=${curr.id}">编辑</a>
                                     </c:if>
