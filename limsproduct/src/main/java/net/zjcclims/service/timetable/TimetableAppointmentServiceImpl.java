@@ -4200,7 +4200,12 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 			sql+=" and rs.term_id="+schoolTerm.getId();
 		}
 		if (search != null && !"".equals(search)) {
-			sql += " and (rs.course_name like '%"+ search +"%' or rs.lp_name like '%"+ search +"%')";
+			sql += " and (rs.course_name like '%"+ search +"%'" +
+					" or rs.lp_name like '%"+ search +"%'" +
+					" or rs.lab_name like '%"+ search +"%'" +
+					" or rs.teacher like '%"+ search +"%'" +
+					" or rs.classes like '%"+ search +"%'" +
+					" or rs.weeks like '%"+ search +"%')";
 		}
 		sql+=" group by rs.weeks,rs.course_no,rs.start_class,rs.end_class";
 		sql+=" order by rs.class_date,rs.weeks,rs.weekday,rs.start_class asc ";
