@@ -1245,8 +1245,8 @@ public class LabRoomController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         // id对应的实验室物联管理员
         LabRoomAdmin admin = labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
-        List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(admin.getLabRoom().getId());
         if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+            List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(admin.getLabRoom().getId());
             String str = "{\"Table1\":[";
             // 遍历门禁
             for (LabRoomAgent agent : agentList) {
@@ -1264,40 +1264,33 @@ public class LabRoomController<JsonResult> {
 
             HttpClientUtil.doPost("http://10.50.20.100:85/deleteManager", params);
         }
-        labRoomAdminDAO.remove(admin);
-        // 判断该实验室管理员是否还有其他实验室管理
-        List labRooms = labRoomAdminService.findLabRoomAdminForByUsernameAndType(admin.getUser().getUsername(), admin.getTypeId());
-        if(labRooms == null || labRooms.size() == 0) {
-            Authority a;
-            User u = admin.getUser();
-            if (admin.getTypeId() == 2) {
-//            a = authorityDAO.findAuthorityById(19);
-                a = authorityDAO.findAuthorityByAuthorityName("CABINETADMIN").iterator().next();
-            } else {
-//            a = authorityDAO.findAuthorityById(5);
-                a = authorityDAO.findAuthorityByAuthorityName("LABMANAGER").iterator().next();
-            }
-            Set<Authority> ahths = u.getAuthorities();
-            ahths.remove(a);
-            u.setAuthorities(ahths);
-            userDAO.store(u);
-            RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
-            refuseItemBackup.setBusinessId(admin.getLabRoom().getId().toString());
-            if (admin.getTypeId() == 2) {
-                refuseItemBackup.setType("LabAgentAdmin");
-                refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
-            } else {
-                refuseItemBackup.setType("LabRoomAdmin");
-                refuseItemBackup.setOperationItemName("添加实验室管理员"+"("+u.getCname()+u.getUsername()+")");
-            }
-            refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
-            refuseItemBackup.setLabRoomName(admin.getLabRoom().getLabRoomName());
-            refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
-            refuseItemBackupDAO.store(refuseItemBackup);
+        // 权限管理
+        String auth_name = "";
+        if (admin.getTypeId() == 2) {
+            auth_name = "CABINETADMIN";
+        }else {
+            auth_name = "LABMANAGER";
         }
+        String sql = "{call proc_lab_managers('" + admin.getUser().getUsername() + "','"+ auth_name +"',"+ admin.getTypeId() +","+ admin.getLabRoom().getId() +")}";
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object[]> list = query.getResultList();
+        // 保存操作日志
+        User u = admin.getUser();
+        RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
+        refuseItemBackup.setBusinessId(admin.getLabRoom().getId().toString());
+        if (admin.getTypeId() == 2) {
+            refuseItemBackup.setType("LabAgentAdmin");
+            refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
+        } else {
+            refuseItemBackup.setType("LabRoomAdmin");
+            refuseItemBackup.setOperationItemName("删除实验室管理员"+"("+u.getCname()+u.getUsername()+")");
+        }
+        refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
+        refuseItemBackup.setLabRoomName(admin.getLabRoom().getLabRoomName());
+        refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
+        refuseItemBackupDAO.store(refuseItemBackup);
         mav.addObject("type",type);
-        mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id="
-                + admin.getLabRoom().getId()+"&type="+type);
+        mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id=" + admin.getLabRoom().getId()+"&type="+type);
         return mav;
     }
     /**
@@ -1331,38 +1324,32 @@ public class LabRoomController<JsonResult> {
         for (int id : array) {
             // id对应的实验室物联管理员
             LabRoomAdmin admin = labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
-            labRoomAdminDAO.remove(admin);
-            // 判断该实验室管理员是否还有其他实验室管理
-            List labRooms = labRoomAdminService.findLabRoomAdminForByUsernameAndType(admin.getUser().getUsername(), admin.getTypeId());
-            if (labRooms == null || labRooms.size() == 0) {
-                Authority a;
-                User u = admin.getUser();
-                if (admin.getTypeId() == 2) {
-//            a = authorityDAO.findAuthorityById(19);
-                    a = authorityDAO.findAuthorityByAuthorityName("CABINETADMIN").iterator().next();
-                } else {
-//            a = authorityDAO.findAuthorityById(5);
-                    a = authorityDAO.findAuthorityByAuthorityName("LABMANAGER").iterator().next();
-                }
-                Set<Authority> ahths = u.getAuthorities();
-                ahths.remove(a);
-                u.setAuthorities(ahths);
-                userDAO.store(u);
-                LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(roomId);
-                RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
-                refuseItemBackup.setBusinessId(roomId.toString());
-                if (admin.getTypeId() == 2) {
-                    refuseItemBackup.setType("LabAgentAdmin");
-                    refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
-                } else {
-                    refuseItemBackup.setType("LabRoomAdmin");
-                    refuseItemBackup.setOperationItemName("删除实验室管理员"+"("+u.getCname()+u.getUsername()+")");
-                }
-                refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
-                refuseItemBackup.setLabRoomName(labRoom.getLabRoomName());
-                refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
-                refuseItemBackupDAO.store(refuseItemBackup);
+            // 权限管理
+            String auth_name = "";
+            if (admin.getTypeId() == 2) {
+                auth_name = "CABINETADMIN";
+            }else {
+                auth_name = "LABMANAGER";
             }
+            String sql = "{call proc_lab_managers('" + admin.getUser().getUsername() + "','"+ auth_name +"',"+ admin.getTypeId() +","+ admin.getLabRoom().getId() +")}";
+            Query query = entityManager.createNativeQuery(sql);
+            List<Object[]> list = query.getResultList();
+
+            User u = admin.getUser();
+            LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(roomId);
+            RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
+            refuseItemBackup.setBusinessId(roomId.toString());
+            if (admin.getTypeId() == 2) {
+                refuseItemBackup.setType("LabAgentAdmin");
+                refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
+            } else {
+                refuseItemBackup.setType("LabRoomAdmin");
+                refuseItemBackup.setOperationItemName("删除实验室管理员"+"("+u.getCname()+u.getUsername()+")");
+            }
+            refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
+            refuseItemBackup.setLabRoomName(labRoom.getLabRoomName());
+            refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
+            refuseItemBackupDAO.store(refuseItemBackup);
         }
         mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id=" + roomId+"&type="+type);
         return mav;
