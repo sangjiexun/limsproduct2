@@ -69,7 +69,7 @@ public interface MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-3-26
      */
-    JSONObject findAllAssetCabinetList(Integer page, Integer limit);
+    JSONObject findAllAssetCabinetList(Integer page, Integer limit,HttpServletRequest request);
     /**
      * 物资分类列表
      * @param page 页当前数
@@ -153,7 +153,7 @@ public interface MaterialService {
      * @param limit 当前页限制大小
      * @author 吴奇臻 2019-5-15
      */
-    JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id);
+    JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id,HttpServletRequest request);
     /**
      * 物资申领条目列表
      * * @return 状态字符串

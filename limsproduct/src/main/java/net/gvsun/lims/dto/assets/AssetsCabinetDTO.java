@@ -30,6 +30,10 @@ public class AssetsCabinetDTO implements Serializable{
     private String type;
     //10.存放地点
     private String location;
+    //11.创建人
+    private String createUser;
+    //11.学院
+    private String schoolAcademy;
 
 
     public Integer getId() {
@@ -118,5 +122,21 @@ public class AssetsCabinetDTO implements Serializable{
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public String getSchoolAcademy() {
+        return schoolAcademy;
+    }
+
+    public void setSchoolAcademy(String schoolAcademy) {
+        this.schoolAcademy = schoolAcademy;
     }
 }
