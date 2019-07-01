@@ -4192,7 +4192,7 @@ public class TimetableAppointmentServiceImpl implements TimetableAppointmentServ
 	 * @author 廖文辉 2018-11-2
 	 */
 	public List<Object[]> getCurrentTermTimetable(SchoolTerm schoolTerm,String acno, String search){
-		String sql = " SELECT * FROM report_schedule rs where 1=1";
+		String sql = " SELECT rs.id,rs.class_date,rs.weeks,rs.weekday,rs.course_name,rs.lp_name,rs.lab_name,rs.start_class,rs.end_class,rs.teacher,GROUP_CONCAT(DISTINCT rs.classes) FROM report_schedule rs where 1=1";
 		if(acno!=null){
 			sql+=" and rs.academy_number='"+acno+"'";
 		}
