@@ -31,7 +31,6 @@
 $(document).ready(
 	//设置
    	function (){
-        listUserForLabRoom();
         $('[data-id]').each(function(i,e){
          $(e).on('click',function(){
          layer.open({
@@ -46,12 +45,6 @@ $(document).ready(
 		});
    	});
 
-function listUserForLabRoom(){
-    $.post('${pageContext.request.contextPath}/labRoom/listUserForLabRoom',function(data){  //serialize()序列化
-        $("#username3").html(data);
-        $("#username3").trigger("liszt:updated");
-    });
-}
 /**
 添加设备
 */
@@ -138,19 +131,63 @@ function addAdmin(typeId){
 /**
 添加实验项目
 */
-function addOperationItem(){
-     $("#addOperationItem").show();
-     $("#addOperationItem").window('open');   
-    
+function addOperationItem(lab_id){
+	var index = layer.open({
+		type: 2,
+		title: '项目列表',
+		fix: true,
+		maxmin:true,
+		shift:-1,
+		closeBtn: 1,
+		shadeClose: true,
+		move:false,
+		area: ['1000px', '420px'],
+		content: '${pageContext.request.contextPath }/labRoom/layerOperationItemLims?lab_id='+lab_id,
+		end: function(){
+			window.location.href="${pageContext.request.contextPath}/labRoom/getLabRoom?currpage=1&id=${labRoom.id}&type=${type}";
+		}
+	});
+	layer.full(index);
  }
- function getValue(){
-	 var s=[];
-     $($("#operation option:selected")).each(function(){
-	         s.push(this.value);
-     });
- 	//alert(s);
- 	window.location.href="${pageContext.request.contextPath}/labRoom/saveLabRoomOperationItem?roomId=${labRoom.id}&operationItem="+s+"&type=${type}";
+// 添加授权人员名单
+ function addAuthorized(lab_id) {
+	 var index = layer.open({
+		 type: 2,
+		 title: '用户列表',
+		 fix: true,
+		 maxmin:true,
+		 shift:-1,
+		 closeBtn: 1,
+		 shadeClose: true,
+		 move:false,
+		 area: ['1000px', '420px'],
+		 content: '${pageContext.request.contextPath }/labRoom/layerAddLabRoomAuthorized?lab_id='+lab_id+'&currpage=1',
+		 end: function(){
+			 window.location.href="${pageContext.request.contextPath}/labRoom/getLabRoom?currpage=1&id=${labRoom.id}&type=${type}";
+		 }
+	 });
+	 layer.full(index);
  }
+
+ // 修改授权人员信息
+function updateAuth(admin_id) {
+	var index = layer.open({
+		type: 2,
+		title: '编辑授权人员信息',
+		fix: true,
+		maxmin:true,
+		shift:-1,
+		closeBtn: 1,
+		shadeClose: true,
+		move:false,
+		area: ['1000px', '420px'],
+		content: '${pageContext.request.contextPath}/labRoom/updateLabRoomAuthorizeUser?id='+ admin_id,
+		end: function(){
+			window.location.href="${pageContext.request.contextPath}/labRoom/getLabRoom?currpage=1&id=${labRoom.id}&type=${type}";
+		}
+	});
+	layer.full(index);
+}
 //添加设备信息
 function setDeviceInfo(id,deviceId){
 	//alert(id+"------"+deviceId);
@@ -1114,38 +1151,6 @@ function  saveLabRoomAdmin(typeId){
         });
 
     }
-    //物联硬件提交前判空
-    function checkAuthorized(){
-		var username = $("#username3").val();
-		var startDate = $("#startDate").val();
-        var endDate = $("#endDate").val();
-        var startTime = $("#startTime").val();
-        var endTime = $("#endTime").val();
-        if(username==null||username==""){
-            alert("请选择人员")
-            return false;
-        }
-        else if(startDate==null||startDate==""){
-            alert("请选择开始日期")
-            return false;
-        }
-        else if(endDate==null||endDate==""){
-            alert("请选择结束日期")
-            return false;
-        }
-        else if(startTime==null||startTime==""){
-            alert("请选择开始时间")
-            return false;
-        }
-        else if(endTime==null||endTime==""){
-            alert("请选择结束时间")
-            return false;
-        }
-        else{
-            return true;
-		}
-
-    }
 </script>
 
 <style>
@@ -1412,7 +1417,7 @@ td {
 							<c:if test="${authLevel gt 0}">
 								<c:if test="${flag==true}">
 									<a class="btn btn-new" href="javascript:void(0)"
-										onclick="addOperationItem();">添加实验项目</a>
+										onclick="addOperationItem('${labRoom.id}');">添加实验项目</a>
 								</c:if>
 								<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomOperationItem();">批量删除</a>
 							</c:if>
@@ -1481,31 +1486,6 @@ td {
 									</c:forEach>
 								</tbody>
 							</table>
-						</div>
-						<!-- 添加实验项目 -->
-						<div id="addOperationItem" class="easyui-window " title="添加实验项目"
-							align="left" title="" modal="true" maximizable="false"
-							collapsible="false" closed="true" minimizable="false"
-							style="width: 500px; height: 300px;">
-								<table>
-									<tr>
-										<td>实验项目卡名称</td>
-									</tr>
-									<tr>
-										<td><input type="hidden" id="operationItem"
-											name="operationItem"> <select id="operation"
-											name="operation" class="chzn-select" multiple="multiple">
-												<c:forEach items="${items}" var="m">
-													<option value="${m.id}">${m.lpName}(${m.lpCodeCustom})</option>
-												</c:forEach>
-										</select></td>
-									</tr>
-									<tr>
-										<td><input type="button" value="提交" onclick="getValue();">
-										</td>
-										<td><input type="button" value="取消"></td>
-									</tr>
-								</table>
 						</div>
 					</div>
 					<!-- 实验项目结束 -->
@@ -1732,7 +1712,8 @@ td {
 											<a id="refreshing1" class="btn btn-new" onclick="refreshZjcc();"  href="javascript:void(0)">刷新权限</a>
 										</c:if>
 									</c:if>
-									<a class="btn btn-new" href="javascript:void(0)" onclick="addAdmin(2);">添加物联管理员</a>
+									<a class="btn btn-new" href="javascript:void(0)" onclick="
+									2);">添加物联管理员</a>
 									<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomAdmin();">批量删除</a>
 									<input class="btn btn-new" type="button" value="批量导入" onclick="importAdmin(2);"/>
 								</sec:authorize>
@@ -2188,6 +2169,9 @@ td {
 					<div class="content-box">
 						<div class="title">
 							<div id="title">授权名单管理</div>
+							<c:if test="${authLevel gt 0}">
+								<input class="search r btn btn-new" type="button" onclick="addAuthorized('${labRoom.id}');return false;" value="添加" />
+							</c:if>
 						</div>
 <%--						<div class="tool-box">
 							<form:form name="queryForm" action="${pageContext.request.contextPath}/labRoom/getLabRoom?id=${labRoom.id}&currpage=1&type=${type}" method="post" modelAttribute="viewUseOfLc">
@@ -2201,43 +2185,6 @@ td {
 								</ul>
 							</form:form>
 						</div>--%>
-						<c:if test="${authLevel gt 0}">
-							<div class="title" style="border-top:none;clear:both;">
-								<div class="select_s" >
-									<form name="form" action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoom.id}&type=${type}" method="post" onsubmit="return checkAuthorized()">
-										<div class="tool-box" style="float:left;">
-											<ul>
-											<li>人员名称/编号：</li><input id="proj_name" type="hidden" value="${proj_name}" />
-											<li>
-												<select id="username3" name="username3" class="chzn-select">
-											<%--<c:forEach items="${userList}" var="curr">--%>
-												<%--<option value="${curr.username}">${curr.cname }${curr.username}</option>--%>
-											<%--</c:forEach>--%>
-												</select>
-											</li>
-											</ul>
-										</div>
-										<div style="float:left;">
-											<span class="f14" style="float:left;">开始日期：</span>
-											<input id="startDate" name="startDate" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" style="width:100px; margin-top: 1px;" readonly />
-										</div>
-										<div style="float:left;">
-											<span class="f14" style="float:left;">结束日期：</span>
-											<input id="endDate" name="endDate" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" style="width:100px; margin-top: 1px;" readonly />
-										</div>
-										<div style="float:left;">
-											<span class="f14" style="float:left;">开始时间：</span>
-											<input id="startTime" name="startTime" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'HH:mm'})" style="width:100px; margin-top: 1px;" readonly />
-										</div>
-										<div style="float:left;">
-											<span class="f14" style="float:left;">结束时间：</span>
-											<input id="endTime" name="endTime" class="Wdate" type="text" onclick="WdatePicker({dateFmt:'HH:mm'})" style="width:100px; margin-top: 1px;" readonly />
-										</div>
-										<input class="search r btn btn-new" type="submit" value="添加" />
-									</form>
-								</div>
-							</div>
-						</c:if>
 					</div>
 				<div class="edit-content">
 					<table class="tb" id="my_show">
@@ -2263,7 +2210,7 @@ td {
 								<td><fmt:formatDate value="${admin.startTime.time}" pattern="HH:mm:ss "/></td>
 								<td><fmt:formatDate value="${admin.endTime.time}" pattern="HH:mm:ss "/></td>
 								<td>
-									<a href="${pageContext.request.contextPath}/labRoom/updateLabRoomAuthorizeUser?id=${admin.id}&type=${type}">修改</a>
+									<a href="${pageContext.request.contextPath}/labRoom/updateLabRoomAuthorizeUser?id=${admin.id}&type=${type}" onclick="updateAuth('${admin.id}'); return false;">修改</a>
 									<a onclick="return confirm('确认要删除吗？')"
 									   href="${pageContext.request.contextPath}/labRoom/deleteLabRoomAuthorizeUser?id=${admin.id}&type=${type}">删除</a>
 								</td>

@@ -3047,17 +3047,21 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @return
 	 * @author 廖文辉 2019-01-10
 	 */
-	public List<User> findUserByacno(String academyNumber){
+	public List<User> findUserByacno(String academyNumber, String search, int currpage, int pagesize){
 		String sql="select u from User u where 1=1";
 		if(pConfig.PROJECT_NAME.equals("fdulims")){
 			// 复旦需要添加外院的人员
 		}else if (academyNumber != null && !academyNumber.equals("")) {
 			sql += " and u.schoolAcademy.academyNumber = '" + academyNumber + "'";
 		}
+		// 查询条件
+		if (!EmptyUtil.isStringEmpty(search)) {
+			sql += " and (u.cname like '%"+ search +"%' or u.username like '%"+ search +"%')";
+		}
 		sql += " and u.enabled=true";
 		// 筛选老师和近五年的学生
 		sql += " and (u.userRole = 1 or u.grade > (" + Calendar.getInstance().get(Calendar.YEAR) + "-6))";
-		return userDAO.executeQuery(sql,0,-1);
+		return userDAO.executeQuery(sql,(currpage-1)*pagesize, pagesize);
 	}
 	/**
 	 * Description 查找本学期的操作日志

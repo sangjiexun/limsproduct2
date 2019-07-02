@@ -595,4 +595,13 @@ public interface OperationService {
 	 * 日期：2016-05-31
 	 ***********************************************************************************/
 	public void saveoperationoutlineitems(int outlineId,String[] courseitems );
+
+	/**
+	 * Description 跟据条件查询项目列表
+	 * @param item
+	 * @param lab_id
+	 * @return
+	 * @author 陈乐为 2019-7-2
+	 */
+	public List<OperationItem> findItemByQuery(OperationItem item, Integer lab_id);
 }

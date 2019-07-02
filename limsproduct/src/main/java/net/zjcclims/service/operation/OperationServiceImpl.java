@@ -2850,4 +2850,33 @@ public class OperationServiceImpl implements OperationService {
 		return operationItemDAO.executeQuery(hql,0,-1);
 	}
 
+	/**
+	 * Description 跟据条件查询项目列表
+	 * @param item
+	 * @param lab_id
+	 * @return
+	 * @author 陈乐为 2019-7-2
+	 */
+	public List<OperationItem> findItemByQuery(OperationItem item, Integer lab_id) {
+		StringBuffer hql = new StringBuffer("select i from OperationItem i join i.labRooms room where 1=1");
+		if(!EmptyUtil.isObjectEmpty(item)) {// 有效传参
+			// 项目名称
+			if(!EmptyUtil.isStringEmpty(item.getLpName())) {
+				hql.append(" and i.lpName = '"+ item.getLpName() +"'");
+			}
+			// 所属课程
+			if(!EmptyUtil.isObjectEmpty(item.getSchoolCourseInfo()) && !EmptyUtil.isStringEmpty(item.getSchoolCourseInfo().getCourseNumber())) {
+				hql.append(" and i.schoolCourseInfo.courseNumber = '"+ item.getSchoolCourseInfo().getCourseNumber() +"'");
+			}
+			// 所属实验室
+			if (!EmptyUtil.isIntegerEmpty(lab_id)) {
+				hql.append(" and room.id = " + lab_id);
+			}
+		}
+		// 按照状态正序（草稿-审核中-...）
+		hql.append(" order by i.lpName");
+
+		return operationItemDAO.executeQuery(hql.toString(), 0, -1);
+	}
+
 }
