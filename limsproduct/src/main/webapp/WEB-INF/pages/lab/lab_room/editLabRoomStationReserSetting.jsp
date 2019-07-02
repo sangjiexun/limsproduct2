@@ -171,11 +171,13 @@ function cancel(){
 //            document.getElementById("allowSecurityAccess").style.display="";
             document.getElementById("isAudit").style.display="";
             document.getElementById("labRoomWorkers").style.display="";
+//            document.getElementById("1staudit").style.display="";
 //            document.getElementById("selectAcademy").style.display="";
             if (${empty isAudit1}) {//是否可以预约联动
 //            document.getElementById("isAudit").style.display = "None";
                 document.getElementById('needAudit1').checked = "";
                 document.getElementById('needAudit0').checked = "";
+                document.getElementById("1staudit").style.display="None";
 //            $("#rdo1").removeAttr("checked");
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
@@ -185,8 +187,11 @@ function cancel(){
 //        document.getElementById("trainingType").style.display = "None";
             } else if(${isAudit1 == 1}){
                 document.getElementById('needAudit1').checked = true;
+                document.getElementById("selectAcademy").style.display="";
+                document.getElementById("1staudit").style.display="";
             } else if(${isAudit1 == 0}){
                 document.getElementById('needAudit0').checked = true;
+                document.getElementById("1staudit").style.display="None";
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
                         document.getElementById(needAllAudits[i]).style.display = "None";
@@ -198,6 +203,7 @@ function cancel(){
 //            document.getElementById("allowSecurityAccess").style.display="None";
             document.getElementById("isAudit").style.display="None";
             document.getElementById("labRoomWorkers").style.display="None";
+            document.getElementById("1staudit").style.display="None";
 //            document.getElementById("selectAcademy").style.display="None";
             // document.getElementById("labManager").style.display="None";
             // document.getElementById("dean").style.display="None";

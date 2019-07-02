@@ -324,6 +324,7 @@ $(document).ready(function(){
     if (${allowAppointment==2}) {//是否可以预约联动
         //document.getElementById("allowLending").style.display = "None";
         document.getElementById("isAudit").style.display = "None";
+        document.getElementById("1staudit").style.display = "None";
         // document.getElementById("manager").style.display="None";
         // document.getElementById("teacher").style.display = "None";
         // document.getElementById("dean").style.display = "None";
@@ -400,26 +401,37 @@ $("#needAudit1").change(function(){
 $("#appointment1").change(function(){
 	document.getElementById("allowSecurityAccess").style.display="";
 	document.getElementById("isAudit").style.display="";
+    document.getElementById("1staudit").style.display="None";
     //document.getElementById("selectAcademy").style.display="";
-	if(${isAudit==2} || ${empty isAudit})
-    {//是否需要审核联动
+	if(${empty isAudit}){//是否需要审核联动
         // document.getElementById("teacher").style.display="None";
         // document.getElementById("dean").style.display="None";
         // document.getElementById("labManager").style.display="None";
         // document.getElementById("trainingCenterDirector").style.display="None";
         // document.getElementById("trainingDepartmentDirrector").style.display="None";
+        document.getElementById('needAudit1').checked = "";
+        document.getElementById('needAudit2').checked = "";
+        document.getElementById("1staudit").style.display="None";
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
             }
         }
-    }else
+    }else if(${isAudit==2}){
+        document.getElementById("1staudit").style.display="None";
+        if(needAllAudits[0]) {
+            for (var i = 0; i < needAllAudits.length; i++) {
+                document.getElementById(needAllAudits[i]).style.display = "None";
+            }
+        }
+	}else if(${isAudit==1})
         {
         // document.getElementById("teacher").style.display="";
         // document.getElementById("dean").style.display="";
         // document.getElementById("labManager").style.display="";
         // document.getElementById("trainingCenterDirector").style.display="";
         // document.getElementById("trainingDepartmentDirrector").style.display="";
+            document.getElementById("1staudit").style.display="";
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "";
@@ -461,6 +473,7 @@ $(document).ready(function(){
 	$("#appointment2").change(function(){
 		document.getElementById("allowSecurityAccess").style.display="None";
 		document.getElementById("isAudit").style.display="None";
+		document.getElementById("1staudit").style.display="None";
         //document.getElementById("selectAcademy").style.display="None";
 		// document.getElementById("labManager").style.display="None";
 		// document.getElementById("dean").style.display="None";
