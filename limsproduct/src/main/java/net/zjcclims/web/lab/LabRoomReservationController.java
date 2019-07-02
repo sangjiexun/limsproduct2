@@ -41,7 +41,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -232,6 +234,97 @@ public class LabRoomReservationController<JsonResult> {
         mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
         mav.setViewName("/labroom/labAppointment.jsp");
         return mav;
+    }
+
+    /****************************************************************************
+     * 功能：AJAX 根据姓名、工号查询工位预约的学生名单 作者：Hezhaoyi 时间：2019-7-2
+     *
+     * @throws UnsupportedEncodingException
+     ****************************************************************************/
+    @SuppressWarnings("deprecation")
+    @RequestMapping("/LabRoomStationReservation/findUserByCnameAndUsername")
+    public @ResponseBody
+    String findUserByCnameAndUsername(@RequestParam String cname,
+                                      String username,Integer page, Integer typeId)
+            throws UnsupportedEncodingException {
+
+        int pageSize = 20;
+
+        StringBuffer sql = new StringBuffer("SELECT t FROM User t join t.authorities a WHERE a.id=1 ");
+        if (cname != null) {
+            // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
+            sql.append(" and u.cname like '%" + cname + "%' ");
+        }
+        if (username != null) {
+            // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
+            sql.append(" and u.username like '%" + username + "%' ");
+        }
+        Query query = entityManager.createQuery(sql.toString());
+        int totalRecords = query.getResultList().size();
+        query.setMaxResults(pageSize);
+        int firstResult = (Integer.valueOf(page)-1) * pageSize;
+        query.setFirstResult(firstResult);
+        List<User> studentList = query.getResultList();
+        // 分页开始
+        // 根据分页信息查询出来的记录
+        //List<User> userList = ;
+        Map<String, Integer> pageModel = shareService.getPage(page, pageSize,
+                totalRecords);
+        String s = "";
+        for (User d : studentList) {
+            String academy = "";
+            if (d.getSchoolAcademy() != null) {
+                academy = d.getSchoolAcademy().getAcademyName();
+            }
+            s += "<tr>" + "<td><input type='checkbox' name='CK_name' value='"
+                    + d.getUsername() + "'/></td>" + "<td>" + d.getCname()
+                    + "</td>" + "<td>" + d.getUsername() + "</td>" + "<td>"
+                    + academy + "</td>" +
+
+                    "</tr>";
+        }
+        s += "<tr><td colspan='6'>"
+                + "<a href='javascript:void(0)' onclick='firstPage(1,"+typeId+");'>"
+                + "首页" + "</a>&nbsp;"
+                + "<a href='javascript:void(0)' onclick='previousPage("
+                + page
+                + ","+typeId+");'>"
+                + "上一页"
+                + "</a>&nbsp;"
+                + "<a href='javascript:void(0)' onclick='nextPage("
+                + page
+                + ","
+                + pageModel.get("totalPage")
+                +","+typeId+");'>"
+                + "下一页"
+                + "</a>&nbsp;"
+                + "<a href='javascript:void(0)' onclick='lastPage("
+                + pageModel.get("totalPage")
+                + ","+typeId+");'>"
+                + "末页"
+                + "</a>&nbsp;"
+                + "当前第"
+                + page
+                + "页&nbsp; 共"
+                + pageModel.get("totalPage")
+                + "页  " + totalRecords + "条记录" + "</td></tr>";
+        return htmlEncode(s);
+    }
+
+    /****************************************************************************
+     * 功能：处理ajax中文乱码 作者：贺子龙 时间：2015-09-08
+     ****************************************************************************/
+    public static String htmlEncode(String str) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < str.length(); i++) {
+            int c = (int) str.charAt(i);
+            if (c > 127 && c != 160) {
+                sb.append("&#").append(c).append(";");
+            } else {
+                sb.append((char) c);
+            }
+        }
+        return sb.toString();
     }
 
     /****************************************************************************

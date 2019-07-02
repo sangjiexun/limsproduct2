@@ -1198,11 +1198,11 @@ public class LabReservationController<JsonResult> {
                 if(authority.getAuthorityName().equals("LABMANAGER")){
                     authorityList.add(3,authority);
                 }
-                if(authority.getAuthorityName().equals("ACADEMYLEVELM")){
-                    authorityList.add(4,authority);
-                }
                 if(authority.getAuthorityName().equals("SUPERADMIN")){
                     authorityList.add(5,authority);
+                }
+                if(authority.getAuthorityName().equals("ACADEMYLEVELM")){
+                    authorityList.add(4,authority);
                 }
             }
         }else {
