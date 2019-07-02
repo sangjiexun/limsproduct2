@@ -1026,12 +1026,18 @@ public class LabReservationController<JsonResult> {
 
         // 开放范围/开放对象  实验室type = 1
         List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
-        SchoolAcademy schoolAcademyAll = schoolAcademies.get(schoolAcademies.size()-1);
-        schoolAcademies.remove(schoolAcademyAll);
-        SchoolAcademy schoolAcademy0 = schoolAcademies.get(1);
-        schoolAcademies.remove(schoolAcademy0);
-        schoolAcademies.add(0,schoolAcademyAll);
-        mav.addObject("schoolAcademyList", schoolAcademies);
+        List<SchoolAcademy> schoolAcademyList = new ArrayList<>();
+        for(SchoolAcademy schoolAcademy :schoolAcademies){
+        	if(!schoolAcademy.getAcademyNumber().equals("20190506")){
+                schoolAcademyList.add(schoolAcademy);
+			}
+		}
+		//全校选项置顶
+		SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber("20190506");
+        if(schoolAcademy!=null){
+            schoolAcademyList.add(0,schoolAcademy);
+        }
+        mav.addObject("schoolAcademyList", schoolAcademyList);
         Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
         List<Authority> authorityList = new ArrayList<>();
         //开放对象选择顺序调整：全部、学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
@@ -1160,13 +1166,19 @@ public class LabReservationController<JsonResult> {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
 
 		// 开放范围/开放对象
-		List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
-        SchoolAcademy schoolAcademyAll = schoolAcademies.get(schoolAcademies.size()-1);
-        schoolAcademies.remove(schoolAcademyAll);
-        SchoolAcademy schoolAcademy0 = schoolAcademies.get(1);
-        schoolAcademies.remove(schoolAcademy0);
-        schoolAcademies.add(0,schoolAcademyAll);
-		mav.addObject("schoolAcademyList", schoolAcademies);
+        List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
+        List<SchoolAcademy> schoolAcademyList = new ArrayList<>();
+        for(SchoolAcademy schoolAcademy :schoolAcademies){
+            if(!schoolAcademy.getAcademyNumber().equals("20190506")){
+                schoolAcademyList.add(schoolAcademy);
+            }
+        }
+        //全校选项置顶
+        SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber("20190506");
+        if(schoolAcademy!=null){
+            schoolAcademyList.add(0,schoolAcademy);
+        }
+        mav.addObject("schoolAcademyList", schoolAcademyList);
 //		工位预约type为2
         Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
         List<Authority> authorityList = new ArrayList<>();
