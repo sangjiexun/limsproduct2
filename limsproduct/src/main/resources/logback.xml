@@ -15,7 +15,7 @@
             <onMatch>DENY</onMatch>
         </filter>
         <!--logstash ip地址-->
-        <destination>192.168.1.185:10515</destination>
+        <destination>www.gvsun.net:10515</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" >
             <!--名称一定要修改！！！-->
             <customFields>{"appname":"limsproduct-name"}</customFields>
