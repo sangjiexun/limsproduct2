@@ -251,7 +251,7 @@ public class LabRoomReservationController<JsonResult> {
     @RequestMapping("/LabRoomStationReservation/findUserByCnameAndUsername")
     public @ResponseBody
     String findUserByCnameAndUsername(@RequestParam String cname,
-                                      String username,Integer page, Integer typeId)
+                                      String username,Integer page)
             throws UnsupportedEncodingException {
 
         int pageSize = 20;
@@ -290,23 +290,23 @@ public class LabRoomReservationController<JsonResult> {
                     "</tr>";
         }
         s += "<tr><td colspan='6'>"
-                + "<a href='javascript:void(0)' onclick='firstPage(1,"+typeId+");'>"
+                + "<a href='javascript:void(0)' onclick='firstPage(1);'>"
                 + "首页" + "</a>&nbsp;"
                 + "<a href='javascript:void(0)' onclick='previousPage("
                 + page
-                + ","+typeId+");'>"
+                + ");'>"
                 + "上一页"
                 + "</a>&nbsp;"
                 + "<a href='javascript:void(0)' onclick='nextPage("
                 + page
                 + ","
                 + pageModel.get("totalPage")
-                +","+typeId+");'>"
+                +");'>"
                 + "下一页"
                 + "</a>&nbsp;"
                 + "<a href='javascript:void(0)' onclick='lastPage("
                 + pageModel.get("totalPage")
-                + ","+typeId+");'>"
+                + ");'>"
                 + "末页"
                 + "</a>&nbsp;"
                 + "当前第"
