@@ -18,7 +18,7 @@
         <destination>www.gvsun.net:10515</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" >
             <!--名称一定要修改！！！-->
-            <customFields>{"appname":"limsproduct-name"}</customFields>
+            <customFields>{"appname":"limsproduct-lbl"}</customFields>
         </encoder>
     </appender>
 
@@ -26,6 +26,6 @@
         <!--输出到控制台-->
         <appender-ref ref="STDOUT" />
         <!--输出到logstash-->
-<!--        <appender-ref ref="stash" />-->
+        <appender-ref ref="stash" />
     </root>
 </configuration>
