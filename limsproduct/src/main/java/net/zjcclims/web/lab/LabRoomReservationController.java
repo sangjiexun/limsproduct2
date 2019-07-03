@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.LabRoomStationReservationAuditDTO;
 import net.gvsun.lims.dto.common.BaseDTO;
+import net.gvsun.lims.vo.labRoom.LabRoomVO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -138,6 +140,10 @@ public class LabRoomReservationController<JsonResult> {
     private TimetableTeacherRelatedDAO timetableTeacherRelatedDAO;
     @Autowired
     private TimetableAppointmentDAO timetableAppointmentDAO;
+    @Autowired
+    private ReservationSetItemDAO reservationSetItemDAO;
+    @Autowired
+    private SchoolWeekDAO schoolWeekDAO;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -245,19 +251,19 @@ public class LabRoomReservationController<JsonResult> {
     @RequestMapping("/LabRoomStationReservation/findUserByCnameAndUsername")
     public @ResponseBody
     String findUserByCnameAndUsername(@RequestParam String cname,
-                                      String username,Integer page, Integer typeId)
+                                      String username,Integer page)
             throws UnsupportedEncodingException {
 
         int pageSize = 20;
 
         StringBuffer sql = new StringBuffer("SELECT t FROM User t join t.authorities a WHERE a.id=1 ");
-        if (cname != null) {
+        if (cname != null && !cname.equals("")) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
-            sql.append(" and u.cname like '%" + cname + "%' ");
+            sql.append(" and t.cname like '%" + cname + "%' ");
         }
-        if (username != null) {
+        if (username != null && !username.equals("")) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
-            sql.append(" and u.username like '%" + username + "%' ");
+            sql.append(" and t.username like '%" + username + "%' ");
         }
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
@@ -284,23 +290,23 @@ public class LabRoomReservationController<JsonResult> {
                     "</tr>";
         }
         s += "<tr><td colspan='6'>"
-                + "<a href='javascript:void(0)' onclick='firstPage(1,"+typeId+");'>"
+                + "<a href='javascript:void(0)' onclick='firstPage(1);'>"
                 + "首页" + "</a>&nbsp;"
                 + "<a href='javascript:void(0)' onclick='previousPage("
                 + page
-                + ","+typeId+");'>"
+                + ");'>"
                 + "上一页"
                 + "</a>&nbsp;"
                 + "<a href='javascript:void(0)' onclick='nextPage("
                 + page
                 + ","
                 + pageModel.get("totalPage")
-                +","+typeId+");'>"
+                +");'>"
                 + "下一页"
                 + "</a>&nbsp;"
                 + "<a href='javascript:void(0)' onclick='lastPage("
                 + pageModel.get("totalPage")
-                + ","+typeId+");'>"
+                + ");'>"
                 + "末页"
                 + "</a>&nbsp;"
                 + "当前第"
@@ -326,7 +332,6 @@ public class LabRoomReservationController<JsonResult> {
         }
         return sb.toString();
     }
-
     /****************************************************************************
      * 功能：查询实验室 作者：孙虎 时间：2017-09-20
      * 工位预约
@@ -828,8 +833,10 @@ public class LabRoomReservationController<JsonResult> {
             if (array != null) {
                 errorUsernames = labRoomReservationService.isAllStudent(array);
             }
-            if (errorUsernames.equals("") && errorUsernames.replaceAll(",", "").equals("") &&
-                    !userRole.equals("2")) {//无错误编号
+//            if (errorUsernames.equals("") && errorUsernames.replaceAll(",", "").equals("") &&
+//                    !userRole.equals("2")) {//无错误编号
+            if (errorUsernames.equals("") && errorUsernames.replaceAll(",", "").equals("")) {//无错误编号
+
                 User user = shareService.getUserDetail();
 //                List<User> deans = shareService.findDeansByAcademyNumber(user.getSchoolAcademy());
 //                if(deans != null && deans.size() > 0) {
@@ -2761,7 +2768,7 @@ public class LabRoomReservationController<JsonResult> {
         labRoomDeviceReservation = labRoomReservationService.saveAuditResultDevice(labRoomDeviceReservation, auditResult, remark);
         return "redirect:/LabRoomDeviceReservation/deviceReservationAllAudit?id=" + id + "&tage=" + tage + "&state=" + state + "&currpage=" + currpage + "&authName=" + authName;
     }
-    
+
     /**********************************************************************************************************
      * 保存大仪预约审核 --单级角色批量审核 作者：孙虎  时间：：2017-09-27 state:1导师审核2系主任3实训室管理员4实训系主任5实训部主任
      * @throws NoSuchAlgorithmException

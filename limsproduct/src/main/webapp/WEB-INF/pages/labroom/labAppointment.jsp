@@ -56,6 +56,10 @@
 		#user_body tr:last-child td {
 			text-align: center!important;
 		}
+		.two_btn{
+			text-align: center;
+			/*line-height: 100px;*/
+		}
 	</style>
     <script type="text/javascript">
         layui.use('laydate', function(){
@@ -66,6 +70,8 @@
                 ,type: 'time'
                 ,range: true //或 range: '~' 来自定义分割字符
                 ,trigger : 'click'
+                ,min: '09:30:00'
+                ,max: '17:30:00'
                 ,done: function(value, date, endDate){
 //                    console.log(value); //得到日期生成的值，如：2017-08-18
 //                    console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
@@ -103,7 +109,32 @@
 //                    findRestStations();
                 }
             });
+
         });
+//        function changeTime() {
+//            alert($('#lendingTime').val());
+//        }
+        function wtimePicker() {
+            WdatePicker({
+				minDate:'%y-%M-{%d}',
+				dateFmt:'yyyy-MM-dd',
+				onpicked:function(){
+				    console.log($('#lendingTime').val());
+				    var labroom = document.getElementById("labRoom").value;
+				    var lendingTime = $('#lendingTime').val();
+                    $.ajax({
+                        type: "GET",
+                        url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
+                        dataType:'json',
+                        success:function(data){
+
+                        },
+                        error:function(){
+                            alert("查询失败！后台出了点问题！");
+                        }
+                    })
+				}})
+        }
         <%--function onChangeDate() {--%>
 
             <%--if($("#labRoom").val() == ""){--%>
@@ -744,7 +775,7 @@ function cancel(){
 						<td colspan="3">
 							<input class="Wdate" id="lendingTime" name="lendingTime" type="text"
 								   value="<fmt:formatDate value="${labReservation.lendingTime.time}" pattern="yyyy-MM-dd"/>"
-								   onclick="WdatePicker({minDate:'%y-%M-{%d}',dateFmt:'yyyy-MM-dd'})" />
+								   onclick="wtimePicker()" />
 								<%--<input  class="easyui-datebox"  id="reservationTime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>--%>
 							<font class="space"></font>
 							预约时间&nbsp;:
@@ -969,8 +1000,11 @@ function cancel(){
 <div id="newStudents" class="easyui-window" title="选择添加学生" modal="true" dosize="true" maximizable="true" collapsible="true" minimizable="false" closed="true" iconcls="icon-add" style="width:800px; height:600px;">
 	<div class="TabbedPanelsContentGroup">
 	<div class="TabbedPanelsContent">
-	
-	<div class="content-box">
+	<div class="two_btn">
+		<a class='btn btn-common' href='javascript:void(0)' onclick="schoolClassSearch()">通过班级多选</a>
+		<a class='btn btn-common' href='javascript:void(0)' onclick="singleSearch()">通过搜索单选</a>
+	</div>
+	<div class="content-box search_schoolClass" style="display: none;">
 	<form:form action="" method="post">
 	<fieldset class="introduce-box">
          <legend>年级信息</legend>
@@ -992,6 +1026,37 @@ function cancel(){
 	</fieldset>
 	</form:form>
 	</div>
+		<div class="content-box search_single" style="display: none;">
+			<form:form id="userForm" method="post">
+				<table class="tb" id="my_show">
+					<tr>
+						<td>姓名：<input id="cname"/>
+						</td>
+						<td>工号：<input id="username1"  />
+							<a onclick="queryUser(1);">搜索</a> <a onclick="cancleQuery(1);">取消</a>
+						</td>
+						<td><input type="hidden" id="adminType"> <input
+								type="button" value="添加" onclick="addUser(1);"></td>
+					</tr>
+				</table>
+			</form:form>
+
+			<table id="my_show">
+				<thead>
+				<tr>
+					<th style="width:10% !important">选择</th>
+					<th style="width:30% !important">姓名</th>
+					<th style="width:30% !important">工号</th>
+					<th style="width:30% !important">所属学院</th>
+
+				</tr>
+				</thead>
+
+				<tbody id="user_body">
+
+				</tbody>
+			</table>
+		</div>
 	</div>
 	</div>
 	
@@ -1294,7 +1359,23 @@ function cancel(){
                                     saveLabRoomReservation();
                                 }
                             }
-						    
+                            function schoolClassSearch() {
+								$('.search_schoolClass').show();
+                                $('.search_single').hide();
+                            }
+						    function singleSearch() {
+                                $('.search_schoolClass').hide();
+                                $('.search_single').show();
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body").innerHTML=data;
+                                    }
+                                });
+                            }
 						   
 						</script>
 	</div></div>
