@@ -473,7 +473,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                     <tbody>
                     <c:forEach items="${listOperationItem}" var="curr">
                         <tr>
-                            <c:if test="${status eq 3}">
+                            <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                                 <td><input id="check_${curr.id}" name="items" type="checkbox" value="${curr.id}"/></td>
                             </c:if>
                             <td>${curr.lpCodeCustom}</td>

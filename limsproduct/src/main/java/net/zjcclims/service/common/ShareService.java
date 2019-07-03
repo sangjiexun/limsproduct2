@@ -818,4 +818,11 @@ public interface ShareService {
 	 * @author 陈乐为 2019-6-20
 	 */
 	public boolean theSameDay(Date app_date);
+
+	/**
+	 * Description 从班级中获取可用学年
+	 * @return
+	 * @author 陈乐为
+	 */
+	public List<SchoolClasses> getYearCode();
 }

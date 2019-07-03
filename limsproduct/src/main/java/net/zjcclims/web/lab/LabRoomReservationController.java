@@ -225,7 +225,7 @@ public class LabRoomReservationController<JsonResult> {
         List<LabRoom> labRooms = entityManager.createQuery(sql.toString()).getResultList();
         mav.addObject("labRooms", labRooms);
         //选择年级
-        mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+        mav.addObject("grade", shareService.getYearCode());
         mav.addObject("listLabRoom", listLabRoom);
         mav.addObject("pageModel", pageModel);
         mav.addObject("totalRecords", totalRecords);
@@ -363,7 +363,7 @@ public class LabRoomReservationController<JsonResult> {
 //            mav.addObject("labRooms", labRoomDAO.executeQuery("select l from LabRoom l where l.labCenter.id=" + sid));
 //        }
         //选择年级
-        mav.addObject("grade", userDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+        mav.addObject("grade", shareService.getYearCode());
         mav.addObject("listLabRoom", listLabRoom);
         mav.addObject("pageModel", pageModel);
         mav.addObject("totalRecords", totalRecords);
