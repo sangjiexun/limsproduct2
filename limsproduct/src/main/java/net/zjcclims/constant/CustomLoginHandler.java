@@ -13,7 +13,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 public class CustomLoginHandler extends
         SavedRequestAwareAuthenticationSuccessHandler {
 
-    @Value("${cms_url}")
+    @Value("${cms_url:}")
     private String cmsUrl;
 
     @Override
