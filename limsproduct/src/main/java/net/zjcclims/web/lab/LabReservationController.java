@@ -1053,49 +1053,12 @@ public class LabReservationController<JsonResult> {
                 authorityList.add(authority);
             }
         }
-        if(pConfig.PROJECT_NAME.equals("shjulims")){
-            for(Authority authority:authorities1){
-                if(authority.getAuthorityName().equals("STUDENT")){
-                    authorityList.add(1,authority);
-                }
-                if(authority.getAuthorityName().equals("TEACHER")){
-                    authorityList.add(2,authority);
-                }
-                if(authority.getAuthorityName().equals("EXCENTERDIRECTOR")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("LABMANAGER")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("ACADEMYLEVELM")){
-                    authorityList.add(4,authority);
-                }
-                if(authority.getAuthorityName().equals("SUPERADMIN")){
-                    authorityList.add(5,authority);
-                }
-            }
-        }else {
-            for(Authority authority:authorities1){
-                if(authority.getAuthorityName().equals("STUDENT")){
-                    authorityList.add(1,authority);
-                }
-                if(authority.getAuthorityName().equals("TEACHER")){
-                    authorityList.add(2,authority);
-                }
-                if(authority.getAuthorityName().equals("EXCENTERDIRECTOR")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("LABMANAGER")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("ACADEMYLEVELM")){
-                    authorityList.add(4,authority);
-                }
-                if(authority.getAuthorityName().equals("SUPERADMIN")){
-                    authorityList.add(6,authority);
-                }
-            }
-        }
+		authorityList.add(1,authorityDAO.findAuthorityByName("SUPERADMIN"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("EXCENTERDIRECTOR"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("ACADEMYLEVELM"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("LABMANAGER"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("TEACHER"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("STUDENT"));
         mav.addObject("authorityList", authorityList);
 
 		StringBuffer sql = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + " and l.type = 1");
@@ -1195,50 +1158,12 @@ public class LabReservationController<JsonResult> {
                 authorityList.add(authority);
             }
         }
-        //交大需求
-        if(pConfig.PROJECT_NAME.equals("shjulims")){
-            for(Authority authority:authorities1){
-                if(authority.getAuthorityName().equals("STUDENT")){
-                    authorityList.add(1,authority);
-                }
-                if(authority.getAuthorityName().equals("TEACHER")){
-                    authorityList.add(2,authority);
-                }
-                if(authority.getAuthorityName().equals("EXCENTERDIRECTOR")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("LABMANAGER")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("SUPERADMIN")){
-                    authorityList.add(5,authority);
-                }
-                if(authority.getAuthorityName().equals("ACADEMYLEVELM")){
-                    authorityList.add(4,authority);
-                }
-            }
-        }else {
-            for(Authority authority:authorities1){
-                if(authority.getAuthorityName().equals("STUDENT")){
-                    authorityList.add(1,authority);
-                }
-                if(authority.getAuthorityName().equals("TEACHER")){
-                    authorityList.add(2,authority);
-                }
-                if(authority.getAuthorityName().equals("EXCENTERDIRECTOR")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("LABMANAGER")){
-                    authorityList.add(3,authority);
-                }
-                if(authority.getAuthorityName().equals("ACADEMYLEVELM")){
-                    authorityList.add(4,authority);
-                }
-                if(authority.getAuthorityName().equals("SUPERADMIN")){
-                    authorityList.add(6,authority);
-                }
-            }
-        }
+        authorityList.add(1,authorityDAO.findAuthorityByName("SUPERADMIN"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("EXCENTERDIRECTOR"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("ACADEMYLEVELM"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("LABMANAGER"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("TEACHER"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("STUDENT"));
         mav.addObject("authorityList", authorityList);
 
         StringBuffer sql = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + " and l.type = 2");
