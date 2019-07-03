@@ -257,13 +257,13 @@ public class LabRoomReservationController<JsonResult> {
         int pageSize = 20;
 
         StringBuffer sql = new StringBuffer("SELECT t FROM User t join t.authorities a WHERE a.id=1 ");
-        if (cname != null) {
+        if (cname != null && !cname.equals("")) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
-            sql.append(" and u.cname like '%" + cname + "%' ");
+            sql.append(" and t.cname like '%" + cname + "%' ");
         }
-        if (username != null) {
+        if (username != null && !username.equals("")) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
-            sql.append(" and u.username like '%" + username + "%' ");
+            sql.append(" and t.username like '%" + username + "%' ");
         }
         Query query = entityManager.createQuery(sql.toString());
         int totalRecords = query.getResultList().size();
