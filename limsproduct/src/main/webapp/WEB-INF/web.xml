@@ -6,6 +6,9 @@
 			org.springframework.web.context.request.RequestContextListener
 		</listener-class>
   </listener>
+  <listener>
+    <listener-class>uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4JServletContextListener</listener-class>
+  </listener>
     <!-- 所有的请求的getParameter会被替换，如果参数里面 含有敏感词会被替换掉 -->
   <filter>
      <filter-name>XssSqlFilter</filter-name>
