@@ -106,8 +106,8 @@ public class MaterialController {
      */
     @RequestMapping("/assetsAllCabinetList")
     @ResponseBody
-    public String assetsCabinetList(@RequestParam Integer page, Integer limit){
-        JSONObject jsonObject = materialService.findAllAssetCabinetList(page,limit);
+    public String assetsCabinetList(HttpServletRequest request, @RequestParam Integer page, Integer limit){
+        JSONObject jsonObject = materialService.findAllAssetCabinetList(page,limit,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
     /**
@@ -187,7 +187,7 @@ public class MaterialController {
     @RequestMapping("/assetCabinetAccessRecordList")
     @ResponseBody
     public String assetCabinetAccessRecordList(HttpServletRequest request, @RequestParam Integer page, Integer limit,Integer id){
-        JSONObject jsonObject = materialService.findAllAssetCabinetAccessRecordList(page,limit,id);
+        JSONObject jsonObject = materialService.findAllAssetCabinetAccessRecordList(page,limit,id,request);
         return shareService.htmlEncode(jsonObject.toJSONString());
     }
 

@@ -23,6 +23,8 @@ public class AssetsCabinetAccessRecordDTO implements Serializable{
     private String quantity;
     //物品柜剩余数量
     private String amount;
+    //所属学院
+    private String schoolAcademy;
 
     public Integer getId() {
         return id;
@@ -78,5 +80,13 @@ public class AssetsCabinetAccessRecordDTO implements Serializable{
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getSchoolAcademy() {
+        return schoolAcademy;
+    }
+
+    public void setSchoolAcademy(String schoolAcademy) {
+        this.schoolAcademy = schoolAcademy;
     }
 }

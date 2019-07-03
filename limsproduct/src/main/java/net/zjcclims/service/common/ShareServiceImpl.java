@@ -116,6 +116,7 @@ public class ShareServiceImpl implements ShareService {
 	@Autowired
 	private PConfig pConfig;
 	@Autowired private MessageDAO messageDAO;
+	@Autowired private SchoolClassesDAO schoolClassesDAO;
 	/*
 	 * Instantiates a new ShareServiceImpl.
 	 */
@@ -3143,6 +3144,17 @@ System.out.println("二维码路径："+url);
 			bln = true;
 		}
 		return bln;
+	}
+
+	/**
+	 * Description 从班级中获取可用学年
+	 * @return
+	 * @author 陈乐为
+	 */
+	public List<SchoolClasses> getYearCode() {
+		String sql = "select st from SchoolClasses st group by st.classGrade order by st.classGrade";
+
+		return schoolClassesDAO.executeQuery(sql);
 	}
 
 }

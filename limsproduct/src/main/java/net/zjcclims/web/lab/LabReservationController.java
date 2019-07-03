@@ -1026,30 +1026,39 @@ public class LabReservationController<JsonResult> {
 
         // 开放范围/开放对象  实验室type = 1
         List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
-        mav.addObject("schoolAcademyList", schoolAcademies);
+        List<SchoolAcademy> schoolAcademyList = new ArrayList<>();
+        for(SchoolAcademy schoolAcademy :schoolAcademies){
+        	if(!schoolAcademy.getAcademyNumber().equals("20190506")){
+                schoolAcademyList.add(schoolAcademy);
+			}
+		}
+		//全校选项置顶
+		SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber("20190506");
+        if(schoolAcademy!=null){
+            schoolAcademyList.add(0,schoolAcademy);
+        }
+        mav.addObject("schoolAcademyList", schoolAcademyList);
         Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
-        List<Authority> authorityArrayList = new ArrayList<>();
-        for(Authority authority:authorities1){
-            authorityArrayList.add(authority);
-        }
         List<Authority> authorityList = new ArrayList<>();
-        //开放对象选择顺序调整：学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
-        authorityList.add(authorityArrayList.get(0));  //学生
-        authorityList.add(authorityArrayList.get(1));  //教师
-        authorityList.add(authorityArrayList.get(4));  //实验室管理员
-        authorityList.add(authorityArrayList.get(5));  //院系级管理员
-        authorityList.add(authorityArrayList.get(3));  //实验中心主任
-        authorityList.add(authorityArrayList.get(9));  //超级管理员
-        for(int i = 0,len = authorityArrayList.size();i<len;i++){
-            if(i!=0 && i!=1 && i!=4 && i!=5 && i!=3 && i!=9){
-                authorityList.add(authorityArrayList.get(i));
-            }
-        }
+        //开放对象选择顺序调整：全部、学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
         Authority authorityAll = new Authority();
         authorityAll.setId(-1);
         authorityAll.setAuthorityName("ALL");
         authorityAll.setCname("全部");
         authorityList.add(authorityAll);
+        for(Authority authority:authorities1){
+            if(!"STUDENT".equals(authority.getAuthorityName()) && !"TEACHER".equals(authority.getAuthorityName())
+                    && !"LABMANAGER".equals(authority.getAuthorityName()) && !"ACADEMYLEVELM".equals(authority.getAuthorityName())
+                    && !"EXCENTERDIRECTOR".equals(authority.getAuthorityName()) && !"SUPERADMIN".equals(authority.getAuthorityName())){
+                authorityList.add(authority);
+            }
+        }
+		authorityList.add(1,authorityDAO.findAuthorityByName("SUPERADMIN"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("EXCENTERDIRECTOR"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("ACADEMYLEVELM"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("LABMANAGER"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("TEACHER"));
+		authorityList.add(1,authorityDAO.findAuthorityByName("STUDENT"));
         mav.addObject("authorityList", authorityList);
 
 		StringBuffer sql = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + " and l.type = 1");
@@ -1120,32 +1129,41 @@ public class LabReservationController<JsonResult> {
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
 
 		// 开放范围/开放对象
-		List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
-		mav.addObject("schoolAcademyList", schoolAcademies);
-//		工位预约type为2
-        Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
-        List<Authority> authorityArrayList = new ArrayList<>();
-        for(Authority authority:authorities1){
-            authorityArrayList.add(authority);
-        }
-        List<Authority> authorityList = new ArrayList<>();
-        //开放对象选择顺序调整：学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
-        authorityList.add(authorityArrayList.get(0));  //学生
-        authorityList.add(authorityArrayList.get(1));  //教师
-        authorityList.add(authorityArrayList.get(4));  //实验室管理员
-        authorityList.add(authorityArrayList.get(5));  //院系级管理员
-        authorityList.add(authorityArrayList.get(3));  //实验中心主任
-        authorityList.add(authorityArrayList.get(9));  //超级管理员
-        for(int i = 0,len = authorityArrayList.size();i<len;i++){
-            if(i!=0 && i!=1 && i!=4 && i!=5 && i!=3 && i!=9){
-                authorityList.add(authorityArrayList.get(i));
+        List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
+        List<SchoolAcademy> schoolAcademyList = new ArrayList<>();
+        for(SchoolAcademy schoolAcademy :schoolAcademies){
+            if(!schoolAcademy.getAcademyNumber().equals("20190506")){
+                schoolAcademyList.add(schoolAcademy);
             }
         }
+        //全校选项置顶
+        SchoolAcademy schoolAcademy = schoolAcademyDAO.findSchoolAcademyByAcademyNumber("20190506");
+        if(schoolAcademy!=null){
+            schoolAcademyList.add(0,schoolAcademy);
+        }
+        mav.addObject("schoolAcademyList", schoolAcademyList);
+//		工位预约type为2
+        Set<Authority> authorities1 = authorityDAO.findAllAuthoritys();
+        List<Authority> authorityList = new ArrayList<>();
+        //开放对象选择顺序调整：全部、学生、教师、实验室管理员、院系级管理员、实验中心主任、超级管理员
         Authority authorityAll = new Authority();
         authorityAll.setId(-1);
         authorityAll.setAuthorityName("ALL");
         authorityAll.setCname("全部");
         authorityList.add(authorityAll);
+        for(Authority authority:authorities1){
+            if(!"STUDENT".equals(authority.getAuthorityName()) && !"TEACHER".equals(authority.getAuthorityName())
+                    && !"LABMANAGER".equals(authority.getAuthorityName()) && !"ACADEMYLEVELM".equals(authority.getAuthorityName())
+                    && !"EXCENTERDIRECTOR".equals(authority.getAuthorityName()) && !"SUPERADMIN".equals(authority.getAuthorityName())){
+                authorityList.add(authority);
+            }
+        }
+        authorityList.add(1,authorityDAO.findAuthorityByName("SUPERADMIN"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("EXCENTERDIRECTOR"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("ACADEMYLEVELM"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("LABMANAGER"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("TEACHER"));
+        authorityList.add(1,authorityDAO.findAuthorityByName("STUDENT"));
         mav.addObject("authorityList", authorityList);
 
         StringBuffer sql = new StringBuffer("select l from LabOpenUpAcademy l where l.labRoomId=" + labRoomId  + " and l.type = 2");

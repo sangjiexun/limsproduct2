@@ -1718,6 +1718,8 @@ public class LabRoomLendingController<JsonResult> {
                             .append("-")
                             .append(sdf1.format(end.getTime()))
                             .append("</option>");
+                    isLimit = true;
+                    isOpenTime = true;
                 }
             }
         }else {
@@ -1751,6 +1753,8 @@ public class LabRoomLendingController<JsonResult> {
                             .append("-")
                             .append(sdf1.format(end.getTime()))
                             .append("</option>");
+                    isLimit = true;
+                    isOpenTime = true;
                 }
             }
         }

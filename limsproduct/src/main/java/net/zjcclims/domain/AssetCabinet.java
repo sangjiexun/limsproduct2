@@ -67,7 +67,17 @@ public class AssetCabinet implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	String cabinetName;
-	
+
+	@Column(name = "create_user")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String createUser;
+
+	@Column(name = "academy_number")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String academyNumber;
+
 	@Column(name = "flag")
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
@@ -149,6 +159,22 @@ public class AssetCabinet implements Serializable {
 	 */
 	public String getCabinetName() {
 		return this.cabinetName;
+	}
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	public String getAcademyNumber() {
+		return academyNumber;
+	}
+
+	public void setAcademyNumber(String academyNumber) {
+		this.academyNumber = academyNumber;
 	}
 
 	/**

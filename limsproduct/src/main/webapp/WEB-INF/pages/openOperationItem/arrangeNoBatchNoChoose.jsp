@@ -214,8 +214,8 @@
                                     <tr>
                                         <td>
                                             <c:forEach items="${grade }" var="s" varStatus="i">
-                                                <c:if test="${s.yearCode>'2010' }">
-                                                    <a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClasses(${s.yearCode})' >${s.yearCode}</a>
+                                                <c:if test="${s.classGrade>'2010' }">
+                                                    <a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClasses(${s.classGrade})' >${s.classGrade}</a>
                                                 </c:if>
                                             </c:forEach></td>
                                     </tr>

@@ -224,9 +224,28 @@ public class MaterialServiceImpl implements MaterialService {
      * * @return 状态字符串
      * @author 吴奇臻 2019-5-15
      */
-    public JSONObject findAllAssetCabinetList(Integer page, Integer limit){
+    public JSONObject findAllAssetCabinetList(Integer page, Integer limit,HttpServletRequest request){
         List<AssetsCabinetDTO> assetsCabinetDTOList=new ArrayList<>();
-        String sql="select id,cabinet_code,cabinet_name from asset_cabinet";
+        String sql="SELECT\n" +
+                "\tac.id,\n" +
+                "\tac.cabinet_code,\n" +
+                "\tac.cabinet_name,\n" +
+                "  CONCAT(u.cname,\"(\",u.username,\")\"),\n" +
+                "  sa.academy_name\n" +
+                "FROM\n" +
+                "\tasset_cabinet ac\n" +
+                "LEFT JOIN USER u ON ac.create_user=u.username\n" +
+                "LEFT JOIN school_academy sa on sa.academy_number=ac.academy_number where 1=1";
+        //添加权限相关筛选
+        String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
+        User user=shareService.getUser();//获得用户
+        String username=user.getUsername();//用户编号
+        if(authorityName.equals("ROLE_TEACHER")){
+            sql+=" and ac.app_user = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_LABMANAGER")||authorityName.equals("ROLE_EXCENTERDIRECTOR")){
+            sql+=" and ac.academy_number = '"+user.getSchoolAcademy().getAcademyNumber()+"'";//实验室管理员看自己学院
+        }
         Query query=entityManager.createNativeQuery(sql);
         query.setMaxResults(limit);
         query.setFirstResult((page-1)*limit);
@@ -236,6 +255,8 @@ public class MaterialServiceImpl implements MaterialService {
            assetsCabinetDTO.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
            assetsCabinetDTO.setCabinetCode(o[1]!=null?o[1].toString():null);
            assetsCabinetDTO.setCabinetName(o[2]!=null?o[2].toString():null);
+           assetsCabinetDTO.setCreateUser(o[3]!=null?o[3].toString():null);
+           assetsCabinetDTO.setSchoolAcademy(o[4]!=null?o[4].toString():null);
            assetsCabinetDTOList.add(assetsCabinetDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -299,10 +320,12 @@ public class MaterialServiceImpl implements MaterialService {
                 "\taa.price,\n" +
                 "\tac.cname,\n" +
                 "\taa.asset_statu,\n" +
-                "\taa.cur_audit_level\n" +
+                "\taa.cur_audit_level,\n" +
+                "\tsa.academy_name\n" +
                 "FROM\n" +
                 "\tasset_app aa\n" +
                 "LEFT JOIN asset_classification ac ON aa.category_id = ac.id\n" +
+                "LEFT JOIN school_academy sa ON sa.academy_number = aa.academy_number\n" +
                 "LEFT JOIN `user` u ON aa.app_user = u.username where 1=1 ";
         if(status!=null&&!status.equals("")){
             sql+="and aa.asset_statu = "+status+"";
@@ -362,6 +385,7 @@ public class MaterialServiceImpl implements MaterialService {
             }else{
                 assetsApplyDTO.setAppFlag(0);
             }
+            assetsApplyDTO.setAcademyNumber(o[8]!=null?o[8].toString():null);
             assetsApplyDTOList.add(assetsApplyDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -388,7 +412,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "  ac.cname,\n" +
                 "  ass.total_price,\n" +
                 "  ass.status,\n" +
-                "  ass.cur_audit_level\n" +
+                "  ass.cur_audit_level,\n" +
+                "  sa.academy_name\n" +
                 "FROM\n" +
                 "\tasset_storage ass\n" +
                 "LEFT JOIN school_academy sa ON ass.academy_number = sa.academy_number\n" +
@@ -453,6 +478,7 @@ public class MaterialServiceImpl implements MaterialService {
             }else{
                 assetsInStorageDTO.setAppFlag(0);
             }
+            assetsInStorageDTO.setAcademyNumber(o[9]!=null?o[9].toString():null);
             assetsInStorageDTOList.add(assetsInStorageDTO);
         }
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
@@ -480,10 +506,12 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tar.asset_usage,\n" +
                 "\tac.is_need_return,\n" +
                 "  ar.cur_audit_level,\n" +
-                "  ar.start_data\n" +
+                "  ar.start_data,\n" +
+                "  sa.academy_name\n" +
                 "FROM\n" +
                 "\tasset_receive ar\n" +
                 "LEFT JOIN `user` u ON u.username = ar.app_user\n" +
+                "LEFT JOIN school_academy sa ON sa.academy_number = ar.academy_number\n" +
                 "LEFT JOIN asset_classification ac on ar.category_id=ac.id WHERE 1=1 ";
         if(status!=null&&!status.equals("")){
             sql+=" and ar.status = "+status+"";
@@ -534,7 +562,9 @@ public class MaterialServiceImpl implements MaterialService {
                 }
             }
             assetsReceiveDTO.setBeginTime(o[9]!=null?o[9].toString().substring(0,19):null);
+            assetsReceiveDTO.setAcademyNumber(o[10]!=null?o[10].toString():null);
             String appUser="";
+            //审核标志位
             if(o[3]!=null){
                 appUser=o[3].toString();
             }
@@ -543,6 +573,7 @@ public class MaterialServiceImpl implements MaterialService {
             }else{
                 assetsReceiveDTO.setAppFlag(0);
             }
+            //宁德一中需求
             String sql1="SELECT\n" +
                     "  acr.stock_number\n" +
                     "FROM\n" +
@@ -823,7 +854,7 @@ public class MaterialServiceImpl implements MaterialService {
      * @param limit 当前页限制大小
      * @author 吴奇臻 2019-5-15
      */
-    public JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id){
+    public JSONObject findAllAssetCabinetAccessRecordList(Integer page, Integer limit,Integer id,HttpServletRequest request){
         List<AssetsCabinetAccessRecordDTO> assetsCabinetAccessRecordDTOList=new ArrayList<>();
         String sql="SELECT\n" +
                 "\tacar.app_id,\n" +
@@ -832,13 +863,25 @@ public class MaterialServiceImpl implements MaterialService {
                 "\tCONCAT(u.cname,\"(\",u.username,\")\") as username,\n" +
                 "  ac.cabinet_name,\n" +
                 "\tacar.quantity,\n" +
-                "  acar.remain_quantity\n" +
+                "  acar.remain_quantity,\n" +
+                "  sa.academy_name\n" +
                 "FROM\n" +
                 "\tasset_cabinet_access_record acar\n" +
                 "INNER JOIN asset_cabinet_record acr ON (acar.cabinet_id = acr.cabinet_id and acar.asset_id = acr.asset_id)\n" +
                 "LEFT JOIN asset_cabinet ac on acar.cabinet_id=ac.id\n" +
                 "LEFT JOIN user u on acar.username=u.username\n" +
-                "where acar.asset_id="+id;
+                "LEFT JOIN school_academy sa on sa.academy_number=u.academy_number\n" +
+                "where 1=1 and acar.asset_id="+id;
+        //添加权限相关筛选条件
+        String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
+        User user=shareService.getUser();//获得用户
+        String username=user.getUsername();//用户编号
+        if(authorityName.equals("ROLE_TEACHER")){
+            sql+=" and acar.username = '"+username+"'";//教师只看自己
+        }
+        if(authorityName.equals("ROLE_LABMANAGER")||authorityName.equals("ROLE_EXCENTERDIRECTOR")){
+            sql+=" and u.academy_number = '"+user.getSchoolAcademy().getAcademyNumber()+"'";//实验室管理员看自己学院
+        }
         sql +=" order by acar.create_date desc";
         int totalRecords=entityManager.createNativeQuery(sql).getResultList().size();
         Query query=entityManager.createNativeQuery(sql);
@@ -855,6 +898,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetsCabinetAccessRecordDTO.setCabinetName(o[4]!=null?(o[4].toString()):null);
             assetsCabinetAccessRecordDTO.setQuantity(o[5]!=null?(o[5].toString()):null);
             assetsCabinetAccessRecordDTO.setAmount(o[6]!=null?(o[6].toString()):null);
+            assetsCabinetAccessRecordDTO.setSchoolAcademy(o[7]!=null?(o[7].toString()):null);
             assetsCabinetAccessRecordDTOList.add(assetsCabinetAccessRecordDTO);
         }
         JSONObject jsonObject=this.getJSON(assetsCabinetAccessRecordDTOList,totalRecords);
@@ -2429,6 +2473,10 @@ public class MaterialServiceImpl implements MaterialService {
                 assetCabinet.setHardwareType("685");
                 assetCabinet.setServerId(Integer.parseInt(assetsCabinetDTO.getServerId()));
             }
+            //保存创建人及所属学院
+            User user=shareService.getUser();
+            assetCabinet.setCreateUser(user.getUsername());
+            assetCabinet.setAcademyNumber(user.getSchoolAcademy().getAcademyNumber());
             assetCabinetDAO.store(assetCabinet);
         }catch (Exception e){
             e.printStackTrace();

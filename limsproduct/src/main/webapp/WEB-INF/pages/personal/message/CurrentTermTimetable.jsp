@@ -90,10 +90,10 @@
                             <th>日期</th>
                             <th>周次</th>
                             <th>星期</th>
+                            <th>节次</th>
                             <th>课程名称</th>
                             <th>实验项目</th>
                             <th>实验室</th>
-                            <th>上课时间</th>
                             <th>授课教师</th>
                             <th>上课班级</th>
                             <th>操作</th>
@@ -103,21 +103,21 @@
                         <c:forEach items="${timetableAppointment}" var="current" varStatus="i">
                             <tr>
                                 <td>${i.count}</td>
-                                <td>${current[12]}</td>
-                                <td>${current[9]}</td>
-                                <td>${current[8]}</td>
-                                <td>${current[6]}</td>
-                                <td>${current[19]}</td>
-                                <td>${current[13]}</td>
-                                <td><c:if test="${current[10]==current[11]}">
-                                    ${current[10]}
+                                <td>${current[1]}</td>
+                                <td>${current[2]}</td>
+                                <td>${current[3]}</td>
+                                <td><c:if test="${current[7]==current[8]}">
+                                    ${current[7]}
                                 </c:if>
-                                    <c:if test="${current[10]!=current[11]}">
-                                        ${current[10]}-${current[11]}
+                                    <c:if test="${current[7]!=current[8]}">
+                                        ${current[7]}-${current[8]}
                                     </c:if>
                                 </td>
-                                <td>${current[15]}</td>
-                                <td>${current[7]}</td>
+                                <td>${current[4]}</td>
+                                <td>${current[5]}</td>
+                                <td>${current[6]}</td>
+                                <td>${current[9]}</td>
+                                <td>${current[10]}</td>
                                 <td></td>
                             </tr>
                         </c:forEach>

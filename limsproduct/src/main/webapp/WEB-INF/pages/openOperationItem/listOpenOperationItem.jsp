@@ -473,7 +473,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                     <tbody>
                     <c:forEach items="${listOperationItem}" var="curr">
                         <tr>
-                            <c:if test="${status eq 3}">
+                            <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                                 <td><input id="check_${curr.id}" name="items" type="checkbox" value="${curr.id}"/></td>
                             </c:if>
                             <td>${curr.lpCodeCustom}</td>
@@ -623,7 +623,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                  idAndAuth[curr.id] eq sessionScope.selected_role &&
                                   status != 1}">
                                         <!-- 可以审核&是审核人&不在‘我的项目’栏 -->
-                                        <a href="javascript:void(0);" onclick="viewOperationItemRest(${curr.id})">审核</a>
+                                        <a href="javascript:void(0);" onclick="listItemMaterialRecordRest(${curr.id})">审核</a>
                                     </c:if>
                                     <c:if test="${curr.CDictionaryByLpStatusCheck.id==checkYes.id}">
                                         <%-- <c:if test="${sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR' || sessionScope.selected_role eq 'ROLE_EXPERIMENTALTEACHING'

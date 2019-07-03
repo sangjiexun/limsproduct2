@@ -61,6 +61,12 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
                 align: 'center',
                 sort: true,
             }, {
+                field: 'academyNumber',
+                title: '所属学院',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            }, {
                 field: 'price',
                 title: '申请金额',
                 minWidth: 100,

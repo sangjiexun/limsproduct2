@@ -45,6 +45,18 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
                 minWidth: 100,
                 align: 'center',
                 sort: true,
+            },{
+                field: 'createUser',
+                title: '创建人',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            },{
+                field: 'schoolAcademy',
+                title: '所属学院',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
             }, {
                 fixed: 'right',
                 title: '操作',

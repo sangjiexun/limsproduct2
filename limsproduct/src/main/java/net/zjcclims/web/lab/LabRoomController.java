@@ -797,13 +797,6 @@ public class LabRoomController<JsonResult> {
         // 新建ModelAndView对象；
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUser();
-        mav.addObject("user", user);
-        String academyNumber="";
-        if(user.getSchoolAcademy().getAcademyNumber()!=null){
-            academyNumber=user.getSchoolAcademy().getAcademyNumber();
-        }
-//        List<User> userList=labRoomService.findUserByacno(academyNumber);
-//        mav.addObject("userList",userList);
         boolean flag = labRoomService.getLabRoomAdminReturn(id, user);
         mav.addObject("flag", flag);
         // System.out.println(flag);
@@ -811,40 +804,11 @@ public class LabRoomController<JsonResult> {
         LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(id);
         mav.addObject("labRoom", labRoom);
         // 获取所有实验项目
-        //List<OperationItem> operationItems = labRoomService.findAllOperationItemByRoomId(id);
-        //mav.addObject("operationItems", operationItems);
-        Set<OperationItem> ops=labRoom.getOperationItems();
+        Set<OperationItem> ops = labRoom.getOperationItems();
         mav.addObject("operationItems", ops);
         // 根据查询条件获取实验项目
-        List<OperationItem> operationItems = new ArrayList<>();
-        if(!"".equals(operationItem.getLpName()) && operationItem.getLpName() != null){
-            for(OperationItem op:ops){
-                if(op.getLpName().equals(operationItem.getLpName())){
-                    operationItems.add(op);
-                }
-            }
-            mav.addObject("operationItem1", operationItems);
-        } else if (operationItem.getSchoolCourseInfo() != null
-                && !"".equals(operationItem.getSchoolCourseInfo().getCourseName()) && operationItem.getSchoolCourseInfo().getCourseName() != null) {
-            for (OperationItem op : ops) {
-                if (op.getSchoolCourseInfo().getCourseName().equals(operationItem.getSchoolCourseInfo().getCourseName())) {
-                    operationItems.add(op);
-                }
-            }
-            mav.addObject("operationItem1", operationItems);
-        }else if(!"".equals(operationItem.getLpName()) && operationItem.getLpName() != null && operationItem.getSchoolCourseInfo() != null
-                && !"".equals(operationItem.getSchoolCourseInfo().getCourseName()) && operationItem.getSchoolCourseInfo().getCourseName() != null){
-            for (OperationItem op : ops) {
-                if (op.getSchoolCourseInfo().getCourseName().equals(operationItem.getSchoolCourseInfo().getCourseName())) {
-                    if(op.getLpName().equals(operationItem.getLpName())){
-                        operationItems.add(op);
-                    }
-                }
-            }
-            mav.addObject("operationItem1", operationItems);
-        }else {
-            mav.addObject("operationItem1", ops);
-        }
+        List<OperationItem> itemList = operationService.findItemByQuery(operationItem, labRoom.getId());
+        mav.addObject("operationItem1", itemList);
 
         // 获取所有电脑使用记录
         labRoomName = labRoom.getLabRoomName();
@@ -853,30 +817,19 @@ public class LabRoomController<JsonResult> {
         // 根据查询条件获取电脑使用记录
         List<ViewUseOfLc> allViewUseOfLcList = labRoomDeviceService.findAllallViewUseOfLcListByLabRoomName(viewUseOfLc, labRoomName, request);
         mav.addObject("allViewUseOfLcList", allViewUseOfLcList);
-        // 所有的实验项目卡
-        List<OperationItem> items = null;
-        if(user.getSchoolAcademy()!=null && user.getSchoolAcademy().getAcademyNumber()!=null) {
-            items = labRoomService.findAllOperationItem(user.getSchoolAcademy().getAcademyNumber());
-        }else {
-            items = labRoomService.findAllOperationItem("-1");
-        }
-        mav.addObject("items", items);
+
         // 实验室家具
-        List<LabRoomFurniture> labRoomFurniture = labRoomFurnitureService
-                .findLabRoomFurnitureByRooId(id);
+        List<LabRoomFurniture> labRoomFurniture = labRoomFurnitureService.findLabRoomFurnitureByRooId(id);
         mav.addObject("labRoomFurniture", labRoomFurniture);
         mav.addObject("labRoomFurnitures", new LabRoomFurniture());
         // 根据实验室查询实验室管理员
-        List<LabRoomAdmin> adminList = labRoomDeviceService
-                .findLabRoomAdminByRoomId(id, 1);
+        List<LabRoomAdmin> adminList = labRoomDeviceService.findLabRoomAdminByRoomId(id, 1);
         mav.addObject("adminList", adminList);
         // 实验室物联管理员
-        List<LabRoomAdmin> agentAdmin = labRoomDeviceService
-                .findLabRoomAdminByRoomId(id, 2);
+        List<LabRoomAdmin> agentAdmin = labRoomDeviceService.findLabRoomAdminByRoomId(id, 2);
         mav.addObject("agentAdmin", agentAdmin);
         // 被授权人员
-        List<LabRoomAdmin> authorizeUsers = labRoomDeviceService
-                .findLabRoomAdminByRoomId(id, 3);
+        List<LabRoomAdmin> authorizeUsers = labRoomDeviceService.findLabRoomAdminByRoomId(id, 3);
         mav.addObject("authorizeUsers", authorizeUsers);
         // 实验室管理员
         mav.addObject("admin", new LabRoomAdmin());
@@ -902,8 +855,7 @@ public class LabRoomController<JsonResult> {
         mav.addObject("softwareList", softwareList);
 
         // 根据实验分室id查询实验室设备
-        List<LabRoomDevice> labDeviceList = labRoomDeviceService
-                .findLabRoomDeviceByRoomId(id);
+        List<LabRoomDevice> labDeviceList = labRoomDeviceService.findLabRoomDeviceByRoomId(id);
         mav.addObject("labDeviceList", labDeviceList);
         // 设备查询表单对象
         mav.addObject("schoolDevice", schoolDevice);
@@ -969,7 +921,7 @@ public class LabRoomController<JsonResult> {
         // 权限等级
         int authLevel = shareService.getLevelByAuthName(request.getSession().getAttribute("selected_role").toString());
         mav.addObject("authLevel", authLevel);
-        List<Object[]> logs=labRoomService.getRefuseItemBackup(id);
+        List<Object[]> logs = labRoomService.getRefuseItemBackup(id);
         mav.addObject("logs",logs);
         mav.addObject("newServer", pConfig.newServer);
         mav.addObject("proj_name", pConfig.PROJECT_NAME);
@@ -979,19 +931,14 @@ public class LabRoomController<JsonResult> {
     /****************************************************************************
      * 功能：保存实验室项目卡 作者：贺子龙 时间：2015-09-07
      ****************************************************************************/
+    @ResponseBody
     @RequestMapping("/saveLabRoomOperationItem")
-    public ModelAndView saveLabRoomOperationItem(@RequestParam Integer roomId,@RequestParam int type,
-                                                 HttpServletRequest request) {
-        ModelAndView mav = new ModelAndView();
+    public String saveLabRoomOperationItem(@RequestParam String[] array,@RequestParam Integer roomId) {
         // roomId对应的实验室
         LabRoom room = labRoomService.findLabRoomByPrimaryKey(roomId);
 
-        String s = request.getParameter("operationItem");
-        String str[] = s.split(",");
-        labRoomService.saveLabRoomOperationItem(room, str);
-        mav.addObject("type",type);
-        mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id=" + roomId+"&type="+type);
-        return mav;
+        labRoomService.saveLabRoomOperationItem(room, array);
+        return "success";
     }
 
     /****************************************************************************
@@ -1245,8 +1192,8 @@ public class LabRoomController<JsonResult> {
         ModelAndView mav = new ModelAndView();
         // id对应的实验室物联管理员
         LabRoomAdmin admin = labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
-        List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(admin.getLabRoom().getId());
         if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+            List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(admin.getLabRoom().getId());
             String str = "{\"Table1\":[";
             // 遍历门禁
             for (LabRoomAgent agent : agentList) {
@@ -1264,40 +1211,33 @@ public class LabRoomController<JsonResult> {
 
             HttpClientUtil.doPost("http://10.50.20.100:85/deleteManager", params);
         }
-        labRoomAdminDAO.remove(admin);
-        // 判断该实验室管理员是否还有其他实验室管理
-        List labRooms = labRoomAdminService.findLabRoomAdminForByUsernameAndType(admin.getUser().getUsername(), admin.getTypeId());
-        if(labRooms == null || labRooms.size() == 0) {
-            Authority a;
-            User u = admin.getUser();
-            if (admin.getTypeId() == 2) {
-//            a = authorityDAO.findAuthorityById(19);
-                a = authorityDAO.findAuthorityByAuthorityName("CABINETADMIN").iterator().next();
-            } else {
-//            a = authorityDAO.findAuthorityById(5);
-                a = authorityDAO.findAuthorityByAuthorityName("LABMANAGER").iterator().next();
-            }
-            Set<Authority> ahths = u.getAuthorities();
-            ahths.remove(a);
-            u.setAuthorities(ahths);
-            userDAO.store(u);
-            RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
-            refuseItemBackup.setBusinessId(admin.getLabRoom().getId().toString());
-            if (admin.getTypeId() == 2) {
-                refuseItemBackup.setType("LabAgentAdmin");
-                refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
-            } else {
-                refuseItemBackup.setType("LabRoomAdmin");
-                refuseItemBackup.setOperationItemName("添加实验室管理员"+"("+u.getCname()+u.getUsername()+")");
-            }
-            refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
-            refuseItemBackup.setLabRoomName(admin.getLabRoom().getLabRoomName());
-            refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
-            refuseItemBackupDAO.store(refuseItemBackup);
+        // 权限管理
+        String auth_name = "";
+        if (admin.getTypeId() == 2) {
+            auth_name = "CABINETADMIN";
+        }else {
+            auth_name = "LABMANAGER";
         }
+        String sql = "{call proc_lab_managers('" + admin.getUser().getUsername() + "','"+ auth_name +"',"+ admin.getTypeId() +","+ admin.getLabRoom().getId() +")}";
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object[]> list = query.getResultList();
+        // 保存操作日志
+        User u = admin.getUser();
+        RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
+        refuseItemBackup.setBusinessId(admin.getLabRoom().getId().toString());
+        if (admin.getTypeId() == 2) {
+            refuseItemBackup.setType("LabAgentAdmin");
+            refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
+        } else {
+            refuseItemBackup.setType("LabRoomAdmin");
+            refuseItemBackup.setOperationItemName("删除实验室管理员"+"("+u.getCname()+u.getUsername()+")");
+        }
+        refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
+        refuseItemBackup.setLabRoomName(admin.getLabRoom().getLabRoomName());
+        refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
+        refuseItemBackupDAO.store(refuseItemBackup);
         mav.addObject("type",type);
-        mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id="
-                + admin.getLabRoom().getId()+"&type="+type);
+        mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id=" + admin.getLabRoom().getId()+"&type="+type);
         return mav;
     }
     /**
@@ -1331,38 +1271,32 @@ public class LabRoomController<JsonResult> {
         for (int id : array) {
             // id对应的实验室物联管理员
             LabRoomAdmin admin = labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
-            labRoomAdminDAO.remove(admin);
-            // 判断该实验室管理员是否还有其他实验室管理
-            List labRooms = labRoomAdminService.findLabRoomAdminForByUsernameAndType(admin.getUser().getUsername(), admin.getTypeId());
-            if (labRooms == null || labRooms.size() == 0) {
-                Authority a;
-                User u = admin.getUser();
-                if (admin.getTypeId() == 2) {
-//            a = authorityDAO.findAuthorityById(19);
-                    a = authorityDAO.findAuthorityByAuthorityName("CABINETADMIN").iterator().next();
-                } else {
-//            a = authorityDAO.findAuthorityById(5);
-                    a = authorityDAO.findAuthorityByAuthorityName("LABMANAGER").iterator().next();
-                }
-                Set<Authority> ahths = u.getAuthorities();
-                ahths.remove(a);
-                u.setAuthorities(ahths);
-                userDAO.store(u);
-                LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(roomId);
-                RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
-                refuseItemBackup.setBusinessId(roomId.toString());
-                if (admin.getTypeId() == 2) {
-                    refuseItemBackup.setType("LabAgentAdmin");
-                    refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
-                } else {
-                    refuseItemBackup.setType("LabRoomAdmin");
-                    refuseItemBackup.setOperationItemName("删除实验室管理员"+"("+u.getCname()+u.getUsername()+")");
-                }
-                refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
-                refuseItemBackup.setLabRoomName(labRoom.getLabRoomName());
-                refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
-                refuseItemBackupDAO.store(refuseItemBackup);
+            // 权限管理
+            String auth_name = "";
+            if (admin.getTypeId() == 2) {
+                auth_name = "CABINETADMIN";
+            }else {
+                auth_name = "LABMANAGER";
             }
+            String sql = "{call proc_lab_managers('" + admin.getUser().getUsername() + "','"+ auth_name +"',"+ admin.getTypeId() +","+ admin.getLabRoom().getId() +")}";
+            Query query = entityManager.createNativeQuery(sql);
+            List<Object[]> list = query.getResultList();
+
+            User u = admin.getUser();
+            LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(roomId);
+            RefuseItemBackup refuseItemBackup = new RefuseItemBackup();
+            refuseItemBackup.setBusinessId(roomId.toString());
+            if (admin.getTypeId() == 2) {
+                refuseItemBackup.setType("LabAgentAdmin");
+                refuseItemBackup.setOperationItemName("删除物联管理员"+"("+u.getCname()+u.getUsername()+")");
+            } else {
+                refuseItemBackup.setType("LabRoomAdmin");
+                refuseItemBackup.setOperationItemName("删除实验室管理员"+"("+u.getCname()+u.getUsername()+")");
+            }
+            refuseItemBackup.setTerm(shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
+            refuseItemBackup.setLabRoomName(labRoom.getLabRoomName());
+            refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
+            refuseItemBackupDAO.store(refuseItemBackup);
         }
         mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id=" + roomId+"&type="+type);
         return mav;
@@ -4081,49 +4015,48 @@ public class LabRoomController<JsonResult> {
      * @作者：廖文辉
      * @时间：2019-01-10
      ****************************************************************************/
+    @ResponseBody
     @RequestMapping("/saveLabRoomAuthorized")
-    public ModelAndView saveLabRoomAuthorized(@ModelAttribute LabRoomAdmin labRoomAdmin,@RequestParam Integer roomId,@RequestParam int type,HttpServletRequest request) throws ParseException{
-        ModelAndView mav = new ModelAndView();
-        // id对应的实验室
-        LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(roomId);
-        if(request!=null){
-            Calendar calendarStartDate=Calendar.getInstance();
-            Calendar calendarEndDate=Calendar.getInstance();
-            Calendar calendarStartTime=Calendar.getInstance();
-            Calendar calendarEndTime=Calendar.getInstance();
-            String startDate=request.getParameter("startDate");
-            String endDate=request.getParameter("endDate");
-            String startTime=request.getParameter("startTime");
-            String endTime=request.getParameter("endTime");
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat sdf2=new SimpleDateFormat("HH:mm");
-            SimpleDateFormat sdf3=new SimpleDateFormat("HH:mm");
-            try {
-                Date startDateTime =sdf.parse(startDate);
-                calendarStartDate.setTime(startDateTime);
-                Date endDateTime=sdf1.parse(endDate);
-                calendarEndDate.setTime(endDateTime);
-                Date startTimeTime=sdf2.parse(startTime);
-                calendarStartTime.setTime(startTimeTime);
-                Date endTimeTime=sdf3.parse(endTime);
-                calendarEndTime.setTime(endTimeTime);
-                labRoomAdmin.setStartDate(calendarStartDate);
-                labRoomAdmin.setEndDate(calendarEndDate);
-                labRoomAdmin.setStartTime(calendarStartTime);
-                labRoomAdmin.setEndTime(calendarEndTime);
-            }catch (ParseException e){
-                e.printStackTrace();
+    public String saveLabRoomAuthorized(@ModelAttribute LabRoomAdmin labRoomAdmin,@RequestParam String[] array,@RequestParam Integer roomId,HttpServletRequest request) {
+        for (String username : array) {
+            // id对应的实验室
+            LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(roomId);
+            if (request != null) {
+                Calendar calendarStartDate = Calendar.getInstance();
+                Calendar calendarEndDate = Calendar.getInstance();
+                Calendar calendarStartTime = Calendar.getInstance();
+                Calendar calendarEndTime = Calendar.getInstance();
+                String startDate = request.getParameter("startDate");
+                String endDate = request.getParameter("endDate");
+                String startTime = request.getParameter("startTime");
+                String endTime = request.getParameter("endTime");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat sdf3 = new SimpleDateFormat("HH:mm");
+                try {
+                    Date startDateTime = sdf.parse(startDate);
+                    calendarStartDate.setTime(startDateTime);
+                    Date endDateTime = sdf1.parse(endDate);
+                    calendarEndDate.setTime(endDateTime);
+                    Date startTimeTime = sdf2.parse(startTime);
+                    calendarStartTime.setTime(startTimeTime);
+                    Date endTimeTime = sdf3.parse(endTime);
+                    calendarEndTime.setTime(endTimeTime);
+                    labRoomAdmin.setStartDate(calendarStartDate);
+                    labRoomAdmin.setEndDate(calendarEndDate);
+                    labRoomAdmin.setStartTime(calendarStartTime);
+                    labRoomAdmin.setEndTime(calendarEndTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
+            labRoomAdmin.setUser(userDAO.findUserByUsername(username));
+            labRoomAdmin.setTypeId(3);
+            labRoomAdmin.setLabRoom(labRoom);
+            labRoomAdminDAO.store(labRoomAdmin);
         }
-        if(request.getParameter("username3")!=null){
-            labRoomAdmin.setUser(userDAO.findUserByUsername(request.getParameter("username3")));
-        }
-        labRoomAdmin.setTypeId(3);
-        labRoomAdmin.setLabRoom(labRoom);
-        labRoomAdminDAO.store(labRoomAdmin);
-        mav.setViewName("redirect:/labRoom/getLabRoom?currpage=1&id=" + roomId+"&type="+type);
-        return mav;
+        return "success";
     }
     /****************************************************************************
      * @功能：保存授权名单
@@ -4131,21 +4064,14 @@ public class LabRoomController<JsonResult> {
      * @时间：2019-01-10
      ****************************************************************************/
     @RequestMapping("/updateLabRoomAuthorizeUser")
-    public ModelAndView updateLabRoomAuthorizeUser(@RequestParam Integer id,@RequestParam int type) {
+    public ModelAndView updateLabRoomAuthorizeUser(@RequestParam Integer id) {
         ModelAndView mav = new ModelAndView();
         // id对应的实验室物联硬件
         LabRoomAdmin labRoomAdmin=labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
         mav.addObject("labRoomAdmin",labRoomAdmin);
-        mav.addObject("type",type);
         mav.addObject("id",id);
         User user = shareService.getUser();
         mav.addObject("user", user);
-        String academyNumber="";
-        if(user.getSchoolAcademy().getAcademyNumber()!=null){
-            academyNumber=user.getSchoolAcademy().getAcademyNumber();
-         }
-//         List<User> userList=labRoomService.findUserByacno(academyNumber);
-//        mav.addObject("userList",userList);
         mav.setViewName("lab/lab_room/updateLabRoomAuthorizeUser.jsp");
 
         return mav;
@@ -4183,24 +4109,6 @@ public class LabRoomController<JsonResult> {
     }
 
     /**
-     * Description 查找本学院近五年的用户
-     * @param acno
-     * @return
-     * @author 黄保钱 2019-3-15
-     */
-    @RequestMapping("/listUserForLabRoom")
-    @ResponseBody
-    public String listUserForLabRoom(@ModelAttribute("selected_academy") String acno){
-        List<User> userList=labRoomService.findUserByacno(acno);
-        String a="请选择";
-        String s="<option  value='" + "'>" +a+ "</option>";
-        for (User u : userList) {
-            s+="<option  value='" +u.getUsername() + "'>" +u.getCname() + u.getUsername() + "</option>";
-        }
-        return shareService.htmlEncode(s);
-    }
-
-    /**
      * Description 保存批量设置实验室管理员/物联管理员
      * @param request
      * @return
@@ -4231,5 +4139,52 @@ public class LabRoomController<JsonResult> {
         }else {
             return "fail";
         }
+    }
+
+    /**
+     * Description 弹出框--项目列表
+     * @return
+     * @author 陈乐为 2019-7-2
+     */
+    @RequestMapping("/layerOperationItemLims")
+    public ModelAndView layerOperationItemLims(Integer lab_id) {
+        ModelAndView mav = new ModelAndView();
+        User user = shareService.getUserDetail();
+        // 所有的实验项目卡
+        List<OperationItem> items = null;
+        if(user.getSchoolAcademy()!=null && user.getSchoolAcademy().getAcademyNumber()!=null) {
+            items = labRoomService.findAllOperationItem(user.getSchoolAcademy().getAcademyNumber());
+        }else {
+            items = labRoomService.findAllOperationItem("-1");
+        }
+        mav.addObject("listOperationItem", items);
+        mav.addObject("lab_id", lab_id);
+
+        mav.setViewName("lab/lab_room/layerOperationItems.jsp");
+        return mav;
+    }
+
+    /**
+     * Description 弹出层--用户列表
+     * @param lab_id
+     * @param acno
+     * @return
+     * @author 陈乐为 2019-7-2
+     */
+    @RequestMapping("/layerAddLabRoomAuthorized")
+    public ModelAndView layerAddLabRoomAuthorized(Integer lab_id, @ModelAttribute("selected_academy") String acno, int currpage, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+        int pagesize = 20;
+        String search = request.getParameter("search");
+        List<User> userList = labRoomService.findUserByacno(acno, search, currpage, pagesize);
+        mav.addObject("userList", userList);
+        mav.addObject("lab_id", lab_id);
+        mav.addObject("user", new User());
+
+        int totalRecords = labRoomService.findUserByacno(acno, search, 1, -1).size();
+        mav.addObject("pageModel", shareService.getPage(currpage, pagesize, totalRecords));
+
+        mav.setViewName("lab/lab_room/layerAddLabRoomAuthorized.jsp");
+        return mav;
     }
 }
