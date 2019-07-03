@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <!--logstash ip地址-->
+        <destination>192.168.1.185:10515</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" >
+            <!--名称一定要修改！！！-->
+            <customFields>{"appname":"limsproduct-name"}</customFields>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <!--输出到控制台-->
+        <appender-ref ref="STDOUT" />
+        <!--输出到logstash-->
+<!--        <appender-ref ref="stash" />-->
+    </root>
+</configuration>

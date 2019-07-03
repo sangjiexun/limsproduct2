@@ -22,6 +22,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
@@ -39,6 +41,7 @@ import java.util.Map;
  **************************************************************************/
 public class HttpClientUtil {
     private static CookieStore store;
+    static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
     static HttpClient httpClient1 = new DefaultHttpClient();
 
     /**************************************************************************
@@ -86,7 +89,7 @@ public class HttpClientUtil {
                 resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("HttpClientUtil doGet异常",e);
         } finally {
             try {
                 if (response != null) {
@@ -94,7 +97,7 @@ public class HttpClientUtil {
                 }
                 httpclient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("HttpClientUtil close异常",e);
             }
         }
         return resultString;
@@ -137,13 +140,13 @@ public class HttpClientUtil {
             response = httpClient.execute(httpPost);
             resultString = EntityUtils.toString(response.getEntity(), "utf-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("HttpClientUtil doPost异常",e);
         } finally {
             try {
                 response.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("HttpClientUtil close异常",e);
             }
         }
 
@@ -175,13 +178,13 @@ public class HttpClientUtil {
             response = httpClient.execute(httpPost);
             resultString = EntityUtils.toString(response.getEntity(), "utf-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("HttpClientUtil doPostJson异常",e);
         } finally {
             try {
                 response.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("HttpClientUtil close异常",e);
             }
         }
 
@@ -210,13 +213,13 @@ public class HttpClientUtil {
             response = httpClient.execute(httpPost);
             resultString = EntityUtils.toString(response.getEntity(), "utf-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("HttpClientUtil doPost异常",e);
         } finally {
             try {
                 response.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("HttpClientUtil close异常",e);
             }
         }
 
