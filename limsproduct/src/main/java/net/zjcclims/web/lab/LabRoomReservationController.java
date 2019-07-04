@@ -257,16 +257,23 @@ public class LabRoomReservationController<JsonResult> {
         int pageSize = 20;
 
         StringBuffer sql = new StringBuffer("SELECT t FROM User t join t.authorities a WHERE a.id=1 ");
+        String sqlCount = "SELECT count(*) FROM user t LEFT JOIN user_authority a ON a.user_id = t.username WHERE a.authority_id = 1 ";
         if (cname != null && !cname.equals("")) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
             sql.append(" and t.cname like '%" + cname + "%' ");
+            sqlCount += " and t.cname like '%" + cname + "%' ";
         }
         if (username != null && !username.equals("")) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
             sql.append(" and t.username like '%" + username + "%' ");
+            sqlCount += " and t.username like '%" + username + "%' ";
         }
+        Query query1=entityManager.createNativeQuery(sqlCount);
+        Integer totalRecords=Integer.parseInt(query1.getSingleResult().toString());
+//        List<User> studentList1 = userDAO.executeQuery(sql.toString(),0,-1);
+//        int totalRecords = studentList1.size();
         Query query = entityManager.createQuery(sql.toString());
-        int totalRecords = query.getResultList().size();
+//        int totalRecords = query.getResultList().size();
         query.setMaxResults(pageSize);
         int firstResult = (Integer.valueOf(page)-1) * pageSize;
         query.setFirstResult(firstResult);
@@ -278,15 +285,14 @@ public class LabRoomReservationController<JsonResult> {
                 totalRecords);
         String s = "";
         for (User d : studentList) {
-            String academy = "";
-            if (d.getSchoolAcademy() != null) {
-                academy = d.getSchoolAcademy().getAcademyName();
-            }
+//            String academy = "";
+//            if (d.getSchoolAcademy() != null) {
+//                academy = d.getSchoolAcademy().getAcademyName();
+//            }
             s += "<tr>" + "<td><input type='checkbox' name='CK_name' value='"
                     + d.getUsername() + "'/></td>" + "<td>" + d.getCname()
-                    + "</td>" + "<td>" + d.getUsername() + "</td>" + "<td>"
-                    + academy + "</td>" +
-
+                    + "</td>" + "<td>" + d.getUsername() + "</td>" +
+//                    "<td>" + academy + "</td>" +
                     "</tr>";
         }
         s += "<tr><td colspan='6'>"
