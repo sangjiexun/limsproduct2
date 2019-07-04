@@ -342,6 +342,7 @@ public class LabRoomReservationController<JsonResult> {
      * @Description: 工位预约获取可选的时间段
      * @Author Hezhaoyi 2019-6-3
      ****************************************************************************/
+    @ResponseBody
     @RequestMapping(value = "/device/getStationReOptionalTime", method = RequestMethod.GET)
     public LabRoomVO getStationReOptionalTime(HttpServletRequest request)throws ParseException{
         Integer labRoomId = request.getParameter("labRoom") == null ? -1 : Integer.parseInt(request.getParameter("labRoom"));

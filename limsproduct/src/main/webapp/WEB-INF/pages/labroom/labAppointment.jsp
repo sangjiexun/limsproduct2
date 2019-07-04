@@ -124,10 +124,10 @@
 				    var lendingTime = $('#lendingTime').val();
                     $.ajax({
                         type: "GET",
-                        url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
-                        dataType:'json',
+                        url: "${pageContext.request.contextPath}/device/getStationReOptionalTime?labRoom="+labroom+"&lendingTime="+lendingTime,
+//                        dataType:'json',
                         success:function(data){
-
+							console.log(data);
                         },
                         error:function(){
                             alert("查询失败！后台出了点问题！");
@@ -838,10 +838,11 @@ function cancel(){
 							<th style="min-width:120px;text-align:right;">添加学生<a class="btn btn-common" href='javascript:void(0)'	onclick='newStudents()'>选择添加</a>
 								<br/>(或输入学生学号，以逗号分开)
 							</th>
-							<td style="text-align:left;"><textarea rows="" cols=""
+							<td colspan="3" style="text-align:left;"><textarea rows="" cols=""
 								name="students" id="students"
-								style="width: 400px;height: 60px;padding: 5px"></textarea></td>
-							<td></td>
+								style="height: 60px;padding: 5px"></textarea></td>
+								<%--style="width: 400px;height: 60px;padding: 5px"></textarea></td>--%>
+							<%--<td></td>--%>
 						</tr>
 					</c:if>
 					<tr>
