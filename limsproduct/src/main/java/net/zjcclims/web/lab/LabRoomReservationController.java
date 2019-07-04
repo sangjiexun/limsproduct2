@@ -254,7 +254,7 @@ public class LabRoomReservationController<JsonResult> {
                                       String username,Integer page)
             throws UnsupportedEncodingException {
 
-        int pageSize = 20;
+        int pageSize = 15;
 
         StringBuffer sql = new StringBuffer("SELECT t FROM User t join t.authorities a WHERE a.id=1 ");
         String sqlCount = "SELECT count(*) FROM user t LEFT JOIN user_authority a ON a.user_id = t.username WHERE a.authority_id = 1 ";
