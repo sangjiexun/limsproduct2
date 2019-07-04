@@ -3313,7 +3313,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @author 陈乐为 2019-4-3
 	 */
 	public String saveMultipleManager(int type_code, String[] labs, String[] users) {
-		String memo = "异常提示：";
+		String memo = "提示：";
 		for (String lab : labs) {
 			int lab_id = Integer.valueOf(lab);
 			LabRoom labRoom = this.findLabRoomByPrimaryKey(lab_id);
@@ -3365,6 +3365,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 					refuseItemBackup.setLabRoomName(labRoom.getLabRoomName());
 					refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
 					refuseItemBackupDAO.store(refuseItemBackup);
+					memo = "提示：添加完成";
 				}else {
 //					memo += user.getCname()+"["+user.getUsername()+"]已经是"+labRoom.getLabRoomName()+"["+labRoom.getLabRoomNumber()+"]的管理人员<br>";
 					memo += user.getCname()+"已经是"+labRoom.getLabRoomName()+"的管理人员；";
