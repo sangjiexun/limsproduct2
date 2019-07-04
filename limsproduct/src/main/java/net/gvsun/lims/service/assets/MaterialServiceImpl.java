@@ -234,7 +234,7 @@ public class MaterialServiceImpl implements MaterialService {
                 "  sa.academy_name\n" +
                 "FROM\n" +
                 "\tasset_cabinet ac\n" +
-                "LEFT JOIN USER u ON ac.create_user=u.username\n" +
+                "LEFT JOIN `user` u ON ac.create_user=u.username\n" +
                 "LEFT JOIN school_academy sa on sa.academy_number=ac.academy_number where 1=1";
         //添加权限相关筛选
         String authorityName=request.getSession().getAttribute("selected_role").toString();//权限名
@@ -2664,7 +2664,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "cab.cabinet_code,\n" +
                 "cab.cabinet_name,\n" +
                 "r.stock_number,\n" +
-                "r.cabinet_id\n" +
+                "r.cabinet_id,\n" +
+                "sc.academy_name\n" +
                 "FROM\n" +
                 "asset_cabinet_record r\n" +
                 "INNER JOIN\n" +
@@ -2673,6 +2674,8 @@ public class MaterialServiceImpl implements MaterialService {
                 "asset_classification c ON c.id = a.category\n" +
                 "LEFT JOIN\n" +
                 "asset_cabinet cab on cab.id = r.cabinet_id\n" +
+                "LEFT JOIN\n" +
+                "school_academy sc on cab.academy_number = sc.academy_number\n" +
                 "WHERE r.asset_id = "+assetId+"";
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> resultList = query.getResultList();
@@ -2684,6 +2687,7 @@ public class MaterialServiceImpl implements MaterialService {
             assetCabinetRecordDTO1.setCabinetName(o[11]!=null?o[11].toString():null);
             assetCabinetRecordDTO1.setStockNumber(o[12]!=null?o[12].toString():null);
             assetCabinetRecordDTO1.setCabinetId(o[13]!=null?o[13].toString():null);
+            assetCabinetRecordDTO1.setSchoolAcademy(o[14]!=null?o[14].toString():null);
             assetCabinetRecordDTOListItem.add(assetCabinetRecordDTO1);
         }
 
