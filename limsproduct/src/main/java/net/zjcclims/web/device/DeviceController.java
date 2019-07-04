@@ -4485,7 +4485,7 @@ public class DeviceController<JsonResult> {
         message.setUsername(shareService.findAllDepartmentHead(user).isEmpty() ? null : shareService.findAllDepartmentHead(user).get(0).getUsername());
         message = messageDAO.store(message);
         String messageContent1 = "您有一个设备申请需要审核，信息为：" + deviceInfo + "等";
-        String result1 = shareService.sendMessage(shareService.findAllDepartmentHead(user).isEmpty() ? null : shareService.findAllDepartmentHead(user).get(0).getTelephone(), messageContent1);
+//        String result1 = shareService.sendMessage(shareService.findAllDepartmentHead(user).isEmpty() ? null : shareService.findAllDepartmentHead(user).get(0).getTelephone(), messageContent1);
         mav.setViewName("redirect:/device/deviceLendingApplyList?page=1");
         return mav;
     }
