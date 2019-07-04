@@ -144,6 +144,10 @@ public class LabRoomReservationController<JsonResult> {
     private ReservationSetItemDAO reservationSetItemDAO;
     @Autowired
     private SchoolWeekDAO schoolWeekDAO;
+    @Autowired
+    private SystemTimeDAO systemTimeDAO;
+    @Autowired
+    private LabRoomLimitTimeDAO labRoomLimitTimeDAO;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -413,7 +417,9 @@ public class LabRoomReservationController<JsonResult> {
         //小数部分
         double dPoint = Time.subtract(bigDecimalLongPart).doubleValue();
         //转换成字符串型分钟
-        String minStr = Double.toString(dPoint * 100 * 60);
+        String minStr = Double.toString(dPoint * 60);
+        //去掉小数点
+        minStr = minStr.substring(0,minStr.indexOf("."));
         //开放开始时间拼接
         if(hourStr.length()==1){
             hourStr = "0"+hourStr;
@@ -916,6 +922,32 @@ public class LabRoomReservationController<JsonResult> {
                 return "overMax";
             }
         }
+        //判断预约时间是否在实验室禁用时间段内
+        int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
+        SchoolWeek schoolWeek = schoolWeekDAO.findSingleSchoolWeekByDate(reservation);
+        int week = schoolWeek.getWeek();
+        int weekday = schoolWeek.getWeekday();
+        Set<SystemTime> systemTimes = systemTimeDAO.findAllSystemTimes();
+        List<SystemTime> systemTimeList = new ArrayList<>();
+        for(SystemTime systemTime : systemTimes){
+            if(systemTime.getStartDate().before(start) || systemTime.getEndDate().after(end)){
+                systemTimeList.add(systemTime);
+            }
+        }
+        for(SystemTime systemTime:systemTimeList){
+            Set<LabRoomLimitTime> labRoomLimitTimes = labRoomLimitTimeDAO.findLabRoomLimitTimeBylabIdAndTermAndType(labRoomId,termId,0);
+            for(LabRoomLimitTime labRoomLimitTime : labRoomLimitTimes){
+                int startWeekOver = labRoomLimitTime.getStartweek();
+                int endWeekOver = labRoomLimitTime.getEndweek();
+                int WeekdayOver = labRoomLimitTime.getWeekday();
+                int startClass = labRoomLimitTime.getStartclass();
+                int endClass = labRoomLimitTime.getEndclass();
+                if(!labRoomLendingService.judgeLabReservationIsConflict(startWeekOver,endWeekOver,WeekdayOver,startClass,endClass,week,weekday,systemTime.getSection())){
+                    return "LIMIT";
+                }
+            }
+        }
+
         //根据日期和id查找该实训室的剩余可预约工位数（还未关联预约结果及排课）
         int restStationNum = labRoomReservationService.findRestReservationStations(labRoomId, reservation, start, end);
         if (array != null && array.length > restStationNum) {
