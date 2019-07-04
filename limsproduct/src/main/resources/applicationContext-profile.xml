@@ -166,4 +166,9 @@
 		<context:property-placeholder location="classpath:config/ndyzlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
 	</beans>
 
+	<!-- 西安欧亚版本 -->
+	<beans profile="ouylims">
+		<context:property-placeholder file-encoding="utf-8" ignore-unresolvable="true" location="classpath:config/ouylims/*.properties"/>
+	</beans>
+
 </beans>
