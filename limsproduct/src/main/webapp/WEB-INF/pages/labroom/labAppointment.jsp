@@ -445,8 +445,8 @@
            if(obj[i].checked) //取到对象数组后，我们来循环检测它是不是被选中
            s+=obj[i].value+",";   //如果选中，将value添加到变量s中    
        }
-       var str = $('#students').val() +"," +s;
-       $('#students').val(s);
+       var str = $('#students').val() +s;
+       $('#students').val(str);
        $("#newStudents").window('close');
   }
 //ajax查询班级用户列表  
@@ -1030,13 +1030,13 @@ function cancel(){
 			<form:form id="userForm" method="post">
 				<table class="tb" id="my_show">
 					<tr>
-						<td>姓名：<input id="cname"/>
+						<td>姓名：<input type="text" id="cname"/>
 						</td>
-						<td>工号：<input id="username1"  />
-							<a onclick="queryUser(1);">搜索</a> <a onclick="cancleQuery(1);">取消</a>
+						<td>工号：<input type="text" id="username1"  />
+							<a onclick="queryUser();">搜索</a> <a onclick="cancleQuery();">取消</a>
 						</td>
 						<td><input type="hidden" id="adminType"> <input
-								type="button" value="添加" onclick="addUser(1);"></td>
+								type="button" value="添加" onclick="addUser();"></td>
 					</tr>
 				</table>
 			</form:form>
@@ -1045,14 +1045,14 @@ function cancel(){
 				<thead>
 				<tr>
 					<th style="width:10% !important">选择</th>
-					<th style="width:30% !important">姓名</th>
-					<th style="width:30% !important">工号</th>
-					<th style="width:30% !important">所属学院</th>
+					<th style="width:45% !important">姓名</th>
+					<th style="width:45% !important">工号</th>
+					<%--<th style="width:30% !important">所属学院</th>--%>
 
 				</tr>
 				</thead>
 
-				<tbody id="user_body">
+				<tbody id="user_body_single">
 
 				</tbody>
 			</table>
@@ -1372,9 +1372,125 @@ function cancel(){
                                     url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
                                     type:"POST",
                                     success:function(data){//AJAX查询成功
-                                            document.getElementById("user_body").innerHTML=data;
+                                            document.getElementById("user_body_single").innerHTML=data;
                                     }
                                 });
+                            }
+                            function queryUser(){
+                                var cname;
+                                var username;
+                                    cname=document.getElementById("cname").value;
+                                    username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+
+                            }
+                            function cancleQuery(){
+                                var cname="";
+                                var username="";
+                                $('#cname').val("");
+                                $('#username1').val("");
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            //首页
+                            function firstPage(page){
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            //上一页
+                            function previousPage(page){
+                                if(page==1){
+                                    page=1;
+                                }else{
+                                    page=page-1;
+                                }
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            //下一页
+                            function nextPage(page,totalPage){
+                                if(page>=totalPage){
+                                    page=totalPage;
+                                }else{
+                                    page=page+1
+                                }
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+                                    }
+                                });
+                            }
+                            //末页
+                            function lastPage(page){
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            function addUser(){
+                                var array=new Array();
+                                var s = "";
+                                var flag; //判断是否一个未选
+                                $("input[name='CK_name']:checkbox").each(function() { //遍历所有的name为CK_name的 checkbox
+                                    if ($(this).attr("checked")) { //判断是否选中
+                                        flag = true; //只要有一个被选择 设置为 true
+                                    }
+                                })
+
+                                if (flag) {
+                                    $("input[name='CK_name']:checkbox").each(function() { //遍历所有的name为selectFlag的 checkbox
+                                        if ($(this).attr("checked")) { //判断是否选中
+//                                            array.push($(this).val()); //将选中的值 添加到 array中
+                                            s+=$(this).val()+",";   //如果选中，将value添加到变量s中
+                                        }
+                                    })
+                                    var str = $('#students').val()  +s;
+                                    $('#students').val(str);
+                                    $("#newStudents").window('close');
+                                    <%--//将要所有要添加的数据传给后台处理--%>
+                                    <%--window.location.href="${pageContext.request.contextPath}/labRoom/saveLabRoomAdmin?roomId=${labRoom.id}&array="+array+"&typeId="+typeId+"&type=${type}";--%>
+                                } else {
+                                    alert("请至少选择一条记录");
+                                }
                             }
 						   
 						</script>
