@@ -339,6 +339,92 @@ public class LabRoomReservationController<JsonResult> {
         return sb.toString();
     }
     /****************************************************************************
+     * @Description: 工位预约获取可选的时间段
+     * @Author Hezhaoyi 2019-6-3
+     ****************************************************************************/
+    @RequestMapping(value = "/device/getStationReOptionalTime", method = RequestMethod.GET)
+    public LabRoomVO getStationReOptionalTime(HttpServletRequest request)throws ParseException{
+        Integer labRoomId = request.getParameter("labRoom") == null ? -1 : Integer.parseInt(request.getParameter("labRoom"));
+        String lendingTimeS = request.getParameter("lendingTime");
+        LabRoomVO labRoomVO = new LabRoomVO();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date lendingTimeDate = sdf.parse(lendingTimeS);
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
+        DecimalFormat df=new DecimalFormat("0.00");
+        Calendar lendingTime = Calendar.getInstance();
+        lendingTime.setTime(lendingTimeDate);
+
+        //开放时间段
+        //把时间选在周末的情况，判断实验室周末是否开放
+        boolean isOpen = true;
+        boolean isOpenTime = true;
+        SchoolWeek schoolWeek = schoolWeekDAO.findSingleSchoolWeekByDate(lendingTime);
+        int week = schoolWeek.getWeek();
+        int weekday = schoolWeek.getWeekday();
+        int termId = schoolWeek.getSchoolTerm().getId();
+        ReservationSetItem reservationSetItem = reservationSetItemDAO.findReservationSetItemBylabRoomIdAndType(labRoomId,0);
+
+        BigDecimal startHour = new BigDecimal(0);
+        BigDecimal endHour = new BigDecimal(0);
+        //开放时间段设置
+        if(reservationSetItem != null){
+            if(weekday==6 || weekday==7){               //实验室周末不开放
+                if (reservationSetItem != null && reservationSetItem.getOpenInweekend() != null
+                        && reservationSetItem.getOpenInweekend() == 0) {
+                    isOpen = false;
+                }else{            //实验室周末开放，获取实验室周末开放时间段
+                    startHour = reservationSetItem.getStartHourInweekend();
+                    endHour = reservationSetItem.getEndHourInweekend();
+                }
+            }else{
+                startHour = reservationSetItem.getStartHourInweek();
+                endHour = reservationSetItem.getEndHourInweek();
+            }
+        }
+
+        if(isOpen == false){   //所选时间段为周末且该实验室周末不开放，没有可选的时间段
+            labRoomVO.setStationReStartTime("");
+            labRoomVO.setStationReEndTime("");
+        }else {
+            //工位预约可选的起止时间
+           String startTime = this.stationRerBigDecimalconvertString(startHour);
+           String endTime = this.stationRerBigDecimalconvertString(endHour);
+           labRoomVO.setStationReStartTime(startTime);
+           labRoomVO.setStationReEndTime(endTime);
+        }
+        return labRoomVO;
+    }
+
+    /**
+     * Description 将BigDecimal类型的实验室开放时间转换为String类型工位预约可选起止时间
+     * @param Time
+     * @return
+     * @author Hezhaoyi 2019-7-4
+     */
+    public String stationRerBigDecimalconvertString(BigDecimal Time){
+
+        //整数部分
+        int timeInteger = Time.intValue();
+        //转换成字符串型小时
+        String hourStr = String.valueOf(timeInteger);
+        BigDecimal bigDecimalLongPart = new BigDecimal(Integer.toString(timeInteger));
+        //小数部分
+        double dPoint = Time.subtract(bigDecimalLongPart).doubleValue();
+        //转换成字符串型分钟
+        String minStr = Double.toString(dPoint * 100 * 60);
+        //开放开始时间拼接
+        if(hourStr.length()==1){
+            hourStr = "0"+hourStr;
+        }
+        if(minStr.length()==1){
+            minStr = "0"+minStr;
+        }
+        String timeStr = hourStr +":"+ minStr+":00";
+
+        return timeStr;
+    }
+    /****************************************************************************
      * 功能：查询实验室 作者：孙虎 时间：2017-09-20
      * 工位预约
      ****************************************************************************/
