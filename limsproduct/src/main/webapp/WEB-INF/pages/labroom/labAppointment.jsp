@@ -70,8 +70,8 @@
                 ,type: 'time'
                 ,range: true //或 range: '~' 来自定义分割字符
                 ,trigger : 'click'
-                ,min: '09:30:00'
-                ,max: '17:30:00'
+//                ,min: '09:30:00'
+//                ,max: '17:30:00'
                 ,done: function(value, date, endDate){
 //                    console.log(value); //得到日期生成的值，如：2017-08-18
 //                    console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
@@ -128,6 +128,56 @@
 //                        dataType:'json',
                         success:function(data){
 							console.log(data);
+                            $("#reservationTime").remove();
+                            $("#reservationTime_td").append('<input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">');
+
+                            layui.use('laydate', function() {
+                                var laydate = layui.laydate;
+                                    laydate.render({
+                                        elem: '#reservationTime'
+                                        , type: 'time'
+                                        , range: true //或 range: '~' 来自定义分割字符
+                                        , trigger: 'click'
+                                        , min: data.stationReStartTime
+                                        , max: data.stationReEndTime
+                                        ,done: function(value, date, endDate){
+//                    console.log(value); //得到日期生成的值，如：2017-08-18
+//                    console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+//                    console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                                            if($("input[name='lendingTime']") .val() == ""){
+                                                alert("请选择日期");
+//                        $('reservationTime').val('');
+                                                laydate.reset();
+                                                return false;
+                                            }
+                                            if (document.getElementById("labRoom").value) {
+                                            } else {
+                                                alert("请选择实验室");
+//                        $('reservationTime').val('');
+                                                laydate.reset();
+                                                return false;
+                                            }
+                                            var myData = {
+                                                'lendingTime': $("input[name='lendingTime']").val(),
+                                                'reservationTime': value
+                                            }
+                                            var labRoomId = document.getElementById("labRoom").value;
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
+                                                data: myData,
+                                                dataType:'json',
+                                                success:function(data){
+                                                    $("#restStations").text(data);
+                                                },
+                                                error:function(){
+                                                    alert("查询失败！后台出了点问题！");
+                                                }
+                                            })
+//                    findRestStations();
+                                        }
+                                    });
+                            });
                         },
                         error:function(){
                             alert("查询失败！后台出了点问题！");
@@ -772,7 +822,7 @@ function cancel(){
 						<%--</span>--%>
 							<%--&lt;%&ndash;<font style="color: red">请选择准确时间以查询剩余的工位数量</font>--%>
 						<%--&ndash;%&gt;</td>--%>
-						<td colspan="3">
+						<td colspan="3" id="reservationTime_td">
 							<input class="Wdate" id="lendingTime" name="lendingTime" type="text"
 								   value="<fmt:formatDate value="${labReservation.lendingTime.time}" pattern="yyyy-MM-dd"/>"
 								   onclick="wtimePicker()" />
