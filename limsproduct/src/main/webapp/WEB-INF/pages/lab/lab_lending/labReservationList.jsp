@@ -237,7 +237,7 @@ $(function(){
 									<c:forEach items="${current.labRoom.labRoomAdmins}" var="la">
 										<c:if test="${la.user.username eq user.username}">
 											<a href="javascript:void(0)"
-											   onclick="obsoleteLabReservation('${current.id}')">作废</a>
+											   onclick="obsoleteLabReservation('${current.id}')">取消预约</a><%--作废--%>
 										</c:if>
 									</c:forEach>
 								</c:if>

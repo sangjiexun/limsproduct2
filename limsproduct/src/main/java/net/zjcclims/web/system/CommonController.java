@@ -157,6 +157,11 @@ public class CommonController<JsonResult> {
 			}
 		} 
 		mav.addObject("authority", authority);
+		//多角色
+		if (auths != null && auths.size() > 1) {
+			mav.addObject("multi_role", true);
+		}
+
 		Cookie[] cookies = request.getCookies(); //获取cookie数组
 		if(cookies != null) {
 			int isuser = 0;

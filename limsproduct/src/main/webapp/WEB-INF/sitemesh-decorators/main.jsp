@@ -206,7 +206,7 @@
                     	<%--<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_LABORATORYMAINTENANCE">--%>
                     		<%--<a class="button icon-envelope-alt fa-university" href="${sessionScope.cmsSiteUrl}" title="网站管理"></a>--%>
                     	<%--</sec:authorize>--%>
-                        <c:if test="${sessionScope.selected_role ne 'ROLE_STUDENT'}">
+                        <c:if test="${multi_role}">
                             <a class="button icon-envelope-alt fa-slideshare" href="javascript:void(0);" onclick="changeRole()" title="切换角色"></a>
                         </c:if>
                         <%--<sec:authorize ifNotGranted="ROLE_STUDENT,ROLE_TEACHER">

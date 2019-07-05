@@ -118,7 +118,7 @@ var s=${isAudit};
 	<div id="navigation">
 		<ul>
 			<li><a href="javascript:void(0)">开放预约 </a></li>
-			<li class="end"><a href="javascript:void(0)"><spring:message code="left.station.appointment" />预约</a></li>
+			<li class="end"><a href="javascript:void(0)"><spring:message code="left.station.appointment" /></a></li>
 		</ul>
 	</div>
 </div>
@@ -240,6 +240,9 @@ var s=${isAudit};
      	 <%--<a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">审核</a>--%>
          <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}',${s.labRoom.id});">审核</a>
      </c:if>
+         <c:if test="${auditState.get(i.count-1)==1&& isAudit eq 2}">
+             <a href="${pageContext.request.contextPath}/LabRoomReservation/deletelabStaionReservation?id=${s.id}&tage=${tage}&currpage=${currpage}&isaudit=${isAudit}" onclick="return confirm('确定撤回吗？');">撤回</a>
+         </c:if>
      <c:if test="${s.result==1}">
      <%--实验室管理员才可看到--%>
      <c:forEach items="${s.labRoom.labRoomAdmins}" var="admin">

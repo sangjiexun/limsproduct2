@@ -2287,13 +2287,13 @@ System.out.println("二维码路径："+url);
 		message.setUsername(receiveUser.getUsername());
 		messageDAO.store(message);
 		messageDAO.flush();
-		if (receiveUser.getTelephone() != null && pConfig.PROJECT_NAME.equals("zjcclims")) {// 暂时给浙江建设发送短信
-			try {
-				String mess = receiveUser.getCname() + "您好，您有" + message.getTitle() + "，请登录平台处理或查阅！";
-				String result = this.sendMessage(receiveUser.getTelephone(), mess);
-			} catch (InterruptedException | NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			}
+		if (receiveUser.getTelephone() != null && (pConfig.PROJECT_NAME.equals("zjcclims") || pConfig.PROJECT_NAME.equals("limsproduct"))) {// 暂时给浙江建设/鲁班楼发送短信
+//			try {
+//				String mess = receiveUser.getCname() + "您好，您有" + message.getTitle() + "，请登录平台处理或查阅！";
+//				String result = this.sendMessage(receiveUser.getTelephone(), mess);
+//			} catch (InterruptedException | NoSuchAlgorithmException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
     

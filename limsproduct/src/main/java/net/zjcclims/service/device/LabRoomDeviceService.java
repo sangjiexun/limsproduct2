@@ -393,7 +393,7 @@ public interface LabRoomDeviceService {
      * 功能：查找所有审核通过的设备借用审核单总数
      * 作者：李鹏翔
      ****************************************************************************/
-    public int getPassLendingTotals(LabRoomDeviceLendingResult lrdlr, HttpServletRequest request);
+    public int getPassLendingTotals(LabRoomDeviceLending lrdl, HttpServletRequest request);
 
     /****************************************************************************
      * 功能：查找所有审核通过的设备领用审核单总数
@@ -405,8 +405,8 @@ public interface LabRoomDeviceService {
      * 功能：查找所有审核通过的设备借用审核单
      * 作者：李鹏翔
      ****************************************************************************/
-    public List<LabRoomDeviceLendingResult> findAllPassLending(
-            LabRoomDeviceLendingResult lrdlr, Integer page, int pageSize, HttpServletRequest request);
+    public List<LabRoomDeviceLending> findAllPassLending(
+            LabRoomDeviceLending lrdl, Integer page, int pageSize, HttpServletRequest request);
 
     /****************************************************************************
      * 功能：查找所有审核通过的设备领用审核单
@@ -419,7 +419,7 @@ public interface LabRoomDeviceService {
      * 功能：查找所有审核被拒绝的设备借用审核单总数
      * 作者：李鹏翔
      ****************************************************************************/
-    public int getRejectedLendingTotals(LabRoomDeviceLendingResult lrdlr, HttpServletRequest request);
+    public int getRejectedLendingTotals(LabRoomDeviceLending lrdl, HttpServletRequest request);
 
     /****************************************************************************
      * 功能：查找所有审核被拒绝的设备领用审核单总数
@@ -431,8 +431,8 @@ public interface LabRoomDeviceService {
      * 功能：查找所有审核通过的设备借用审核单
      * 作者：李鹏翔
      ****************************************************************************/
-    public List<LabRoomDeviceLendingResult> findAllRejectedLending(
-            LabRoomDeviceLendingResult lrdlr, Integer page, int pageSize, HttpServletRequest request);
+    public List<LabRoomDeviceLending> findAllRejectedLending(
+            LabRoomDeviceLending lrdl, Integer page, int pageSize, HttpServletRequest request);
 
     /****************************************************************************
      * 功能：查找所有审核通过的设备领用审核单
@@ -953,5 +953,21 @@ public interface LabRoomDeviceService {
      * @author 陈乐为 2019年4月29日
      */
     public BigDecimal getAgentPriceByLab(Integer lab_id);
+
+    /**
+     * Description 保存系主任审核
+     * @return
+     * @author 顾延钊 2019年7月4日
+     */
+
+    public void saveDeviceAudit(Integer id,Integer auditResult,String remark,String acno);
+
+    /**
+     * Description 提交设备借用申请
+     * @return
+     * @author 顾延钊 2019年7月4日
+     */
+    String submitDeviceLending(Integer id, String acno);
+
 
 }

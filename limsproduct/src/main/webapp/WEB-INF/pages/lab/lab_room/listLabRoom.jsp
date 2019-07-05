@@ -106,32 +106,6 @@
         }
 
 	</script>
-	<script type="text/javascript">
-		// 提交批量设置管理员
-		function subMultiple() {
-			var type_code = $("#type_code").val();
-			var labtwo = $("#labtwo").val();
-			var peopletwo = $("#peopletwo").val();
-            if($("#type_code").val()==''){
-                alert("请选择管理员类别！");
-            }else if($("#labtwo").val()=='' || $("#labtwo").val()==null) {
-                alert("请至少选择一个实验室！");
-			}else if($("#peopletwo").val()=='' || $("#peopletwo").val()==null) {
-                alert("请至少选择一个管理员！");
-			}
-            $.ajax({
-                url:"${pageContext.request.contextPath}/labRoom/saveMultipleManager",// 保存批量添加的管理员
-                type:"POST",
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-				data:{"type_code":type_code,"labtwo":labtwo,"peopletwo":peopletwo},
-                dataType: 'text',
-				// async:false,
-                success:function(data){
-                    alert(data);
-                }
-            });
-        }
-	</script>
 	<style>
 		.btn {
 			line-height: 23px;
@@ -256,6 +230,21 @@
             }
         });}
     }
+	// 批量设置管理员
+	function setManagers() {
+		var index = layer.open({
+			type: 2,
+			title: '批量设置管理员',
+			maxmin: true,
+			shadeClose: true,
+			area: ['800px', '400px'],
+			content: "${pageContext.request.contextPath}/labRoom/layerSetLabManagers",
+			end:function(){
+
+			}
+		});
+		layer.full(index);
+	}
 </script>
 <div class="navigation">
 	<div id="navigation">
@@ -288,9 +277,10 @@
 			<c:if test="${authLevel eq '1' || authLevel eq '3' || authLevel eq '5'}">
 				<a class="btn btn-new" onclick="newLabRoom()">新建</a>
 			</c:if>
-			<%--<c:if test="${authLevel lt 6 && authLevel ne 0}">
-				<button class="btn btn-new" data-toggle="modal" data-target="#myModal">批量设置管理员</button>
-			</c:if>--%>
+			<c:if test="${authLevel lt 6 && authLevel ne 0}">
+<%--				<button class="btn btn-new" data-toggle="modal" data-target="#myModal">批量设置管理员</button>--%>
+				<button class="btn btn-new" onclick="setManagers(); return false;">批量设置管理员</button>
+			</c:if>
 		</ul>
 		<div class="TabbedPanelsContentGroup">
 			<div class="TabbedPanelsContent">
@@ -448,85 +438,5 @@
 		</div>
 	</div>
 </div>
-<!--批量设置管理员弹出框-->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header bg-light">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h5 class="modal-title">批量设置管理员</h5>
-			</div>
-			<div class="modal-body" style="height: auto;">
-				<div class="row">
-					<div class="col-md-12">
-						<select id="type_code" name="type_code" class="form-control selectpicker" title="请选择管理员类别">
-							<option value="">请选择</option>
-							<option value="1">实验室管理员</option>
-							<option value="2">物联管理员</option>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="form-group col-md-5">
-						<select id="labone" class="form-control selectpicker show-tick" data-first-option="false" data-live-search="true" style="height: 200px;" multiple title="请选择实验室">
-							<c:forEach items="${labRoomList}" var="curr">
-								<option value="${curr.id}">${curr.labRoomName}[${curr.labRoomNumber}]</option>
-							</c:forEach>
-						</select>
-					</div>
-					<div class="col-md-2 text-center">
-						<input class="btn btn-outline-primary btn-sm" type="button" id="labright" value=">>"><br>
-						<input class="btn btn-outline-primary btn-sm" type="button" id="lableft" value="<<">
-					</div>
-					<div class="col-md-5">
-						<select id="labtwo" class="form-control show-tick" multiple="multiple" style="height: 100px !important; display: block !important;">
-							<%--<option value="333">333</option>--%>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="form-group col-md-5">
-						<select id="peopleone" class="form-control selectpicker show-tick" data-first-option="false" data-live-search="true" style="height: 200px;" multiple title="请选择人员">
-							<c:forEach items="${userList}" var="curr">
-								<option value="${curr.username}">${curr.cname}[${curr.username}]</option>
-							</c:forEach>
-						</select>
-					</div>
-					<div class="col-md-2 text-center">
-						<input class="btn btn-outline-primary btn-sm" type="button" id="peopleright" value=">>"><br>
-						<input class="btn btn-outline-primary btn-sm" type="button" id="peopleleft" value="<<">
-					</div>
-					<div class="col-md-5">
-						<select id="peopletwo" class="form-control show-tick" multiple="multiple" style="height: 100px !important; display: block !important;">
-							<%--<option value="333">333</option>--%>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-sm" data-dismiss="modal" onclick="subMultiple();">提交</button>
-				<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
-			</div>
-		</div>
-	</div>
-</div>
-<script type="text/javascript">
-    $("#labright").click(function() { //向右删除下拉框的值   向左增加下拉框的值 的点击事件
-        $("#labone option:selected").appendTo("#labtwo");
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $("#lableft").click(function() { //向左删除下拉框的值   向右增加下拉框的值  的点击事件
-        $("#labtwo option:selected").appendTo("#labone");
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $("#peopleright").click(function() { //向右删除下拉框的值   向左增加下拉框的值 的点击事件
-        $("#peopleone option:selected").appendTo("#peopletwo");
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $("#peopleleft").click(function() { //向左删除下拉框的值   向右增加下拉框的值  的点击事件
-        $("#peopletwo option:selected").appendTo("#peopleone");
-        $('.selectpicker').selectpicker('refresh');
-    });
-</script>
 </body>
 </html>

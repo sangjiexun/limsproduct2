@@ -199,6 +199,7 @@
                 
             <tbody>
                 		<c:forEach items="${deviceLendList}" var="reservation" varStatus="i">
+						<c:if test="${auditState.get(i.count-1)==0 }">
                 		<tr>
                         <td>${i.count}</td>
                         <td>${reservation.lendBatch}</td>
@@ -208,14 +209,10 @@
                         <td>${reservation.content}</td>
                         <td><fmt:formatDate value="${reservation.lendingTime.time}" pattern="yyyy-MM-dd"/> </td>
                         <td>
-                         <c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s"> 
-                              <c:if test="${s.CDictionary.id==615}">${s.user.cname}<font class="pass">(通过)</font><br></c:if>
-                         </c:forEach>
-                         <c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s"> 
-                              <c:if test="${s.CDictionary.id==616}">${s.user.cname}<font class="reject">(拒绝)</font><br></c:if>
-                         </c:forEach>
+								 审核拒绝
                          </td>
                       	<td>
+							</c:if>
                       </c:forEach>
                        
                 </tbody>

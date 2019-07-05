@@ -29,6 +29,13 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/jquery.uploadify.min.js"></script> 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/dhulims/device/editDevice.js"></script>
+<script type="text/javascript">
+    function closeWindow() {
+        var index=parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+
+    }
+</script>
 
 <style>
 .tool-box2 th{text-align:left;}
@@ -121,7 +128,8 @@
 			<div class="content-box">
 				<div class="title">
 				<div id="title">设备二维码</div>
-					<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>
+					<%--<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>--%>
+					<a class="btn btn-new"  herf="#" onclick="closeWindow();">返回</a>
 				</div>
 					<fieldset class="introduce-box">
 						     <label>二维码</label>

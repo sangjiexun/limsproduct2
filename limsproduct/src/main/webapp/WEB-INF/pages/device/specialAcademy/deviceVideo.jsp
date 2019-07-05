@@ -91,6 +91,11 @@ function saveVideo(){
 	/* var url = "${pageContext.request.contextPath}/device/editDeviceDocumentRest/" + ${labRoomId} + "/"+ ${deviceNumber} + "/" + "${deviceName}" +"/"+ ${username}+"/"+${page}+"/" + +${device.id}+ "/"+"${schoolDevice_allowAppointment}";
 	window.location.href=url;  */
 }
+function closeWindow() {
+    var index=parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+
+}
 </script>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/zjcclims/device/editDevice.js"></script>
@@ -186,7 +191,8 @@ function saveVideo(){
 			<div class="content-box">
 				<div class="title">
 				<div id="title">设备视频</div>
-					<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>
+					<%--<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>--%>
+					<a class="btn btn-new"  herf="#" onclick="closeWindow();">返回</a>
 				</div>
 					<fieldset class="introduce-box">
 						     <label>设备相关视频</label>

@@ -218,9 +218,6 @@ public class LabRoomController<JsonResult> {
             totalRecords = labRoomService.findLabRoomByLabCenter(1, -1, 1, labRoom,9, request, acno).size();
             List<LabRoom>listLabRoom = labRoomService.findLabRoomByLabCenter(currpage, pageSize,1, labRoom, orderBy, request,acno);
             mav.addObject("listLabRoom", listLabRoom);
-            // 本学院所有可用实验室-批量添加管理员
-            List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
-            mav.addObject("labRoomList", labRoomList);
             List<LabRoomVO> labRoomVOList = new ArrayList<>();
             for(LabRoom labroom : listLabRoom){
                 LabRoomVO labRoomVO = new LabRoomVO();
@@ -303,11 +300,6 @@ public class LabRoomController<JsonResult> {
         String auth = request.getSession().getAttribute("selected_role").toString();
         int authLevel = shareService.getLevelByAuthName(auth);
         mav.addObject("authLevel", authLevel);
-//        if(authLevel < 6 && authLevel > 0) {
-//            // 本学院所有在校教师及近5年学生
-//            List<User> userList = labRoomService.findUserByacno(acno);
-//            mav.addObject("userList", userList);
-//        }
         // 当前用户
         mav.addObject("username", shareService.getUserDetail().getUsername());
 
@@ -4187,4 +4179,27 @@ public class LabRoomController<JsonResult> {
         mav.setViewName("lab/lab_room/layerAddLabRoomAuthorized.jsp");
         return mav;
     }
+
+    /**
+     * Description 弹出层--批量设置管理员
+     * @param acno
+     * @param request
+     * @return
+     * @author 陈乐为 2019-7-4
+     *
+     */
+    @RequestMapping("/layerSetLabManagers")
+    public ModelAndView layerSetLabManagers(@ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+        // 本学院所有在校教师及近5年学生
+        List<User> userList = labRoomService.findUserByacno(acno, null, 1, -1);
+        mav.addObject("userList", userList);
+        // 本学院所有可用实验室-批量添加管理员
+        List<LabRoom> labRoomList = labRoomService.findLabRoomByLabCenter(1, -1, 1, null, 9, request, acno);
+        mav.addObject("labRoomList", labRoomList);
+
+        mav.setViewName("lab/lab_room/layerSetLabManagers.jsp");
+        return mav;
+    }
+
 }

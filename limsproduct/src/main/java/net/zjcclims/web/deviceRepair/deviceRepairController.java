@@ -229,7 +229,11 @@ public class deviceRepairController {
         // 设备价格
         if(deviceRepair.getType() == 1){
             LabRoomDevice lrd = deviceRepairService.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
-            mav.addObject("devicePrice", lrd.getSchoolDevice().getDevicePrice());
+            if (Objects.nonNull(lrd) && Objects.nonNull(lrd.getSchoolDevice().getDevicePrice())) {
+                mav.addObject("devicePrice", lrd.getSchoolDevice().getDevicePrice());
+            }else {
+                mav.addObject("devicePrice","无");
+            }
         }else{
             mav.addObject("devicePrice", "无");
         }
@@ -396,7 +400,9 @@ public class deviceRepairController {
         // 设备价格
         if(deviceRepair.getType() == 1){
             LabRoomDevice lrd = deviceRepairService.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
-            mav.addObject("devicePrice", lrd.getSchoolDevice().getDevicePrice());
+            if (Objects.nonNull(lrd) && Objects.nonNull(lrd.getSchoolDevice().getDevicePrice())) {
+                mav.addObject("devicePrice", lrd.getSchoolDevice().getDevicePrice());
+            }
         }else{
             mav.addObject("devicePrice", "无");
         }
@@ -437,7 +443,9 @@ public class deviceRepairController {
         // 设备价格
         if(deviceRepair.getType() == 1){
             LabRoomDevice lrd = deviceRepairService.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
-            mav.addObject("devicePrice", lrd.getSchoolDevice().getDevicePrice());
+            if (Objects.nonNull(lrd) && Objects.nonNull(lrd.getSchoolDevice().getDevicePrice())) {
+                mav.addObject("devicePrice", lrd.getSchoolDevice().getDevicePrice());
+            }
         }else{
             mav.addObject("devicePrice", "无");
         }
@@ -572,7 +580,9 @@ public class deviceRepairController {
         // 所属单位
         if(deviceRepair.getType() == 1) {
             LabRoomDevice labRoomDevice = deviceRepairService.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
-            map.put("labCenter", labRoomDevice.getLabRoom().getLabCenter().getCenterName());
+            if (Objects.nonNull(labRoomDevice) && Objects.nonNull(labRoomDevice.getLabRoom())) {
+                map.put("labCenter", labRoomDevice.getLabRoom().getLabCenter().getCenterName());
+            }
         }else{
             map.put("labCenter", "校级");
         }
@@ -583,7 +593,9 @@ public class deviceRepairController {
         // 设备型号和编号
         if(deviceRepair.getType() == 1) {
             LabRoomDevice device = deviceRepairService.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
-            map.put("devicePattern", device.getSchoolDevice().getDevicePattern());
+            if (Objects.nonNull(device) && Objects.nonNull(device.getSchoolDevice().getDevicePattern())) {
+                map.put("devicePattern", device.getSchoolDevice().getDevicePattern());
+            }
             map.put("deviceNumber", deviceRepair.getDeviceNumber());
         }
         // 创建日期

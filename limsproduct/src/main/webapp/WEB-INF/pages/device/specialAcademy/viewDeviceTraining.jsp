@@ -93,7 +93,7 @@ function cancleTrainingRest(id){
 function findTrainingPeopleByTrainIdRest(id,toChangeAudit){//将labRoomId deviceNumber deviceName page传递到后台
 	
 	var url = "${pageContext.request.contextPath}/device/findTrainingPeopleByTrainIdRest/" + ${labRoomId} + "/"+ ${deviceNumber} + "/" + "${deviceName}"+"/"+${username} + "/"+${page}+"/" + id+"/"+1 +"/"+toChangeAudit+"/"+"${schoolDevice_allowAppointment}";
-	alert(url);
+	//alert(url);
 	window.location.href=url;
 }
 

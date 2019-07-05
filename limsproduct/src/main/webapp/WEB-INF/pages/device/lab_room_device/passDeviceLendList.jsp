@@ -230,14 +230,20 @@
                         <td>${reservation.content}</td>
                         <td><fmt:formatDate value="${reservation.lendingTime.time}" pattern="yyyy-MM-dd"/> </td>
                         <td><fmt:formatDate value="${reservation.backTime.time}" pattern="yyyy-MM-dd"/> </td>
-                        <td>
-                         <c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s"> 
+
+                         <%--<c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s">
                               <c:if test="${s.CDictionary.id==615}">${s.user.cname}<font class="pass">(通过)</font><br></c:if>
                          </c:forEach>
                          <c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s"> 
                               <c:if test="${s.CDictionary.id==616}">${s.user.cname}<font class="reject">(拒绝)</font><br></c:if>
-                         </c:forEach>
-                         </td>
+                         </c:forEach>--%>
+							 <c:if test="${auditState.get(i.count-1)==-2 }">
+							<td>审核通过</td>
+							</c:if>
+							<c:if test="${auditState.get(i.count-1)==-1 }">
+								<td>审核通过</td>
+							</c:if>
+
                         <td>
 	                    <c:if test="${reservation.CDictionary.id==653}">
 							<c:if test="${projectName eq 'zjcclims'}">

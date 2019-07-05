@@ -225,14 +225,40 @@ function cancelQuery(){
                         <td>${reservation0.userByLendingUser.cname}</td>
                         <td>${reservation0.content}</td>
                         <td><fmt:formatDate value="${reservation0.lendingTime.time}" pattern="yyyy-MM-dd"/> </td>
-                        <td>
-                         <c:forEach items="${reservation0.labRoomDeviceLendingResults}" var="s">
+						<td>
+							<c:if test="${auditState.get(i.count-1)>0 }">
+								<%--<td>审核中</td>--%>
+								${auditShow.get(i.count-1)}
+							</c:if>
+								<c:if test="${auditState.get(i.count-1)==-2 }">
+							审核通过
+							</c:if>
+							<c:if test="${auditState.get(i.count-1)==-1 }">
+								审核通过
+							</c:if>
+							<c:if test="${auditState.get(i.count-1)==0 }">
+								审核拒绝
+							</c:if>
+							</td>
+                         <%--<c:forEach items="${reservation0.labRoomDeviceLendingResults}" var="s">
                               <c:if test="${s.CDictionary.id==615}">${s.user.cname}<font class="pass">(通过)</font><br></c:if>
                          </c:forEach>
                          <c:forEach items="${reservation0.labRoomDeviceLendingResults}" var="s">
                               <c:if test="${s.CDictionary.id==616}">${s.user.cname}<font class="reject">(拒绝)</font><br></c:if>
-                         </c:forEach>
-                        </td>
+                         </c:forEach>--%>
+							 <%--<c:if test="${reservation0.stage==1}">${reservation0.userByDepartmentHead.cname}(<font color="blue">通过</font>)<br></c:if>
+							 <c:forEach items="${reservation0.labRoomDevice.labRoom.labRoomAdmins}" var="s">
+								 <c:if test="${reservation0.stage==2}">
+									 ${reservation0.userByDepartmentHead.cname}(<font color="blue">通过</font>)<br>
+									 ${s.user.cname}(<font color="blue">通过</font>)<br>
+								 </c:if>
+								 <c:if test="${reservation0.stage==3}">
+									 ${reservation0.userByDepartmentHead.cname}(<font color="blue">通过</font>)<br>
+									 ${s.user.cname}(<font color="blue">通过</font>)<br>
+									 ${labRoomHeads.cname}(<font color="blue">通过</font>)<br>
+								 </c:if>
+							 </c:forEach>--%>
+
                         <td>${reservation0.CDictionary.CName}
                         <td>
 							<c:if test="${reservation0.stage!=null}">

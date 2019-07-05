@@ -7,7 +7,9 @@
 
 package net.zjcclims.web.device;
 
-import net.gvsun.lims.dto.timetable.LabDeviceReservationParamDTO;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.service.auditServer.AuditService;
 import net.gvsun.lims.service.timetable.LabDeviceReservationService;
 import net.luxunsh.util.EmptyUtil;
@@ -23,6 +25,7 @@ import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.system.ShareDataService;
+import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,8 +47,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 /****************************************************************************
  * @功能： 设备管理模块
@@ -337,7 +338,7 @@ public class DeviceController<JsonResult> {
         List<LabRoomDevice>labRoomDevices =labRoomDeviceService.getLabRoomDevice(acno);
         mav.addObject("labRoomDevices",labRoomDevices);
         // 查询出来的总记录条数
-       /* int totalRecords = labRoomDeviceService.findAllLabRoomDeviceNew(labRoomDevice, "-1", isReservation);*/
+        /* int totalRecords = labRoomDeviceService.findAllLabRoomDeviceNew(labRoomDevice, "-1", isReservation);*/
 //        int totalRecords = labRoomDeviceService.findAllLabRoomDeviceNew(labRoomDevice, acno, 1, -1, isReservation).size();
         // 查询所有设备记录
         List<LabRoomDevice> listLabRoomDeviceAll = labRoomDeviceService.findAllLabRoomDeviceNew(labRoomDevice, acno, 1, -1, isReservation);
@@ -638,7 +639,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/exportLabRoomDevice")
     public void exportListStudentHouse(@ModelAttribute LabRoomDevice labRoomDevice, @RequestParam int roomId, Integer page, @ModelAttribute("selected_academy") String acno,
                                        @ModelAttribute("is_reservation") Integer isReservtaion, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<LabRoomDevice> labRoomDevices = labRoomDeviceService.findAllLabRoomDevice(labRoomDevice, acno, page, 10, roomId);
+        List<LabRoomDevice> labRoomDevices = labRoomDeviceService.findAllLabRoomDevice(labRoomDevice, acno, page, -1, roomId);
         labRoomDeviceService.exportLabRoomDevice(labRoomDevices, request, response);
     }
 
@@ -992,9 +993,9 @@ public class DeviceController<JsonResult> {
     }
 
     /*
-    *Description:微服务设备预约保存
-    * author:Hezhaoyi
-    * 2019-3-1
+     *Description:微服务设备预约保存
+     * author:Hezhaoyi
+     * 2019-3-1
      */
     /*@Transactional
     @RequestMapping("/device/saveDeviceReservation")
@@ -1390,7 +1391,7 @@ public class DeviceController<JsonResult> {
 //        if (academy.equals("0201")) {// 纺织学院
 //            mav.setViewName("redirect:/device/listLabRoomDeviceNew?roomId=" + d.getLabRoom().getId() + "&page=1");
 //        } else
-            mav.setViewName("redirect:/device/listLabRoomDevice?page=1");
+        mav.setViewName("redirect:/device/listLabRoomDevice?page=1");
         // mav.setViewName("redirect:/device/listLabRoomDevice?page=1");
         return mav;
     }
@@ -1865,25 +1866,26 @@ public class DeviceController<JsonResult> {
      * @作者：李鹏翔
      ****************************************************************************/
     @RequestMapping("/device/auditLabRoomAdminDeviceLending")
-    public ModelAndView auditLabRoomAdminDeviceLending(@RequestParam Integer idKey) {
+    public ModelAndView auditLabRoomAdminDeviceLending(@RequestParam Integer idKey,HttpServletRequest request,String acno) {
         ModelAndView mav = new ModelAndView();
-        LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(idKey);
-        if(lrdl==null){
-            mav.addObject("noLabRoomDeviceLending", 1);
-            mav.setViewName("/device/lab_room_device/auditDeviceLending.jsp");
-            return mav;
-        }
-        // 找到流水号
-        String lendBatch = lrdl.getLendBatch();
+        LabRoomDeviceLending labRoomDeviceLending = labRoomDeviceService.findDeviceLendingById(idKey);
+        LabRoomDevice labRoomDevice = labRoomDeviceLending.getLabRoomDevice();
+        LabRoom labRoom = labRoomDevice.getLabRoom();
+        User creatUser = labRoomDeviceLending.getUserByLendingUser();
+        String businessType = "labRoomDeviceLending" + creatUser.getSchoolAcademy().getAcademyNumber();
+
+        mav.addObject("labRoomDeviceLending", labRoomDeviceLending);
+        mav.addObject("labRoom", labRoom);
+
+        String lendBatch = labRoomDeviceLending.getLendBatch();
         // 找到流水号下的设备借用
         List<LabRoomDeviceLending> lends = labRoomDeviceService.getDeviceLendingByBatchWithoutReject(lendBatch);
         mav.addObject("lends", lends);
-        mav.addObject("lrdl", lrdl);
+        mav.addObject("lrdl", labRoomDeviceLending);
         mav.addObject("idKey", idKey);
         mav.addObject("user", shareService.getUser());
-        mav.addObject("labRoomAdmins", lrdl.getLabRoomDevice().getLabRoom().getLabRoomAdmins());
-        mav.addObject("result", labRoomDeviceService.getAuditResultMap());
-        mav.addObject("lrdlr", new LabRoomDeviceLendingResult());
+        mav.addObject("labRoomAdmins", labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabRoomAdmins());
+        mav.addObject("username", shareService.getUser().getUsername());
         mav.setViewName("/device/lab_room_device/auditDeviceLending.jsp");
         return mav;
     }
@@ -1896,44 +1898,34 @@ public class DeviceController<JsonResult> {
      * @时间：1017-10-16
      ****************************************************************************/
     @RequestMapping("/device/saveLabRoomAdminDeviceLending")
-    public @ResponseBody String saveLabRoomAdminDeviceLending(HttpServletRequest request, 
-            Integer[] array_ok, Integer[] array_refuse) throws NoSuchAlgorithmException, InterruptedException {
+    public @ResponseBody String saveLabRoomAdminDeviceLending(HttpServletRequest request,
+                                                              Integer[] array_ok, Integer[] array_refuse,Integer auditResult,@ModelAttribute("selected_academy") String acno) throws NoSuchAlgorithmException, InterruptedException {
+        //Integer idKey = 36;
         String remark = request.getParameter("remark");
-        if (!EmptyUtil.isObjectEmpty(array_ok) && array_ok.length>0) {
+        if (!net.zjcclims.service.EmptyUtil.isObjectEmpty(array_ok) && array_ok.length > 0) {
+            auditResult = 1;
             Integer lendId = 0;
             for (Integer id : array_ok) {
                 // 新建并保存审核结果
-                LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
                 LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
-                l.setLabRoomDeviceLending(lrdl);
-                l.setUser(shareService.getUser());
-                l.setRemark(remark);
                 CDictionary cDictionary = new CDictionary();
                 cDictionary.setId(615);// 615审核通过
-                l.setCDictionary(cDictionary);
-                labRoomDeviceLendingResultDAO.store(l);
-                // 根据结果和借用的id处理后续消息、状态等机制
                 labRoomDeviceService.createAuditMessageByLendIdManager(id, 2+"");
                 lendId = lrdl.getId();
+                labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
             }
             labRoomDeviceService.sendMessageForDeviceLending(lendId, 2+"", 2);
-        }
-        if (!EmptyUtil.isObjectEmpty(array_refuse) && array_refuse.length>0) {
+        } else if (!net.zjcclims.service.EmptyUtil.isObjectEmpty(array_refuse) && array_refuse.length > 0) {
+            auditResult = 0;
             Integer lendId = 0;
             for (Integer id : array_refuse) {
                 // 新建并保存审核结果
-                LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
                 LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
-                l.setLabRoomDeviceLending(lrdl);
-                l.setUser(shareService.getUser());
-                l.setRemark(remark);
                 CDictionary cDictionary = new CDictionary();
                 cDictionary.setId(616);// 616审核拒绝
-                l.setCDictionary(cDictionary);
-                labRoomDeviceLendingResultDAO.store(l);
-                // 根据结果和借用的id处理后续消息、状态等机制
                 labRoomDeviceService.createAuditMessageByLendIdManager(id, 3+"");
                 lendId = lrdl.getId();
+                labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
             }
             labRoomDeviceService.sendMessageForDeviceLending(lendId, 3+"", 2);
         }
@@ -1946,27 +1938,27 @@ public class DeviceController<JsonResult> {
      * @时间：2017-10-16
      ****************************************************************************/
     @RequestMapping("/device/auditDepartmentDeviceLending")
-    public ModelAndView auditDepartmentDeviceLending(@RequestParam Integer idKey) {
+    public ModelAndView auditDepartmentDeviceLending(@RequestParam Integer idKey, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
-        LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(idKey);
+        LabRoomDeviceLending labRoomDeviceLending = labRoomDeviceService.findDeviceLendingById(idKey);
+        LabRoomDevice labRoomDevice = labRoomDeviceLending.getLabRoomDevice();
+        LabRoom labRoom = labRoomDevice.getLabRoom();
+        User creatUser=labRoomDeviceLending.getUserByLendingUser();
+        String businessType="labRoomDeviceLending" + creatUser.getSchoolAcademy().getAcademyNumber();
+
+        mav.addObject("labRoomDeviceLending",labRoomDeviceLending);
+        mav.addObject("labRoom",labRoom);
         mav.setViewName("/device/lab_room_device/auditDepartmentDeviceLending.jsp");
-        if(lrdl==null){
-            mav.addObject("noLabRoomDeviceLending", 1);
-            return mav;
-        }
-        // 找到流水号
-        String lendBatch = lrdl.getLendBatch();
+        String lendBatch = labRoomDeviceLending.getLendBatch();
         // 找到流水号下的设备借用
         List<LabRoomDeviceLending> lends = labRoomDeviceService.getDeviceLendingByBatchWithoutReject(lendBatch);
         mav.addObject("lends", lends);
-
-        mav.addObject("lrdl", lrdl);
+        mav.addObject("lrdl", labRoomDeviceLending);
         mav.addObject("idKey", idKey);
         mav.addObject("user", shareService.getUser());
         mav.addObject("username", shareService.getUser().getUsername());
-        mav.addObject("result", labRoomDeviceService.getAuditResultMap());
-        mav.addObject("lrdlr", new LabRoomDeviceLendingResult());
         return mav;
+
     }
 
     /****************************************************************************
@@ -1977,47 +1969,35 @@ public class DeviceController<JsonResult> {
      * @时间：1017-10-16
      ****************************************************************************/
     @RequestMapping("/device/saveDepartmentDeviceLending")
-    public @ResponseBody String saveDepartmentDeviceLending(HttpServletRequest request, 
-    		Integer[] array_ok, Integer[] array_refuse) throws NoSuchAlgorithmException, InterruptedException {
-    	String remark = request.getParameter("remark");
-    	if (!EmptyUtil.isObjectEmpty(array_ok) && array_ok.length>0) {
-    	    Integer lendId = 0;
-			for (Integer id : array_ok) {
-				// 新建并保存审核结果
-				LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
-				LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
-				l.setLabRoomDeviceLending(lrdl);
-				l.setUser(shareService.getUser());
-				l.setRemark(remark);
-				CDictionary cDictionary = new CDictionary();
-				cDictionary.setId(615);// 615审核通过
-				l.setCDictionary(cDictionary);
-				labRoomDeviceLendingResultDAO.store(l);
-				// 根据结果和借用的id处理后续消息、状态等机制
-				labRoomDeviceService.createAuditMessageByLendId(id, 2+"");
-				lendId = id;
-			}
-			labRoomDeviceService.sendMessageForDeviceLending(lendId, 2+"", 1);
-		}
-    	if (!EmptyUtil.isObjectEmpty(array_refuse) && array_refuse.length>0) {
-    	    Integer lendId = 0;
-			for (Integer id : array_refuse) {
-				// 新建并保存审核结果
-				LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
-				LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
-				l.setLabRoomDeviceLending(lrdl);
-				l.setUser(shareService.getUser());
-				l.setRemark(remark);
-				CDictionary cDictionary = new CDictionary();
-				cDictionary.setId(616);// 616审核拒绝
-				l.setCDictionary(cDictionary);
-				labRoomDeviceLendingResultDAO.store(l);
-				// 根据结果和借用的id处理后续消息、状态等机制
-				labRoomDeviceService.createAuditMessageByLendId(id, 3+"");
-				lendId = lrdl.getId();
-			}
+    public @ResponseBody String saveDepartmentDeviceLending(HttpServletRequest request,Integer auditResult,
+                                                            Integer[] array_ok, Integer[] array_refuse,@ModelAttribute("selected_academy") String acno) throws NoSuchAlgorithmException, InterruptedException {
+        String remark = request.getParameter("remark");
+        if (!EmptyUtil.isObjectEmpty(array_ok) && array_ok.length > 0) {
+            auditResult = 1;
+            Integer lendId = 0;
+            for (Integer id : array_ok) {
+                // 新建并保存审核结果
+                CDictionary cDictionary = new CDictionary();
+                cDictionary.setId(615);// 615审核通过
+                // 根据结果和借用的id处理后续消息、状态等机制
+                labRoomDeviceService.createAuditMessageByLendId(id, 2+"");
+                lendId = id;
+                labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
+            }
+            labRoomDeviceService.sendMessageForDeviceLending(lendId, 2+"", 1);
+        } else if (!EmptyUtil.isObjectEmpty(array_refuse) && array_refuse.length > 0) {
+            auditResult = 0;
+            Integer lendId = 0;
+            for (Integer id : array_refuse) {
+                // 新建并保存审核结果
+                LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
+                // 根据结果和借用的id处理后续消息、状态等机制
+                labRoomDeviceService.createAuditMessageByLendId(id, 3+"");
+                lendId = lrdl.getId();
+                labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
+            }
             labRoomDeviceService.sendMessageForDeviceLending(lendId, 3+"", 1);
-		}
+        }
         return "success";
     }
 
@@ -2029,23 +2009,25 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/auditLabRoomHeadDeviceLending")
     public ModelAndView auditLabRoomHeadDeviceLending(@RequestParam Integer idKey) {
         ModelAndView mav = new ModelAndView();
-        LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(idKey);
+        LabRoomDeviceLending labRoomDeviceLending = labRoomDeviceService.findDeviceLendingById(idKey);
+        LabRoomDevice labRoomDevice = labRoomDeviceLending.getLabRoomDevice();
+        LabRoom labRoom = labRoomDevice.getLabRoom();
+        User creatUser=labRoomDeviceLending.getUserByLendingUser();
+        String businessType="labRoomDeviceLending" + creatUser.getSchoolAcademy().getAcademyNumber();
+
+        mav.addObject("labRoomDeviceLending",labRoomDeviceLending);
+        mav.addObject("labRoom",labRoom);
         mav.setViewName("/device/lab_room_device/auditLabRoomHeadDeviceLending.jsp");
-        if(lrdl==null){
-            mav.addObject("noLabRoomDeviceLending", 1);
-            return mav;
-        }
-        // 找到流水号
-        String lendBatch = lrdl.getLendBatch();
+        String lendBatch = labRoomDeviceLending.getLendBatch();
         // 找到流水号下的设备借用
         List<LabRoomDeviceLending> lends = labRoomDeviceService.getDeviceLendingByBatchWithoutReject(lendBatch);
         mav.addObject("lends", lends);
-        mav.addObject("lrdl", lrdl);
+        mav.addObject("lrdl", labRoomDeviceLending);
         mav.addObject("idKey", idKey);
         mav.addObject("user", shareService.getUser());
         mav.addObject("labRoomHeads", shareService.findAllLabRoomtHead());
-        mav.addObject("result", labRoomDeviceService.getAuditResultMap());
-        mav.addObject("lrdlr", new LabRoomDeviceLendingResult());
+        mav.addObject("username", shareService.getUser().getUsername());
+        //mav.addObject("result", labRoomDeviceService.getAuditResultMap());
         return mav;
     }
 
@@ -2057,44 +2039,36 @@ public class DeviceController<JsonResult> {
      * @时间：1017-10-16
      ****************************************************************************/
     @RequestMapping("/device/saveLabRoomHeadDeviceLending")
-    public @ResponseBody String saveLabRoomHeadDeviceLending(HttpServletRequest request, 
-            Integer[] array_ok, Integer[] array_refuse) throws NoSuchAlgorithmException, InterruptedException {
+    public @ResponseBody String saveLabRoomHeadDeviceLending(HttpServletRequest request,
+                                                             Integer[] array_ok, Integer[] array_refuse,Integer auditResult,@ModelAttribute("selected_academy") String acno) throws NoSuchAlgorithmException, InterruptedException {
+        //Integer idKey = 34;
         String remark = request.getParameter("remark");
-        if (!EmptyUtil.isObjectEmpty(array_ok) && array_ok.length>0) {
+        if (!EmptyUtil.isObjectEmpty(array_ok) && array_ok.length > 0) {
+            auditResult = 1;
             Integer lendId = 0;
             for (Integer id : array_ok) {
                 // 新建并保存审核结果
-                LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
+                //LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
                 LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
-                l.setLabRoomDeviceLending(lrdl);
-                l.setUser(shareService.getUser());
-                l.setRemark(remark);
                 CDictionary cDictionary = new CDictionary();
                 cDictionary.setId(615);// 615审核通过
-                l.setCDictionary(cDictionary);
-                labRoomDeviceLendingResultDAO.store(l);
                 // 根据结果和借用的id处理后续消息、状态等机制
                 labRoomDeviceService.createAuditMessageByLendIdHead(id, 2+"");
                 lendId = id;
+                labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
             }
             labRoomDeviceService.sendMessageForDeviceLending(lendId, 2+"", 3);
-        }
-        if (!EmptyUtil.isObjectEmpty(array_refuse) && array_refuse.length>0) {
+        } else if (!EmptyUtil.isObjectEmpty(array_refuse) && array_refuse.length > 0) {
+            auditResult = 0;
             Integer lendId = 0;
             for (Integer id : array_refuse) {
                 // 新建并保存审核结果
-                LabRoomDeviceLendingResult l = new LabRoomDeviceLendingResult();
                 LabRoomDeviceLending lrdl = labRoomDeviceService.findDeviceLendingById(id);
-                l.setLabRoomDeviceLending(lrdl);
-                l.setUser(shareService.getUser());
-                l.setRemark(remark);
                 CDictionary cDictionary = new CDictionary();
                 cDictionary.setId(616);// 616审核拒绝
-                l.setCDictionary(cDictionary);
-                labRoomDeviceLendingResultDAO.store(l);
-                // 根据结果和借用的id处理后续消息、状态等机制
                 labRoomDeviceService.createAuditMessageByLendIdHead(id, 3+"");
-                lendId = id;
+                lendId = lrdl.getId();
+                labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
             }
             labRoomDeviceService.sendMessageForDeviceLending(lendId, 2+"", 3);
         }
@@ -2171,21 +2145,20 @@ public class DeviceController<JsonResult> {
      * @作者：李鹏翔
      ****************************************************************************/
     @RequestMapping("/device/passDeviceLendList")
-    public ModelAndView passDeviceLendList(@ModelAttribute LabRoomDeviceLendingResult lrdlr, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
+    public ModelAndView passDeviceLendList(@ModelAttribute LabRoomDeviceLending lrdl, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
-        LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
+        //LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
-        mav.addObject("reservation", lrdlr);
+        mav.addObject("reservation", lrdl);
         // 查询出所有的设备设备预约记录
-        int totalRecords = labRoomDeviceService.getPassLendingTotals(lrdlr, request);
+        int totalRecords = labRoomDeviceService.getPassLendingTotals(lrdl, request);
         int pageSize = 10;// 每页10条记录
         // 分页信息
         Map<String, Integer> pageModel = shareService.getPage(page, pageSize, totalRecords);
         List<LabRoomDeviceLending> devicelendingList = labRoomDeviceService.findAllPassLending(page, pageSize, request);
         // 根据分页信息查询出来的记录
-//		List<LabRoomDeviceLendingResult> deviceLendList = labRoomDeviceService.findAllPassLending(lrdlr, page, pageSize,request);
         mav.addObject("deviceLendList", devicelendingList);
 
         mav.addObject("pageModel", pageModel);
@@ -2198,6 +2171,28 @@ public class DeviceController<JsonResult> {
         String endtime = request.getParameter("endtime");
         mav.addObject("starttime", starttime);
         mav.addObject("endtime", endtime);
+        List<Integer> auditState=new ArrayList<>();
+        for (int i=0;i<devicelendingList.size();i++) {
+            Map<String, String> params2 = new HashMap<>();
+            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + devicelendingList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessAppUid = shareService.getSerialNumber(devicelendingList.get(i).getId().toString(), businessType);
+            //String businessAppUid="b34a161e-96fa-468f-9df9-0d22f81fed5c";
+            params2.put("businessType", businessType);
+            params2.put("businessAppUid", businessAppUid);
+            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            JSONObject jsonObject2 = JSON.parseObject(s2);
+            String status2 = jsonObject2.getString("status");
+            //Integer auditNumber = null;
+            if ("success".equals(status2)) {
+                JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                if (jsonArray != null) {
+                    JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                    auditState.add(jsonObject3.getIntValue("level"));
+                } else {
+                    auditState.add(-2);
+                }
+            }
+        }
         // 当前登录人
         User user = shareService.getUser();
         // 判断当前登录人是否为实验教务或者超级管理员或者是本中心主任
@@ -2210,7 +2205,7 @@ public class DeviceController<JsonResult> {
         }
         mav.addObject("user", user);
         mav.addObject("projectName", pConfig.PROJECT_NAME);
-//		mav.addObject("labRoomAdmins",lrdlr.getLabRoomDeviceLending().getLabRoomDevice().getLabRoom().getLabRoomAdmins());
+        mav.addObject("auditState",auditState);
         mav.setViewName("/device/lab_room_device/passDeviceLendList.jsp");
         return mav;
     }
@@ -2260,26 +2255,20 @@ public class DeviceController<JsonResult> {
      * @作者：李鹏翔
      ****************************************************************************/
     @RequestMapping("/device/rejectedDeviceLendList")
-    public ModelAndView rejectedDeviceLendList(@ModelAttribute LabRoomDeviceLendingResult lrdlr, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
+    public ModelAndView rejectedDeviceLendList(@ModelAttribute LabRoomDeviceLending lrdl, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
-        mav.addObject("reservation", lrdlr);
-        LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
+        mav.addObject("reservation", lrdl);
+        //LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
         // 查询出所有的设备设备预约记录
-        int totalRecords = labRoomDeviceService.getRejectedLendingTotals(lrdlr, request);
+        int totalRecords = labRoomDeviceService.getAllDeviceLendingApplyList(request);
         int pageSize = 10;// 每页10条记录
         // 分页信息
         Map<String, Integer> pageModel = shareService.getPage(page, pageSize, totalRecords);
-//		LabRoomDeviceLendingResult labRoomDeviceLendingResult=new LabRoomDeviceLendingResult();
-        List<LabRoomDeviceLending> devicelendingRejectedList = new ArrayList<LabRoomDeviceLending>();
+        List<LabRoomDeviceLending> devicelendingRejectedList = labRoomDeviceService.getAllDeviceLendingApplyList(page, pageSize, request);
         // 根据分页信息查询出来的记录
-        List<LabRoomDeviceLendingResult> deviceLendList = labRoomDeviceService.findAllRejectedLending(lrdlr, page, pageSize, request);
-        for (LabRoomDeviceLendingResult l : deviceLendList) {
-
-            devicelendingRejectedList.add(l.getLabRoomDeviceLending());
-        }
         mav.addObject("deviceLendList", devicelendingRejectedList);
 //		mav.addObject("deviceLendList", deviceLendList);
 
@@ -2293,6 +2282,26 @@ public class DeviceController<JsonResult> {
         String endtime = request.getParameter("endtime");
         mav.addObject("starttime", starttime);
         mav.addObject("endtime", endtime);
+        List<Integer> auditState=new ArrayList<>();
+        for (int i=0;i<devicelendingRejectedList.size();i++) {
+            Map<String, String> params2 = new HashMap<>();
+            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + devicelendingRejectedList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessAppUid = shareService.getSerialNumber(devicelendingRejectedList.get(i).getId().toString(), businessType);
+            params2.put("businessType", businessType);
+            params2.put("businessAppUid", businessAppUid);
+            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            JSONObject jsonObject2 = JSON.parseObject(s2);
+            String status2 = jsonObject2.getString("status");
+            if ("success".equals(status2)) {
+                JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                if (jsonArray != null) {
+                    JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                    auditState.add(jsonObject3.getIntValue("level"));
+                } else {
+                    auditState.add(-2);
+                }
+            }
+        }
         // 当前登录人
         User user = shareService.getUser();
         // 判断当前登录人是否为实验教务或者超级管理员或者是本中心主任
@@ -2304,6 +2313,7 @@ public class DeviceController<JsonResult> {
             }
         }
         mav.addObject("user", user);
+        mav.addObject("auditState",auditState);
         mav.setViewName("/device/lab_room_device/rejectedDeviceLending.jsp");
         return mav;
     }
@@ -2483,8 +2493,8 @@ public class DeviceController<JsonResult> {
     @ResponseBody
     @RequestMapping("/device/returnDeviceLending")
     public String returnDeviceLending(@RequestParam Integer idKey, HttpServletRequest request) throws ParseException {
-    	String remark = request.getParameter("remark");
-    	String backtime = request.getParameter("backtime");
+        String remark = request.getParameter("remark");
+        String backtime = request.getParameter("backtime");
         labRoomDeviceService.returnDeviceLending(idKey, remark,backtime);
         return "success";
     }
@@ -2579,9 +2589,9 @@ public class DeviceController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("labRoomDevices",labRoomDeviceDAO.findAllLabRoomDevices());
         // 当前登录人
-		User user = shareService.getUser();
-		mav.addObject("user", user);
-		//获取当前实验中心的所有老师
+        User user = shareService.getUser();
+        mav.addObject("user", user);
+        //获取当前实验中心的所有老师
         //List<User> users = shareService.findUserByCidAndAuthorities(cid,2);
         //获取所有老师
         Map users = shareService.getUsersMap();
@@ -3978,42 +3988,42 @@ public class DeviceController<JsonResult> {
         LabRoomDevice labRoomDevice = new LabRoomDevice();
         LabRoomDeviceLending labRoomDeviceLending = null;
         try{
-        String startTime = request.getParameter("startTime");
-        String returnTime = request.getParameter("returnTime");
-        String content = request.getParameter("content");
-        if (content!=null && !"".equals(content)){
-        if(content.equals(new String(content.getBytes("iso8859-1"), "iso8859-1"))){
-            content = new String(content.getBytes("iso8859-1"), "utf-8");
-        }}
+            String startTime = request.getParameter("startTime");
+            String returnTime = request.getParameter("returnTime");
+            String content = request.getParameter("content");
+            if (content!=null && !"".equals(content)){
+                if(content.equals(new String(content.getBytes("iso8859-1"), "iso8859-1"))){
+                    content = new String(content.getBytes("iso8859-1"), "utf-8");
+                }}
 //        SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
 
-        labRoomDeviceLending = labRoomService.checkTimeAndContent(startTime,returnTime,content);
-        mav.addObject("labRoomDeviceLending", labRoomDeviceLending);
-        // 学期
-        List<SchoolTerm> terms = shareService.findAllSchoolTerms();
-        mav.addObject("terms", terms);
-        // 查询出所有的设备
-        int totalRecords = labRoomDeviceService.getAllLendableDevice(request);
-        //int pageSize = 10;// 每页10条记录
-        int pageSize = CommonConstantInterface.INT_PAGESIZE;
-        // 根据分页信息查询出来的记录
-        List<LabRoomDevice> allLendableDeviceList = labRoomDeviceService.findAllLendableDevice(labRoomDevice, null, pageSize, currpage, request);
-        mav.addObject("allLendableDeviceList", allLendableDeviceList);
-        mav.addObject("pageModel", shareService.getPage(currpage, pageSize, totalRecords));
-        mav.addObject("totalRecords", totalRecords);
-        mav.addObject("currpage", currpage);
-        mav.addObject("pageSize", pageSize);
-        mav.addObject("deviceName", request.getParameter("deviceName"));
-        // 当前登录人
-        User user = shareService.getUser();
-        List<User> dUsers = shareService.findDeansByAcademyNumber(user.getSchoolAcademy());
-        if(dUsers == null || dUsers.size() == 0){
-            mav.addObject("dean", "noDean");
-        }else {
-            mav.addObject("dean", "dean");
-        }
-        mav.addObject("user", user);
-        mav.setViewName("/device/lab_room_device/allLendableLabRoomDeviceList.jsp");
+            labRoomDeviceLending = labRoomService.checkTimeAndContent(startTime,returnTime,content);
+            mav.addObject("labRoomDeviceLending", labRoomDeviceLending);
+            // 学期
+            List<SchoolTerm> terms = shareService.findAllSchoolTerms();
+            mav.addObject("terms", terms);
+            // 查询出所有的设备
+            int totalRecords = labRoomDeviceService.getAllLendableDevice(request);
+            //int pageSize = 10;// 每页10条记录
+            int pageSize = CommonConstantInterface.INT_PAGESIZE;
+            // 根据分页信息查询出来的记录
+            List<LabRoomDevice> allLendableDeviceList = labRoomDeviceService.findAllLendableDevice(labRoomDevice, null, pageSize, currpage, request);
+            mav.addObject("allLendableDeviceList", allLendableDeviceList);
+            mav.addObject("pageModel", shareService.getPage(currpage, pageSize, totalRecords));
+            mav.addObject("totalRecords", totalRecords);
+            mav.addObject("currpage", currpage);
+            mav.addObject("pageSize", pageSize);
+            mav.addObject("deviceName", request.getParameter("deviceName"));
+            // 当前登录人
+            User user = shareService.getUser();
+            List<User> dUsers = shareService.findDeansByAcademyNumber(user.getSchoolAcademy());
+            if(dUsers == null || dUsers.size() == 0){
+                mav.addObject("dean", "noDean");
+            }else {
+                mav.addObject("dean", "dean");
+            }
+            mav.addObject("user", user);
+            mav.setViewName("/device/lab_room_device/allLendableLabRoomDeviceList.jsp");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -4175,9 +4185,9 @@ public class DeviceController<JsonResult> {
      */
     @RequestMapping("/device/saveLabRoomDeviceRepair")
     public String saveLabRoomDeviceRepair(@RequestParam int labRoomDeviceId, @ModelAttribute LabRoomDeviceRepair labRoomDeviceRepair) {
-    	if(labRoomDeviceId != -1){
-    		labRoomDeviceRepair.setLabRoomDevice(labRoomDeviceDAO.findLabRoomDeviceByPrimaryKey(labRoomDeviceId));
-    	}
+        if(labRoomDeviceId != -1){
+            labRoomDeviceRepair.setLabRoomDevice(labRoomDeviceDAO.findLabRoomDeviceByPrimaryKey(labRoomDeviceId));
+        }
         labRoomDeviceRepairDAO.store(labRoomDeviceRepair);
         return "redirect:/device/applyDeviceRepairList?page=1";
     }
@@ -4293,12 +4303,12 @@ public class DeviceController<JsonResult> {
      * @时间：2017-11-03
      ****************************************************************************/
     @RequestMapping("/device/deviceLendingApplyList")
-    public ModelAndView deviceLendingApplyList(@ModelAttribute LabRoomDeviceLendingResult lrdlr, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
+    public ModelAndView deviceLendingApplyList(Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
-        mav.addObject("reservation", lrdlr);
+        //mav.addObject("reservation", lrdlr);
         // 查询出所有的设备设备预约记录
         int totalRecords = labRoomDeviceService.getAllDeviceLendingApplyList(request);
         int pageSize = 10;// 每页10条记录
@@ -4328,7 +4338,84 @@ public class DeviceController<JsonResult> {
                 }
             }
         }
+
+        List<Integer> auditState=new ArrayList<>();
+        List<String> auditShow=new ArrayList<>();
+        for (int i=0;i<deviceLendList.size();i++) {
+            Map<String, String> params2 = new HashMap<>();
+            //String s=lrdl.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String s28=deviceLendList.get(i).getId().toString();
+            String s3="nicai";
+            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+
+            //String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
+            String businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
+            //String businessAppUid="b34a161e-96fa-468f-9df9-0d22f81fed5c";
+            /*if(shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType)=="fail"){
+                //没有流水单号就是用预约id用作业务id
+                businessAppUid = deviceLendList.get(i).getId().toString();
+            }else {
+                businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
+                //有流水单号用流水单号做业务id
+            }*/
+            params2.put("businessType", businessType);
+            params2.put("businessAppUid", businessAppUid);
+            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            JSONObject jsonObject2 = JSON.parseObject(s2);
+            String status2 = jsonObject2.getString("status");
+            Integer auditNumber = null;
+            if ("success".equals(status2)) {
+                JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                if (jsonArray != null) {
+                    JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                    auditNumber = labRoomService.getAuditNumber(deviceLendList.get(i).getLabRoomDevice().getLabRoom(), jsonObject3.getIntValue("level"));
+                    auditState.add(jsonObject3.getIntValue("level"));
+                }
+                else {
+                    auditState.add(-2);
+                }
+                Map<String, String> allAuditStateParams = new HashMap<>();
+                allAuditStateParams.put("businessType", businessType);
+                allAuditStateParams.put("businessAppUid", businessAppUid);
+                allAuditStateParams.put("businessUid", "-1");
+                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
+                String htmlStr = "";
+                if(!"fail".equals(status2)) {
+                    JSONArray allAuditStateJSONArray = allAuditStateJSON.getJSONArray("data");
+                    if (allAuditStateJSONArray != null && allAuditStateJSONArray.size() != 0) {
+                        for (int j = 0; j < allAuditStateJSONArray.size(); j++) {
+                            JSONObject o = allAuditStateJSONArray.getJSONObject(j);
+                            User auditUser = null;
+                            if(o.getString("auditUser") != null){
+                                htmlStr += "<span style='color: black";
+                                auditUser = userDAO.findUserByUsername(o.getString("auditUser"));
+                            }else {
+                                htmlStr += "<span style='color: gray";
+                            }
+                            htmlStr += "'>";
+                            String authCName = authorityDAO.findAuthorityByAuthorityName(o.getString("authName")).iterator().next().getCname();
+                            htmlStr += authCName + " ";
+                            htmlStr += auditUser == null ? "" : auditUser.getCname() + " ";
+                            htmlStr += o.getString("result");
+                            htmlStr += "</span><br>";
+                        }
+                    }
+                }
+                auditShow.add(htmlStr);
+                mav.addObject("auditShow", auditShow);
+
+
+            }
+        }
+
+
+
+
+
+
         mav.addObject("user", user);
+        mav.addObject("auditState", auditState);
         mav.setViewName("/device/lab_room_device_lending/deviceLendingApplyList.jsp");
         return mav;
     }
@@ -4355,6 +4442,8 @@ public class DeviceController<JsonResult> {
         List<LabRoomDeviceLending> deviceLendList = labRoomDeviceService.findAllLabRoomLends(lrdl, page, pageSize, request);
 
         mav.addObject("deviceLendList", deviceLendList);
+        String str=request.getParameter("deviceName");
+        System.out.println(str);
         mav.addObject("deviceName", request.getParameter("deviceName"));
         mav.addObject("lendBatch", request.getParameter("lendBatch"));
         String starttime = request.getParameter("starttime");
@@ -4365,6 +4454,76 @@ public class DeviceController<JsonResult> {
         mav.addObject("totalRecords", totalRecords);
         mav.addObject("page", page);
         mav.addObject("pageSize", pageSize);
+
+        List<Integer> auditState=new ArrayList<>();
+        List<String> auditShow=new ArrayList<>();
+        for (int i=0;i<deviceLendList.size();i++) {
+            Map<String, String> params2 = new HashMap<>();
+            //String s=lrdl.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String s28=deviceLendList.get(i).getId().toString();
+            String s3="nicai";
+            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+
+            //String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
+            String businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
+            //String businessAppUid="b34a161e-96fa-468f-9df9-0d22f81fed5c";
+            /*if(shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType)=="fail"){
+                //没有流水单号就是用预约id用作业务id
+                businessAppUid = deviceLendList.get(i).getId().toString();
+            }else {
+                businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
+                //有流水单号用流水单号做业务id
+            }*/
+            params2.put("businessType", businessType);
+            params2.put("businessAppUid", businessAppUid);
+            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            JSONObject jsonObject2 = JSON.parseObject(s2);
+            String status2 = jsonObject2.getString("status");
+            Integer auditNumber = null;
+            if ("success".equals(status2)) {
+                JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                if (jsonArray != null) {
+                    JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                    auditNumber = labRoomService.getAuditNumber(deviceLendList.get(i).getLabRoomDevice().getLabRoom(), jsonObject3.getIntValue("level"));
+                    auditState.add(jsonObject3.getIntValue("level"));
+                }
+                else {
+                    auditState.add(-2);
+                }
+                Map<String, String> allAuditStateParams = new HashMap<>();
+                allAuditStateParams.put("businessType", businessType);
+                allAuditStateParams.put("businessAppUid", businessAppUid);
+                allAuditStateParams.put("businessUid", "-1");
+                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
+                String htmlStr = "";
+                if(!"fail".equals(status2)) {
+                    JSONArray allAuditStateJSONArray = allAuditStateJSON.getJSONArray("data");
+                    if (allAuditStateJSONArray != null && allAuditStateJSONArray.size() != 0) {
+                        for (int j = 0; j < allAuditStateJSONArray.size(); j++) {
+                            JSONObject o = allAuditStateJSONArray.getJSONObject(j);
+                            User auditUser = null;
+                            if(o.getString("auditUser") != null){
+                                htmlStr += "<span style='color: black";
+                                auditUser = userDAO.findUserByUsername(o.getString("auditUser"));
+                            }else {
+                                htmlStr += "<span style='color: gray";
+                            }
+                            htmlStr += "'>";
+                            String authCName = authorityDAO.findAuthorityByAuthorityName(o.getString("authName")).iterator().next().getCname();
+                            htmlStr += authCName + " ";
+                            htmlStr += auditUser == null ? "" : auditUser.getCname() + " ";
+                            htmlStr += o.getString("result");
+                            htmlStr += "</span><br>";
+                        }
+                    }
+                }
+                auditShow.add(htmlStr);
+                mav.addObject("auditShow", auditShow);
+
+
+            }
+        }
 
         // 当前登录人
         User user = shareService.getUser();
@@ -4381,6 +4540,7 @@ public class DeviceController<JsonResult> {
         }
         mav.addObject("labRoomHeads", shareService.findAllLabRoomtHead());
         mav.addObject("user", user);
+        mav.addObject("auditState", auditState);
         mav.setViewName("/device/lab_room_device_lending/deviceLendList.jsp");
         return mav;
     }
@@ -4425,48 +4585,28 @@ public class DeviceController<JsonResult> {
      * @作者：周志辉
      ****************************************************************************/
     @RequestMapping("/device/submitDeviceLending")
-    public ModelAndView submitDeviceLending(@RequestParam String lendBatch) throws NoSuchAlgorithmException, InterruptedException {
+    public ModelAndView submitDeviceLending(@RequestParam String lendBatch, Integer idKey,@ModelAttribute("selected_academy") String acno) throws NoSuchAlgorithmException, InterruptedException {
         // 新建ModelAndView对象；
         ModelAndView mav = new ModelAndView();
+        LabRoomDeviceLending labRoomDeviceLending=labRoomDeviceLendingDAO.findLabRoomDeviceLendingById(idKey);
         List<LabRoomDeviceLending> lendings = labRoomDeviceService.getDeviceLendingByBatch(lendBatch);
+        /*User creatUser=labRoomDeviceLending.getUserByLendingUser();
+        String businessType="labRoomDeviceLending" + creatUser.getSchoolAcademy().getAcademyNumber();*/
         String deviceInfo = "";
-        int idKey = 0;
+
         for (LabRoomDeviceLending d : lendings) {
-        	deviceInfo = d.getLabRoomDevice().getSchoolDevice().getDeviceNumber() + 
-        			"-" + d.getLabRoomDevice().getSchoolDevice().getDeviceName() ;
-        	idKey = d.getId();
-        	d.setStage(0);
+            deviceInfo = d.getLabRoomDevice().getSchoolDevice().getDeviceNumber() +
+                    "-" + d.getLabRoomDevice().getSchoolDevice().getDeviceName() ;
+            idKey = d.getId();
+            d.setStage(0);
             //审核中
             CDictionary cDictionary = shareService.getCDictionaryByCategory("c_lending_status","3");
             d.setCDictionary(cDictionary);
-        	labRoomDeviceLendingDAO.store(d);
-		}
-        
-        
+            labRoomDeviceLendingDAO.store(d);
+        }
         //获取当前登陆人
         User user = shareService.getUser();
-        /*//给自己发送消息
-        Message messageToStudent = new Message();
-        messageToStudent.setSendUser(shareService.getUserDetail().getCname());// 当前登录人
-        messageToStudent.setSendCparty(shareService.getUserDetail().getSchoolAcademy()
-                .getAcademyName());// 当前登录人所在学院
-        messageToStudent.setTitle(CommonConstantInterface.STR_LABROOMDEVICELENDING_TITLE);
-        String content1 = "申请成功，等待审核";
-        content1 += "<a  href=\"../device/deviceLendingApplyList?page=1";
-        content1 += "'>点击查看</a>";
-        messageToStudent.setTage(0);
-        messageToStudent.setContent(content1);
-        messageToStudent.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
-        messageToStudent.setCreateTime(Calendar.getInstance());
-        // message.setUsername(excenterDirector.getUsername());
-        messageToStudent.setUsername(user.getUsername());
-        messageToStudent = messageDAO.store(messageToStudent);
-        String messageContent = "您已成功提交对" + deviceInfo + "等的申请";
-        try {
-            String result = shareService.sendMessage(user.getTelephone(), messageContent);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
+
 
         //给下级审核人发送消息
         Message message = new Message();
@@ -4485,9 +4625,13 @@ public class DeviceController<JsonResult> {
         message.setUsername(shareService.findAllDepartmentHead(user).isEmpty() ? null : shareService.findAllDepartmentHead(user).get(0).getUsername());
         message = messageDAO.store(message);
         String messageContent1 = "您有一个设备申请需要审核，信息为：" + deviceInfo + "等";
-        String result1 = shareService.sendMessage(shareService.findAllDepartmentHead(user).isEmpty() ? null : shareService.findAllDepartmentHead(user).get(0).getTelephone(), messageContent1);
+        //String result1 = shareService.sendMessage(shareService.findAllDepartmentHead(user).isEmpty() ? null : shareService.findAllDepartmentHead(user).get(0).getTelephone(), messageContent1);
+
+        labRoomDeviceService.submitDeviceLending(idKey,acno);
         mav.setViewName("redirect:/device/deviceLendingApplyList?page=1");
         return mav;
+
+
     }
 
     /**
@@ -4513,10 +4657,10 @@ public class DeviceController<JsonResult> {
         String[] batchDeviceElesArr = batchDeviceEles.split(",");
         List<String> batchDeviceEleList = new ArrayList<String>();
         for (String batchDevice : batchDeviceElesArr) {
-        	batchDeviceEleList.add(batchDevice);
+            batchDeviceEleList.add(batchDevice);
         }
-        Collections.sort(batchDeviceEleList);  
-        
+        Collections.sort(batchDeviceEleList);
+
         //获取当前登陆人
         User user = shareService.getUser();
         // 本批次的流水号
@@ -4524,14 +4668,14 @@ public class DeviceController<JsonResult> {
         // 实验室id
         String labId = "_";
         for (String labRoom_device : batchDeviceEleList){
-        	// labRoom_device由实验室id和device id构成
-        	String[] batchArr = labRoom_device.split("_");
-        	if (!labId.equals(batchArr[0])) {
-        		lendBatch = labRoomDeviceService.getDeviceLendingBatch();
-			}
-        	labId = batchArr[0];
-        	LabRoomDevice labRoomDevice = labRoomDeviceService.
-        			findLabRoomDeviceByPrimaryKey(Integer.valueOf(batchArr[1]));
+            // labRoom_device由实验室id和device id构成
+            String[] batchArr = labRoom_device.split("_");
+            if (!labId.equals(batchArr[0])) {
+                lendBatch = labRoomDeviceService.getDeviceLendingBatch();
+            }
+            labId = batchArr[0];
+            LabRoomDevice labRoomDevice = labRoomDeviceService.
+                    findLabRoomDeviceByPrimaryKey(Integer.valueOf(batchArr[1]));
             LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
             //流水号
             lrdl.setLendBatch(lendBatch);

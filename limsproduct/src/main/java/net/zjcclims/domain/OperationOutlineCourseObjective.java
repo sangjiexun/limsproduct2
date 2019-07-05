@@ -3,7 +3,9 @@ package net.zjcclims.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "operation_outline_course_objective", schema = "limsproduct", catalog = "")
+@NamedQueries({
+        @NamedQuery(name = "findOperationOutlineCourseObjectiveByPrimaryKey", query = "select o from OperationOutlineCourseObjective o where o.id = ?1")})
+@Table(name = "operation_outline_course_objective", schema = "limsproduct")
 public class OperationOutlineCourseObjective {
     private int id;
     private Integer operationOutlineId;
