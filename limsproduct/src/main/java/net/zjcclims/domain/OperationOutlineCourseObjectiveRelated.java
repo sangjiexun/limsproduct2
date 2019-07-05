@@ -3,6 +3,8 @@ package net.zjcclims.domain;
 import javax.persistence.*;
 
 @Entity
+@NamedQueries({
+        @NamedQuery(name = "findOperationOutlineCourseObjectiveRelatedByPrimaryKey", query = "select r from OperationOutlineCourseObjectiveRelated r where r.id = ?1")})
 @Table(name = "operation_outline_course_objective_related", schema = "limsproduct", catalog = "")
 public class OperationOutlineCourseObjectiveRelated {
     private int id;
@@ -24,6 +26,7 @@ public class OperationOutlineCourseObjectiveRelated {
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
         return id;
     }

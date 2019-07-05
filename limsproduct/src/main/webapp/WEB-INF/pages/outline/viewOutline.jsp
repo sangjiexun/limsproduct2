@@ -92,6 +92,7 @@
                                 <tr><td>${infor.coursesAdvice}</td></tr>
                                 <tr><th>课程任务和教学目标</th></tr>
                                 <tr><td>${infor.outlineCourseTeachingTarget}</td></tr>
+                                <tr><th>课程目标</th></tr>
                                 <c:forEach items="${courseObjectiveList}" var="o">
                                     <tr>
                                         <td>${o.objectiveName}:${o.objectiveContent}</td>

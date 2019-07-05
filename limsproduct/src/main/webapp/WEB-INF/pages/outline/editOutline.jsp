@@ -22,6 +22,404 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/swfupload.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/jquery.uploadify.min.js"></script>
     <script type="text/javascript">
+        function isInteger(str){
+            var r = /^\+?[1-9][0-9]*$/;　　//正整数
+            return r.test(str);
+        }
+        function add(openFlag) {
+            if (openFlag == 0) {
+                var outlineId = $("#outlineId").val();
+                var objectiveName = $("#objectiveName").val();
+                var objectiveContent = $("#objectiveContent").val();
+                if(objectiveName == null || objectiveName==""){
+                    alert("请填写课程目标!");
+                    return false;
+                }
+                if(objectiveContent == null || objectiveContent=="" ){
+                    alert("请填写课程目标内容!");
+                    return false;
+                }
+                addObjective(outlineId,objectiveName,objectiveContent,openFlag)
+            }
+        }
+        function addObjective(outlineId,objectiveName,objectiveContent,openFlag) {
+            var myData = {
+                "operationOutlineId": outlineId,
+                "objectiveName": objectiveName,
+                "objectiveContent": objectiveContent,
+            };
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/saveOperationOutlineCourseObjective",
+                type: 'POST',
+                data:  JSON.stringify(myData),
+                contentType: "application/json;charset=UTF-8",
+                async: false,
+                success: function (data) {
+                    if (openFlag == 0) {
+                        var str='';
+                        str +="<tr>"+
+                            "<td>" + data.objectiveName + "</td>" +
+                            "<td>" + data.objectiveContent+ "</td>"+
+                            "<td><a href='javascript:void(0);'  onclick='deleteObjective(&quot;" + data.id + "&quot,this)'>删除</a></td>"+
+                            "</tr>";
+                        $("#openSet").append(str);
+                        //清空填写框内容
+                        $("#objectiveName").val("");
+                        $("#objectiveContent").val("");
+                    }
+                }
+            });
+            alert(1);
+            window.location.reload();
+        }
+        function deleteObjective(objectiveId,obj) {
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/deleteOperationOutlineCourseObjective?objectiveId="+objectiveId,
+                type: 'GET',
+                async: false,
+                success: function (data) {
+                    if(data == "success"){
+                        var tr = getRowObj(obj);
+                        if(tr != null){
+                            tr.parentNode.removeChild(tr);
+                        }
+                    }else if(data == "error"){
+                        alert("请求错误!");
+                    }
+                }
+            });
+        }
+        function getRowObj(obj){
+            var i = 0;
+            while(obj.tagName.toLowerCase() != "tr"){
+                obj = obj.parentNode;
+                if(obj.tagName.toLowerCase() == "table")return null;
+            }
+            return obj;
+        }
+        function addRelated(type) {
+            if (type == 0) {
+                var graduationRequirement = $("#graduationRequirement").val();
+                var requirementPoint = $("#requirementPoint").val();
+                var selectedObjectiveGraduation = $("#selectedObjectiveGraduation").val();
+                if(graduationRequirement == null || graduationRequirement ==""){
+                    alert("请填写毕业要求!");
+                    return false;
+                }
+                if(requirementPoint == null || requirementPoint==""){
+                    alert("请填写毕业要求指标点!");
+                    return false;
+                }
+                if(selectedObjectiveGraduation == null || selectedObjectiveGraduation==""){
+                    alert("请选择对应的课程目标!");
+                    return false;
+                }
+                var ids = "";
+                var names ="";
+                for(var i=0;i<selectedObjectiveGraduation.length;i++){
+                    if(i==0){
+                        var str = selectedObjectiveGraduation[i].split('/');
+                        ids = ids + str[0];
+                        names = names + str[1];
+                    }else{
+                        var str = selectedObjectiveGraduation[i].split('/');
+                        ids = ids + ","+str[0];
+                        names = names + ","+str[1];
+                    }
+                }
+                addRelatedGraduation(graduationRequirement,requirementPoint,ids,names)
+            }
+            if(type == 1){
+                var courseContent = $("#courseContent").val();
+                var courseRequirement = $("#courseRequirement").val();
+                var courseHour = $("#courseHourCourse").val();
+                var method = $("#method").val();
+                var selectedObjectiveCourse = $("#selectedObjectiveCourse").val();
+                if(courseContent == null || courseContent ==""){
+                    alert("请填写教学内容!");
+                    return false;
+                }
+                if(courseRequirement == null || courseRequirement==""){
+                    alert("请填写教学要求!");
+                    return false;
+                }
+                if(courseHour == null || courseHour == ""){
+                    alert("请填写学时!");
+                    return false;
+                }
+                if(!isInteger(courseHour)){
+                    alert("学时不符合要求，请输入正整数!");
+                    return false;
+                }
+                if(method == null || method==""){
+                    alert("请填写教学方式!");
+                    return false;
+                }
+                if(selectedObjectiveCourse == null || selectedObjectiveCourse==""){
+                    alert("请选择对应的课程目标!");
+                    return false;
+                }
+                var ids = "";
+                var names ="";
+                for(var i=0;i<selectedObjectiveCourse.length;i++){
+                    if(i==0){
+                        var str = selectedObjectiveCourse[i].split('/');
+                        ids = ids + str[0];
+                        names = names + str[1];
+                    }else{
+                        var str = selectedObjectiveCourse[i].split('/');
+                        ids = ids + ","+str[0];
+                        names = names + ","+str[1];
+                    }
+                }
+                addRelatedCourse(courseContent,courseRequirement,courseHour,method,ids,names)
+            }
+            if(type == 2){
+                var appraiseName = $("#appraiseName").val();
+                var appraisePercentage = $("#appraisePercentage").val();
+                var appraiseDetail = $("#appraiseDetail").val();
+                var selectedObjectiveAppraise = $("#selectedObjectiveAppraise").val();
+                if(appraiseName == null || appraiseName ==""){
+                    alert("请填写考核环节!");
+                    return false;
+                }
+                if(appraisePercentage == null || appraisePercentage==""){
+                    alert("请填写所占分值!");
+                    return false;
+                }
+                if(!isInteger(appraisePercentage)){
+                    alert("分值不符合要求，请输入正整数!");
+                    return false;
+                }
+                if(appraiseDetail == null || appraiseDetail == ""){
+                    alert("请填写考核与评价细则!");
+                    return false;
+                }
+                if(selectedObjectiveAppraise == null || selectedObjectiveAppraise==""){
+                    alert("请选择对应的课程目标!");
+                    return false;
+                }
+                var ids = "";
+                var names ="";
+                for(var i=0;i<selectedObjectiveAppraise.length;i++){
+                    if(i==0){
+                        var str = selectedObjectiveAppraise[i].split('/');
+                        ids = ids + str[0];
+                        names = names + str[1];
+                    }else{
+                        var str = selectedObjectiveAppraise[i].split('/');
+                        ids = ids + ","+str[0];
+                        names = names + ","+str[1];
+                    }
+                }
+                addRelatedAppraise(appraiseName,appraisePercentage,appraiseDetail,ids,names)
+            }
+            if(type == 3){
+                var appraiseName = $("#appraiseNameCompletion").val();
+                var appraisePercentage = $("#appraisePercentageCompletion").val();
+                var averageScore = $("#averageScore").val();
+                var objectiveCompletionRate = $("#objectiveCompletionRate").val();
+                var selectedObjectiveCompletion = $("#selectedObjectiveCompletion").val();
+                if(appraiseName == null || appraiseName ==""){
+                    alert("请填写考核环节!");
+                    return false;
+                }
+                if(appraisePercentage == null || appraisePercentage==""){
+                    alert("请填写所占分值!");
+                    return false;
+                }
+                if(!isInteger(appraisePercentage)){
+                    alert("分值不符合要求，请输入正整数!");
+                    return false;
+                }
+                if(averageScore == null || averageScore == ""){
+                    alert("请填写学生平均得分符号!");
+                    return false;
+                }
+                if(objectiveCompletionRate == null || objectiveCompletionRate == ""){
+                    alert("请填写达成度计算结果表达式!");
+                    return false;
+                }
+                if(selectedObjectiveCompletion == null || selectedObjectiveCompletion==""){
+                    alert("请选择对应的课程目标!");
+                    return false;
+                }
+                var ids = "";
+                var names ="";
+                for(var i=0;i<selectedObjectiveCompletion.length;i++){
+                    if(i==0){
+                        var str = selectedObjectiveCompletion[i].split('/');
+                        ids = ids + str[0];
+                        names = names + str[1];
+                    }else{
+                        var str = selectedObjectiveCompletion[i].split('/');
+                        ids = ids + ","+str[0];
+                        names = names + ","+str[1];
+                    }
+                }
+                addRelatedCompletion(appraiseName,appraisePercentage,averageScore,objectiveCompletionRate,ids,names)
+            }
+        }
+        function addRelatedGraduation(graduationRequirement,requirementPoint,ids,names) {
+            var myData = {
+                "graduationRequirement": graduationRequirement,
+                "requirementPoint": requirementPoint,
+                "objectiveIds": ids,
+                "objectiveNames":names,
+                "operationOutlineId":${idKey},
+                "type":0,
+            };
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/saveOperationOutlineCourseObjectiveRelated",
+                type: 'POST',
+                data:  JSON.stringify(myData),
+                contentType: "application/json;charset=UTF-8",
+                async: false,
+                success: function (data) {
+                    var str='';
+                    str +="<tr>"+
+                        "<td>" + data.graduationRequirement + "</td>" +
+                        "<td>" + data.requirementPoint+ "</td>"+
+                        "<td>" + data.objectiveNames+ "</td>"+
+                        "<td><a href='javascript:void(0);'  onclick='deleteRelated(&quot;" + data.id + "&quot,this)'>删除</a></td>"+
+                        "</tr>";
+                    $("#openSetGraduation").append(str);
+                    //清空填写框内容
+                    $("#graduationRequirement").val("");
+                    $("#requirementPoint").val("");
+                    $("#selectedObjectiveGraduation").trigger("chosen:updated");
+                }
+            });
+        }
+        function addRelatedCourse(courseContent,courseRequirement,courseHour,method,ids,names) {
+            var myData = {
+                "courseContent": courseContent,
+                "courseRequirement": courseRequirement,
+                "courseHour": courseHour,
+                "method": method,
+                "objectiveIds": ids,
+                "objectiveNames":names,
+                "operationOutlineId":${idKey},
+                "type":1,
+            };
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/saveOperationOutlineCourseObjectiveRelated",
+                type: 'POST',
+                data:  JSON.stringify(myData),
+                contentType: "application/json;charset=UTF-8",
+                async: false,
+                success: function (data) {
+                    var str='';
+                    str +="<tr>"+
+                        "<td>" +  "</td>" +
+                        "<td>" + data.courseContent + "</td>" +
+                        "<td>" + data.courseRequirement+ "</td>"+
+                        "<td>" + data.courseHour+ "</td>"+
+                        "<td>" + data.method+ "</td>"+
+                        "<td>" + data.objectiveNames+ "</td>"+
+                        "<td><a href='javascript:void(0);'  onclick='deleteRelated(&quot;" + data.id + "&quot,this)'>删除</a></td>"+
+                        "</tr>";
+                    $("#openSetCourse").append(str);
+                    //清空填写框内容
+                    $("#courseContent").val("");
+                    $("#courseRequirement").val("");
+                    $("#courseHourCourse").val("");
+                    $("#method").val("");
+                    $("#selectedObjectiveCourse").trigger("chosen:updated");
+                }
+            });
+        }
+        function addRelatedAppraise(appraiseName,appraisePercentage,appraiseDetail,ids,names) {
+            var myData = {
+                "appraiseName": appraiseName,
+                "appraisePercentage": appraisePercentage,
+                "appraiseDetail": appraiseDetail,
+                "objectiveIds": ids,
+                "objectiveNames":names,
+                "operationOutlineId":${idKey},
+                "type":2,
+            };
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/saveOperationOutlineCourseObjectiveRelated",
+                type: 'POST',
+                data:  JSON.stringify(myData),
+                contentType: "application/json;charset=UTF-8",
+                async: false,
+                success: function (data) {
+                    var str='';
+                    str +="<tr>"+
+                        "<td>" + data.appraiseName + "</td>" +
+                        "<td>" + data.appraisePercentage+ "</td>"+
+                        "<td>" + data.appraiseDetail+ "</td>"+
+                        "<td>" + data.objectiveNames+ "</td>"+
+                        "<td><a href='javascript:void(0);'  onclick='deleteRelated(&quot;" + data.id + "&quot,this)'>删除</a></td>"+
+                        "</tr>";
+                    $("#openSetAppraise").append(str);
+                    //清空填写框内容
+                    $("#appraiseName").val("");
+                    $("#appraisePercentage").val("");
+                    $("#appraiseDetail").val("");
+                    $("#selectedObjectiveAppraise").trigger("chosen:updated");
+                }
+            });
+        }
+        function addRelatedCompletion(appraiseName,appraisePercentage,averageScore,objectiveCompletionRate,ids,names) {
+            var myData = {
+                "appraiseName": appraiseName,
+                "appraisePercentage": appraisePercentage,
+                "averageScore": averageScore,
+                "objectiveCompletionRate": objectiveCompletionRate,
+                "objectiveIds": ids,
+                "objectiveNames":names,
+                "operationOutlineId":${idKey},
+                "type":3,
+            };
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/saveOperationOutlineCourseObjectiveRelated",
+                type: 'POST',
+                data:  JSON.stringify(myData),
+                contentType: "application/json;charset=UTF-8",
+                async: false,
+                success: function (data) {
+                    var str='';
+                    str +="<tr>"+
+                        "<td>" + data.objectiveNames+ "(预添加，刷新页面更新)</td>"+
+                        "<td>" + data.appraiseName + "</td>" +
+                        "<td>" + data.appraisePercentage+ "</td>"+
+                        "<td>" + data.averageScore+ "</td>"+
+                        "<td>" + data.objectiveCompletionRate+ "</td>"+
+                        "<td><a href='javascript:void(0);'  onclick='deleteRelated(&quot;" + data.id + "&quot,this)'>删除</a></td>"+
+                        "</tr>";
+                    $("#openSetCompletion").append(str);
+                    //清空填写框内容
+                    $("#appraiseNameCompletion").val("");
+                    $("#appraisePercentageCompletion").val("");
+                    $("#averageScore").val("");
+                    $("#objectiveCompletionRate").val("");
+                    $("#selectedObjectiveCompletion").trigger("chosen:updated");
+                }
+            });
+        }
+        function deleteRelated(objectiveRelatedId,obj) {
+            if(!confirm("确定要删除吗?")){
+                return false;
+            }
+            $.ajax({
+                url: "${pageContext.request.contextPath}/outline/deleteOperationOutlineCourseObjectiveRelated?objectiveRelatedId="+objectiveRelatedId,
+                type: 'GET',
+                async: false,
+                success: function (data) {
+                    if(data == "success"){
+                        var tr = getRowObj(obj);
+                        if(tr != null){
+                            tr.parentNode.removeChild(tr);
+                        }
+                    }else if(data == "error"){
+                        alert("请求错误!");
+                    }
+                }
+            });
+        }
         $(function(){
             $("#Pop_content").window({
                 top: ($(window).width() - 800) * 0.5 ,
@@ -239,7 +637,12 @@
     <div id="navigation">
         <ul>
             <li><a href="javascript:void(0)"><spring:message code="left.practicalTeaching.arrange"/></a></li>
-            <li class="end"><a href="javascript:void(0)">新建大纲</a></li>
+            <c:if test="${idKey eq 0}">
+                <li class="end"><a href="javascript:void(0)">新建大纲</a></li>
+            </c:if>
+            <c:if test="${idKey ne 0}">
+                <li class="end"><a href="javascript:void(0)">编辑大纲</a></li>
+            </c:if>
         </ul>
     </div>
 </div>
@@ -247,8 +650,14 @@
     <div id="TabbedPanels1" class="TabbedPanels">
         <div class="TabbedPanelsContentGroup">
             <div class="TabbedPanelsContent">
+                <input type="hidden" id="outlineId" value="${idKey}"/>
                 <div class="title">
-                    <div id="title"> 新建大纲	 </div>
+                    <c:if test="${idKey eq 0}">
+                        <div id="title"> 新建大纲	 </div>
+                    </c:if>
+                    <c:if test="${idKey ne 0}">
+                        <div id="title"> 编辑大纲	 </div>
+                    </c:if>
                     <a class="btn-new" onclick="window.history.go(-1)">返回</a>
                 </div>
 
@@ -294,6 +703,22 @@
                                             </c:forEach>
                                         </select>
                                     </td>
+                                </tr>
+                                <tr>
+                                    <th class="label">课程学时</th>
+                                    <td class="label"><form:input path="courseHour" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/></td>
+                                    <th class="label">讲课学时</th>
+                                    <td class="label"><form:input path="theoryCourseHour" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/> </td>
+                                </tr>
+                                <tr>
+                                    <th class="label">实验学时</th>
+                                    <td class="label"><form:input path="experimentCourseHour" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/></td>
+                                    <th class="label">上机学时</th>
+                                    <td class="label"><form:input path="computerCourseHour" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/> </td>
+                                </tr>
+                                <tr>
+                                    <th class="label">习题学时</th>
+                                    <td class="label"><form:input path="exerciseCourseHour" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/> </td>
                                 </tr>
                                 <tr>
                                     <th class="label">后续课程</th>
@@ -372,6 +797,84 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            <c:if test="${idKey ne 0}">
+                            <legend>课程目标<input type="hidden" value="" id="xsd"></legend>
+                            <div class="content-double">
+                                <table id="openSet">
+                                    <thead>
+                                    <tr>
+                                        <th>课程目标名称/序号</th>
+                                        <th>课程目标内容</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <input  id="objectiveName"  name="objectiveName"  type="text"/>
+                                        </td>
+                                        <td>
+                                            <input  id="objectiveContent"  name="objectiveContent"  type="text" style="width:100%!important;height: 80px!important;"/>
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="add(0)";>保存</a>
+                                        </td>
+                                    </tr>
+                                    <c:forEach items="${courseObjectiveList}" var="o">
+                                    <tr>
+                                        <td>${o.objectiveName}</td>
+                                        <td>${o.objectiveContent}</td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="deleteObjective('${o.id}',this)";>删除</a>
+                                        </td>
+                                    </tr>
+                                    </c:forEach>
+                                </table>
+                            </div>
+                            <legend>课程目标与毕业要求指标点对应关系<input type="hidden" value="" id="xsd"></legend>
+                            <div class="content-double" style="overflow: unset">
+                                <table id="openSetGraduation">
+                                    <thead>
+                                    <tr>
+                                        <th>毕业要求</th>
+                                        <th>毕业要求指标点</th>
+                                        <th>课程目标</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <input  id="graduationRequirement"  name="graduationRequirement"  type="text"/>
+                                        </td>
+                                        <td>
+                                            <input  id="requirementPoint"  name="requirementPoint"  type="text" style="width:100%!important;height: 80px!important;"/>
+                                        </td>
+                                        <td>
+                                            <select class="chzn-select" multiple id="selectedObjectiveGraduation"
+                                                    name="selectedObjectiveGraduation">
+                                                <c:forEach items="${courseObjectiveList}" var="o" varStatus="i">
+                                                    <option value="${o.id}/${o.objectiveName}">${o.objectiveName}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="addRelated(0)";>保存</a>
+                                        </td>
+                                    </tr>
+                                    <c:forEach items="${ObjectiveRelatedGraduation}" var="g" varStatus="i">
+                                    <tr>
+                                        <td>${g.graduationRequirement}</td>
+                                        <td>${g.requirementPoint}</td>
+                                        <td>${g.objectiveNames}</td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="deleteRelated('${g.id}',this)";>删除</a>
+                                        </td>
+                                    </tr>
+                                    </c:forEach>
+                                </table>
+                            </div>
+                            </c:if>
                         </fieldset>
                         <fieldset class="introduce-box">
                             <legend>课程基本内容及要求<input type="hidden" value="" id="xsd"></legend>
@@ -384,6 +887,75 @@
                             </table>
                         </fieldset>
                         <fieldset class="introduce-box">
+                            <legend>课程教学方法<input type="hidden" value="" id="ctm"></legend>
+                            <table id="listTable" width="50%" cellpadding="0">
+                                <tbody>
+                                <tr><td colspan="3">课程教学方法详情</td></tr>
+                                <tr><td><form:textarea path="teachMethod" cols="104" /></textarea></td></tr>
+                                </tbody>
+                            </table>
+                            <c:if test="${idKey ne 0}">
+                            <legend>课程目标与课程内容对应关系<input type="hidden" value="" id="xsd"></legend>
+                            <div class="content-double" style="overflow: unset">
+                                <table id="openSetCourse">
+                                    <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>教学内容</th>
+                                        <th>教学要求</th>
+                                        <th>学时</th>
+                                        <th>教学方式</th>
+                                        <th>对应课程目标</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            <input  id="courseContent"  name="courseContent"  type="text" style="width:100%!important;height: 80px!important;"/>
+                                        </td>
+                                        <td>
+                                            <input  id="courseRequirement"  name="courseRequirement"  type="text" style="width:100%!important;height: 80px!important;"/>
+                                        </td>
+                                        <td>
+                                            <input  id="courseHourCourse"  name="courseHourCourse"  type="text"/>
+                                        </td>
+                                        <td>
+                                            <input  id="method"  name="method"  type="text"/>
+                                        </td>
+                                        <td>
+                                            <select class="chzn-select" multiple id="selectedObjectiveCourse"
+                                                    name="selectedObjectiveCourse">
+                                                <c:forEach items="${courseObjectiveList}" var="o" varStatus="i">
+                                                    <option value="${o.id}/${o.objectiveName}">${o.objectiveName}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="addRelated(1)";>保存</a>
+                                        </td>
+                                    </tr>
+                                    <c:forEach items="${ObjectiveRelatedCourse}" var="c" varStatus="i">
+                                    <tr>
+                                        <td>${i.index+1}</td>
+                                        <td>${c.courseContent}</td>
+                                        <td>${c.courseRequirement}</td>
+                                        <td>${c.courseHour}</td>
+                                        <td>${c.method}</td>
+                                        <td>${c.objectiveNames}</td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="deleteRelated('${c.id}',this)";>删除</a>
+                                        </td>
+                                    </tr>
+                                    </c:forEach>
+                                </table>
+                            </div>
+                            </c:if>
+                        </fieldset>
+                        <fieldset class="introduce-box">
                             <legend>作业及成绩评定<input type="hidden" value="" id="xsd"></legend>
                             <table>
                                 <tr><td colspan="3">作业、考核成绩及成绩评定</td></tr>
@@ -391,7 +963,114 @@
                                 <tr><td>课程任务和教学目标<font color="red">*</font></td></tr>
                                 <tr><td><form:textarea path="outlineCourseTeachingTargetOver" cols="104" required="true" /></td></tr>
                             </table>
+                            <c:if test="${idKey ne 0}">
+                            <legend>课程考核方法<input type="hidden" value="" id="xsd"></legend>
+                            <div class="content-double" style="overflow: unset">
+                                <table id="openSetAppraise">
+                                    <thead>
+                                    <tr>
+                                        <th>考核环节</th>
+                                        <th>所占分值</th>
+                                        <th>考核与评价细则</th>
+                                        <th>对应课程目标</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <input  id="appraiseName"  name="appraiseName"  type="text" />
+                                        </td>
+                                        <td>
+                                            <input  id="appraisePercentage"  name="appraisePercentage"  type="text"/>
+                                        </td>
+                                        <td>
+                                            <input  id="appraiseDetail"  name="appraiseDetail"  type="text" style="width:100%!important;height: 80px!important;"/>
+                                        </td>
+                                        <td>
+                                            <select class="chzn-select" multiple id="selectedObjectiveAppraise"
+                                                    name="selectedObjectiveAppraise">
+                                                <c:forEach items="${courseObjectiveList}" var="o" varStatus="i">
+                                                    <option value="${o.id}/${o.objectiveName}">${o.objectiveName}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="addRelated(2)";>保存</a>
+                                        </td>
+                                    </tr>
+                                    <c:forEach items="${ObjectiveRelatedAppraise}" var="a" varStatus="i">
+                                    <tr>
+                                        <td>${a.appraiseName}</td>
+                                        <td>${a.appraisePercentage}</td>
+                                        <td>${a.appraiseDetail}</td>
+                                        <td>${a.objectiveNames}</td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="deleteRelated('${a.id}',this)";>删除</a>
+                                        </td>
+                                    </tr>
+                                    </c:forEach>
+                                </table>
+                            </div>
+                            </c:if>
                         </fieldset>
+                        <c:if test="${idKey ne 0}"><
+                        <fieldset class="introduce-box">
+                            <legend>课程目标达成度评价方法<input type="hidden" value="" id="xsd"></legend>
+                            <div class="content-double" style="overflow: unset">
+                                <table id="openSetCompletion">
+                                    <thead>
+                                    <tr>
+                                        <th>对应课程目标</th>
+                                        <th>考试环节</th>
+                                        <th>所占分值</th>
+                                        <th>学生平均得分</th>
+                                        <th>达成度计算结果</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <select class="chzn-select" multiple id="selectedObjectiveCompletion"
+                                                    name="selectedObjectiveCompletion">
+                                                <c:forEach items="${courseObjectiveList}" var="o" varStatus="i">
+                                                    <option value="${o.id}/${o.objectiveName}">${o.objectiveName}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input  id="appraiseNameCompletion"  name="appraiseNameCompletion"  type="text" />
+                                        </td>
+                                        <td>
+                                            <input  id="appraisePercentageCompletion"  name="appraisePercentageCompletion"  type="text"/>
+                                        </td>
+                                        <td>
+                                            <input  id="averageScore"  name="averageScore"  type="text" />
+                                        </td>
+                                        <td>
+                                            <input  id="objectiveCompletionRate"  name="objectiveCompletionRate" />
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="addRelated(3)";>保存</a>
+                                        </td>
+                                    </tr>
+                                    <c:forEach items="${ObjectiveRelatedCompletion}" var="c" varStatus="i">
+                                    <tr>
+                                        <td>${c.objectiveNames}</td>
+                                        <td>${c.appraiseName}</td>
+                                        <td>${c.appraisePercentage}</td>
+                                        <td>${c.averageScore}</td>
+                                        <td>${c.objectiveCompletionRate}</td>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="deleteRelated('${c.id}',this)";>删除</a>
+                                        </td>
+                                    </tr>
+                                    </c:forEach>
+                                </table>
+                            </div>
+                        </fieldset>
+                        </c:if>
                         <fieldset class="introduce-box">
                             <legend>文档名称<input type="hidden" value="" id="xsd"></legend>
                             <input type="button" onclick="uploadDocument()" value="上传附件"/>
@@ -431,6 +1110,16 @@
                                     </tr>
                                 </c:forEach>
                             </table>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <table id="listTable" width="50%" cellpadding="0" cellspacing="0" class="tablesorter">
+                                <tr>
+                                    <th class="label">大纲填写人</th>
+                                    <td class="label"><form:input path="user.cname"/></td>
+                                    <th class="label">大纲审核人</th>
+                                    <td class="label"><form:input path="auditor" /> </td>
+                                </tr>
                             </table>
                         </fieldset>
                         <tr><td colspan="5"></td></tr>

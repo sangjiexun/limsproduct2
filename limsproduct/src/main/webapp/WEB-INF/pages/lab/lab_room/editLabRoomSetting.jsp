@@ -534,8 +534,6 @@ function addRecord(selectedAuthority,selectedSchoolAcademy,openFlag) {
                 $("#selectedAuthority").trigger("liszt:updated");
                 $("#selectedSchoolAcademy").val("");
                 $("#selectedSchoolAcademy").trigger("liszt:updated");
-
-
             }
         }
     });
