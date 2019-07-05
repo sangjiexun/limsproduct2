@@ -14,7 +14,7 @@ layui.use(['form'], function() {
     var projectName = $('#auditServerUrl').val();
     // console.log(parent.layer.methodConfig);
     // console.log(initjson.parentProject);
-    var daata = {username:username,labRId:labRId,auditServerUrl:auditServerUrl,projectName:projectName}
+    var daata = {username:username,appointmentId:labRId,auditServerUrl:auditServerUrl,projectName:projectName}
     var jsonData = JSON.stringify(daata)
     $.ajax({
        url: zuulUrl  + "api/labReservation/apiLabRoomReservationAudit",
