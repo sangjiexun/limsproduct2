@@ -134,8 +134,9 @@ public class AuditSettingController<JsonResult> {
             businessType = projectName + businessName;
             allType = 1;
         }else if (flag == 13){
-            businessName = "EquipmentLendingAudit";
+            businessName = "LabRoomDeviceLending";
             businessType = projectName + businessName;
+            allType=1;
 
             // 获取所有权限
             Set<Authority> authorities = authorityDAO.findAllAuthoritys();

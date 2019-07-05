@@ -1741,7 +1741,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      * 功能：查找所有审核通过的设备借用审核单总数
      * 作者：李鹏翔
      ****************************************************************************/
-    public int getPassLendingTotals(LabRoomDeviceLendingResult lrdlr, HttpServletRequest request) {
+    public int getPassLendingTotals(LabRoomDeviceLending lrdl, HttpServletRequest request) {
 //		String sql="select count(l) from LabRoomDeviceLendingResult l where l.CAuditResult.id=2 and l.labRoomDeviceLending.CLendingStatus.id = 1 and l.labRoomDeviceLending.lendType='1'";
 //		User user=shareService.getUser();
 //		String sql="select count(l) from LabRoomDeviceLendingResult l where l.CDictionary.CCategory='c_audit_result' and l.CDictionary.CNumber ='2' and l.labRoomDeviceLending.CDictionary.CCategory='c_lending_status' and l.labRoomDeviceLending.CDictionary.CNumber= '1' and l.labRoomDeviceLending.lendType='1'";
@@ -1754,21 +1754,21 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
 
         String deviceName = request.getParameter("deviceName");
         if (deviceName != null && !deviceName.equals("")) {
-            sql += " and (l.labRoomDevice.schoolDevice.deviceName like '%" + deviceName 
-            		+ "%' or l.labRoomDevice.schoolDevice.deviceNumber like '%"+ deviceName +"%')";
+            sql += " and (l.labRoomDevice.schoolDevice.deviceName like '%" + deviceName
+                    + "%' or l.labRoomDevice.schoolDevice.deviceNumber like '%"+ deviceName +"%')";
         }
-        
+
         String lendBatch = request.getParameter("lendBatch");
         if (lendBatch != null && !lendBatch.equals("")) {
             sql += " and (l.lendBatch like '%"+ lendBatch +"%')";
         }
-        
+
         String starttime = request.getParameter("starttime");
         String endtime = request.getParameter("endtime");
         if (starttime != null && starttime.length() > 0 && endtime != null && endtime.length() > 0) {
             sql += " and l.lendingTime between '" + starttime + "' and '" + endtime + "' ";
         }
-        return ((Long) labRoomDeviceLendingResultDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
+        return ((Long) labRoomDeviceLendingDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
     }
 
     /****************************************************************************
@@ -1787,8 +1787,8 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      * 功能：查找所有审核通过的设备借用审核单
      * 作者：李鹏翔
      ****************************************************************************/
-    public List<LabRoomDeviceLendingResult> findAllPassLending(
-            LabRoomDeviceLendingResult lrdlr, Integer page, int pageSize, HttpServletRequest request) {
+    public List<LabRoomDeviceLending> findAllPassLending(
+            LabRoomDeviceLending lrdlr, Integer page, int pageSize, HttpServletRequest request) {
 //		String sql="select l from LabRoomDeviceLendingResult l where l.CAuditResult.id=2 and l.labRoomDeviceLending.CLendingStatus.id = 1 and l.labRoomDeviceLending.lendType='1'";
         String sql = "select l from LabRoomDeviceLendingResult l where l.CDictionary.CCategory='c_audit_result' and l.CDictionary.CNumber ='2' and l.labRoomDeviceLending.CDictionary.CCategory='c_lending_status' and l.labRoomDeviceLending.CDictionary.CNumber= '1' and l.labRoomDeviceLending.lendType='1'";
         String deviceName = request.getParameter("deviceName");
@@ -1800,7 +1800,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
         if (lendBatch != null && !lendBatch.equals("")) {
             sql += " and (l.lendBatch like '%"+ lendBatch +"%')";
         }
-        return labRoomDeviceLendingResultDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
+        return labRoomDeviceLendingDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
     }
 
     /****************************************************************************
@@ -1843,10 +1843,10 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      * 功能：查找所有审核被拒绝的设备借用审核单总数
      * 作者：李鹏翔
      ****************************************************************************/
-    public int getRejectedLendingTotals(LabRoomDeviceLendingResult lrdlr, HttpServletRequest request) {
+    public int getRejectedLendingTotals(LabRoomDeviceLending lrdl, HttpServletRequest request) {
 //		String sql="select count(l) from LabRoomDeviceLendingResult l where l.CAuditResult.id=3 and l.labRoomDeviceLending.CLendingStatus.id = 1 and l.labRoomDeviceLending.lendType='1'";
 //		String sql="select count(l) from LabRoomDeviceLendingResult l where l.CDictionary.CCategory='c_audit_result' and l.CDictionary.CNumber ='3' and l.labRoomDeviceLending.CDictionary.CCategory='c_lending_status' and l.labRoomDeviceLending.CDictionary.CNumber= '1' and l.labRoomDeviceLending.lendType='1'";
-        String sql = "select count(l) from LabRoomDeviceLendingResult l where l.CDictionary.CCategory='c_audit_result' and l.CDictionary.CNumber ='3' and l.labRoomDeviceLending.lendType='1'";
+        String sql = "select count(l) from LabRoomDeviceLending l where l.stage<0";
         User user = shareService.getUser();
 //		if(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().indexOf("ROLE_SUPERADMIN") == -1){
 //			sql+=" and l.labRoomDeviceLending.userByLendingUser.username like '"+user.getUsername()+"'";
@@ -1854,21 +1854,21 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
 
         String deviceName = request.getParameter("deviceName");
         if (deviceName != null && !deviceName.equals("")) {
-        	sql += " and (l.labRoomDeviceLending.labRoomDevice.schoolDevice.deviceName like '%" + deviceName 
-                    + "%' or l.labRoomDeviceLending.labRoomDevice.schoolDevice.deviceNumber like '%"+ deviceName +"%')";
+            sql += " and (l.labRoomDevice.schoolDevice.deviceName like '%" + deviceName
+                    + "%' or l.labRoomDevice.schoolDevice.deviceNumber like '%"+ deviceName +"%')";
         }
-        
+
         String lendBatch = request.getParameter("lendBatch");
         if (lendBatch != null && !lendBatch.equals("")) {
-            sql += " and (l.labRoomDeviceLending.lendBatch like '%"+ lendBatch +"%')";
+            sql += " and (l.lendBatch like '%"+ lendBatch +"%')";
         }
-        
+
         String starttime = request.getParameter("starttime");
         String endtime = request.getParameter("endtime");
         if (starttime != null && starttime.length() > 0 && endtime != null && endtime.length() > 0) {
-            sql += " and l.labRoomDeviceLending.lendingTime between '" + starttime + "' and '" + endtime + "' ";
+            sql += " and l.lendingTime between '" + starttime + "' and '" + endtime + "' ";
         }
-        return ((Long) labRoomDeviceLendingResultDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
+        return ((Long) labRoomDeviceLendingDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
     }
 
     /****************************************************************************
@@ -1885,22 +1885,22 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      * 功能：查找所有审核通过的设备借用审核单
      * 作者：李鹏翔
      ****************************************************************************/
-    public List<LabRoomDeviceLendingResult> findAllRejectedLending(
-            LabRoomDeviceLendingResult lrdlr, Integer page, int pageSize, HttpServletRequest request) {
+    public List<LabRoomDeviceLending> findAllRejectedLending(
+            LabRoomDeviceLending lrdl, Integer page, int pageSize, HttpServletRequest request) {
 
-        String sql = "select l from LabRoomDeviceLendingResult l where l.CDictionary.CCategory='c_audit_result' and l.CDictionary.CNumber ='3' and l.labRoomDeviceLending.lendType='1'";
+        String sql = "select l from LabRoomDeviceLending l where l.CDictionary.CCategory='c_audit_result' and l.CDictionary.CNumber ='3' and l.lendType='1'";
         String deviceName = request.getParameter("deviceName");
         if (deviceName != null && !deviceName.equals("")) {
-        	sql += " and (l.labRoomDeviceLending.labRoomDevice.schoolDevice.deviceName like '%" + deviceName 
-                    + "%' or l.labRoomDeviceLending.labRoomDevice.schoolDevice.deviceNumber like '%"+ deviceName +"%')";
+            sql += " and (l.labRoomDevice.schoolDevice.deviceName like '%" + deviceName
+                    + "%' or l.labRoomDevice.schoolDevice.deviceNumber like '%"+ deviceName +"%')";
         }
         String starttime = request.getParameter("starttime");
         String endtime = request.getParameter("endtime");
         if (starttime != null && starttime.length() > 0 && endtime != null && endtime.length() > 0) {
-            sql += " and l.labRoomDeviceLending.lendingTime between '" + starttime + "' and '" + endtime + "' ";
+            sql += " and l.lendingTime between '" + starttime + "' and '" + endtime + "' ";
         }
-        sql += " order by l.labRoomDeviceLending.lendingTime desc";
-        return labRoomDeviceLendingResultDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
+        sql += " order by l.lendingTime desc";
+        return labRoomDeviceLendingDAO.executeQuery(sql, (page - 1) * pageSize, pageSize);
     }
 
     /****************************************************************************
@@ -4128,6 +4128,93 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
         price = (BigDecimal) labRoomDeviceDAO.createQuerySingleResult(hql.toString()).getResultList().get(0);
 
         return price;
+    }
+
+
+    /**
+     * Description 保存系主任审核
+     * @return
+     * @author 顾延钊 2019年7月4日
+     */
+    @Override
+    public void saveDeviceAudit(Integer idKey, Integer auditResult, String remark, String acno){
+        LabRoomDeviceLending labRoomDeviceLending = findDeviceLendingById(idKey);
+        LabRoomDevice labRoomDevice=labRoomDeviceLending.getLabRoomDevice();
+        LabRoom labRoom=labRoomDevice.getLabRoom();
+        //User createUser=shareService.getUserDetail();
+        String businessType=pConfig.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessAppUid="";
+        if (shareService.getSerialNumber(labRoomDeviceLending.getId().toString(),businessType)=="fail"){
+            businessAppUid=labRoomDeviceLending.getId().toString();
+        }else {
+            businessAppUid=shareService.getSerialNumber(labRoomDeviceLending.getId().toString(),businessType);
+        }
+        //business=getBusinessLevels(business);
+        String businessUid=labRoom.getId().toString();
+        if(auditResult==1){
+            User user=shareService.getUserDetail();
+            System.out.println(user.getUsername());
+            Map<String,String> params=new HashMap<>();
+            params.put("businessType",businessType);
+            params.put("businessAppUid",businessAppUid);
+            params.put("businessUid","-1");
+            params.put("result","pass");
+            params.put("info",remark);
+            params.put("username",user.getUsername());
+            String s=HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+           /*JSONObject jsonObject5 = JSON.parseObject(s);
+           JSONObject status = jsonObject5.getJSONObject("status");
+           System.out.println(status);*/
+           /*try {
+               auditService.saveBusinessLevel(idKey.toString(),"-1","pass",remark,business,user.getUsername());
+               *//*String s=auditService.getCurrAudit(idKey.toString(),business);
+               String nextAuth=JSONObject.parseObject(s).getJSONArray("data").getJSONObject(0).getString("result");
+               if ("pass".equals(nextAuth)){
+                   labRoomDeviceLending.setStage(2);
+               }else if (!"fail".equals(nextAuth)){
+                   //List<User> users=findUsersBy
+               }*//*
+               //createAuditMessageByLendId(idKey, 2+"");
+           }catch (Exception e){
+               e.printStackTrace();
+           }*/
+        }else {
+            User user=shareService.getUserDetail();
+            Map<String,String> params=new HashMap<>();
+            params.put("businessType",businessType);
+            params.put("businessAppUid",businessAppUid);
+            params.put("businessUid","-1");
+            params.put("result","fail");
+            params.put("info",remark);
+            params.put("username",user.getUsername());
+            HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+
+        }
+        labRoomDeviceLendingDAO.store(labRoomDeviceLending);
+    }
+    /**
+     * Description 提交设备借用申请
+     * @return
+     * @author 顾延钊 2019年7月4日
+     */
+    @Override
+    public String submitDeviceLending(Integer id,String acno){
+        LabRoomDeviceLending labRoomDeviceLending=labRoomDeviceLendingDAO.findLabRoomDeviceLendingById(id);
+        String businessType=pConfig.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
+        /*String config="on,on,on";
+        Map<String,String> params2=new HashMap<>();
+        params2.put("businessUid",labRoomDeviceLending.getLabRoomDevice().getLabRoom().getId().toString());
+        params2.put("config",config);
+        params2.put("businessType",businessType);*/
+
+        Map<String,String> params=new HashMap<>();
+        params.put("businessUid","-1");
+        params.put("businessType",businessType);
+        params.put("businessAppUid",businessAppUid);
+        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/saveInitBusinessAuditStatus",params);
+        return "success";
+
     }
 
 }
