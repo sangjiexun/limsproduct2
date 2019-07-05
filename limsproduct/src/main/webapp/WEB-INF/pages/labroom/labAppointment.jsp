@@ -166,7 +166,7 @@
                                                 type: "POST",
                                                 url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
                                                 data: myData,
-                                                dataType:'json',
+                                                // dataType:'json',
                                                 success:function(data){
                                                     $("#restStations").text(data);
                                                 },
@@ -1306,6 +1306,8 @@ function cancel(){
                                             alert("预约失败，实验室已被借用");
                                         }else if(data=="reserved"){
                                             alert("预约失败，实验室已被预约");
+                                        }else if(data=="LIMIT"){
+                                            alert("预约失败，所选时间段在实验室禁用时间段内");
                                         }else if(data=="success"){
 						    				alert("预约信息已提交等待审核…");
 						    				flag = 0;

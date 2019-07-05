@@ -39,11 +39,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import sun.awt.image.IntegerInterleavedRaster;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
@@ -148,6 +150,8 @@ public class LabRoomReservationController<JsonResult> {
     private SystemTimeDAO systemTimeDAO;
     @Autowired
     private LabRoomLimitTimeDAO labRoomLimitTimeDAO;
+    @Autowired
+    private LabRoomStationReservationStudentDAO labRoomStationReservationStudentDAO;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -799,7 +803,8 @@ public class LabRoomReservationController<JsonResult> {
      ****************************************************************************/
     @ResponseBody
     @RequestMapping("/LabRoomReservation/findRestStations")
-    public Integer findRestStations(HttpServletRequest request, @RequestParam Integer labRoomId) throws ParseException {
+    public String findRestStations(HttpServletRequest request, @RequestParam Integer labRoomId) throws Exception {
+        String ret = "";
         //获取日期及开始结束时间
         String reservationTimeS = request.getParameter("lendingTime");
         String reservationTime = request.getParameter("reservationTime");
@@ -816,9 +821,43 @@ public class LabRoomReservationController<JsonResult> {
         reservation.setTime(reservationTimeDate);
         start.setTime(startDate);
         end.setTime(endDate);
-        //根据日期和id查找该实训室的剩余可预约工位数（还未关联预约结果及排课）
-        int restStationNum = labRoomReservationService.findRestReservationStations(labRoomId, reservation, start, end);
-        return restStationNum;
+        //判断所选时间是否含有实验室禁用时间
+        //判断预约时间是否在实验室禁用时间段内
+        boolean flag = true;
+        SchoolWeek schoolWeek = schoolWeekDAO.findSingleSchoolWeekByDate(reservation);
+        int termId = schoolWeek.getSchoolTerm().getId();
+        int week = schoolWeek.getWeek();
+        int weekday = schoolWeek.getWeekday();
+        Set<SystemTime> systemTimes = systemTimeDAO.findAllSystemTimes();
+        List<SystemTime> systemTimeList = new ArrayList<>();
+        for(SystemTime systemTime : systemTimes){
+            if(((systemTime.getEndDate().after(start)||systemTime.getEndDate().compareTo(start)==0)
+                    && (systemTime.getStartDate().before(start) || systemTime.getStartDate().compareTo(start)==0)) ||
+                    ((systemTime.getStartDate().before(end)||systemTime.getStartDate().compareTo(end)==0 )
+                            &&( systemTime.getEndDate().after(end) || systemTime.getEndDate().compareTo(end)==0))){
+                systemTimeList.add(systemTime);
+            }
+        }
+        for(SystemTime systemTime:systemTimeList){
+            Set<LabRoomLimitTime> labRoomLimitTimes = labRoomLimitTimeDAO.findLabRoomLimitTimeBylabIdAndTermAndType(labRoomId,termId,0);
+            for(LabRoomLimitTime labRoomLimitTime : labRoomLimitTimes){
+                int startWeekOver = labRoomLimitTime.getStartweek();
+                int endWeekOver = labRoomLimitTime.getEndweek();
+                int WeekdayOver = labRoomLimitTime.getWeekday();
+                int startClass = labRoomLimitTime.getStartclass();
+                int endClass = labRoomLimitTime.getEndclass();
+                if(!labRoomLendingService.judgeLabReservationIsConflict(startWeekOver,endWeekOver,WeekdayOver,startClass,endClass,week,weekday,systemTime.getSection())){
+                    ret =  "所选时间段在该实验室禁用时间段内，该实验室工位不可预约";
+                    flag = false;
+                }
+            }
+        }
+        if(flag == true){
+            //根据日期和id查找该实训室的剩余可预约工位数（还未关联预约结果及排课）
+            int restStationNum = labRoomReservationService.findRestReservationStations(labRoomId, reservation, start, end);
+            ret = String.valueOf(restStationNum);
+        }
+        return ret;
     }
 
     /****************************************************************************
@@ -923,14 +962,17 @@ public class LabRoomReservationController<JsonResult> {
             }
         }
         //判断预约时间是否在实验室禁用时间段内
-        int termId = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
         SchoolWeek schoolWeek = schoolWeekDAO.findSingleSchoolWeekByDate(reservation);
+        int termId = schoolWeek.getSchoolTerm().getId();
         int week = schoolWeek.getWeek();
         int weekday = schoolWeek.getWeekday();
         Set<SystemTime> systemTimes = systemTimeDAO.findAllSystemTimes();
         List<SystemTime> systemTimeList = new ArrayList<>();
         for(SystemTime systemTime : systemTimes){
-            if(systemTime.getStartDate().before(start) || systemTime.getEndDate().after(end)){
+            if(((systemTime.getEndDate().after(start)||systemTime.getEndDate().compareTo(start)==0)
+                    && (systemTime.getStartDate().before(start) || systemTime.getStartDate().compareTo(start)==0)) ||
+            ((systemTime.getStartDate().before(end)||systemTime.getStartDate().compareTo(end)==0 )
+                    &&( systemTime.getEndDate().after(end) || systemTime.getEndDate().compareTo(end)==0))){
                 systemTimeList.add(systemTime);
             }
         }
@@ -988,6 +1030,51 @@ public class LabRoomReservationController<JsonResult> {
             }
         }
         return "success";
+    }
+
+    /****************************************************************************
+     * Description：工位预约撤回功能-删除工位预约
+     *
+     * @author:Hezhaoyi
+     * @date:2010-7-4
+     ****************************************************************************/
+    @RequestMapping("/LabRoomReservation/deletelabStaionReservation")
+    @Transactional
+    public ModelAndView deletelabStaionReservation(@RequestParam Integer id,Integer currpage,
+                                             Integer tage, Integer isaudit, @ModelAttribute("selected_academy") String acno) {
+        ModelAndView mav=new ModelAndView();
+        LabRoomStationReservation labRoomStationReservation =labRoomStationReservationDAO.findLabRoomStationReservationById(id);
+        String businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoomStationReservation.getLabRoom().getLabCenter() == null ? "-1" : labRoomStationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+        String businessAppUid = "";
+        if(shareService.getSerialNumber(labRoomStationReservation.getId().toString(), businessType)=="fail"){
+            //没有流水单号就是用预约id用作业务id
+            businessAppUid = labRoomStationReservation.getId().toString();
+        }else {
+            //有流水单号用流水单号做业务id
+            businessAppUid = shareService.getSerialNumber(labRoomStationReservation.getId().toString(), businessType);
+        }
+
+        if(labRoomStationReservation!=null) {
+            Set<LabRoomStationReservationStudent> labRoomStationReservationStudentSet = labRoomStationReservation.getLabRoomStationReservationStudents();
+            for(LabRoomStationReservationStudent labRoomStationReservationStudent:labRoomStationReservationStudentSet){
+                labRoomStationReservationStudentDAO.remove(labRoomStationReservationStudent);
+                labRoomStationReservationStudentDAO.flush();
+            }
+            labRoomStationReservationDAO.remove(labRoomStationReservation);
+            labRoomStationReservationDAO.flush();
+        }
+        //删除审核数据
+        Map<String, String> params = new HashMap<>();
+        params.put("businessType", businessType);
+        params.put("businessAppUid", businessAppUid);
+        String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/deleteBusinessAudit", params);
+        //删除流水单
+        if(!shareService.getSerialNumber(labRoomStationReservation.getId().toString(), businessType).equals("fail")){
+            shareService.deleteSerialNumber(businessAppUid);
+        }
+        //重定向
+        mav.setViewName("redirect:/LabRoomReservation/labRoomReservationList?tage="+tage+"&currpage="+currpage+"&isaudit="+isaudit);
+        return mav;
     }
 
     /****************************************************************************
@@ -1067,6 +1154,7 @@ public class LabRoomReservationController<JsonResult> {
         }
 
         Object[] objects = new Object[pageSize];
+        List<Integer> auditState = new ArrayList<>();
         boolean isGraded = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
         int count = 0;
         for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
@@ -1074,14 +1162,15 @@ public class LabRoomReservationController<JsonResult> {
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", stationReservation.getLabRoom().getId().toString());
             String businessType = pConfig.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            String businessAppUid = "";
             if(shareService.getSerialNumber(stationReservation.getId().toString(), businessType)=="fail"){
                 //没有流水单号就是用预约id用作业务id
-                params.put("businessAppUid", stationReservation.getId().toString());
+                businessAppUid = stationReservation.getId().toString();
             }else {
-                String businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
                 //有流水单号用流水单号做业务id
-                params.put("businessAppUid", businessAppUid);
+                businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
             }
+            params.put("businessAppUid", businessAppUid);
 //            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
 //                    (stationReservation.getLabRoom().getLabRoomLevel() == null ? "" : stationReservation.getLabRoom().getLabRoomLevel().toString())
 //                    : "") + "StationReservation");
@@ -1107,7 +1196,29 @@ public class LabRoomReservationController<JsonResult> {
                 }
             }
             objects[count++] = returnStr;
+
+            //关联前端取消、撤回、作废按钮
+            Map<String, String> params2 = new HashMap<>();
+            params2.put("businessType", businessType);
+            params2.put("businessAppUid", businessAppUid);
+            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            JSONObject jsonObject2 = JSON.parseObject(s2);
+            String status2 = jsonObject2.getString("status");
+            Integer auditNumber = null;
+            if("success".equals(status2)){
+                JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                if(jsonArray != null) {
+                    JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                    if(jsonObject3.getIntValue("level")==-1){            //审核通过更新为查看按钮
+                        stationReservation.setButtonMark(-1);
+                    }
+                    auditState.add(jsonObject3.getIntValue("level"));
+                }
+            }else{
+                auditState.add(-2);
+            }
         }
+        mav.addObject("auditState",auditState);
         mav.addObject("auditItems", objects);
 
         mav.addObject("user", user);
