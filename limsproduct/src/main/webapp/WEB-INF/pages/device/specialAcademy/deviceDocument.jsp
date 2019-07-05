@@ -41,6 +41,11 @@ function uploadDocument(){
 	$('#searchFile').window('open');
 		///window.location.href=url;	
 }
+function closeWindow() {
+    var index=parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+	
+}
 </script>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/zjcclims/device/editDevice.js"></script>
@@ -136,7 +141,8 @@ function uploadDocument(){
 			<div class="content-box">
 				<div class="title">
 				<div id="title">相关文档</div>
-				<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>
+				<%--<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>--%>
+					<a class="btn btn-new"  herf="#" onclick="closeWindow();">返回</a>
 				<a class="btn btn-new" onclick="uploadDocument();">上传文档</a>
 			</div>
 								<table>

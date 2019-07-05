@@ -639,7 +639,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/exportLabRoomDevice")
     public void exportListStudentHouse(@ModelAttribute LabRoomDevice labRoomDevice, @RequestParam int roomId, Integer page, @ModelAttribute("selected_academy") String acno,
                                        @ModelAttribute("is_reservation") Integer isReservtaion, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<LabRoomDevice> labRoomDevices = labRoomDeviceService.findAllLabRoomDevice(labRoomDevice, acno, page, 10, roomId);
+        List<LabRoomDevice> labRoomDevices = labRoomDeviceService.findAllLabRoomDevice(labRoomDevice, acno, page, -1, roomId);
         labRoomDeviceService.exportLabRoomDevice(labRoomDevices, request, response);
     }
 

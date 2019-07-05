@@ -42,6 +42,11 @@ function showImage(image){
 		     });
 	$('#showImage').window('open');
 }	
+function closeWindow() {
+    var index=parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+	
+}
 
 
 function uploadDocument1(){
@@ -172,7 +177,8 @@ function saveDocument(){
 			<div class="content-box">
 				<div class="title">
 				<div id="title">设备图片</div>
-				<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>
+				<%--<a class="btn btn-new"  herf="#" onclick="openSetupLink();">返回</a>--%>
+					<a class="btn btn-new"  herf="#" onclick="closeWindow();">返回</a>
 				</div>
 					<fieldset class="introduce-box">
 						     <label>设备图片</label>

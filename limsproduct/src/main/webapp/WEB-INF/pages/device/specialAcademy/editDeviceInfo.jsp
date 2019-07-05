@@ -371,12 +371,12 @@ function closeMyWindow(){
 						</div>
 						<sec:authorize ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_LABMANAGER">
 							<div class="moudle_footer">
-								<div class="submit_link">
+								<%--<div class="submit_link">--%>
 								<%--<a class="btn btn-return" type="button" href="${pageContext.request.contextPath}/operation/listOperationItemLims?currpage=1&status=1&orderBy=9">返回</a>--%>
 								<%--<input class="btn btn-return" type="submit" value="保存" onclick="saveEditForm();">--%>
 									<input  class="btn btn-big" type="button"  onclick="saveDeviceReservationInfoRest(${device.id})" value="提交"/>
 									<input class="btn btn-return" type="button" value="返回" onclick="closeMyWindow()"/>
-								</div>
+								<%--</div>--%>
 							</div>
 						</sec:authorize>
 					</form:form>

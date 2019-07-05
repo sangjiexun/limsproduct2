@@ -77,6 +77,11 @@
             });
             $('#showImage').window('open');
         }
+        function closeWindow() {
+            var index=parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+
+        }
     </script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/dhulims/device/editDevice.js"></script>
 
@@ -182,7 +187,8 @@
                 <div class="content-box">
                     <div class="title">
                         <div id="title">设备注意事项</div>
-                        <a class="btn btn-new" herf="#" onclick="openSetupLink();">返回</a>
+                        <%--<a class="btn btn-new" herf="#" onclick="openSetupLink();">返回</a>--%>
+                        <a class="btn btn-new" herf="#" onclick="closeWindow();">返回</a>
                     </div>
 
                     <form:form
@@ -196,7 +202,8 @@
                             </fieldset>
                             <sec:authorize
                                     ifAnyGranted="ROLE_SUPERADMIN,ROLE_EXPERIMENTALTEACHING,ROLE_PREEXTEACHING,ROLE_EXCENTERDIRECTOR,ROLE_LABMANAGER,ROLE_EQUIPMENTADMIN,ROLE_LABMANAGER">
-                                <input class="submit_btn2" type="button" value="返回" onclick="openSetupLink()"/>
+                                <%--<input class="submit_btn2" type="button" value="返回" onclick="openSetupLink()"/>--%>
+                                <input class="submit_btn2" type="button" value="返回" onclick="closeWindow()"/>
                                 <input class="submit_btn1" type="button" onclick="saveDeviceAttentionRest(${device.id})"
                                        value="提交"/>
                             </sec:authorize>
