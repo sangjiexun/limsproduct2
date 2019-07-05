@@ -1712,8 +1712,7 @@ td {
 											<a id="refreshing1" class="btn btn-new" onclick="refreshZjcc();"  href="javascript:void(0)">刷新权限</a>
 										</c:if>
 									</c:if>
-									<a class="btn btn-new" href="javascript:void(0)" onclick="
-									2);">添加物联管理员</a>
+									<a class="btn btn-new" href="javascript:void(0)" onclick="addAdmin(2);">添加物联管理员</a>
 									<a class="btn btn-new" href="javascript:void(0);" onclick="batchDeleteLabRoomAdmin();">批量删除</a>
 									<input class="btn btn-new" type="button" value="批量导入" onclick="importAdmin(2);"/>
 								</sec:authorize>
