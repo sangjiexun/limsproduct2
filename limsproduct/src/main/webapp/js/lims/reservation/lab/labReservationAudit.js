@@ -11,7 +11,7 @@ layui.use(['form'], function() {
     var appointmentId = $('#labRId').val();
     // console.log(parent.layer.methodConfig);
     // console.log(initjson.parentProject);
-    var daata = {labRId:labRId};
+    var daata = {appointmentId:appointmentId};
     var jsonData = JSON.stringify(daata)
     $.ajax({
        url: zuulUrl  + "api/labReservation/apiLabRoomReservationAudit",
@@ -102,7 +102,7 @@ layui.use(['form'], function() {
         var appointmentId = $('#labRId').val();
         var result = data.field.gpexamine;
         var info = data.field.remark;
-        var daata = {businessAppUid:businessAppUid,result:result,info:info};
+        var daata = {appointmentId:appointmentId,result:result,info:info};
         var jsonData = JSON.stringify(daata)
         $.ajax({
             url: zuulUrl  + "api/labReservation/apiSaveLabRoomReservationAudit",

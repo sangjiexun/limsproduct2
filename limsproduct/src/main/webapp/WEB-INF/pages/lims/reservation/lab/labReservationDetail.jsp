@@ -61,7 +61,7 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-main">
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
-            <legend>实验室预约审核</legend>
+            <legend>实验室预约</legend>
         </fieldset>
         <div class="layui-col-lg8">
             <form class="layui-form" action="" lay-filter="labReservationAudit">
