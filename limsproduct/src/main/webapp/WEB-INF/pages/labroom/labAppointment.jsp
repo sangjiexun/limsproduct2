@@ -168,7 +168,7 @@
                                                 data: myData,
                                                 // dataType:'json',
                                                 success:function(data){
-                                                    $("#restStations").text(data);
+                                                    $("#restStations").text(decodeURI(data));
                                                 },
                                                 error:function(){
                                                     alert("查询失败！后台出了点问题！");

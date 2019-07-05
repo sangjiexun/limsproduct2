@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -847,7 +848,7 @@ public class LabRoomReservationController<JsonResult> {
                 int startClass = labRoomLimitTime.getStartclass();
                 int endClass = labRoomLimitTime.getEndclass();
                 if(!labRoomLendingService.judgeLabReservationIsConflict(startWeekOver,endWeekOver,WeekdayOver,startClass,endClass,week,weekday,systemTime.getSection())){
-                    ret =  "所选时间段在该实验室禁用时间段内，该实验室工位不可预约";
+                    ret =  URLEncoder.encode("所选时间段在该实验室禁用时间段内，该实验室工位不可预约","utf-8");
                     flag = false;
                 }
             }
