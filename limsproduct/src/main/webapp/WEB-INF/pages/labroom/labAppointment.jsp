@@ -776,9 +776,19 @@ function cancel(){
 		</li>
 		<sec:authorize ifNotGranted="ROLE_STUDENT">
 			<li class="TabbedPanelsTab" id="s3"><a
-					href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">我的审核</a>
+					href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
 			</li>
 		</sec:authorize>
+		<sec:authorize ifNotGranted="ROLE_STUDENT">
+			<li class="TabbedPanelsTab" id="s4"><a
+					href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
+			</li>
+		</sec:authorize>
+		<c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_LABMANAGER'}">
+			<li class="TabbedPanelsTab" id="s5"><a
+					href="${pageContext.request.contextPath}/LabRoomReservation/labStationReservationObsoleteList?page=1">失效记录</a>
+			</li>
+		</c:if>
 	</ul>
 </div>
 <div class="right-content">

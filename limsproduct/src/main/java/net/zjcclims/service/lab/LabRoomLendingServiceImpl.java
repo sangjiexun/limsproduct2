@@ -247,6 +247,8 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
                 Calendar end = Calendar.getInstance();
                 start.setTime(startDate);
                 end.setTime(endDate);
+                labReservation.setStartTime(start);
+                labReservation.setEndTime(end);
                 LabReservationTimeTable lrtt = new LabReservationTimeTable();
                 lrtt.setSchoolTerm(s.getSchoolTerm());
                 lrtt.setCDictionary(cd);

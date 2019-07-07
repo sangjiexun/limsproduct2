@@ -159,4 +159,42 @@ public class UserServiceImpl implements UserService {
         }
         return userDTOs;
     }
+
+
+    /*************************************************************************************
+     * Description:用户管理-获取指定学院的系主任
+     *
+     * @author： Hezhaoyi
+     * @date：2019-7-7
+     *************************************************************************************/
+    public List<User> findDeansByAcademyNumber(String academyNumber) {
+        //获取列表主查询语句
+        StringBuffer sql = new StringBuffer("SELECT u FROM User u join u.authorities a WHERE (a.id=9 or a.id=17) and u.academy_number= "+academyNumber );
+
+        sql.append(" order by u.cname asc");
+        // 执行sb语句
+        List<User> users = userDAO.executeQuery(sql.toString());
+
+        return users;
+    }
+
+    /*************************************************************************************
+     * Description:用户管理-根据权限名称查询用户
+     *
+     * @author： Hezhaoyi
+     * @date：2019-7-7
+     *************************************************************************************/
+    public List<User> findUserByAuthorityName(String authorityName) {
+        //获取列表主查询语句
+        String sql = "select u from User u join u.authorities a where 1=1";
+        sql += " and a.authorityName = '" + authorityName + "'";
+        sql += " order by u.cname asc";
+        // 执行sb语句
+        List<User> users = userDAO.executeQuery(sql);
+
+        return users;
+    }
+
+
+
 }

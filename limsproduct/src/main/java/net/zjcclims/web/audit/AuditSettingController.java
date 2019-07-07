@@ -153,6 +153,11 @@ public class AuditSettingController<JsonResult> {
 
 
         }
+        else if(flag == 14){
+            businessName = "CancelLabRoomStationReservation";
+            businessType = projectName + businessName;
+            allType = 1;
+        }
         map.put("businessName", businessName);
         map.put("allType", allType);
 //        else if(flag == 2){// 项目审核

@@ -110,6 +110,72 @@ var s=${isAudit};
           layer.full(index);
       });
   }
+  //取消预约
+  function cancelLabStationReservation(id) {
+      if(confirm("确定取消吗")) {
+          $.ajax({
+              url: "${pageContext.request.contextPath}/LabRoomReservation/cancelLabStationReservation?id=" + id,
+              contentType: "application/json;charset=utf-8",
+              dataType: "text",
+              type: "post",
+              async: false,
+              success: function (data) {
+                  if (data == "success") {
+                      alert("已提交取消的申请，请等待审核");
+                      window.location.reload();
+                  } else {
+                      alert("取消失败");
+                  }
+              },
+              error: function () {
+                  alert("取消失败");
+              }
+          });
+      }
+  }
+  function openCancelAuditWindow(id) {
+      layer.ready(function(){
+          var index = layer.open({
+              type: 2,
+              title: '审核',
+              fix: true,
+              maxmin:true,
+              shift:-1,
+              closeBtn: 1,
+              shadeClose: true,
+              move:false,
+              area: ['1000px', '420px'],
+              content: '../auditing/auditList?businessType=CancelLabRoomStationReservation&businessUid=-1&businessAppUid='+id,
+              end: function(){
+                  window.location.reload();
+              }
+          });
+          layer.full(index);
+      });
+  }
+  //作废
+  function obsoleteLabStationReservation(id) {
+      if(confirm("确定作废吗")) {
+          $.ajax({
+              url: "${pageContext.request.contextPath}/LabRoomReservation/obsoleteLabStationReservation?id=" + id,
+              contentType: "application/json;charset=utf-8",
+              dataType: "text",
+              type: "post",
+              async: false,
+              success: function (data) {
+                  if (data == "success") {
+                      alert("已作废");
+                      window.location.reload();
+                  } else {
+                      alert("作废失败");
+                  }
+              },
+              error: function () {
+                  alert("作废失败");
+              }
+          });
+      }
+  }
 </script>
 
 </head>
@@ -132,9 +198,19 @@ var s=${isAudit};
     </li>
     <sec:authorize ifNotGranted="ROLE_STUDENT">
         <li class="TabbedPanelsTab" id="s3"><a
-                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">我的审核</a>
+                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
         </li>
     </sec:authorize>
+    <sec:authorize ifNotGranted="ROLE_STUDENT">
+        <li class="TabbedPanelsTab" id="s4"><a
+                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
+        </li>
+    </sec:authorize>
+    <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_LABMANAGER'}">
+        <li class="TabbedPanelsTab" id="s5"><a
+                href="${pageContext.request.contextPath}/LabRoomReservation/labStationReservationObsoleteList?page=1">失效记录</a>
+        </li>
+    </c:if>
 </ul>
 	<div class="TabbedPanelsContentGroup">
         <div class="TabbedPanelsContent">
@@ -158,14 +234,16 @@ var s=${isAudit};
                                         <option value="1">审核通过</option>
                                         <%--<option value="3">未审核</option>--%>
                                         <option value="4">审核拒绝</option>
-                                        <option value="5">所有</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5">取消预约</option>
                                     </c:if>
                                     <c:if test="${auditStatus == 1}">
                                         <option value="2">审核中</option>
                                         <option value="1" selected>审核通过</option>
                                         <%--<option value="3">未审核</option>--%>
                                         <option value="4">审核拒绝</option>
-                                        <option value="5">所有</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5">取消预约</option>
                                     </c:if>
                                     <%--<c:if test="${auditStatus == 3}">
                                         <option value="2">审核中</option>
@@ -179,14 +257,24 @@ var s=${isAudit};
                                         <option value="1">审核通过</option>
                                         <%--<option value="3">未审核</option>--%>
                                         <option value="4" selected>审核拒绝</option>
-                                        <option value="5">所有</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5">取消预约</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == -1}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <%--<option value="3">未审核</option>--%>
+                                        <option value="4">审核拒绝</option>
+                                        <option value="-1" selected>所有</option>
+                                        <option value="5">取消预约</option>
                                     </c:if>
                                     <c:if test="${auditStatus == 5}">
                                         <option value="2">审核中</option>
                                         <option value="1">审核通过</option>
                                         <%--<option value="3">未审核</option>--%>
                                         <option value="4">审核拒绝</option>
-                                        <option value="5" selected>所有</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5" selected>取消预约</option>
                                     </c:if>
                                 </form:select>
                             </li>
@@ -229,10 +317,11 @@ var s=${isAudit};
      	 <c:if test="${s.result==1}">审核通过</c:if>
          <c:if test="${s.result==2}">审核中</c:if>
          <c:if test="${s.result==4}">审核拒绝</c:if>
-         <c:if test="${s.result==3}">未审核</c:if> 
+         <c:if test="${s.result==3}">未审核</c:if>
+         <c:if test="${s.result==5}">取消预约</c:if>
      </td>
      <td>
-     <c:if test="${s.buttonMark eq 0}">
+     <c:if test="${s.buttonMark eq 0 && s.result ne 5 && s.result ne 6}">
      	 <%--<a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">查看</a>--%>
          <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', ${s.labRoom.id});">查看</a>
      </c:if>
@@ -242,6 +331,26 @@ var s=${isAudit};
      </c:if>
          <c:if test="${auditState.get(i.count-1)==1&& isAudit eq 2}">
              <a href="${pageContext.request.contextPath}/LabRoomReservation/deletelabStaionReservation?id=${s.id}&tage=${tage}&currpage=${currpage}&isaudit=${isAudit}" onclick="return confirm('确定撤回吗？');">撤回</a>
+         </c:if>
+         <c:if test="${isAudit eq 2 && s.result eq 1}">
+             <a href="javascript:void(0)"
+                onclick="cancelLabStationReservation('${s.id}');">取消预约</a>
+         </c:if>
+         <c:if test="${isAudit eq 1 && s.result eq 5 }">
+             <a href="javascript:void(0)"
+                onclick="openCancelAuditWindow('${s.id}');">审核取消</a>
+         </c:if>
+         <c:if test="${isAudit eq 2 && s.result eq 5}">
+             <a href="javascript:void(0)"
+                onclick="openCancelAuditWindow('${s.id}');">查看</a>
+         </c:if>
+         <c:if test="${(sessionScope.selected_role eq 'ROLE_LABMANAGER') && isAudit eq 1 && (auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0)}">
+             <c:forEach items="${s.labRoom.labRoomAdmins}" var="la">
+                 <c:if test="${la.user.username eq user.username}">
+                     <a href="javascript:void(0)"
+                        onclick="obsoleteLabStationReservation('${s.id}')">取消预约</a><%--作废--%>
+                 </c:if>
+             </c:forEach>
          </c:if>
      <c:if test="${s.result==1}">
      <%--实验室管理员才可看到--%>
