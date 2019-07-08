@@ -244,7 +244,7 @@
                     href="${pageContext.request.contextPath}/audit/auditSetting?flag=11">工位预约审核设置</a>
             </li>
             <li class="TabbedPanelsTab" id="s12" onclick="changeTag(12)"><a
-                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=12">取消预约审核设置</a>
+                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=12">取消实验室预约审核设置</a>
             </li>
             <li class="TabbedPanelsTab" id="s13" onclick="changeTag(13)"><a
                     href="${pageContext.request.contextPath}/audit/auditSetting?flag=13">设备借用审核设置</a>

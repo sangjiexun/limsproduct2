@@ -13,7 +13,7 @@
   $(function(){
 var s=${isAudit};
  if(1==s){
- $("#s3").addClass("TabbedPanelsTab selected");
+ $("#s4").addClass("TabbedPanelsTab selected");
  $("#s1").addClass("TabbedPanelsTab");
   $("#s2").addClass("TabbedPanelsTab");
  }
@@ -198,12 +198,12 @@ var s=${isAudit};
     </li>
     <sec:authorize ifNotGranted="ROLE_STUDENT">
         <li class="TabbedPanelsTab" id="s3"><a
-                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
+                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
         </li>
     </sec:authorize>
     <sec:authorize ifNotGranted="ROLE_STUDENT">
         <li class="TabbedPanelsTab" id="s4"><a
-                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
+                href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
         </li>
     </sec:authorize>
     <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_LABMANAGER'}">

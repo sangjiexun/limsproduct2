@@ -183,13 +183,13 @@
                 href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=2">我的申请</a>
         </li>
         <sec:authorize ifNotGranted="ROLE_STUDENT">
-            <li class="TabbedPanelsTab" id="s3"><a
-                    href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
+            <li class="TabbedPanelsTab selected" id="s3"><a
+                    href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
             </li>
         </sec:authorize>
         <sec:authorize ifNotGranted="ROLE_STUDENT">
-            <li class="TabbedPanelsTab selected" id="s4"><a
-                    href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
+            <li class="TabbedPanelsTab" id="s4"><a
+                    href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
             </li>
         </sec:authorize>
         <c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_LABMANAGER'}">

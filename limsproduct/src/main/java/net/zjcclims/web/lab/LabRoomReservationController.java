@@ -1239,11 +1239,15 @@ public class LabRoomReservationController<JsonResult> {
             int m =0;
             //取消提前12小时设置
             Calendar currentTime = Calendar.getInstance();
-//            currentTime.add(Calendar.HOUR, Integer.parseInt(pConfig.advanceCancelTime));
+            currentTime.add(Calendar.HOUR, Integer.parseInt(pConfig.advanceCancelTime));
             // 审核记录
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", stationReservation.getLabRoom().getId().toString());
             String businessType = pConfig.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            //判断是否是取消预约的数据，切换businessType
+            if(stationReservation.getResult()==5){
+                businessType = pConfig.PROJECT_NAME + "CancelLabRoomStationReservation";
+            }
             String businessAppUid = "";
             if(shareService.getSerialNumber(stationReservation.getId().toString(), businessType)=="fail"){
                 //没有流水单号就是用预约id用作业务id
@@ -1251,6 +1255,10 @@ public class LabRoomReservationController<JsonResult> {
             }else {
                 //有流水单号用流水单号做业务id
                 businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
+            }
+            //判断是否是取消预约的数据，切换businessAppUid
+            if(stationReservation.getResult()==5){
+                params.put("businessUid", "-1");
             }
             params.put("businessAppUid", businessAppUid);
 //            params.put("businessType", pConfig.PROJECT_NAME + (isGraded ?
@@ -1338,8 +1346,8 @@ public class LabRoomReservationController<JsonResult> {
     /****************************************************************************
      * 功能：查询实验室预约我的审核列表 作者：Hezhaoyi 时间：2019-7-7
      ****************************************************************************/
-    @RequestMapping("/LabRoomReservation/labRoomReservationAuditList")
-    public ModelAndView labRoomReservationAuditList(@ModelAttribute LabRoomStationReservation labRoomStationReservation, @RequestParam Integer currpage,
+    @RequestMapping("/LabRoomReservation/labRoomStationReservationAuditList")
+    public ModelAndView labRoomStationReservationAuditList(@ModelAttribute LabRoomStationReservation labRoomStationReservation, @RequestParam Integer currpage,
                                                Integer tage, Integer isaudit, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         // 新建ModelAndView对象；
         ModelAndView mav = new ModelAndView();
@@ -1392,6 +1400,10 @@ public class LabRoomReservationController<JsonResult> {
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", stationReservation.getLabRoom().getId().toString());
             String businessType = pConfig.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            //判断是否是取消预约的数据，切换审核businessType
+            if(stationReservation.getResult()==5){
+                businessType = pConfig.PROJECT_NAME + "CancelLabRoomStationReservation";
+            }
             String businessAppUid = "";
             if(shareService.getSerialNumber(stationReservation.getId().toString(), businessType)=="fail"){
                 //没有流水单号就是用预约id用作业务id
@@ -1399,6 +1411,10 @@ public class LabRoomReservationController<JsonResult> {
             }else {
                 //有流水单号用流水单号做业务id
                 businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
+            }
+            //判断是否是取消预约的数据，切换审核businessUid
+            if(stationReservation.getResult()==5){
+                params.put("businessUid", "-1");
             }
             params.put("businessAppUid", businessAppUid);
             params.put("businessType", businessType);
