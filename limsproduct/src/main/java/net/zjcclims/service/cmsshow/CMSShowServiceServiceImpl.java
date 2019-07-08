@@ -708,6 +708,11 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 			labAttendance.setMajor(temp[5].toString());//专业
 			labAttendance.setAttendanceTime(temp[6].toString());//考勤时间
 			labAttendance.setLabRoomName(lab_name);//实验室名称
+			if (temp[7] != null) {
+				labAttendance.setStatus(temp[7].toString());
+			}else {
+				labAttendance.setStatus("");
+			}
 			labAttendances.add(labAttendance);
 		}
 
@@ -765,7 +770,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	@Override
 	public List<Object[]> getCommonHwdlogListByLabroomId(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize){
 		labRoomId = labRoomDAO.findLabRoomById(Integer.parseInt(labRoomId)).getLabRoomNumber();
-		StringBuffer sql = new StringBuffer("call proc_common_hwdlog_roomId(");
+		StringBuffer sql = new StringBuffer("call proc_common_hdwlog_roomId(");
 
 		// labroom_id
 		if(labRoomId!=null&&!labRoomId.equals("")){
