@@ -12,22 +12,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 import net.zjcclims.constant.CommonConstantInterface;
-import net.zjcclims.dao.SchoolClassesDAO;
+import net.zjcclims.dao.*;
+import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabCenterService;
 //import net.zjcclims.service.system.TimeDetailService;
 import net.zjcclims.service.system.UserDetailService;
-import net.zjcclims.dao.UserDAO;
-import net.zjcclims.dao.SchoolMajorDAO;
-import net.zjcclims.domain.LabCenter;
-import net.zjcclims.domain.User;
-import net.zjcclims.domain.SchoolClasses;
-import net.zjcclims.domain.UserCard;
-import net.zjcclims.dao.UserCardDAO;
 
+import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,7 +65,8 @@ public class UsersController<JsonResult>
 		binder.registerCustomEditor(Long.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Long.class, true));
 		binder.registerCustomEditor(Double.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Double.class, true));
 	}
-
+	@PersistenceContext
+	private EntityManager entityManager;
 	@Autowired
 	UserDetailService userDetailService;
 
@@ -85,6 +84,7 @@ public class UsersController<JsonResult>
 	private UserCardDAO userCardDAO;
 	@Autowired
 	private PConfig pConfig;
+	@Autowired private CommonServerDAO commonServerDAO;
 	/************************************************************
 	 * @内容：用户列表
 	 * @作者：叶明盾
@@ -440,10 +440,51 @@ public class UsersController<JsonResult>
 			userCardDAO.flush();
 		}else{
 			UserCard userCard=u.get(0);
+			// 保存前取到旧卡号
+			String old_card_no = "";
+			String old_acl_card = "";
+			String oldSQL = "select * from view_user where username='"+ username +"'";
+			Query query = entityManager.createNativeQuery(oldSQL);
+			List<Object[]> list = query.getResultList();
+			for (Object[] obj : list) {
+				if (obj[1] != null && obj[1] != "" && obj[3] != null && obj[3] != "") {
+					old_card_no = obj[1].toString();
+					old_acl_card = obj[3].toString();
+					break;
+				}
+			}
+
 			userCard.setCardNo(cardno);
 			userCard.setEnabled(String.valueOf(1));
 			userCardDAO.store(userCard);
 			userCardDAO.flush();
+			// 保存后，获取新卡号
+			String new_card_no = "";
+			String new_acl_card = "";
+			String newSQL = "select * from view_user where username='"+ username +"'";
+			Query newQuery = entityManager.createNativeQuery(newSQL);
+			List<Object[]> newList = newQuery.getResultList();
+			for (Object[] obj : newList) {
+				if (obj[1] != null && obj[1] != "" && obj[3] != null && obj[3] != "") {
+					new_card_no = obj[1].toString();
+					new_acl_card = obj[3].toString();
+					break;
+				}
+			}
+
+			// 同步卡号
+			Set<CommonServer> commonServers = commonServerDAO.findAllCommonServers();
+			for (CommonServer server : commonServers) {
+				if (server.getServerIp() != null && new_acl_card != "" && old_acl_card != "") {
+					String url = "http://" + server.getServerIp() + ":" + server.getServerSn() + "/iot/acldoor/" + username + "/changecard/" + old_acl_card + "/" + new_acl_card;
+					String s = HttpClientUtil.doPost(url);
+				}
+				if (server.getServerIp() != null && new_card_no != "" && old_card_no != "") {
+					String url = "http://" + server.getServerIp() + ":" + server.getServerSn() + "/iot/guard/" + username + "/changecard/" + old_card_no + "/" + new_card_no;
+					String s = HttpClientUtil.doPost(url);
+				}
+			}
+
 		}
 		return "success";
 	}
