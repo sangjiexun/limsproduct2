@@ -678,6 +678,11 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 			labAttendance.setMajor(temp[5].toString());//专业
 			labAttendance.setAttendanceTime(temp[6].toString());//考勤时间
 			labAttendance.setLabRoomName(lab_name);//实验室名称
+			if (temp[7] != null) {
+				labAttendance.setStatus(temp[7].toString());
+			}else {
+				labAttendance.setStatus("");
+			}
 			labAttendances.add(labAttendance);
 		}
 
@@ -726,12 +731,13 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	 */
 	@Override
 	public List<Object[]> getCommonHwdlogList(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize){
-		StringBuffer sql = new StringBuffer("call proc_common_hwdlog(");
-
+		StringBuffer sql = new StringBuffer("call proc_common_hdwlog_roomId(");
+		// room_num，在此不传值
+		sql.append("''");
 		// hardware_ip
 		if(ip!=null&&!ip.equals("")){
-			sql.append("'"+ip+"'");
-		}else {sql.append("''");}
+			sql.append(",'"+ip+"'");
+		}else {sql.append(",''");}
 		// username 学号
 		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
 			sql.append(",'"+commonHdwlog.getUsername()+"'");
@@ -776,6 +782,8 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		if(labRoomId!=null&&!labRoomId.equals("")){
 			sql.append("'"+labRoomId+"'");
 		}else {sql.append("''");}
+		// 硬件IP-在此不传值
+		sql.append(",''");
 		// username 学号
 		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
 			sql.append(",'"+commonHdwlog.getUsername()+"'");

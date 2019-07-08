@@ -1,9 +1,11 @@
 -- 功能：根据room_num获取实验室下的门禁记录,增加按门禁时间排序
--- 作者：陈乐为 2019-7-8 增加状态
+-- 作者：陈乐为 2019-7-8 增加状态，合并按照实验室/物联硬件查询
 
-DROP PROCEDURE if exists `proc_common_hwdlog_roomId`;
+drop procedure if exists `proc_common_hwdlog`;
+DROP PROCEDURE if exists `proc_common_hdwlog_roomId`;
 DELIMITER ;;
 CREATE DEFINER=`root`@`%` PROCEDURE `proc_common_hdwlog_roomId`(In `room_num` varchar(40),
+In `hardware_ip` varchar(40),
 IN `username` varchar(255) character set utf8,
 IN `cname` VARCHAR(40) character set utf8,
 IN `start_time` VARCHAR(40),
@@ -36,6 +38,10 @@ IF room_num <> ''
 THEN set sql_1 = concat(sql_1," and ich.hardware_ip in (select lra.hardware_ip from iot.lab_room_agent lra where lra.room_num ='",room_num,"')");
 end if;
 
+IF hardware_ip <> ''
+THEN set sql_1 = concat(sql_1," and ich.hardware_ip ='",hardware_ip,"'");
+end if;
+
 IF username <> ''
 THEN set sql_1 = concat(sql_1," and (u.username ='",username,"'");
 set sql_1 = concat(sql_1," or u.cname like '%",username,"%')");
@@ -62,5 +68,5 @@ set @sql1 = sql_1;
 PREPARE stmt1 FROM @sql1;
      EXECUTE stmt1;
 
-
-END
+END;;
+DELIMITER ;
