@@ -4138,11 +4138,12 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      */
     @Override
     public void saveDeviceAudit(Integer idKey, Integer auditResult, String remark, String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabRoomDeviceLending labRoomDeviceLending = findDeviceLendingById(idKey);
         LabRoomDevice labRoomDevice=labRoomDeviceLending.getLabRoomDevice();
         LabRoom labRoom=labRoomDevice.getLabRoom();
         //User createUser=shareService.getUserDetail();
-        String businessType=pConfig.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType=pConfigDTO.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         String businessAppUid="";
         if (shareService.getSerialNumber(labRoomDeviceLending.getId().toString(),businessType)=="fail"){
             businessAppUid=labRoomDeviceLending.getId().toString();
@@ -4161,7 +4162,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
             params.put("result","pass");
             params.put("info",remark);
             params.put("username",user.getUsername());
-            String s=HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+            String s=HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
            /*JSONObject jsonObject5 = JSON.parseObject(s);
            JSONObject status = jsonObject5.getJSONObject("status");
            System.out.println(status);*/
@@ -4187,7 +4188,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
             params.put("result","fail");
             params.put("info",remark);
             params.put("username",user.getUsername());
-            HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+            HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 
         }
         labRoomDeviceLendingDAO.store(labRoomDeviceLending);
@@ -4199,8 +4200,9 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      */
     @Override
     public String submitDeviceLending(Integer id,String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabRoomDeviceLending labRoomDeviceLending=labRoomDeviceLendingDAO.findLabRoomDeviceLendingById(id);
-        String businessType=pConfig.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType=pConfigDTO.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
         /*String config="on,on,on";
         Map<String,String> params2=new HashMap<>();
@@ -4212,7 +4214,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
         params.put("businessUid","-1");
         params.put("businessType",businessType);
         params.put("businessAppUid",businessAppUid);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/saveInitBusinessAuditStatus",params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/saveInitBusinessAuditStatus",params);
         return "success";
 
     }

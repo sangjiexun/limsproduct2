@@ -57,10 +57,10 @@ public class AuditController<JsonResult> {
         String businessType= "";
         if(labRoomDAO.findLabRoomById(Integer.valueOf(businessUid))!=null){
             LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
-            businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+            businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
         }
         if(request.getParameter("businessType")!=null){
-            businessType = pConfig.PROJECT_NAME + request.getParameter("businessType");
+            businessType = pConfigDTO.PROJECT_NAME + request.getParameter("businessType");
         }
         // 获取审核状态
         Integer curStage = -2;

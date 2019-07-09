@@ -11,6 +11,7 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.util.HttpClientUtil;
+import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -1999,7 +2000,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                             return;
                         }
                         //重新查询审核状态
-						s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+						s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
 						jsonObject = JSON.parseObject(s);
 						statusStr = jsonObject.getString("status");
 						if(!statusStr.equals("success")){
@@ -2155,13 +2156,14 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 */
 	@Override
 	public String cancelLabStationReservation(Integer id) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		LabRoomStationReservation labRoomStationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
 		//result = 5 提交取消预约审核中
 		labRoomStationReservation.setResult(5);
 		labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
 
-		String businessType = pConfig.PROJECT_NAME + "CancelLabRoomStationReservation";
+		String businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomStationReservation";
 		String businessAppUid = shareService.saveAuditSerialNumbers(labRoomStationReservation.getId().toString(),businessType);
 		// 审核微服务
 		Map<String, String> params = new HashMap<>();
@@ -2169,13 +2171,13 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		params.put("businessUid", "-1");
 		params.put("businessType",businessType);
 		params.put("businessAppUid", businessAppUid);
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
 		JSONObject jsonObject = JSON.parseObject(s);
 		String statusStr = jsonObject.getString("status");
 		if(!statusStr.equals("success")){
 			return "error";
 		}
-		s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+		s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
 		jsonObject = JSON.parseObject(s);
 		statusStr = jsonObject.getString("status");
 		if(!statusStr.equals("success")){
@@ -2252,9 +2254,10 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
      */
     @Override
     public String obsoleteLabStationReservation(Integer id,Integer type){
+    	PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         AuditRefuseBackup auditRefuseBackup = new AuditRefuseBackup();
         LabRoomStationReservation labRoomStationReservation = labRoomStationReservationDAO.findLabRoomStationReservationById(id);
-        String businessType = pConfig.PROJECT_NAME + "StationReservation" + labRoomStationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + labRoomStationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         Map<String, String> allParams = new HashMap<>();
         allParams.put("businessType", businessType);
         String businessAppUid = "";
@@ -2265,7 +2268,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
         }
         allParams.put("businessAppUid", businessAppUid);
         allParams.put("businessUid", labRoomStationReservation.getLabRoom().getId().toString());
-        String allStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
+        String allStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
         JSONArray allJsonArray = JSONObject.parseObject(allStr).getJSONArray("data");
         String auditInfo = "";
         String auditContent = "";
@@ -2294,7 +2297,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
         Map<String, String> delParams = new HashMap<>();
         delParams.put("businessAppUid", businessAppUid);
         delParams.put("businessType", businessType);
-        String delStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/deleteBusinessAudit", delParams);
+        String delStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/deleteBusinessAudit", delParams);
         SchoolWeek schoolWeek = schoolWeekDAO.findSingleSchoolWeekByDate(labRoomStationReservation.getReservation());
 
         RefuseItemBackup refuseItemBackup = new RefuseItemBackup();

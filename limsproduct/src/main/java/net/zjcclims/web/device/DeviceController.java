@@ -129,8 +129,6 @@ public class DeviceController<JsonResult> {
     @Autowired
     private LabDeviceReservationService labDeviceReservationService;
 
-    @Autowired
-    private PConfig pConfig;
     @InitBinder
     public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register
         // static
@@ -2180,7 +2178,7 @@ public class DeviceController<JsonResult> {
             //String businessAppUid="b34a161e-96fa-468f-9df9-0d22f81fed5c";
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             //Integer auditNumber = null;
@@ -2258,6 +2256,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/rejectedDeviceLendList")
     public ModelAndView rejectedDeviceLendList(@ModelAttribute LabRoomDeviceLending lrdl, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -4306,6 +4305,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/deviceLendingApplyList")
     public ModelAndView deviceLendingApplyList(Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -4347,7 +4347,7 @@ public class DeviceController<JsonResult> {
             //String s=lrdl.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
             String s28=deviceLendList.get(i).getId().toString();
             String s3="nicai";
-            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = pConfigDTO.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
 
             //String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
             String businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
@@ -4361,7 +4361,7 @@ public class DeviceController<JsonResult> {
             }*/
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             Integer auditNumber = null;
@@ -4379,7 +4379,7 @@ public class DeviceController<JsonResult> {
                 allAuditStateParams.put("businessType", businessType);
                 allAuditStateParams.put("businessAppUid", businessAppUid);
                 allAuditStateParams.put("businessUid", "-1");
-                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
                 if(!"fail".equals(status2)) {
@@ -4430,6 +4430,7 @@ public class DeviceController<JsonResult> {
     public ModelAndView deviceLendingCheckList(@ModelAttribute LabRoomDeviceLending lrdl, @RequestParam Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         // 新建ModelAndView对象；
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -4477,7 +4478,7 @@ public class DeviceController<JsonResult> {
             }*/
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             Integer auditNumber = null;
@@ -4495,7 +4496,7 @@ public class DeviceController<JsonResult> {
                 allAuditStateParams.put("businessType", businessType);
                 allAuditStateParams.put("businessAppUid", businessAppUid);
                 allAuditStateParams.put("businessUid", "-1");
-                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
                 if(!"fail".equals(status2)) {
