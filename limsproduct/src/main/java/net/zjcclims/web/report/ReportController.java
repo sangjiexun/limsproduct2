@@ -10,6 +10,7 @@ package net.zjcclims.web.report;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.OperationItemByCategory;
 import net.zjcclims.constant.OperationItemByChange;
 import net.zjcclims.constant.OperationItemByRequire;
@@ -26,7 +27,6 @@ import net.zjcclims.service.lab.LabCenterService;
 import net.zjcclims.service.report.ReportService;
 import net.zjcclims.service.system.TermDetailService;
 import net.zjcclims.service.timetable.OuterApplicationService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -74,8 +74,6 @@ public class ReportController<JsonResult> {
 	private OuterApplicationService outerApplicationService;
 	@Autowired
 	private LabCenterDAO labCenterDAO;
-	@Autowired
-	private PConfig pConfig;
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register static property editors.
@@ -198,6 +196,7 @@ public class ReportController<JsonResult> {
 	@RequestMapping("/reportOperationItemRequire")
 	public ModelAndView reportOperationItemRequire(HttpServletRequest request, @RequestParam Integer currpage, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		//学期
 		int term = shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId();
 		if (request.getParameter("term") != null) {
@@ -257,8 +256,8 @@ public class ReportController<JsonResult> {
 		}
 
 		// 学校名称和编号
-		mav.addObject("schoolName", pConfig.schoolName);
-		mav.addObject("schoolCode", pConfig.schoolCode);
+		mav.addObject("schoolName", pConfigDTO.schoolName);
+		mav.addObject("schoolCode", pConfigDTO.schoolCode);
 		// 分页
 		// 计算列表数据的总数
 		int totalRecords = reportService.operationItemRequireViewCount(request);

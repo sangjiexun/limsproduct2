@@ -3,6 +3,7 @@ package net.zjcclims.service.report;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.LabWorkerDAO;
 import net.zjcclims.dao.OperationItemDAO;
@@ -13,7 +14,6 @@ import net.zjcclims.domain.OperationItem;
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,6 @@ public class DataReportServiceImpl implements DataReportService {
     @Autowired private LabWorkerDAO labWorkerDAO;
 
     @Autowired private ShareService shareService;
-    @Autowired private PConfig pConfig;
 
     /**
      * Description 报表上报-查询获取学年
@@ -96,6 +95,7 @@ public class DataReportServiceImpl implements DataReportService {
     @Override
     public void exportOperationItemAVE(List<OperationItem> listOperationItems, File tempFile,
                                        HttpServletRequest request, HttpServletResponse response) throws Exception {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
         String content = "";
         for (OperationItem operationItem : listOperationItems) {
@@ -190,7 +190,7 @@ public class DataReportServiceImpl implements DataReportService {
                 }
             }
 
-            content += pConfig.schoolCode
+            content += pConfigDTO.schoolCode
                     + lpCodeCustom
                     + lpName
                     + lpCategoryMain
@@ -206,7 +206,7 @@ public class DataReportServiceImpl implements DataReportService {
                     + "\r\n";
         }
         this.contentToTxt(tempFile, content);
-        this.downLoad(tempFile, "SJ4"+pConfig.schoolCode, response);
+        this.downLoad(tempFile, "SJ4"+pConfigDTO.schoolCode, response);
     }
 
     /**
@@ -390,6 +390,7 @@ public class DataReportServiceImpl implements DataReportService {
     @Override
     public void exportLabWorkerAVE(List<LabWorker> listLabWorkers, File tempFile, HttpServletResponse response) throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
         String content = "";
         for (LabWorker labWorker : listLabWorkers) {
@@ -519,7 +520,7 @@ public class DataReportServiceImpl implements DataReportService {
                 lwTrainInformalAbroadTime = CommonConstantInterface.STR_SPACE_3.replaceFirst(CommonConstantInterface.STR_SPACE_3.substring(0, 3), "  0");
             }
 
-            content += pConfig.schoolCode
+            content += pConfigDTO.schoolCode
                     + customCode
                     + centerCode
                     + centerName
@@ -537,7 +538,7 @@ public class DataReportServiceImpl implements DataReportService {
                     + "\r\n";
         }
         this.contentToTxt(tempFile, content);
-        this.downLoad(tempFile, "SJ5"+pConfig.schoolCode, response);
+        this.downLoad(tempFile, "SJ5"+pConfigDTO.schoolCode, response);
     }
     /*************************************************************************************
      * @description：专任实验室人员表导出Excel

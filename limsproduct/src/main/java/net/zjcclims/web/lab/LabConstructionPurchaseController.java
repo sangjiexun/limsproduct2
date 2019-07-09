@@ -16,7 +16,6 @@ import net.zjcclims.domain.Authority;
 import net.zjcclims.domain.CDictionary;
 import net.zjcclims.domain.LabConstructionDevice;
 import net.zjcclims.domain.LabConstructionProject;
-import net.zjcclims.domain.LabConstructionProjectAudit;
 import net.zjcclims.domain.LabConstructionPurchase;
 import net.zjcclims.domain.LabConstructionPurchaseAudit;
 import net.zjcclims.domain.MLabConstructionProjectUser;
@@ -27,7 +26,6 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabConstructionProjectService;
 import net.zjcclims.service.lab.LabConstructionPurchaseService;
 
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -56,8 +54,6 @@ public class LabConstructionPurchaseController {
 	@Autowired CDictionaryDAO cDictionaryDAO;
 	@Autowired LabConstructionPurchaseAuditDAO labConstructionPurchaseAuditDAO;
 	@Autowired MessageDAO messageDAO;
-	@Autowired PConfig pConfig;
-
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register // static // property // editors.
 		binder.registerCustomEditor(java.util.Calendar.class,new org.skyway.spring.util.databinding.CustomCalendarEditor());

@@ -4,7 +4,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
-import net.zjcclims.constant.MonthReport;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.SchoolConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -12,7 +12,6 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
 import net.zjcclims.vo.QueryParamsVO;
-import net.zjcclims.web.common.PConfig;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -59,8 +58,6 @@ public class TeachingReportServiceImpl implements TeachingReportService {
     private SchoolClassesDAO schoolClassesDAO;
     @Autowired
     private TimetableAppointmentService timetableAppointmentService;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private ReportService reportService;
     /************************************************************
@@ -1421,6 +1418,9 @@ public class TeachingReportServiceImpl implements TeachingReportService {
      *************************************************************************************/
     public List<TimetableLabRelated> getLabTimetableAppointments(HttpServletRequest request, int termId,
                                                                  int roomId, int week, String teacher, String acno  ) {
+
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 创建根据学期来查询课程；
         StringBuffer hql = new StringBuffer("select distinct c from TimetableLabRelated c " +
                 " left join c.timetableAppointment.timetableAppointmentSameNumbers s " +
@@ -1437,7 +1437,7 @@ public class TeachingReportServiceImpl implements TeachingReportService {
         }
         hql.append(" and c.timetableAppointment.enabled is true");
         // 当前学院筛选
-        if(acno != null && !pConfig.PROJECT_NAME.equals("jitsoft")) {
+        if(acno != null && !pConfigDTO.PROJECT_NAME.equals("jitsoft")) {
             hql.append(" and c.labRoom.labCenter.schoolAcademy.academyNumber like '").append(acno).append("'");
         }
         // 创建根据学期来查询课程；

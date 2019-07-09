@@ -7,7 +7,6 @@ import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.MySQLService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.system.SchoolWeekService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +83,6 @@ public class TimetableProgressSchedulingServiceImpl implements TimetableProgress
 	@Autowired
 	private TimetableAppointmentResultDAO timetableAppointmentResultDAO;
 
-	private PConfig pConfig;
 	@Autowired
 	private SchoolCourseDetailService schoolCourseDetailService;
 	@Autowired

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.common.BaseActionAuthDTO;
 import net.gvsun.lims.dto.common.BaseDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.deviceRepair.DeviceRepairApplyDTO;
 import net.gvsun.lims.dto.deviceRepair.SchoolDeviceRepairDTO;
 import net.gvsun.lims.service.auditServer.AuditService;
@@ -14,7 +15,6 @@ import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +44,6 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
 
     @Autowired
     private UserActionService userActionService;
-
-    @Autowired
-    private PConfig pConfig;
 
     @Autowired
     private LabRoomDeviceDAO labRoomDeviceDAO;
@@ -556,7 +553,7 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
      */
     @Override
     public BaseDTO getDeviceRepairConfirmListBySelect(String search, Integer offset, Integer limit, String sort, String order, HttpServletRequest request){
-
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // sql查询语句
         StringBuilder sql = new StringBuilder("select distinct dr from DeviceRepair dr, LabRoomDevice lrd, User u where 1=1 and (dr.type = 2 or (dr.deviceNumber = lrd.schoolDevice.deviceNumber and dr.labAddress = lrd.labRoom.labRoomName)) and u.username=dr.creater ");
 
@@ -687,16 +684,16 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
                 String RepairWrite = "";
                 String RepairRecord = "";
                 Map<String, String> params = new HashMap<>();
-                params.put("businessType", pConfig.PROJECT_NAME + "RepairAcceptance");
-                String res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+                params.put("businessType", pConfigDTO.PROJECT_NAME + "RepairAcceptance");
+                String res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
                 JSONObject j1 = JSONObject.parseObject(res);
                 RepairAcceptance = j1.getJSONArray("data").getJSONObject(0).getString("authId");
-                params.put("businessType", pConfig.PROJECT_NAME + "RepairWrite");
-                res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+                params.put("businessType", pConfigDTO.PROJECT_NAME + "RepairWrite");
+                res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
                 j1 = JSONObject.parseObject(res);
                 RepairWrite = j1.getJSONArray("data").getJSONObject(0).getString("authId");
-                params.put("businessType", pConfig.PROJECT_NAME + "RepairRecord");
-                res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+                params.put("businessType", pConfigDTO.PROJECT_NAME + "RepairRecord");
+                res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
                 j1 = JSONObject.parseObject(res);
                 RepairRecord = j1.getJSONArray("data").getJSONObject(0).getString("authId");
                 if(deviceRepair.getAuditStage() == 2){
@@ -1275,6 +1272,7 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
      */
     @Override
     public BaseActionAuthDTO getExportActionAuth(BaseActionAuthDTO baseActionAuthDTO, HttpServletRequest request, DeviceRepair deviceRepair, Integer type){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 导出权限
         if(type == 1) {
             User createUser = shareService.findUserByUsername(deviceRepair.getCreater());
@@ -1299,24 +1297,24 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
         if(type == 2){
             boolean flag = false;
             Map<String, String> params = new HashMap<>();
-            params.put("businessType", pConfig.PROJECT_NAME + "RepairAcceptance");
-            String res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + "RepairAcceptance");
+            String res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
             JSONObject j1 = JSONObject.parseObject(res);
             if(j1.getJSONArray("data").size() != 0) {
                 if(request.getSession().getAttribute("selected_role").equals("ROLE_"+j1.getJSONArray("data").getJSONObject(0).getString("authId"))){
                     flag = true;
                 }
             }
-            params.put("businessType", pConfig.PROJECT_NAME + "RepairWrite");
-            res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + "RepairWrite");
+            res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
             j1 = JSONObject.parseObject(res);
             if(j1.getJSONArray("data").size() != 0) {
                 if(request.getSession().getAttribute("selected_role").equals("ROLE_"+j1.getJSONArray("data").getJSONObject(0).getString("authId"))){
                     flag = true;
                 }
             }
-            params.put("businessType", pConfig.PROJECT_NAME + "RepairRecord");
-            res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + "RepairRecord");
+            res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
             j1 = JSONObject.parseObject(res);
             if(j1.getJSONArray("data").size() != 0) {
                 if(request.getSession().getAttribute("selected_role").equals("ROLE_"+j1.getJSONArray("data").getJSONObject(0).getString("authId"))){

@@ -8,6 +8,7 @@ import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
 import net.gvsun.lims.dto.assets.MaterialKindDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.assets.MaterialService;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -27,7 +28,6 @@ import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.SchoolCourseInfoService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,8 +86,6 @@ public class OperationController<JsonResult> {
 	@Autowired private OperItemAuditDAO operItemAuditDAO;
 	@Autowired private MessageService messageService;
 	@Autowired private SchoolDeviceService schoolDeviceService;
-	@Autowired
-	PConfig pConfig;
 	@Autowired
 	private OperationOutlineCourseDAO operationOutlineCourseDAO;
 	@Autowired
@@ -182,6 +180,7 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/listMyOperationItem")
 	public ModelAndView listMyOperationItem(HttpServletRequest request,@RequestParam int currpage, int status, int orderBy,@ModelAttribute OperationItem operationItem, @ModelAttribute("selected_academy") String acno,String schoolMajorsa,String courseNumber){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		//当前登录人
 		User nowUser = shareService.getUserDetail();
 		//实训部主任可以看到全部
@@ -242,8 +241,8 @@ public class OperationController<JsonResult> {
 		// 从权限表中查找审核权限
 		Map<String, String> params = new HashMap<>();
 		params.put("businessUid", "");
-		params.put("businessType", pConfig.PROJECT_NAME + "OperationItem");
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + "OperationItem");
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
 		JSONObject jsonObject = JSON.parseObject(s);
 		Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
 		String name = "";
@@ -260,7 +259,7 @@ public class OperationController<JsonResult> {
 						|| auth.equals("CFO") || auth.equals("ASSISTANT") || auth.equals("EQUIPMENTADMIN")
 						|| auth.equals("TEACHER")) {
 					//浙江建设配置项，实验实训部实验中心主任可以审查全部课题
-				    if(pConfig.PROJECT_NAME=="zjcclims"&&auth.equals("EXCENTERDIRECTOR")){
+				    if(pConfigDTO.PROJECT_NAME=="zjcclims"&&auth.equals("EXCENTERDIRECTOR")){
 						auditors = shareService.findUsersByQuery(auth, "1036");
 					}else{
 						auditors = shareService.findUsersByQuery(auth, acno);
@@ -329,10 +328,10 @@ public class OperationController<JsonResult> {
 		for (OperationItem oi : listOperationItem) {
 			Map<String, String> allAuditStateParams = new HashMap<>();
 			String businessType = "OperationItem";
-			allAuditStateParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+			allAuditStateParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			allAuditStateParams.put("businessAppUid", oi.getId().toString());
 			allAuditStateParams.put("businessUid", "-1");
-			String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+			String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
 			JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
 			String htmlStr = "";
 			if (!"fail".equals(allAuditStateJSON.getString("status"))) {
@@ -371,6 +370,7 @@ public class OperationController<JsonResult> {
 	public ModelAndView listMyOperationItemAuditing(@ModelAttribute OperationItem operationItem, @ModelAttribute("selected_academy") String acno,
 													@RequestParam int currpage){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		int pageSize = ConstantInterface.PAGE_SIZE;
 		//获取当前用户
 		User user = shareService.getUser();
@@ -392,13 +392,13 @@ public class OperationController<JsonResult> {
 			Map<Integer, Integer> idAndLevel = new HashMap<>();
 			Map<String, String> paramsGetCurr = new HashMap<>();
 			String businessType = "OperationItem";
-			paramsGetCurr.put("businessType", pConfig.PROJECT_NAME + businessType);
+			paramsGetCurr.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			StringBuilder sb = new StringBuilder();
 			for (OperationItem oi : listOperationItem) {
 				sb.append(oi.getId().toString()).append(",");
 			}
 			paramsGetCurr.put("businessAppUid", sb.toString().substring(0, sb.length() - 1));
-			String getCurrStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
+			String getCurrStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
 			System.out.println(getCurrStr);
 			JSONObject getCurrJsonObject = JSONObject.parseObject(getCurrStr);
 			if ("success".equals(getCurrJsonObject.getString("status"))) {
@@ -421,10 +421,10 @@ public class OperationController<JsonResult> {
 			// 获取所有审核状态
 			for (OperationItem oi : listOperationItem) {
 				Map<String, String> allAuditStateParams = new HashMap<>();
-				allAuditStateParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+				allAuditStateParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 				allAuditStateParams.put("businessAppUid", oi.getId().toString());
 				allAuditStateParams.put("businessUid", "-1");
-				String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+				String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
 				JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
 				String htmlStr = "";
 				if (!"fail".equals(allAuditStateJSON.getString("status"))) {
@@ -464,6 +464,7 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/operationItemAndAudit")
 	public ModelAndView listMyOperationItemAuditing(HttpServletRequest request,@RequestParam Integer oId, @ModelAttribute("selected_academy") String acno,Integer flag) {
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		OperationItem operationItem = operationItemDAO.findOperationItemById(oId);
 		//获取当前审核情况
 		List<OperItemAudit> operItemAuditList = operationService.findAllOperItemAuditByOId(operationItem);
@@ -496,10 +497,10 @@ public class OperationController<JsonResult> {
 		List<Object[]> auditInfo = new ArrayList<>();
 		Map<String, String> params = new HashMap<>();
 		String businessType = "OperationItem";
-		params.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params.put("businessAppUid", String.valueOf(oId));
 		params.put("businessUid", "-1");
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
 		JSONObject jsonObject = JSONObject.parseObject(s);
 		if("success".equals(jsonObject.getString("status"))){
 			JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -539,9 +540,9 @@ public class OperationController<JsonResult> {
 
 		// 获取当前审核人
 		Map<String, String> paramsGetCurr = new HashMap<>();
-		paramsGetCurr.put("businessType", pConfig.PROJECT_NAME + businessType);
+		paramsGetCurr.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		paramsGetCurr.put("businessAppUid", oId.toString());
-		String getCurrStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
+		String getCurrStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
 		JSONObject getCurrJSON = JSONObject.parseObject(getCurrStr);
 		String authName = "";
 		if("success".equals(getCurrJSON.getString("status"))){
@@ -601,15 +602,16 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/saveOperationItemAudit")
 	public String saveOperationItemAudit(HttpServletRequest request,Integer oId,String auditUser,String audit,String mem,Integer flag, @ModelAttribute("selected_academy") String acno){
 		OperationItem operationItem = operationItemDAO.findOperationItemById(oId);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		Map<String, String> params = new HashMap<>();
 		String businessType = "OperationItem";
-		params.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params.put("businessAppUid", oId.toString());
 		params.put("businessUid", "-1");
 		params.put("result", audit.equals("1") ? "pass" : "fail");
 		params.put("info", mem);
 		params.put("username", auditUser);
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 		JSONObject jsonObject = JSONObject.parseObject(s);
 		if(!"success".equals(jsonObject.getString("status"))){
 			return "fail";
@@ -617,7 +619,7 @@ public class OperationController<JsonResult> {
 		// 当前权限名称
 		String authCName = authorityDAO.findAuthorityByAuthorityName(request.getSession().getAttribute("selected_role").toString().substring(5)).iterator().next().getCname();
 		JSONObject result = jsonObject.getJSONObject("data");
-		String title = pConfig.operationItemName + authCName + shareService.getUserDetail().getCname();
+		String title = pConfigDTO.operationItemName + authCName + shareService.getUserDetail().getCname();
 		if(result.containsKey(-1)){
 			// 全部审核通过
 			CDictionary cd =
@@ -639,9 +641,9 @@ public class OperationController<JsonResult> {
 			// 给下一级审核人发消息
 			// 获取当前审核权限
 			Map<String, String> curParams = new HashMap<>();
-			curParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+			curParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			curParams.put("businessAppUid", operationItem.getId().toString());
-			String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+			String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
 			if("success".equals(JSONObject.parseObject(curStr).getString("status"))){
 				String nextAuthName = JSONObject.parseObject(curStr).getJSONArray("data").getJSONObject(0).getString("result");
 				// 获取权限所对应的用户
@@ -664,7 +666,7 @@ public class OperationController<JsonResult> {
 					message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
 					message.setCond(0);
 					message.setTage(2);
-					message.setTitle(pConfig.operationItemName + "审核");
+					message.setTitle(pConfigDTO.operationItemName + "审核");
 					message.setContent("<a onclick='changeMessage(this)' href='../operation/operationItemAndAudit?oId=" + operationItem.getId() + "&cid=-1&flag=" + (flag+1) + "'>审核</a>");
 					message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
 					message.setCreateTime(date);
@@ -1104,6 +1106,7 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/viewOperationItem")
 	public ModelAndView viewOperationItem(@RequestParam int operationItemId,int flag,int status){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		StringBuffer majorStr = new StringBuffer();
 		OperationItem operationItem = operationService.findOperationItemByPrimaryKey(operationItemId);
 		
@@ -1196,10 +1199,10 @@ public class OperationController<JsonResult> {
 
 		Map<String, String> params = new HashMap<>();
 		String businessType = "OperationItem";
-		params.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params.put("businessAppUid", String.valueOf(operationItemId));
 		params.put("businessUid", "-1");
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
 		JSONObject jsonObject = JSONObject.parseObject(s);
 		List<Object[]> list = new ArrayList<>();
 		if(jsonObject.getString("status").equals("success")){
@@ -2640,6 +2643,7 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/listOperationItemLims")
 	public ModelAndView listOperationItemLims(HttpServletRequest request,@RequestParam int currpage, int status, int orderBy, @ModelAttribute OperationItem operationItem, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		User currUser = shareService.getUserDetail();  //当前登录人
 		if(status == 1) {// 我的项目
 			operationItem.setUserByLpCreateUser(currUser);
@@ -2705,13 +2709,13 @@ public class OperationController<JsonResult> {
 			Map<Integer, Integer> idAndLevel = new HashMap<>();
 			Map<String, String> paramsGetCurr = new HashMap<>();
 			String businessType = "OperationItem";
-			paramsGetCurr.put("businessType", pConfig.PROJECT_NAME + businessType);
+			paramsGetCurr.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			StringBuilder sb = new StringBuilder();
 			for (OperationItem oi : itemList) {
 				sb.append(oi.getId().toString()).append(",");
 			}
 			paramsGetCurr.put("businessAppUid", sb.toString().substring(0, sb.length() - 1));
-			String getCurrStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
+			String getCurrStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
 			System.out.println(getCurrStr);
 			JSONObject getCurrJsonObject = JSONObject.parseObject(getCurrStr);
 			if ("success".equals(getCurrJsonObject.getString("status"))) {
@@ -2735,10 +2739,10 @@ public class OperationController<JsonResult> {
 			// 获取所有审核状态
 			for (OperationItem oi : itemList) {
 				Map<String, String> allAuditStateParams = new HashMap<>();
-				allAuditStateParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+				allAuditStateParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 				allAuditStateParams.put("businessAppUid", oi.getId().toString());
 				allAuditStateParams.put("businessUid", "-1");
-				String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+				String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
 				JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
 				String htmlStr = "";
 				if (!"fail".equals(allAuditStateJSON.getString("status"))) {
@@ -2785,9 +2789,9 @@ public class OperationController<JsonResult> {
 		// 保存审核初始数据
 //		Map<String, String> params = new HashMap<>();
 //		params.put("businessUid", oItem.getId().toString());
-//		params.put("businessType", pConfig.PROJECT_NAME + "OperationItem");
+//		params.put("businessType", pConfigDTO.PROJECT_NAME + "OperationItem");
 //		params.put("businessAppUid", oItem.getId().toString());
-//		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+//		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
 //		JSONObject jsonObject = JSON.parseObject(s);
 //		String status = jsonObject.getString("status");
 //		if(!"success".equals(status)){
@@ -3056,6 +3060,7 @@ public class OperationController<JsonResult> {
 	public ModelAndView viewOperationItemRest(HttpServletRequest request,@PathVariable int status,
 											  @PathVariable int id, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		StringBuffer majorStr = new StringBuffer();
 		OperationItem operationItem = operationService.findOperationItemByPrimaryKey(id);
 
@@ -3144,9 +3149,9 @@ public class OperationController<JsonResult> {
 		// 获取当前审核人
 		Map<String, String> paramsGetCurr = new HashMap<>();
 		String businessType = "OperationItem";
-		paramsGetCurr.put("businessType", pConfig.PROJECT_NAME + businessType);
+		paramsGetCurr.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		paramsGetCurr.put("businessAppUid", operationItem.getId().toString());
-		String getCurrStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
+		String getCurrStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
 		JSONObject getCurrJSON = JSONObject.parseObject(getCurrStr);
 		if("success".equals(getCurrJSON.getString("status"))){
 			JSONArray getCurrArray = getCurrJSON.getJSONArray("data");
@@ -3181,6 +3186,7 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/auditOperationItem")
 	public String checkOperationItem(HttpServletRequest request,@RequestParam int operationItemId, int result){
 		OperationItem operationItem = operationService.findOperationItemByPrimaryKey(operationItemId);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String ip = shareService.getIpAddr(request);
 		//保存日志信息 saveOperationItemLog(String userIp, int tag, int action, int id)
 		//tag：子模块标志位  0-我的实验项目  1-实验项目管理  2-实验项目导入  id：项目卡的id 0-查看 -1--新建
@@ -3224,13 +3230,13 @@ public class OperationController<JsonResult> {
 //			operationService.saveOperationItem(operationItem);
 			Map<String, String> params = new HashMap<>();
 			String businessType = "OperationItem";
-			params.put("businessType", pConfig.PROJECT_NAME + businessType);
+			params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			params.put("businessAppUid", String.valueOf(operationItemId));
 			params.put("businessUid", "-1");
 			params.put("result", result == 1 ? "pass" : "fail");
 			params.put("info", "已审核");
 			params.put("username", shareService.getUserDetail().getUsername());
-			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+			String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 			JSONObject jsonObject = JSONObject.parseObject(s);
 			if(!"success".equals(jsonObject.getString("status"))){
 				return "redirect:/operation/listOperationItemLims?currpage=1&&status=2&orderBy=9";
@@ -3340,6 +3346,7 @@ public class OperationController<JsonResult> {
 	@RequestMapping("/choseAuditUser")
 	public ModelAndView getAuditUser(@RequestParam Integer idKey, @ModelAttribute("selected_academy") String acno,int page) {
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// 项目
 		OperationItem item = operationService.findOperationItemByPrimaryKey(idKey);
 		mav.addObject("operationItem", item);
@@ -3357,8 +3364,8 @@ public class OperationController<JsonResult> {
 		// 从权限表中查找审核权限
 		Map<String, String> params = new HashMap<>();
 		params.put("businessUid", "");
-		params.put("businessType", pConfig.PROJECT_NAME + "OperationItem");
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + "OperationItem");
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
 		JSONObject jsonObject = JSON.parseObject(s);
 		Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
 		if (auditConfigs != null && auditConfigs.size() != 0) {

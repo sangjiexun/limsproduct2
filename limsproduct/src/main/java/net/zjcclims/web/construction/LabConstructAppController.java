@@ -1,6 +1,7 @@
 package net.zjcclims.web.construction;
 
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.WordHandler;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -27,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.zjcclims.web.common.PConfig;
 /**
  * Spring MVC controller that handles CRUD requests for LabConstructApp entities
  * 
@@ -153,8 +153,6 @@ public class LabConstructAppController {
 	private SchoolCourseDAO schoolCourseDAO;
 	@Autowired
 	private SchoolAcademyDAO schoolAcademyDAO;
-	@Autowired
-	PConfig pConfig;
 	
 	/**
 	 * Register custom, context-specific property editors
@@ -1418,7 +1416,9 @@ public class LabConstructAppController {
 	@RequestMapping("/downloadLabConstructApp")
 	public void downloadTeacherNeedWord(@RequestParam int idKey, HttpServletResponse response)throws Exception
 	{
+
 		response.setContentType("application/doc;charset=UTF-8");
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		//id对应的实验室建设申请项目
 		LabConstructApp app=labConstructAppDAO.findLabConstructAppByPrimaryKey(idKey);
 		//新建一个map的list集合；
@@ -1629,7 +1629,7 @@ public class LabConstructAppController {
         	
 		}
         map.put("projectCompletionItemList", projectCompletionItemList);
-        map.put("pConfig.PROJECT_NAME",pConfig.PROJECT_NAME);
+        map.put("pConfigDTO.PROJECT_NAME",pConfigDTO.PROJECT_NAME);
         System.out.println(map);
         //导出word
 		WordHandler handler = new WordHandler();

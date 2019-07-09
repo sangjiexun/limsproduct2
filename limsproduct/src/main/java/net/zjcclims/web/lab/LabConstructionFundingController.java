@@ -16,7 +16,6 @@ import net.zjcclims.domain.LabConstructionFunding;
 import net.zjcclims.domain.LabConstructionFundingAudit;
 import net.zjcclims.domain.LabConstructionProject;
 import net.zjcclims.domain.LabConstructionPurchase;
-import net.zjcclims.domain.LabConstructionPurchaseAudit;
 import net.zjcclims.domain.MLabConstructionProjectUser;
 import net.zjcclims.domain.Message;
 import net.zjcclims.domain.User;
@@ -25,7 +24,7 @@ import net.zjcclims.service.lab.LabConstructionFundingService;
 import net.zjcclims.service.lab.LabConstructionProjectService;
 import net.zjcclims.service.lab.LabConstructionPurchaseService;
 
-import net.zjcclims.web.common.PConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -53,7 +52,6 @@ public class LabConstructionFundingController {
 	@Autowired CDictionaryDAO cDictionaryDAO;
 	@Autowired LabConstructionFundingAuditDAO labConstructionFundingAuditDAO;
 	@Autowired MessageDAO messageDAO;
-	@Autowired PConfig pConfig;
 
 	/********************************
 	 * 功能：分页列出项目经费

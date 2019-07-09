@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.common.BaseActionAuthDTO;
 import net.gvsun.lims.dto.common.BaseDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.timetable.TimetableCourseStudentDTO;
 import net.gvsun.lims.dto.timetable.TimetableMergeDTO;
 import net.gvsun.lims.dto.timetable.TimetableParamVO;
@@ -16,7 +17,6 @@ import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +53,6 @@ public class TimetableSelfCourseServiceImpl implements TimetableSelfCourseServic
     private TimetableCourseStudentDAO timetableCourseStudentDAO;
     @Autowired
     private TimetableManagerService timetableManagerService;
-    @Autowired
-    private PConfig pConfig;
 
 
     /*************************************************************************************
@@ -420,8 +418,9 @@ public class TimetableSelfCourseServiceImpl implements TimetableSelfCourseServic
             Map<String, String> params = new HashMap<>();
             String businessType = "SelfTimetableAudit";
             params.put("businessAppUid", timetableSelfCourse.getId().toString());
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
-            String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+            PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+            params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+            String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
             JSONObject jsonObject = JSON.parseObject(curStr);
             String curStatus = jsonObject.getString("status");
             if ("success".equals(curStatus)) {

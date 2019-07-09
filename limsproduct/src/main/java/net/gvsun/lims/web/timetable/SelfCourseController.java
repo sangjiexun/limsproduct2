@@ -1,12 +1,12 @@
 package net.gvsun.lims.web.timetable;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.timetable.TimetableSelfCourseService;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -47,8 +47,6 @@ public class SelfCourseController<JsonResult> {
     @Autowired
     private TimetableAppointmentSameNumberDAO timetableAppointmentSameNumberDAO;
     @Autowired
-    private PConfig pConfig;
-    @Autowired
     private SchoolTermDAO schoolTermDAO;
 
     /************************************************************
@@ -86,6 +84,8 @@ public class SelfCourseController<JsonResult> {
     @RequestMapping("/selfCourseList")
     public ModelAndView selfCourseList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
@@ -97,8 +97,8 @@ public class SelfCourseController<JsonResult> {
         mav.addObject("cStaticValue", cStaticValue);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
-        mav.addObject("selfBatch", pConfig.selfBatch);
-        mav.addObject("selfNoBatch", pConfig.selfNoBatch);
+        mav.addObject("selfBatch", pConfigDTO.selfBatch);
+        mav.addObject("selfNoBatch", pConfigDTO.selfNoBatch);
         mav.setViewName("lims/timetable/engineer/selfcourse/selfCourseList.jsp");
         return mav;
     }

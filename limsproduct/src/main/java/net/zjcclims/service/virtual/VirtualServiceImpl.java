@@ -1,6 +1,7 @@
 package net.zjcclims.service.virtual;
 
 import com.alibaba.fastjson.JSON;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.zjcclims.dao.*;
@@ -11,7 +12,6 @@ import net.zjcclims.service.lab.LabRoomAdminService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.vo.CourseSchedule;
 import net.zjcclims.vo.virtual.VirtualImageReservationVO;
-import net.zjcclims.web.common.PConfig;
 import net.zjcclims.web.virtual.StartVirtualImageByCourseSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -43,8 +42,6 @@ public class VirtualServiceImpl implements VirtualService {
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     private static String path = "/upload/";
     private static String filenameTemp;
-    @Autowired
-    PConfig pConfig;
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
@@ -807,7 +804,7 @@ public class VirtualServiceImpl implements VirtualService {
             e.printStackTrace();
             return "fail";
         }
-        //String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+        //String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
         return "success";
     }
 
@@ -1071,18 +1068,18 @@ public class VirtualServiceImpl implements VirtualService {
 		//demo
 		Map<String, String> params = new HashMap<>();
 		params.put("businessUid", "-1");
-		params.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params.put("businessAppUid", virtualImageReservation.getId().toString());
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
 		com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
 		String status = jsonObject.getString("status");
 		if (!"success".equals(status)) {
 			return "fail";
 		}
 		Map<String, String> params2 = new HashMap<>();
-		params2.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params2.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params2.put("businessAppUid", virtualImageReservation.getId().toString());
-		String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+		String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
 		com.alibaba.fastjson.JSONObject jsonObject2 = JSON.parseObject(s2);
 		String status2 = jsonObject2.getString("status");
 		com.alibaba.fastjson.JSONArray jsonArray = jsonObject2.getJSONArray("data");
@@ -1091,13 +1088,13 @@ public class VirtualServiceImpl implements VirtualService {
 		String firstAuthName = jsonObject3.getString("result");
 		if (auditNumber == 1 && !request.getSession().getAttribute("selected_role").equals("ROLE_STUDENT") && "TEACHER".equals(firstAuthName)) {
 			Map<String, String> params3 = new HashMap<>();
-			params3.put("businessType", pConfig.PROJECT_NAME + businessType);
+			params3.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			params3.put("businessAppUid", virtualImageReservation.getId().toString());
 			params3.put("businessUid", virtualImage.getId().toString());
 			params3.put("result", "pass");
 			params3.put("info", "不是学生不需要导师审核");
 			params3.put("username", "username");
-			String s3 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params3);
+			String s3 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params3);
 			com.alibaba.fastjson.JSONObject jsonObject4 = JSON.parseObject(s3);
 			String status3 = jsonObject4.getString("status");
 			if (status3.equals("fail")) {
@@ -1105,9 +1102,9 @@ public class VirtualServiceImpl implements VirtualService {
 			}
 		}
 		Map<String, String> params4 = new HashMap<>();
-		params4.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params4.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params4.put("businessAppUid", virtualImageReservation.getId().toString());
-		String s4 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params4);
+		String s4 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params4);
 		com.alibaba.fastjson.JSONObject jsonObject5 = JSON.parseObject(s4);
 		String status4 = jsonObject5.getString("status");
 		com.alibaba.fastjson.JSONArray jsonArray4 = jsonObject5.getJSONArray("data");
@@ -1447,6 +1444,7 @@ public class VirtualServiceImpl implements VirtualService {
      */
     @Override
     public Integer getAuditNumber(VirtualImage virtualImage, Integer state) {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         if (state == null || state <= 0) return state;
         Integer auditNumber;
 		/*if (labRoom.getCDictionaryByIsAudit() != null
@@ -1455,8 +1453,8 @@ public class VirtualServiceImpl implements VirtualService {
         String[] RSWITCH = {"on", "off"};
         Map<String, String> params = new HashMap<>();
         params.put("businessUid", virtualImage.getId().toString());
-        params.put("businessType", pConfig.PROJECT_NAME + "VirtualImageReservation");
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + "VirtualImageReservation");
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
         Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);

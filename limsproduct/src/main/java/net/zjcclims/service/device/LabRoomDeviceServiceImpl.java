@@ -6,6 +6,7 @@ import edu.emory.mathcs.backport.java.util.LinkedList;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -13,7 +14,6 @@ import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -108,8 +108,6 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
     SchoolDeviceService schoolDeviceService;
     @Autowired
     private MessageDAO messageDAO;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     LabRoomTrainingPeopleDAO labRoomTrainingPeopleDAO;
     @Autowired
@@ -999,6 +997,8 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
     @Override
     public String securityAccess(String username, Integer id) {
         // TODO Auto-generated method stub
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String str = "success";
         User user = shareService.getUserDetail();
         //id对应的设备
@@ -1011,8 +1011,8 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
         boolean flag = false;
         Map<String, String> params = new HashMap<>();
         params.put("businessUid", device.getId().toString());
-        params.put("businessType", pConfig.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         if("success".equals(jsonObject.getString("status"))) {
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);

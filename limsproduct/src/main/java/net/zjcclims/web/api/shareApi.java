@@ -1,10 +1,9 @@
 package net.zjcclims.web.api;
 
-import net.gvsun.web.util.Authorization;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.jwt.JWTUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -24,8 +23,6 @@ import java.util.Map;
 @RequestMapping("/shareApi")
 @Controller("shareApi")
 public class shareApi {
-    @Autowired
-    private PConfig pConfig;
     @Value("${directoryEngineHost}")
     private  String directoryEngineHost;
     @Value("${resourceContainerHost}")
@@ -52,6 +49,7 @@ public class shareApi {
     public String getAuthorization(HttpServletResponse res){
         Map<String,Object> data = new HashMap<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         User user = shareService.getUserDetail();
         if(user!=null){
             if(user.getUsername()==null){
@@ -60,11 +58,11 @@ public class shareApi {
                 data.put("cname",user.getCname());
                 data.put("username",user.getUsername());
                 data.put("selected_role",request.getSession().getAttribute("selected_role"));
-                data.put("auditServerUrl",pConfig.auditServerUrl);
-                data.put("authTimetableType",pConfig.authTimetableType);
-                data.put("proj_name", pConfig.PROJECT_NAME);
-                data.put("project", pConfig.siteEnName);
-                data.put("limsUrl", pConfig.limsUrl);
+                data.put("auditServerUrl",pConfigDTO.auditServerUrl);
+                data.put("authTimetableType",pConfigDTO.authTimetableType);
+                data.put("proj_name", pConfigDTO.PROJECT_NAME);
+                data.put("project", pConfigDTO.siteEnName);
+                data.put("limsUrl", pConfigDTO.limsUrl);
                 data.put("academy_number", request.getSession().getAttribute("selected_academy"));
             }
             data.put("siteName","实验室管理");

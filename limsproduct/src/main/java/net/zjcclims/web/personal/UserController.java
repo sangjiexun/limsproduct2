@@ -6,6 +6,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import excelTools.MatrixToImageWriter;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
@@ -20,7 +21,6 @@ import net.zjcclims.service.personal.PersonalCenterService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.SchoolCourseDetailService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
-import net.zjcclims.web.common.PConfig;
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,19 +86,18 @@ public class UserController {
 	private EntityManager entityManager;
 	@Autowired
 	SchoolCourseDetailDAO schoolCourseDetailDAO;
-	@Autowired
-	PConfig pConfig;
+
 	@Autowired
 	private MySQLService mySQLService;
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register // static // property // editors.
-		binder.registerCustomEditor(java.util.Calendar.class, new org.skyway.spring.util.databinding.CustomCalendarEditor());
+		binder.registerCustomEditor(Calendar.class, new org.skyway.spring.util.databinding.CustomCalendarEditor());
 		binder.registerCustomEditor(byte[].class, new org.springframework.web.multipart.support.ByteArrayMultipartFileEditor());
 		binder.registerCustomEditor(boolean.class, new org.skyway.spring.util.databinding.EnhancedBooleanEditor(false));
 		binder.registerCustomEditor(Boolean.class, new org.skyway.spring.util.databinding.EnhancedBooleanEditor(true));
 		binder.registerCustomEditor(java.math.BigDecimal.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(java.math.BigDecimal.class, true));
 		binder.registerCustomEditor(Integer.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Integer.class, true));
-		binder.registerCustomEditor(java.util.Date.class, new org.skyway.spring.util.databinding.CustomDateEditor());
+		binder.registerCustomEditor(Date.class, new org.skyway.spring.util.databinding.CustomDateEditor());
 		binder.registerCustomEditor(String.class, new org.skyway.spring.util.databinding.StringEditor());
 		binder.registerCustomEditor(Long.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Long.class, true));
 		binder.registerCustomEditor(Double.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Double.class, true));
@@ -138,7 +137,7 @@ public class UserController {
 	@Transactional
 	public ModelAndView mySelfTimetable() {
 		ModelAndView mav = new ModelAndView();
-
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// 获取当前用户
 		User user = shareService.getUser();
 		mav.addObject("role",user.getUserRole());
@@ -293,7 +292,7 @@ public class UserController {
 		List<TimetableAppointment> timetableAppointments = new ArrayList<>();
 		timetableAppointments.addAll(timetableAppointment);
 		timetableAppointments.addAll(selfTimetableAppointment);
-		if(pConfig.PROJECT_NAME.equals("fdulims")) {
+		if(pConfigDTO.PROJECT_NAME.equals("fdulims")) {
 			Map<Integer, String> livePathMap = mySQLService.getLivePathByApp(timetableAppointments);
 			mav.addObject("livePathMap", livePathMap);
 			Map<Integer, List<String>> httpPathMap = mySQLService.getHttpPathByApp(timetableAppointments);
@@ -352,6 +351,7 @@ public class UserController {
 	@RequestMapping("/personal/messageList")
 	public ModelAndView messageList(@ModelAttribute Message message,@RequestParam int currpage,int tage,HttpServletRequest request){
 		ModelAndView mav=new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String starttime=request.getParameter("starttime");
 		String endtime=request.getParameter("endtime");
 		mav.addObject("starttime", starttime);
@@ -383,8 +383,8 @@ public class UserController {
 		mav.addObject("trainingRecords", trainingRecords);
 		mav.addObject("str", str);
 		mav.addObject("user", user);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
-		if(pConfig.PROJECT_NAME.equals("shjulims")){   //若是上交大项目隐去个人消息
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
+		if(pConfigDTO.PROJECT_NAME.equals("shjulims")){   //若是上交大项目隐去个人消息
 			mav.addObject("isHide",1);
 		}else{
 			mav.addObject("isHide",0);
@@ -441,6 +441,7 @@ public class UserController {
 	@RequestMapping("/personal/messageStatistics")
 	public ModelAndView messageStatistics(@RequestParam int tage){
 		ModelAndView mav=new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		List<String[]> messageStatistics = new ArrayList<String[]>();
 		String[] s1 = new String[4];
 		s1[0] = "申请";
@@ -470,7 +471,7 @@ public class UserController {
 		User user = shareService.getUser();  // 获取当前用户
 		mav.addObject("user", user);
 		mav.addObject("tage",tage);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 
 		Set<Authority> as = user.getAuthorities();
 		String str = "";
@@ -760,7 +761,7 @@ public class UserController {
 	@RequestMapping("/personal/linkWeChat")
 	public ModelAndView linkWeChat(){
 		ModelAndView mav = new ModelAndView();
-
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		User user = shareService.getUser();  // 获取当前用户
 
 		mav.addObject("user", user);
@@ -768,7 +769,7 @@ public class UserController {
 		//用户培训记录
 		int trainingRecords =shareService.counttrainings(shareService.getUser().getUsername());
 		mav.addObject("trainingRecords", trainingRecords);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 
 		mav.setViewName("personal/WeChat.jsp");
 		return mav;

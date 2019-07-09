@@ -1,6 +1,7 @@
 package net.gvsun.lims.api.wxAPI;
 
 import com.alibaba.fastjson.JSON;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.LabRoomAgentDAO;
 import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.dao.RemoteOpenDoorDAO;
@@ -13,7 +14,6 @@ import net.zjcclims.service.lab.LabRoomLendingService;
 import net.zjcclims.service.lab.LabRoomReservationService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -51,8 +51,6 @@ public class wxAPIController {
     private LabRoomAgentDAO labRoomAgentDAO;
     @Autowired
     private RemoteOpenDoorDAO remoteOpenDoorDAO;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private LabRoomReservationService labRoomReservationService;
 
@@ -96,8 +94,8 @@ public class wxAPIController {
         LabRoomAgent a = labRoomAgentDAO.findLabRoomAgentByPrimaryKey(agentId);
         String ip=a.getHardwareIp();
         String sn=a.getManufactor();
-
-        if(pConfig.PROJECT_NAME.equals("zjcclims")) {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        if(pConfigDTO.PROJECT_NAME.equals("zjcclims")) {
             User user = shareService.getUser();//当前登陆人
             List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(a.getLabRoom().getId());// 根据roomId查询该实验室的门禁
             LabRoom labRoom = labRoomDAO.findLabRoomById(a.getLabRoom().getId());
@@ -149,7 +147,7 @@ public class wxAPIController {
                     port = "80";
                 }
 
-                String sysName = pConfig.PROJECT_NAME;
+                String sysName = pConfigDTO.PROJECT_NAME;
                 if (sysName.contains("jitsoft")) {
                     getURL = "/services/ofthings/acldoor.asp?cmd=" + cmd + "&ip=" + ip + "&sn=" + sn + "&doorIndex=" + doorIndex;
                 }else if(sysName.contains("fdulims")) {
@@ -216,6 +214,7 @@ public class wxAPIController {
     public String judgeConflictForStation(@RequestParam Integer labRoomId, @RequestParam String lendingTimeStr,
                                           @RequestParam String startTimeStr, @RequestParam String endTimeStr) {
         //是否可预约参数
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         int res = 0;
         //是否导师审核参数
         int teac = 0;
@@ -245,8 +244,8 @@ public class wxAPIController {
         String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
         Map<String, String> params = new HashMap<>();
         params.put("businessUid", l.getId().toString());
-        params.put("businessType",pConfig.PROJECT_NAME + "StationReservation" + acno);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        params.put("businessType",pConfigDTO.PROJECT_NAME + "StationReservation" + acno);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
         Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
         if (auditConfigs != null && auditConfigs.size() != 0) {

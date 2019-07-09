@@ -9,11 +9,10 @@ package net.zjcclims.web.system;
 
 import java.text.ParseException;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Iterator;
+
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.SchoolClassesDAO;
 import net.zjcclims.service.common.ShareService;
@@ -22,17 +21,13 @@ import net.zjcclims.service.lab.LabCenterService;
 import net.zjcclims.service.system.UserDetailService;
 import net.zjcclims.dao.UserDAO;
 import net.zjcclims.dao.SchoolMajorDAO;
-import net.zjcclims.domain.LabCenter;
 import net.zjcclims.domain.User;
 import net.zjcclims.domain.SchoolClasses;
 import net.zjcclims.domain.UserCard;
 import net.zjcclims.dao.UserCardDAO;
 
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -83,8 +78,6 @@ public class UsersController<JsonResult>
 	private SchoolMajorDAO schoolMajorDAO;
 	@Autowired
 	private UserCardDAO userCardDAO;
-	@Autowired
-	private PConfig pConfig;
 	/************************************************************
 	 * @内容：用户列表
 	 * @作者：叶明盾
@@ -94,6 +87,7 @@ public class UsersController<JsonResult>
 	public ModelAndView listUser(HttpServletRequest request, @ModelAttribute User user,@RequestParam int currpage,@ModelAttribute("selected_academy") String acno)
 	{
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// 设置分页变量并赋值为20
 		int pageSize = CommonConstantInterface.INT_PAGESIZE;
 		if(request.getSession().getAttribute("selected_role").equals("ROLE_SUPERADMIN")){
@@ -111,7 +105,7 @@ public class UsersController<JsonResult>
 		mav.addObject("page", currpage);
 		//将totalRecords映射到totalRecords，用来获取总记录数
 		mav.addObject("totalRecords", totalRecords);
-		mav.addObject("userOperation", pConfig.userOperation);
+		mav.addObject("userOperation", pConfigDTO.userOperation);
 		
 		//获取用户列表
 		mav.addObject("userMap", userDetailService.getUserTotalRecords(user,acno,currpage,pageSize));

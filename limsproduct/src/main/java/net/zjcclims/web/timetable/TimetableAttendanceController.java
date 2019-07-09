@@ -2,7 +2,6 @@ package net.zjcclims.web.timetable;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.persistence.EntityManager;
@@ -11,6 +10,7 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.service.cmsshow.CMSShowService;
@@ -36,10 +36,8 @@ import net.zjcclims.domain.TimetableAppointmentSameNumber;
 import net.zjcclims.domain.TimetableAttendance;
 import net.zjcclims.domain.User;
 
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -76,8 +74,6 @@ public class TimetableAttendanceController {
 	private SchoolCourseDAO schoolCourseDAO;
 	@Autowired
 	private LabRoomAgentDAO labRoomAgentDAO;
-	@Autowired
-	PConfig pConfig;
 
 	/**
 	 * Register custom, context-specific property editors
@@ -266,6 +262,8 @@ public class TimetableAttendanceController {
 	@RequestMapping("/timetable/Attendance")
 	public ModelAndView Attendance(@RequestParam Integer id,Integer page,@ModelAttribute CommonHdwlog commonHdwlog,HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
 		String starttime=request.getParameter("starttime");
 		String endtime=request.getParameter("endtime");
 		mav.addObject("starttime", starttime);
@@ -289,7 +287,7 @@ public class TimetableAttendanceController {
 			pageModel = shareService.getPage(page, pageSize, totalRecords);
 			//页面显示的实验室
 			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,page,pageSize,request);
-		}else if(pConfig.newServer.equals("false")){
+		}else if(pConfigDTO.newServer.equals("false")){
 			// 老版获取考勤数据
 			totalRecords = cmsShowService.findLabRoomAccessByIpCount(commonHdwlog,ip,port,request);
 			pageModel = shareService.getPage(page, pageSize, totalRecords);
@@ -724,6 +722,8 @@ public class TimetableAttendanceController {
 									   HttpServletResponse response) throws Exception {
 		//id对应的物联设备
 		LabRoomAgent agent=labRoomAgentDAO.findLabRoomAgentByPrimaryKey(id);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
 		String ip=agent.getHardwareIp();
 		String port=agent.getManufactor();
 		List<LabAttendance> accessList =null;
@@ -731,7 +731,7 @@ public class TimetableAttendanceController {
 		if (agent.getCDictionary().getCNumber().equals("6") && agent.getCDictionary().getCCategory().equals("c_agent_type")) {// 智能班牌
 			// 老版获取考勤数据
 			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,0,-1,request);
-		}else if(pConfig.newServer.equals("false")){
+		}else if(pConfigDTO.newServer.equals("false")){
 			// 老版获取考勤数据
 			accessList=cmsShowService.findLabRoomAccessByIp(commonHdwlog,ip,port,0,-1,request);
 		}else {

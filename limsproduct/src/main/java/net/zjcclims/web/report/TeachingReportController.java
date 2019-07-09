@@ -7,7 +7,7 @@
 
 package net.zjcclims.web.report;
 
-import net.zjcclims.constant.MonthReport;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.LabCenterDAO;
 import net.zjcclims.dao.SchoolTermDAO;
 import net.zjcclims.dao.TimetableAppointmentDAO;
@@ -20,7 +20,7 @@ import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.SchoolCourseDetailService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
 import net.zjcclims.vo.QueryParamsVO;
-import net.zjcclims.web.common.PConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -29,9 +29,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -79,8 +76,6 @@ public class TeachingReportController<JsonResult> {
 	private SchoolTermDAO schoolTermDAO;
 	@Autowired
 	private ReportService reportService;
-	@Autowired
-	private PConfig pConfig;
 	
 	/************************************************************
 	 * @学期登记报表
@@ -267,7 +262,8 @@ public class TeachingReportController<JsonResult> {
 	@RequestMapping("/reportTest")
 	public ModelAndView reportTest() {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("zuulServerUrl", pConfig.auditServerUrl);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+		mav.addObject("zuulServerUrl", pConfigDTO.auditServerUrl);
 
 		mav.setViewName("reports/teachingReport/getTest.jsp");
 		return mav;

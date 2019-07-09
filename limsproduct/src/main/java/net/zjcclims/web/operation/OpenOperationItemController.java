@@ -3,6 +3,7 @@ package net.zjcclims.web.operation;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.assets.*;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.assets.MaterialService;
 import net.gvsun.lims.service.timetable.TimetableSelfCourseService;
 import net.zjcclims.dao.*;
@@ -20,7 +21,6 @@ import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.SchoolCourseInfoService;
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,10 +33,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Null;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -50,7 +47,6 @@ public class OpenOperationItemController<JsonResult> {
 
 	@Autowired private ShareService shareService;
 	@Autowired private OperationService operationService;
-	@Autowired private PConfig pConfig;
 	@Autowired private UserDAO userDAO;
 	@Autowired private AuthorityDAO authorityDAO;
 	@Autowired private LabRoomService labRoomService;
@@ -95,6 +91,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/listOpenOperationItem")
 	public ModelAndView listOpenOperationItem(HttpServletRequest request, @RequestParam int currpage, int status, int orderBy, @ModelAttribute OperationItem operationItem, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		User currUser = shareService.getUserDetail();  //当前登录人
 		if(status == 1) {// 我的项目
 			operationItem.setUserByLpCreateUser(currUser);
@@ -160,13 +157,13 @@ public class OpenOperationItemController<JsonResult> {
 			Map<Integer, Integer> idAndLevel = new HashMap<>();
 			Map<String, String> paramsGetCurr = new HashMap<>();
 			String businessType = "OperationItem";
-			paramsGetCurr.put("businessType", pConfig.PROJECT_NAME + businessType);
+			paramsGetCurr.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			StringBuilder sb = new StringBuilder();
 			for (OperationItem oi : itemList) {
 				sb.append(oi.getId().toString()).append(",");
 			}
 			paramsGetCurr.put("businessAppUid", sb.toString().substring(0, sb.length() - 1));
-			String getCurrStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
+			String getCurrStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
 			System.out.println(getCurrStr);
 			JSONObject getCurrJsonObject = JSONObject.parseObject(getCurrStr);
 			if ("success".equals(getCurrJsonObject.getString("status"))) {
@@ -190,10 +187,10 @@ public class OpenOperationItemController<JsonResult> {
 			// 获取所有审核状态
 			for (OperationItem oi : itemList) {
 				Map<String, String> allAuditStateParams = new HashMap<>();
-				allAuditStateParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+				allAuditStateParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 				allAuditStateParams.put("businessAppUid", oi.getId().toString());
 				allAuditStateParams.put("businessUid", "-1");
-				String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+				String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
 				JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
 				String htmlStr = "";
 				if (!"fail".equals(allAuditStateJSON.getString("status"))) {
@@ -221,7 +218,7 @@ public class OpenOperationItemController<JsonResult> {
 				mav.addObject("auditShow", auditShow);
 			}
 		}
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 
 		mav.setViewName("openOperationItem/listOpenOperationItem.jsp");
 		return mav;
@@ -589,6 +586,7 @@ public class OpenOperationItemController<JsonResult> {
 	public ModelAndView viewOperationItemRest(HttpServletRequest request,@PathVariable int status,
 											  @PathVariable int id, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		StringBuffer majorStr = new StringBuffer();
 		OperationItem operationItem = operationService.findOperationItemByPrimaryKey(id);
 
@@ -688,9 +686,9 @@ public class OpenOperationItemController<JsonResult> {
 		// 获取当前审核人
 		Map<String, String> paramsGetCurr = new HashMap<>();
 		String businessType = "OperationItem";
-		paramsGetCurr.put("businessType", pConfig.PROJECT_NAME + businessType);
+		paramsGetCurr.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		paramsGetCurr.put("businessAppUid", operationItem.getId().toString());
-		String getCurrStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
+		String getCurrStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", paramsGetCurr);
 		JSONObject getCurrJSON = JSONObject.parseObject(getCurrStr);
 		if("success".equals(getCurrJSON.getString("status"))){
 			JSONArray getCurrArray = getCurrJSON.getJSONArray("data");
@@ -767,14 +765,15 @@ public class OpenOperationItemController<JsonResult> {
 //			operationItem.setLpCodeCustom(lpCodeCustom);
 //			operationService.saveOperationItem(operationItem);
 			Map<String, String> params = new HashMap<>();
+			PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 			String businessType = "OperationItem";
-			params.put("businessType", pConfig.PROJECT_NAME + businessType);
+			params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			params.put("businessAppUid", String.valueOf(operationItemId));
 			params.put("businessUid", "-1");
 			params.put("result", result == 1 ? "pass" : "fail");
 			params.put("info", "已审核");
 			params.put("username", shareService.getUserDetail().getUsername());
-			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+			String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 			JSONObject jsonObject = JSONObject.parseObject(s);
 			if(!"success".equals(jsonObject.getString("status"))){
 				return "redirect:/operation/listOperationItemLims?currpage=1&&status=2&orderBy=9";
@@ -807,6 +806,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/arrangeNoBatchChoose")
 	public ModelAndView arrangeNoBatchChoose(Integer id){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if(id != null) {
 			mav.addObject("id", id);
 			OperationItem operationItem = operationItemDAO.findOperationItemById(id);
@@ -824,8 +824,8 @@ public class OpenOperationItemController<JsonResult> {
 			mav.addObject("allNumber", operationItem.getLpStudentNumber());
 		}
 		mav.addObject("type", "0");
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "不分批选");
 		mav.setViewName("openOperationItem/arrangeNoBatchChoose.jsp");
@@ -840,6 +840,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/arrangeBatchChoose")
 	public ModelAndView arrangeBatchChoose(Integer id){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if(id != null) {
 			mav.addObject("id", id);
 			OperationItem operationItem = operationItemDAO.findOperationItemById(id);
@@ -856,8 +857,8 @@ public class OpenOperationItemController<JsonResult> {
 			mav.addObject("user", shareService.getUserDetail());
 		}
 		mav.addObject("type", "1");
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "分批自选");
 		mav.setViewName("openOperationItem/arrangeBatchChoose.jsp");
@@ -872,6 +873,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/arrangeNoBatchNoChoose")
 	public ModelAndView arrangeNoBatchNoChoose(Integer id){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if(id != null) {
 			mav.addObject("id", id);
 			OperationItem operationItem = operationItemDAO.findOperationItemById(id);
@@ -888,8 +890,8 @@ public class OpenOperationItemController<JsonResult> {
 			mav.addObject("user", shareService.getUserDetail());
 		}
 		mav.addObject("type", "2");
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "不分批排");
 		mav.setViewName("openOperationItem/arrangeNoBatchNoChoose.jsp");
@@ -904,6 +906,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/arrangeBatchNoChoose")
 	public ModelAndView arrangeBatchNoChoose(Integer id){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if(id != null) {
 			mav.addObject("id", id);
 			OperationItem operationItem = operationItemDAO.findOperationItemById(id);
@@ -920,8 +923,8 @@ public class OpenOperationItemController<JsonResult> {
 			mav.addObject("user", shareService.getUserDetail());
 		}
 		mav.addObject("type", "3");
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
 		mav.addObject("title", "分批直排");
 		mav.setViewName("openOperationItem/arrangeBatchNoChoose.jsp");
@@ -970,7 +973,8 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/timetableNoBatchNoChoose")
 	public ModelAndView timetableNoBatchNoChoose(HttpServletRequest request,@ModelAttribute("selected_academy") String acno){
 	    ModelAndView mav = new ModelAndView();
-	    mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+	    mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 	    Integer opId = Integer.valueOf(request.getParameter("opId"));
 	    OperationItem operationItem = operationItemDAO.findOperationItemById(opId);
 	    //
@@ -987,7 +991,7 @@ public class OpenOperationItemController<JsonResult> {
 		}
 		mav.addObject("courseNumber",courseNumber);
 		// 虚拟镜像
-		mav.addObject("virtual", pConfig.virtual);
+		mav.addObject("virtual", pConfigDTO.virtual);
 		List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
 		mav.addObject("virtualImageList", virtualImageList);
         mav.setViewName("openOperationItem/timetableNoBatchNoChoose.jsp");
@@ -1002,6 +1006,7 @@ public class OpenOperationItemController<JsonResult> {
     @RequestMapping("/timetableChooseGroupList")
     public ModelAndView timetableChooseGroupList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno){
         ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// 获取学期列表
 		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);
@@ -1011,7 +1016,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("selfId",request.getParameter("selfId"));
 		mav.addObject("term",request.getParameter("term"));
 		mav.addObject("cStaticValue", cStaticValue);
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		// 获取可选的教师列表列表
 		mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
 		// 虚拟镜像
@@ -1047,6 +1052,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/arrangeForStudent")
 	public ModelAndView arrangeForStudent(@RequestParam Integer id){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if(id != null) {
 			mav.addObject("id", id);
 			OperationItem operationItem = operationItemDAO.findOperationItemById(id);
@@ -1063,8 +1069,8 @@ public class OpenOperationItemController<JsonResult> {
 			mav.addObject("user", shareService.getUserDetail());
 		}
 		mav.addObject("type", "-1");
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 		mav.addObject("title", "学生选课");
 		mav.setViewName("openOperationItem/arrangeForStudent.jsp");
 		return mav;
@@ -1079,6 +1085,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/saveAssetReceive")
 	@ResponseBody
 	public String saveAssetReceive(Integer selfId){
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		TimetableSelfCourse timetableSelfCourse = timetableSelfCourseDAO.findTimetableSelfCourseById(selfId);
 		if(timetableSelfCourse.getItemPlans() == null || timetableSelfCourse.getItemPlans().size() == 0)
 			return "fail";
@@ -1118,7 +1125,7 @@ public class OpenOperationItemController<JsonResult> {
 						 * 1.宁德需求：不分批排
 						 * 2.分组实验，数量按照组数计算；否则按照实际上课人数计算
 						 */
-						if (pConfig.PROJECT_NAME.equals("ndyzlims") && operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {
+						if (pConfigDTO.PROJECT_NAME.equals("ndyzlims") && operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {
 							if (operationItem.getLpSetNumber()!=null && !operationItem.getLpSetNumber().equals("")) {
 								quantity = Integer.parseInt(operationItem.getLpSetNumber());
 							}
@@ -1193,6 +1200,7 @@ public class OpenOperationItemController<JsonResult> {
 	@RequestMapping("/newSelfReGroupTimetableCourse")
 	public ModelAndView newSelfReGroupTimetableCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		TimetableAppointmentSameNumber timetableAppointmentSameNumber = null;
 		if(Objects.nonNull(request.getParameter("sameNumberId"))&&Integer.parseInt(request.getParameter("sameNumberId"))!=-1){
 			int timetableAppointmentSameNumberId = Integer.parseInt(request.getParameter("sameNumberId"));
@@ -1212,9 +1220,9 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("courseNumber",courseNumber);
 		mav.addObject("term",request.getParameter("term"));
 		mav.addObject("academyNumber",acno);
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		// 虚拟镜像
-		mav.addObject("virtual", pConfig.virtual);
+		mav.addObject("virtual", pConfigDTO.virtual);
 		List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
 		mav.addObject("virtualImageList", virtualImageList);
 		mav.setViewName("openOperationItem/timetableChoose.jsp");

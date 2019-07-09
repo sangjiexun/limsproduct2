@@ -3,9 +3,9 @@ package net.gvsun.lims.service.auditServer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,7 @@ public class AuditServiceImpl implements AuditService {
     @Autowired
     private ShareService shareService;
 
-    @Autowired
-    private PConfig pConfig;
+
 
     /************************************************************************
      *@Description:调用接口保存业务预约初始的审核级别状态
@@ -29,13 +28,15 @@ public class AuditServiceImpl implements AuditService {
      *@Date:2018/9/21
      ************************************************************************/
     public String saveInitBusinessAudit(String businessUid, String businessType, String businessAppUid)throws Exception{
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         Map<String, String> params = new HashMap<>();
         params.put("businessType",type);
         params.put("businessAppUid",businessAppUid);
         params.put("businessUid",businessUid);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/saveInitBusinessAuditStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/saveInitBusinessAuditStatus", params);
         return s;
     }
     /************************************************************************
@@ -45,12 +46,14 @@ public class AuditServiceImpl implements AuditService {
      *@Date:2018/9/21
      ************************************************************************/
     public String getCurrAudit(String businessAppUid, String businessType)throws Exception{
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         Map<String, String> params = new HashMap<>();
         params.put("businessType",type);
         params.put("businessAppUid",businessAppUid);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getCurrAuditStage", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getCurrAuditStage", params);
         return s;
     }
     /************************************************************************
@@ -60,7 +63,9 @@ public class AuditServiceImpl implements AuditService {
      *@Date:2018/9/21
      ************************************************************************/
     public String saveBusinessLevel(String businessAppUid,String businessUid, String result, String info, String businessType,String username)throws Exception{
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         Map<String, String> params = new HashMap<>();
         params.put("businessType",type);
@@ -69,7 +74,7 @@ public class AuditServiceImpl implements AuditService {
         params.put("username",username);
         params.put("result",result);
         params.put("info",info);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/saveBusinessLevelAudit", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/saveBusinessLevelAudit", params);
         return s;
     }
     /************************************************************************
@@ -78,13 +83,15 @@ public class AuditServiceImpl implements AuditService {
      *@Date:2018/9/21
      ************************************************************************/
     public String getBusinessLevel(String businessUid,String businessAppUid,String businessType)throws Exception{
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         Map<String, String> params = new HashMap<>();
         params.put("businessType", type);
         params.put("businessAppUid", businessAppUid);
         params.put("businessUid", businessUid);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessLevelStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessLevelStatus", params);
         return s;
     }
     /************************************************************************
@@ -94,12 +101,14 @@ public class AuditServiceImpl implements AuditService {
      *@Date:2018/9/21
      ************************************************************************/
     public String getBusinessAudit(String businessUid,String businessType)throws Exception{
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         Map<String, String> params = new HashMap<>();
         params.put("businessUid",businessUid);
         params.put("businessType",type);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessAuditConfigs", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessAuditConfigs", params);
         return s;
     }
     /************************************************************************
@@ -109,13 +118,15 @@ public class AuditServiceImpl implements AuditService {
      *@Date:2018/9/21
      ************************************************************************/
     public String saveBusinessAudit(String businessUid,String configs,String businessType) throws Exception{
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         Map<String, String> params = new HashMap<>();
         params.put("businessUid",businessUid);
         params.put("businessType",type);
         params.put("config", configs);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/saveBusinessAuditConfigs", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/saveBusinessAuditConfigs", params);
         return s;
     }
     /************************************************************************
@@ -125,10 +136,12 @@ public class AuditServiceImpl implements AuditService {
      ************************************************************************/
     public List<String> getBusinessAuditConfigLevel(String businessType) throws Exception{
         Map<String, String> params = new HashMap<>();
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type=project+businessType;
         params.put("businessType",type);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessAuditConfigLevel", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessAuditConfigLevel", params);
         JSONObject jsonObject = JSON.parseObject(s);
         JSONArray auditConfig=jsonObject.getJSONArray("data");
         List<String> auditConfigLevel=new ArrayList<>();
@@ -148,11 +161,13 @@ public class AuditServiceImpl implements AuditService {
      ************************************************************************/
     public String saveBusinessAuditConfigLevel(String businessType,String auditLevelConfig) throws Exception{
         Map<String, String> params1 = new HashMap<>();
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String type = project +businessType;
         params1.put("auditLevelConfig", auditLevelConfig);
         params1.put("businessType", type);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params1);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params1);
         return s;
     }
     /**************************************************************************
@@ -161,12 +176,14 @@ public class AuditServiceImpl implements AuditService {
      * @date 2018-12-12
      **************************************************************************/
     public String getAuditLevelName(String uid,String type){
-        String project=pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String project=pConfigDTO.PROJECT_NAME;
         String businessType=project+type;
         Map<String, String> params2 = new HashMap<>();
         params2.put("businessType",businessType);
         params2.put("businessAppUid",uid);
-        String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getCurrAuditStage", params2);
+        String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getCurrAuditStage", params2);
         JSONObject jsonObject2 = JSON.parseObject(s2);
         String status=jsonObject2.getString("status");
         if(!status.equals("500")){

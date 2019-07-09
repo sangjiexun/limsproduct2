@@ -9,14 +9,9 @@ import net.zjcclims.dao.MessageDAO;
 
 import net.zjcclims.domain.Message;
 
-import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.message.MessageService;
 
 import net.zjcclims.service.message.PromoteActProducerService;
-import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.util.jwt.JWTUtil;
-import net.zjcclims.web.common.PConfig;
-import org.apache.http.client.methods.HttpPost;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,9 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.web.servlet.ModelAndView;
-
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 /**
  * Spring MVC controller that handles CRUD requests for Message entities

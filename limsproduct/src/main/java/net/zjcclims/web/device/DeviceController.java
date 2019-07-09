@@ -7,7 +7,7 @@
 
 package net.zjcclims.web.device;
 
-import net.gvsun.lims.dto.timetable.LabDeviceReservationParamDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.auditServer.AuditService;
 import net.gvsun.lims.service.timetable.LabDeviceReservationService;
 import net.luxunsh.util.EmptyUtil;
@@ -23,7 +23,6 @@ import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.system.ShareDataService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -128,8 +127,6 @@ public class DeviceController<JsonResult> {
     @Autowired
     private LabDeviceReservationService labDeviceReservationService;
 
-    @Autowired
-    private PConfig pConfig;
     @InitBinder
     public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register
         // static
@@ -530,6 +527,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/listLabRoomDeviceNew")
     public ModelAndView listLabRoomDeviceNew(@ModelAttribute LabRoomDevice labRoomDevice, @RequestParam int roomId, Integer page, @ModelAttribute("selected_academy") String acno, @ModelAttribute("is_reservation") Integer isReservtaion) {
         // 新建ModelAndView对象；
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         ModelAndView mav = new ModelAndView();
         // roomId对应的实验室
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(roomId);
@@ -571,7 +569,7 @@ public class DeviceController<JsonResult> {
         User user = shareService.getUser();
         mav.addObject("user", user);
 
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/device/specialAcademy/specialAcademyForLabroom.jsp");
         return mav;
     }
@@ -2173,6 +2171,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/passDeviceLendList")
     public ModelAndView passDeviceLendList(@ModelAttribute LabRoomDeviceLendingResult lrdlr, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
@@ -2209,7 +2208,7 @@ public class DeviceController<JsonResult> {
             }
         }
         mav.addObject("user", user);
-        mav.addObject("projectName", pConfig.PROJECT_NAME);
+        mav.addObject("projectName", pConfigDTO.PROJECT_NAME);
 //		mav.addObject("labRoomAdmins",lrdlr.getLabRoomDeviceLending().getLabRoomDevice().getLabRoom().getLabRoomAdmins());
         mav.setViewName("/device/lab_room_device/passDeviceLendList.jsp");
         return mav;
