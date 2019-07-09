@@ -352,7 +352,7 @@ function getTimetablePlanView(pageNumber) {
                         var endDate = new Date(timetableDTOs[i].endDate);
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
-                        var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.selfId + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>&nbsp;";
+                        var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.selfId + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+"," + timetableDTOs[i].groupStudents+",8)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupStudents + "/" + timetableDTOs[i].groupNumbers + "</span></button>&nbsp;";
                         rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
                         if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
                             rt += timetableDTOs[i].endClass;
@@ -631,7 +631,7 @@ function getTimetableHistoryView(pageNumber) {
                         var endDate = new Date(timetableDTOs[i].endDate);
                         var group_button_reality = 'group_button_reality_' + timetableDTOs[i].groupId;
                         var group_div_reality = 'div_reality_' + timetableDTOs[i].groupId;
-                        var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupNumbers + "/" + timetableDTOs[i].groupStudents + "</span></button>";
+                        var result = "<button  id='" + group_button_reality + "' class='btn btn-xs green' onclick=\"setTimetableGroupNumbersReality('" + row.courseNo + "'," + timetableDTOs[i].groupId +","+timetableDTOs[i].groupNumbers+","+ timetableDTOs[i].groupStudents+",6)\" title='编辑' ><span class='glyphicon glyphicon'>" + timetableDTOs[i].groupStudents + "/" + timetableDTOs[i].groupNumbers + "</span></button>";
                         rt += "<tr><td>" + timetableDTOs[i].batchName +"/" + timetableDTOs[i].groupName + "</td><td>" + timetableDTOs[i].weekday + "</td><td>";
                         if (timetableDTOs[i].startClass == timetableDTOs[i].endClass) {
                             rt += timetableDTOs[i].endClass;
@@ -813,7 +813,7 @@ function setTimetableGroupNumbersReality(selfId, groupId,groupNumbers,groupStude
         $(':button').attr("disabled", "true");
         $("#group_button_reality_" + groupId).removeAttr("disabled");
     }else {
-        $("#group_button_reality_" + groupId).text(groupNumbers+"/"+groupStudentNumbers);
+        $("#group_button_reality_" + groupId).text(groupStudentNumbers+"/"+ groupNumbers);
         $('#div_reality_' + groupId).hide();
         $(':button').removeAttr("disabled");
     }

@@ -108,10 +108,10 @@ public class SchoolCourseInfoServiceImpl implements SchoolCourseInfoService {
 		sql+=" and c.courseNumber like '%self-%' ";
 		if(schoolCourseInfoDAO
 				.createQuerySingleResult(sql).getSingleResult()==null){
-			return 0;
+			return 1;
 		}else{
 			return ((Long) schoolCourseInfoDAO
-					.createQuerySingleResult(sql).getSingleResult()).intValue();
+					.createQuerySingleResult(sql).getSingleResult()).intValue()+1;
 		}
 	}
 
