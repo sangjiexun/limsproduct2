@@ -343,7 +343,10 @@ function chooseCopyTimetableGroup(id, courseNo, batchId) {
         content: contextPath + '/lims/timetable/course/chooseCopyTimetableGroup?id=' + id.toString() +
             '&batchId=' + batchId.toString() +
             '&courseNo=' + courseNo.toString() +
-            '&termId='+termId.toString()
+            '&termId='+termId.toString(),
+        end:function(){
+            refreshBootstrapTable();
+        }
     });
     layer.full(index);
 }
