@@ -27,6 +27,10 @@ public class LabRoomVO implements Serializable {
     private String reservationrStatus;
     //可预约工位数
     private Integer labRoomWorker;
+    //工位预约可选时间段开始时间
+    private String stationReStartTime;
+    //实验室预约可选时间段结束时间
+    private String stationReEndTime;
 
     public int getId() {
         return id;
@@ -106,5 +110,21 @@ public class LabRoomVO implements Serializable {
 
     public void setLabRoomWorker(Integer labRoomWorker) {
         this.labRoomWorker = labRoomWorker;
+    }
+
+    public String getStationReStartTime() {
+        return stationReStartTime;
+    }
+
+    public void setStationReStartTime(String stationReStartTime) {
+        this.stationReStartTime = stationReStartTime;
+    }
+
+    public String getStationReEndTime() {
+        return stationReEndTime;
+    }
+
+    public void setStationReEndTime(String stationReEndTime) {
+        this.stationReEndTime = stationReEndTime;
     }
 }

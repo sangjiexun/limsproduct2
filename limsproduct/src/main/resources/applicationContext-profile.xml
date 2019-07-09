@@ -61,9 +61,9 @@
 		<context:property-placeholder location="classpath:config/njykyxylims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
 	</beans>
 
-	<!-- 版本 -->
-	<beans profile="shjulims">
-		<context:property-placeholder location="classpath:config/shjulims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	<!-- 上交大环境学院版本 -->
+	<beans profile="shjdhjlims">
+		<context:property-placeholder location="classpath:config/shjdhjlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
 	</beans>
 
 	<!-- 上海中医药版本 -->
@@ -164,6 +164,11 @@
 	<!-- 宁德一中版本 -->
 	<beans profile="ndyzlims">
 		<context:property-placeholder location="classpath:config/ndyzlims/*.properties" ignore-unresolvable="true" file-encoding="utf-8"/>
+	</beans>
+
+	<!-- 西安欧亚版本 -->
+	<beans profile="ouylims">
+		<context:property-placeholder file-encoding="utf-8" ignore-unresolvable="true" location="classpath:config/ouylims/*.properties"/>
 	</beans>
 
 </beans>

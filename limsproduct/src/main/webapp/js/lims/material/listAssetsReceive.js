@@ -63,6 +63,12 @@ layui.use(['laypage', 'layer', 'table', 'element'], function() {
                 minWidth: 100,
                 align: 'center',
                 sort: true,
+            },{
+                field: 'academyNumber',
+                title: '所属学院',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
             }, {
                 field: 'goodsCategory',
                 title: '物资类别',

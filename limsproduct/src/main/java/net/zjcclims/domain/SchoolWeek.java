@@ -27,6 +27,7 @@ import javax.persistence.*;
 		@NamedQuery(name = "findAllSchoolWeeks", query = "select mySchoolWeek from SchoolWeek mySchoolWeek"),
 		@NamedQuery(name = "findSchoolWeekByCreatedAt", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.createdAt = ?1"),
 		@NamedQuery(name = "findSchoolWeekByDate", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.date = ?1"),
+		@NamedQuery(name = "findSingleSchoolWeekByDate", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.date = ?1"),
 		@NamedQuery(name = "findSchoolWeekByDateAfter", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.date > ?1"),
 		@NamedQuery(name = "findSchoolWeekByDateBefore", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.date < ?1"),
 		@NamedQuery(name = "findSchoolWeekById", query = "select mySchoolWeek from SchoolWeek mySchoolWeek where mySchoolWeek.id = ?1"),

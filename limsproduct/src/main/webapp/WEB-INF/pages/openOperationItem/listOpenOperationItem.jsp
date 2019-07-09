@@ -125,7 +125,14 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                         array.push($(this).val()); //将选中的值 添加到 array中
                     }
                 })
-                window.location.href="${pageContext.request.contextPath}/operation/batchDeleteOperationItem?&array="+array+"&status=${status}";
+
+                $.ajax({
+                    url:'${pageContext.request.contextPath}/operation/batchDeleteOperationItem?&array='+array+'&status=${status}',
+                    type:'POST',
+                    success:function(){
+                        window.location.reload();
+                    }
+                });
             }else {
                 alert("请至少选择一条记录");
             }
@@ -354,7 +361,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                     sessionScope.selected_role eq 'ROLE_DEPARTMENTHEADER'||
                                     sessionScope.selected_role eq 'ROLE_TEACHER'))||
                                     (!fn:contains('zjcclims',PROJECT_NAME))}">
-            <c:if test="${status eq 3}">
+            <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                 <a class="btn btn-new" href="javascript:void(0);" onclick="batchDelete();">批量删除</a>
             </c:if>
             <c:if test="${status eq 1}">
@@ -446,7 +453,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                 <table class="tb" id="my_show">
                     <thead>
                     <tr>
-                        <c:if test="${status eq 3}">
+                        <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                             <th><input id="check_all" type="checkbox" onclick="checkAll();"/></th>
                         </c:if>
                         <th><a href="javascript:void(0);" onclick="orderByNumber()";>实验编号</a></th>
@@ -466,7 +473,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                     <tbody>
                     <c:forEach items="${listOperationItem}" var="curr">
                         <tr>
-                            <c:if test="${status eq 3}">
+                            <c:if test="${status eq 3 && PROJECT_NAME ne 'ndyzlims'}">
                                 <td><input id="check_${curr.id}" name="items" type="checkbox" value="${curr.id}"/></td>
                             </c:if>
                             <td>${curr.lpCodeCustom}</td>
@@ -616,7 +623,7 @@ F<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
                                  idAndAuth[curr.id] eq sessionScope.selected_role &&
                                   status != 1}">
                                         <!-- 可以审核&是审核人&不在‘我的项目’栏 -->
-                                        <a href="javascript:void(0);" onclick="viewOperationItemRest(${curr.id})">审核</a>
+                                        <a href="javascript:void(0);" onclick="listItemMaterialRecordRest(${curr.id})">审核</a>
                                     </c:if>
                                     <c:if test="${curr.CDictionaryByLpStatusCheck.id==checkYes.id}">
                                         <%-- <c:if test="${sessionScope.selected_role eq 'ROLE_EXCENTERDIRECTOR' || sessionScope.selected_role eq 'ROLE_EXPERIMENTALTEACHING'

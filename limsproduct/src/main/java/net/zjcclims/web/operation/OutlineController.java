@@ -5,7 +5,11 @@ package net.zjcclims.web.operation;
  */
 
 import api.net.gvsunlims.constant.ConstantInterface;
+import net.gvsun.lims.vo.operationOutline.CourseObjectiveVO;
+import net.gvsun.lims.vo.operationOutline.ObjectiveRelatedVO;
 import net.zjcclims.dao.CommonDocumentDAO;
+import net.zjcclims.dao.OperationOutlineCourseObjectiveDAO;
+import net.zjcclims.dao.OperationOutlineCourseObjectiveRelatedDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
@@ -19,7 +23,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,13 +49,16 @@ public class OutlineController<JsonResult> {
     }
 
     @Autowired private CommonDocumentDAO commonDocumentDAO;
+    @Autowired private OperationOutlineCourseObjectiveDAO operationOutlineCourseObjectiveDAO;
+    @Autowired private OperationOutlineCourseObjectiveRelatedDAO operationOutlineCourseObjectiveRelatedDAO;
 
     @Autowired private OutlineService outlineService;
     @Autowired private LabCenterService labCenterService;
     @Autowired private ShareService shareService;
     @Autowired private UserDetailService userDetailService;
     @Autowired private OperationService operationService;
-
+    @PersistenceContext
+    private EntityManager entityManager;
     /**
      * Description 实验大纲管理列表
      * @param outline
@@ -108,6 +119,16 @@ public class OutlineController<JsonResult> {
         mav.addObject("commencementnaturemap", operationService.getcommencementnatureSet());
         //查找教师
         mav.addObject("allTeachers", shareService.findAllTeacheres());
+        //课程目标
+        mav.addObject("courseObjectiveList",operationService.getOperationOutlineCourseObjectives(idKey));
+        //课程目标对应毕业需求
+        mav.addObject("ObjectiveRelatedGraduation",operationService.getOperationOutlineCourseObjectiveRelated(idKey,0));
+        //课程目标对应教学内容
+        mav.addObject("ObjectiveRelatedCourse",operationService.getOperationOutlineCourseObjectiveRelated(idKey,1));
+        //考核方法
+        mav.addObject("ObjectiveRelatedAppraise",operationService.getOperationOutlineCourseObjectiveRelated(idKey,2));
+        //课程目标达成度
+        mav.addObject("ObjectiveRelatedCompletion",operationService.getOperationOutlineCourseObjectiveRelated(idKey,3));
 
         mav.setViewName("/outline/editOutline.jsp");
         return mav;
@@ -143,7 +164,11 @@ public class OutlineController<JsonResult> {
                 }
             }
         }
-        return "redirect:/outline/listOutline?currpage=1";
+        if(operationOutline.getId()==null){
+            return "redirect:/outline/editOutline?idKey="+op.getId();
+        }else{
+            return "redirect:/outline/listOutline?currpage=1";
+        }
     }
 
     /**
@@ -192,8 +217,59 @@ public class OutlineController<JsonResult> {
     public ModelAndView checkout(@RequestParam int idKey) {
         ModelAndView mav = new ModelAndView();
         mav.addObject("infor", operationService.getoperationoutlineinfor(idKey));
+        //课程目标
+        mav.addObject("courseObjectiveList",operationService.getOperationOutlineCourseObjectives(idKey));
+        //课程目标对应毕业需求
+        mav.addObject("ObjectiveRelatedGraduation",operationService.getOperationOutlineCourseObjectiveRelated(idKey,0));
+        //课程目标对应教学内容
+        mav.addObject("ObjectiveRelatedCourse",operationService.getOperationOutlineCourseObjectiveRelated(idKey,1));
+        //考核方法
+        mav.addObject("ObjectiveRelatedAppraise",operationService.getOperationOutlineCourseObjectiveRelated(idKey,2));
+        //课程目标达成度
+        mav.addObject("ObjectiveRelatedCompletion",operationService.getOperationOutlineCourseObjectiveRelated(idKey,3));
         mav.setViewName("outline/viewOutline.jsp");
         return mav;
     }
-
+    /**
+     * Description 保存课程目标
+     * @return
+     * @author 刘博越 2019-7-3
+     */
+    @RequestMapping(value = "/saveOperationOutlineCourseObjective", method = RequestMethod.POST)
+    @ResponseBody
+    public CourseObjectiveVO saveOperationOutlineCourseObjective(@RequestBody CourseObjectiveVO courseObjectiveVO) {
+        return operationOutlineCourseObjectiveDAO.saveOperationOutlineCourseObjective(courseObjectiveVO);
+    }
+    /**
+     * Description 删除课程目标
+     * @return
+     * @author 刘博越 2019-7-3
+     */
+    @RequestMapping(value = "/deleteOperationOutlineCourseObjective", method = RequestMethod.GET)
+    @ResponseBody
+    public String deleteOperationOutlineCourseObjective(Integer objectiveId){
+        operationOutlineCourseObjectiveDAO.remove(operationOutlineCourseObjectiveDAO.findOperationOutlineCourseObjectiveByPrimaryKey(objectiveId));
+        return "success";
+    }
+    /**
+     * Description 保存课程目标相关数据
+     * @return
+     * @author 刘博越 2019-7-4
+     */
+    @RequestMapping(value = "/saveOperationOutlineCourseObjectiveRelated", method = RequestMethod.POST)
+    @ResponseBody
+    public ObjectiveRelatedVO saveOperationOutlineCourseObjectiveRelated(@RequestBody ObjectiveRelatedVO objectiveRelatedVO) {
+        return operationOutlineCourseObjectiveRelatedDAO.saveOperationOutlineCourseObjectiveRelated(objectiveRelatedVO);
+    }
+    /**
+     * Description 删除课程目标相关数据
+     * @return
+     * @author 刘博越 2019-7-4
+     */
+    @RequestMapping(value = "/deleteOperationOutlineCourseObjectiveRelated", method = RequestMethod.GET)
+    @ResponseBody
+    public String deleteOperationOutlineCourseObjectiveRelated(Integer objectiveRelatedId){
+        operationOutlineCourseObjectiveRelatedDAO.remove(operationOutlineCourseObjectiveRelatedDAO.findOperationOutlineCourseObjectiveRelatedByPrimaryKey(objectiveRelatedId));
+        return "success";
+    }
 }

@@ -226,7 +226,9 @@ public class TimetableController {
         mav.addObject("acno",acno);
         SchoolAcademy schoolAcademy=schoolAcademyDAO.findSchoolAcademyByPrimaryKey(acno);
         mav.addObject("schoolAcademy",schoolAcademy);
-        List<Object[]>timetableAppointment=timetableAppointmentService.getCurrentTermTimetable(schoolTerm,acno);
+        mav.addObject("search", request.getParameter("search"));
+
+        List<Object[]> timetableAppointment = timetableAppointmentService.getCurrentTermTimetable(schoolTerm,acno, request.getParameter("search"));
         mav.addObject("timetableAppointment",timetableAppointment);
         mav.setViewName("/personal/message/CurrentTermTimetable.jsp");
         return mav;

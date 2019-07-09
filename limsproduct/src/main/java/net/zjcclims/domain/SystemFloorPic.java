@@ -94,6 +94,11 @@ public class SystemFloorPic implements Serializable {
 	@XmlElement
 	String documentUrl;
 
+	@Column(name = "photo_url")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	String photoUrl;
+
 	/**
 	 * ��������
 	 * 
@@ -172,6 +177,14 @@ public class SystemFloorPic implements Serializable {
 	 */
 	public String getDocumentUrl() {
 		return this.documentUrl;
+	}
+
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
 	}
 
 	/**

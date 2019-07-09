@@ -126,10 +126,11 @@
             <tr>
                 <td align=left width="12%"><h3>实验项目：</h3></td>
                 <td colspan="3">
-                    <%--                    <select id="items" name="items" multiple="multiple">--%>
-                    <%--                    </select>--%>
-                    <%--                    <label for="items"></label>--%>
-                    <label id="opName">${operationItem.lpName}</label>
+                    <!-- 传参，保存项目 -->
+                    <select id="items" name="items" multiple="multiple" >
+                        <option value ="${operationItem.id}" selected="selected">${operationItem.lpName}</option>
+                    </select>
+<%--                    <label id="opName">${operationItem.lpName}</label>--%>
                 </td>
             </tr>
             <tr>

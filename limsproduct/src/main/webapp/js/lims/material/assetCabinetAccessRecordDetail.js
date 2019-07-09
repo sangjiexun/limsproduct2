@@ -54,6 +54,12 @@ layui.use(['laypage', 'layer', 'table', 'element','form'], function() {
                 align: 'center',
                 sort: true,
             }, {
+                field: 'schoolAcademy',
+                title: '所属学院',
+                minWidth: 100,
+                align: 'center',
+                sort: true,
+            }, {
                 field: 'cabinetName',
                 title: '物品柜',
                 minWidth: 100,

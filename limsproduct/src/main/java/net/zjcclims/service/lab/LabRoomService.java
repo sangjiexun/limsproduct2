@@ -692,7 +692,7 @@ public interface LabRoomService {
 	 * @return
 	 * @author 廖文辉 2019-01-10
 	 */
-	public List<User> findUserByacno(String academyNumber);
+	public List<User> findUserByacno(String academyNumber, String search, int currpage, int pagesize);
 	/**
 	 * Description 查找本学期的操作日志
 	 *

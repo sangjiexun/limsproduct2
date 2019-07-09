@@ -34,6 +34,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 		@NamedQuery(name = "findLabRoomLimitTimeByInfo", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.info = ?1"),
 		@NamedQuery(name = "findLabRoomLimitTimeByInfoContaining", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.info like ?1"),
 		@NamedQuery(name = "findLabRoomLimitTimeByLabId", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.labId = ?1"),
+		@NamedQuery(name = "findLabRoomLimitTimeBylabIdAndTermAndType", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.labId = ?1 and myLabRoomLimitTime.schoolTerm.id = ?2 and myLabRoomLimitTime.type = ?3"),
 		@NamedQuery(name = "findLabRoomLimitTimeByPrimaryKey", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.id = ?1"),
 		@NamedQuery(name = "findLabRoomLimitTimeByPrimaryKeyAndType", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.id = ?1 and myLabRoomLimitTime.type = ?2"),
 		@NamedQuery(name = "findLabRoomLimitTimeByStartclass", query = "select myLabRoomLimitTime from LabRoomLimitTime myLabRoomLimitTime where myLabRoomLimitTime.startclass = ?1"),

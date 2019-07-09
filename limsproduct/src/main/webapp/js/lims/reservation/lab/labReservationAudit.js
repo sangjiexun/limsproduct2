@@ -8,10 +8,10 @@ var parentProject;
 layui.use(['form'], function() {
     var form = layui.form;
     var layer = layui.layer;
-    var labRId = $('#labRId').val();
+    var appointmentId = $('#labRId').val();
     // console.log(parent.layer.methodConfig);
     // console.log(initjson.parentProject);
-    var daata = {labRId:labRId};
+    var daata = {appointmentId:appointmentId};
     var jsonData = JSON.stringify(daata)
     $.ajax({
        url: zuulUrl  + "api/labReservation/apiLabRoomReservationAudit",
@@ -99,10 +99,10 @@ layui.use(['form'], function() {
         // console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
         // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
         // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
-        var businessAppUid = $('#labRId').val();
+        var appointmentId = $('#labRId').val();
         var result = data.field.gpexamine;
         var info = data.field.remark;
-        var daata = {businessAppUid:businessAppUid,result:result,info:info};
+        var daata = {appointmentId:appointmentId,result:result,info:info};
         var jsonData = JSON.stringify(daata)
         $.ajax({
             url: zuulUrl  + "api/labReservation/apiSaveLabRoomReservationAudit",

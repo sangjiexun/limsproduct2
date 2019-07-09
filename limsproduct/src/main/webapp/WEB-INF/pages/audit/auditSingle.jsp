@@ -85,7 +85,11 @@
     </div>
 </div>
 <script type="text/javascript">
+    var isAjax=false;
     function saveCourseTimetableAudit(){
+        if(isAjax){
+            return false;
+        }
         var auditResult = $('input:radio[name="auditResult"]:checked').val();
         var remark = $("#remark").val();
         var arr = {};
@@ -96,6 +100,7 @@
         arr.auditResult = auditResult;
         arr.remark = remark;
         var arrStr = JSON.stringify(arr);
+        isAjax=true;
         $.ajax({
             url:"${pageContext.request.contextPath}/auditing/saveAudit",
             contentType: "application/json;charset=utf-8",

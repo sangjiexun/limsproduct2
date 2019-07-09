@@ -124,6 +124,12 @@ public class TimetableBatch implements Serializable {
 	@Basic(fetch = FetchType.EAGER)
 	@XmlElement
 	String courseNo;
+
+	@Column(name = "max_group_num")
+	@Basic(fetch = FetchType.EAGER)
+	@XmlElement
+	Integer maxGroupNum;
+
 	/**
 	 */
 	@OneToMany(mappedBy = "timetableBatch", cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
@@ -149,6 +155,14 @@ public class TimetableBatch implements Serializable {
 
 	public void setCourseNo(String courseNo) {
 		this.courseNo = courseNo;
+	}
+
+	public Integer getMaxGroupNum() {
+		return maxGroupNum;
+	}
+
+	public void setMaxGroupNum(Integer maxGroupNum) {
+		this.maxGroupNum = maxGroupNum;
 	}
 
 	/**

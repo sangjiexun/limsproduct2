@@ -197,12 +197,16 @@
                         <td>${reservation.content}</td>
                         <td><fmt:formatDate value="${reservation.lendingTime.time}" pattern="yyyy-MM-dd"/> </td>
                       	<td>
-                         <c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s"> 
+                         <%--<c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s">
                               <c:if test="${s.CDictionary.id==615}">${s.user.cname}(<font color="blue">通过</font>)<br></c:if>
                          </c:forEach>
                          <c:forEach items="${reservation.labRoomDeviceLendingResults}" var="s"> 
                               <c:if test="${s.CDictionary.id==616}">${s.user.cname}(<font color="red">拒绝</font>)<br></c:if>
-                         </c:forEach>
+                         </c:forEach>--%>
+							 <c:if test="${auditState.get(i.count-1)>0 }">
+								 <%--<td>审核中</td>--%>
+							${auditShow.get(i.count-1)}
+							</c:if>
                          </td>
                          <c:if test="${ifRowspanBatch!=reservation.lendBatch}">
                         <td rowspan="${rowspanBatch }">

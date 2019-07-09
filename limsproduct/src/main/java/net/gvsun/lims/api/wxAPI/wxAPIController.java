@@ -29,10 +29,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller("wxAPIController")
 @RequestMapping("/wxAPI")
@@ -223,10 +220,16 @@ public class wxAPIController {
         //时间判冲-{判断是否可预约}
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+
         Calendar lendingTime = Calendar.getInstance();
         Calendar startTime = Calendar.getInstance();
         Calendar endTime = Calendar.getInstance();
+        Calendar reservationTime = Calendar.getInstance();
         try {
+            Date reservationTimeDate = sdf.parse(lendingTimeStr);
+            reservationTime.setTime(reservationTimeDate);
             lendingTime.setTime(sdfDate.parse(lendingTimeStr));
             startTime.setTime(sdfTime.parse(startTimeStr));
             endTime.setTime(sdfTime.parse(endTimeStr));
@@ -262,7 +265,7 @@ public class wxAPIController {
         }
 
         //可预约工位数
-        sNum = labRoomReservationService.findRestReservationStations(l.getId(), lendingTime, startTime, endTime);
+        sNum = labRoomReservationService.findRestReservationStations(l.getId(), reservationTime, startTime, endTime);
 
         //返回
         String jsonItems = "[{\"flag\":\"" + res + "\",\"teac\":\"" + teac + "\",\"sNum\":\"" + sNum +"\"}]";

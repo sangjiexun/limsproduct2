@@ -22,6 +22,7 @@ import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.tcoursesite.WkFolderService;
 import net.zjcclims.service.visualization.VisualizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.WebDataBinder;
@@ -82,8 +83,8 @@ public class visualizationController<JsonResult> {
 	private SystemCampusDAO systemCampusDAO;
 	@Autowired
 	private SchoolAcademyDAO schoolAcademyDAO;
-
-
+	@Value("${uploadFileHost}")
+	private String uploadFileHost;
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register static property editors.
 		binder.registerCustomEditor(Calendar.class, new org.skyway.spring.util.databinding.CustomCalendarEditor());
@@ -743,6 +744,7 @@ public class visualizationController<JsonResult> {
 		ModelAndView mav = new ModelAndView();
 		// 获取楼层
 		List<SystemFloorPic> floorPics = visualizationService.findSystemFloorPic(buildNumber, null);
+		mav.addObject("uploadFileHost", uploadFileHost);
 		mav.addObject("floorPics", floorPics);
 		mav.addObject("buildNumber",buildNumber);
 

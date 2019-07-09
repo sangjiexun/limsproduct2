@@ -288,7 +288,7 @@ public class SelfController<JsonResult> {
         mav.addObject("schoolTerms", schoolTerms);
         mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 年级列表
-        mav.addObject("grade",schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+        mav.addObject("grade", shareService.getYearCode());
         mav.addObject("acno", acno);
         mav.setViewName("lims/timetable/self/newSelfCourse.jsp");
         return mav;

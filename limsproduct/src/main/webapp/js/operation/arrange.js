@@ -131,8 +131,8 @@ $(document).ready(function () {
                                 if($("#type").val() == 0 || $("#type").val() == 1) {
                                     var startDate = $("#startTime").val();
                                     var endDate = $("#endTime").val();
-                                    startDate = startDate.replace(" ", "T");
-                                    endDate = endDate.replace(" ", "T");
+                                    startDate = startDate.substring(0,10);
+                                    endDate = endDate.substring(0, 10);
                                     var arr = new Object();
                                     arr.selfId = selfId;
                                     arr.batchName = "无";
@@ -141,6 +141,7 @@ $(document).ready(function () {
                                     arr.startDate = startDate;
                                     arr.endDate = endDate;
                                     arr.ifselect = 1;
+                                    arr.maxGroupNum = 1;
                                     var arrs = JSON.stringify(arr);
                                     $.ajax({
                                         url: zuulUrl + "api/timetable/manage/apiSaveTimetableBatch",
@@ -460,7 +461,7 @@ function newSelfReNoGroupCourse(term, selfId) {
 }
 
 /*
-*二次不分批排课弹出窗口
+*分批自选排课弹出窗口
 */
 function newSelfReGroupCourse(term, selfId) {
     var index = layer.open({

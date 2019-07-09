@@ -33,7 +33,7 @@
             type="text/javascript"></script>
     <script src="${pageContext.request.contextPath}/bootstrap/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"
             type="text/javascript"></script>
-    <script src="${pageContext.request.contextPath}/js/lims/timetable/self/selfCourseList.js"
+    <script src="${pageContext.request.contextPath}/js/lims/timetable/self/apiSelfCourseList.js"
             type="text/javascript"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
     <style>
@@ -108,17 +108,17 @@
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="TIMETABLED">排课中
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="STAND_TO_AUDIT">待审核
                                 <input type="radio" name="view_status" onclick="getTimetableHistoryView()" value="AUDIT_FAIL">审核拒绝
-                                <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="STAND_TO_RELEASE">审核通过<!-- 原待发布 -->
+                                <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="STAND_TO_RELEASE">待发布<!-- 原待发布 -->
                                 <input type="radio" name="view_status" onclick="refreshBootstrapTable()" value="RELEASED">已发布
                                             &ensp;&ensp; &ensp;&ensp;
-                                <c:if test="${empty cookie.selfType|| cookie.selfType.value != 'MANAGE'}">
+                                <%--<c:if test="${empty cookie.selfType|| cookie.selfType.value != 'MANAGE'}">
                                     <input type="radio" name="view_radio"  onclick="getTimetablePlanView()" checked="checked" value="timetable">排课视图
                                     <input type="radio" name="view_radio"  onclick="getTimetableMangerView()" value="manager">管理发布视图
                                 </c:if>
                                 <c:if test="${not empty cookie.selfType&& cookie.selfType.value == 'MANAGE'}">
                                     <input type="radio" name="view_radio"  onclick="getTimetablePlanView()"  value="timetable">排课视图
                                     <input type="radio" name="view_radio"  onclick="getTimetableMangerView()" checked="checked" value="manager">管理发布视图
-                                </c:if>
+                                </c:if>--%>
                             </div>
                         </div>
                     </div>

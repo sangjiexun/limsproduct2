@@ -108,7 +108,7 @@ st.id as term_id,
 st.term_name,
 sa.academy_number,
 sa.academy_name,
-sci.course_number as course_no,
+tsc.id as course_no,
 sci.course_name,
 ta.weekday as weekday,
 week_s as weeks,
@@ -138,7 +138,7 @@ LEFT JOIN user teacher on teacher.username = tsc.teacher
 LEFT JOIN timetable_course_student tcs on tcs.course_code_id = tsc.id
 LEFT JOIN user students on students.username = tcs.student_number
 LEFT JOIN school_classes scl ON scl.class_number=students.classes_number
-LEFT JOIN timetable_appointment ta on ta.course_number = sci.course_number
+LEFT JOIN timetable_appointment ta on ta.self_course_code = tsc.id
 LEFT JOIN timetable_appointment_same_number tasn on tasn.appointment_id = ta.id
 where st.id = termId and sw.week = week_s and sw.weekday = ta.weekday and tasn.id = t_id and sw.date = classdate and ta.`status`=1 and ta.timetable_style <> 4
 GROUP BY students.username)tmp

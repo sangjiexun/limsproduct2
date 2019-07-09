@@ -54,8 +54,14 @@ public class AuditController<JsonResult> {
 
         String businessUid = request.getParameter("businessUid");
         String businessAppUid = request.getParameter("businessAppUid");
-        LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
-        String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        String businessType= "";
+        if(labRoomDAO.findLabRoomById(Integer.valueOf(businessUid))!=null){
+            LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
+            businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        }
+        if(request.getParameter("businessType")!=null){
+            businessType = pConfig.PROJECT_NAME + request.getParameter("businessType");
+        }
         // 获取审核状态
         Integer curStage = -2;
         String curAuthName = "";
@@ -241,10 +247,16 @@ public class AuditController<JsonResult> {
             LabRoomStationReservation labRoomStationReservation =
                     labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
             if(nextAuthName.equals("pass")){   //审核通过，设置该条预约记录的状态值为审核通过
-                labRoomStationReservation.setResult(1);
-                labRoomStationReservation.setState(6);
-                labRoomStationReservationDAO.store(labRoomStationReservation);
-                labRoomStationReservationDAO.flush();
+                if(auditSaveParamDTO.getBusinessType().contains("CancelLabRoomStationReservation")){  //取消预约审核通过
+                    //备份流程记录 并删除相关记录
+                    //type 2为取消预约
+                    labRoomReservationService.obsoleteLabStationReservation(labRoomStationReservation.getId(),2);
+                }else {
+                    labRoomStationReservation.setResult(1);
+                    labRoomStationReservation.setState(6);
+                    labRoomStationReservationDAO.store(labRoomStationReservation);
+                    labRoomStationReservationDAO.flush();
+                }
                 // 判断当天预约--下发权限
                 Boolean bln = shareService.theSameDay(labRoomStationReservation.getReservation().getTime());
                 // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
@@ -256,9 +268,13 @@ public class AuditController<JsonResult> {
                 labRoomStationReservationDAO.store(labRoomStationReservation);
                 labRoomStationReservationDAO.flush();
             }else {
-                labRoomStationReservation.setResult(2);        //审核中
-                labRoomStationReservationDAO.store(labRoomStationReservation);
-                labRoomStationReservationDAO.flush();
+                if(auditSaveParamDTO.getBusinessType().contains("CancelLabRoomStationReservation")){
+                    //工位预约取消审核 do nothing
+                }else {
+                    labRoomStationReservation.setResult(2);        //审核中
+                    labRoomStationReservationDAO.store(labRoomStationReservation);
+                    labRoomStationReservationDAO.flush();
+                }
             }
         }
 

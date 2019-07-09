@@ -1081,8 +1081,8 @@ public class JsGridReportBase {
 		cell = row.createCell(0);
 		cell.setCellValue(new HSSFRichTextString("填报人:"));
 
-		cell = row.createCell(1);
-		cell.setCellValue(new HSSFRichTextString(creator));
+		//cell = row.createCell(1);
+		//cell.setCellValue(new HSSFRichTextString(creator));
 
 		cell = row.createCell(10);
 		cell.setCellValue(new HSSFRichTextString("填报时间:"));

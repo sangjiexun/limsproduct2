@@ -33,9 +33,18 @@ public class AssetCabinetRecordDTO {
     private String cabinetName;
     //物资数量
     private String stockNumber;
+    //所属学院
+    private String schoolAcademy;
     //物资与物品柜的关系
     List<AssetCabinetRecordDTO> assetCabinetRecordDTOList;
 
+    public String getSchoolAcademy() {
+        return schoolAcademy;
+    }
+
+    public void setSchoolAcademy(String schoolAcademy) {
+        this.schoolAcademy = schoolAcademy;
+    }
 
     public String getAssetId() {
         return assetId;

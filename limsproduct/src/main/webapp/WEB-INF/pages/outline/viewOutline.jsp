@@ -56,6 +56,22 @@
                                     <td><c:forEach items="${infor.CDictionarys}" var="a">${a.CName}/</c:forEach></td>
                                 </tr>
                                 <tr>
+                                    <th>课程学时</th>
+                                    <td>${infor.courseHour}</td>
+                                    <th>讲课学时</th>
+                                    <td>${infor.theoryCourseHour}</td>
+                                </tr>
+                                <tr>
+                                    <th>实验学时</th>
+                                    <td>${infor.experimentCourseHour}</td>
+                                    <th>上机学时</th>
+                                    <td>${infor.computerCourseHour}</td>
+                                </tr>
+                                <tr>
+                                    <th>习题学时</th>
+                                    <td>${infor.exerciseCourseHour}</td>
+                                </tr>
+                                <tr>
                                     <th>后续课程</th>
                                     <td>${infor.schoolCourseInfoByFollowUpCourses.courseName}</td>
                                     <th>先修课程</th>
@@ -76,6 +92,29 @@
                                 <tr><td>${infor.coursesAdvice}</td></tr>
                                 <tr><th>课程任务和教学目标</th></tr>
                                 <tr><td>${infor.outlineCourseTeachingTarget}</td></tr>
+                                <tr><th>课程目标</th></tr>
+                                <c:forEach items="${courseObjectiveList}" var="o">
+                                    <tr>
+                                        <td>${o.objectiveName}:${o.objectiveContent}</td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程目标与毕业要求指标点对应关系</legend>
+                            <table border="1">
+                                <tr>
+                                    <th>毕业要求</th>
+                                    <th>毕业要求指标点</th>
+                                    <th>课程目标</th>
+                                </tr>
+                                <c:forEach items="${ObjectiveRelatedGraduation}" var="g">
+                                    <tr>
+                                        <td>${g.graduationRequirement}</td>
+                                        <td>${g.requirementPoint}</td>
+                                        <td>${g.objectiveNames}</td>
+                                    </tr>
+                                </c:forEach>
                             </table>
                         </fieldset>
                         <fieldset class="introduce-box">
@@ -84,6 +123,80 @@
                                 <tr><th>（一）课程基本内容</th></tr>
                                 <tr><td>${infor.basicContentCourse}</td></tr>
                                 <tr><th>（二）课程基本要求</th></tr>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程目标与课程内容对应关系</legend>
+                            <table border="1">
+                                <tr>
+                                    <th>序号</th>
+                                    <th>教学内容</th>
+                                    <th>教学要求</th>
+                                    <th>学时</th>
+                                    <th>教学方式</th>
+                                    <th>对应课程目标</th>
+                                </tr>
+                                <c:forEach items="${ObjectiveRelatedCourse}" var="c" varStatus="status">
+                                    <tr>
+                                        <td>${status.index+1}</td>
+                                        <td>${c.courseContent}</td>
+                                        <td>${c.courseRequirement}</td>
+                                        <td>${c.courseHour}</td>
+                                        <td>${c.method}</td>
+                                        <td>${c.objectiveNames}</td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程教学方法</legend>
+                            <table>
+                                <tr><th>课程教学方法详情</th></tr>
+                                <tr><td>${infor.teachMethod}</td></tr>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程考核方法</legend>
+                            <table>
+                                <tr><th>课程考核方法详情</th></tr>
+                                <tr><td>${infor.courseAppraise}</td></tr>
+                            </table>
+                            <table border="1">
+                                <tr>
+                                    <th>考核环节</th>
+                                    <th>所占分值</th>
+                                    <th>考核与评价细则</th>
+                                    <th>对应课程目标</th>
+                                </tr>
+                                <c:forEach items="${ObjectiveRelatedAppraise}" var="a">
+                                    <tr>
+                                        <td>${a.appraiseName}</td>
+                                        <td>${a.appraisePercentage}</td>
+                                        <td>${a.appraiseDetail}</td>
+                                        <td>${a.objectiveNames}</td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>课程目标达成度评价方法</legend>
+                            <table border="1">
+                                <tr>
+                                    <th>对应课程目标</th>
+                                    <th>考核环节</th>
+                                    <th>所占分值</th>
+                                    <th>学生平均得分</th>
+                                    <th>达成度计算结果</th>
+                                </tr>
+                                <c:forEach items="${ObjectiveRelatedCompletion}" var="c">
+                                    <tr>
+                                        <td>${c.objectiveNames}</td>
+                                        <td>${c.appraiseName}</td>
+                                        <td>${c.appraisePercentage}</td>
+                                        <td>${c.averageScore}</td>
+                                        <td>${c.objectiveCompletionRate}</td>
+                                    </tr>
+                                </c:forEach>
                             </table>
                         </fieldset>
                         <fieldset class="introduce-box">
@@ -132,6 +245,15 @@
                                         </tr>
                                     </c:forEach>
                                 </table>
+                            </table>
+                        </fieldset>
+                        <fieldset class="introduce-box">
+                            <legend>审核信息</legend>
+                            <table>
+                                <th>大纲撰写人</th>
+                                <td>${infor.user.cname}</td>
+                                <th>大纲审核人</th>
+                                <td>${infor.auditor}</td>
                             </table>
                         </fieldset>
                     </div>

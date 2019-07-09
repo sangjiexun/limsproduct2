@@ -41,7 +41,25 @@
 		}
 		.layui-laydate-list.laydate-time-list > li{width:50% !important;}
 		.layui-laydate-list.laydate-time-list > li:last-child{display:none !important;}
-
+		.class_name {
+			border: 1px solid #d0d6dc!important;
+		}
+		.class_name thead tr th{
+			border-bottom: 1px solid #e4e5e7!important;
+		}
+		.class_name tr td{
+					 border-bottom: 1px solid #cccccc!important;
+		}
+		.class_name tr:nth-child(odd) td {
+			background: #ffffff;
+		}
+		#user_body tr:last-child td {
+			text-align: center!important;
+		}
+		.two_btn{
+			text-align: center;
+			/*line-height: 100px;*/
+		}
 	</style>
     <script type="text/javascript">
         layui.use('laydate', function(){
@@ -52,8 +70,121 @@
                 ,type: 'time'
                 ,range: true //或 range: '~' 来自定义分割字符
                 ,trigger : 'click'
+//                ,min: '09:30:00'
+//                ,max: '17:30:00'
+                ,done: function(value, date, endDate){
+//                    console.log(value); //得到日期生成的值，如：2017-08-18
+//                    console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+//                    console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                    if($("input[name='lendingTime']") .val() == ""){
+                        alert("请选择日期");
+//                        $('reservationTime').val('');
+                        laydate.reset();
+                        return false;
+                    }
+                    if (document.getElementById("labRoom").value) {
+                    } else {
+                        alert("请选择实验室");
+//                        $('reservationTime').val('');
+                        laydate.reset();
+                        return false;
+                    }
+                    var myData = {
+                        'lendingTime': $("input[name='lendingTime']").val(),
+                        'reservationTime': value
+                    }
+                    var labRoomId = document.getElementById("labRoom").value;
+                    $.ajax({
+                        type: "POST",
+                        url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
+                        data: myData,
+                        dataType:'json',
+                        success:function(data){
+                            $("#restStations").text(data);
+                        },
+                        error:function(){
+                            alert("查询失败！后台出了点问题！");
+                        }
+                    })
+//                    findRestStations();
+                }
             });
+
         });
+//        function changeTime() {
+//            alert($('#lendingTime').val());
+//        }
+        function wtimePicker() {
+            WdatePicker({
+				minDate:'%y-%M-{%d}',
+				dateFmt:'yyyy-MM-dd',
+				onpicked:function(){
+				    console.log($('#lendingTime').val());
+				    var labroom = document.getElementById("labRoom").value;
+				    var lendingTime = $('#lendingTime').val();
+                    $.ajax({
+                        type: "GET",
+                        url: "${pageContext.request.contextPath}/device/getStationReOptionalTime?labRoom="+labroom+"&lendingTime="+lendingTime,
+//                        dataType:'json',
+                        success:function(data){
+							console.log(data);
+                            $("#reservationTime").remove();
+                            $("#reservationTime_td").append('<input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">');
+
+                            layui.use('laydate', function() {
+                                var laydate = layui.laydate;
+                                    laydate.render({
+                                        elem: '#reservationTime'
+                                        , type: 'time'
+                                        , range: true //或 range: '~' 来自定义分割字符
+                                        , trigger: 'click'
+                                        , min: data.stationReStartTime
+                                        , max: data.stationReEndTime
+                                        ,done: function(value, date, endDate){
+//                    console.log(value); //得到日期生成的值，如：2017-08-18
+//                    console.log(date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+//                    console.log(endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                                            if($("input[name='lendingTime']") .val() == ""){
+                                                alert("请选择日期");
+//                        $('reservationTime').val('');
+                                                laydate.reset();
+                                                return false;
+                                            }
+                                            if (document.getElementById("labRoom").value) {
+                                            } else {
+                                                alert("请选择实验室");
+//                        $('reservationTime').val('');
+                                                laydate.reset();
+                                                return false;
+                                            }
+                                            var myData = {
+                                                'lendingTime': $("input[name='lendingTime']").val(),
+                                                'reservationTime': value
+                                            }
+                                            var labRoomId = document.getElementById("labRoom").value;
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "${pageContext.request.contextPath}/LabRoomReservation/findRestStations?labRoomId="+labRoomId,
+                                                data: myData,
+                                                // dataType:'json',
+                                                success:function(data){
+                                                    $("#restStations").text(decodeURI(data));
+                                                },
+                                                error:function(){
+                                                    alert("查询失败！后台出了点问题！");
+                                                }
+                                            })
+//                    findRestStations();
+                                        }
+                                    });
+                            });
+                        },
+                        error:function(){
+                            alert("查询失败！后台出了点问题！");
+                        }
+                    })
+				}})
+        }
         <%--function onChangeDate() {--%>
 
             <%--if($("#labRoom").val() == ""){--%>
@@ -364,12 +495,12 @@
            if(obj[i].checked) //取到对象数组后，我们来循环检测它是不是被选中
            s+=obj[i].value+",";   //如果选中，将value添加到变量s中    
        }
-       var str = $('#students').val() +"," +s;
-       $('#students').val(s);
+       var str = $('#students').val() +s;
+       $('#students').val(str);
        $("#newStudents").window('close');
   }
 //ajax查询班级用户列表  
-  function getSchoolClassesUser(classNumber){ 		
+  function getSchoolClassesUser(classNumber){
   	$.ajax({
   		type: "POST",
   		url: "${pageContext.request.contextPath}/timetable/selfTimetable/getSchoolClassesUser",
@@ -621,6 +752,7 @@ function cancel(){
         .space{
         margin:0 12px 0 0;
         }
+
 </style>
 </head>
 <body> 
@@ -644,9 +776,19 @@ function cancel(){
 		</li>
 		<sec:authorize ifNotGranted="ROLE_STUDENT">
 			<li class="TabbedPanelsTab" id="s3"><a
-					href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">我的审核</a>
+					href="${pageContext.request.contextPath}/LabRoomReservation/labRoomStationReservationAuditList?tage=0&currpage=1&isaudit=1">我的审核</a>
 			</li>
 		</sec:authorize>
+		<sec:authorize ifNotGranted="ROLE_STUDENT">
+			<li class="TabbedPanelsTab" id="s4"><a
+					href="${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=0&currpage=1&isaudit=1">预约列表</a>
+			</li>
+		</sec:authorize>
+		<c:if test="${sessionScope.selected_role eq 'ROLE_SUPERADMIN' || sessionScope.selected_role eq 'ROLE_LABMANAGER'}">
+			<li class="TabbedPanelsTab" id="s5"><a
+					href="${pageContext.request.contextPath}/LabRoomReservation/labStationReservationObsoleteList?page=1">失效记录</a>
+			</li>
+		</c:if>
 	</ul>
 </div>
 <div class="right-content">
@@ -690,10 +832,10 @@ function cancel(){
 						<%--</span>--%>
 							<%--&lt;%&ndash;<font style="color: red">请选择准确时间以查询剩余的工位数量</font>--%>
 						<%--&ndash;%&gt;</td>--%>
-						<td colspan="3">
+						<td colspan="3" id="reservationTime_td">
 							<input class="Wdate" id="lendingTime" name="lendingTime" type="text"
 								   value="<fmt:formatDate value="${labReservation.lendingTime.time}" pattern="yyyy-MM-dd"/>"
-								   onclick="WdatePicker({minDate:'%y-%M-{%d}',dateFmt:'yyyy-MM-dd'})" />
+								   onclick="wtimePicker()" />
 								<%--<input  class="easyui-datebox"  id="reservationTime" name="reservationtime"  type="text"  onclick="new Calendar().show(this);"/>--%>
 							<font class="space"></font>
 							预约时间&nbsp;:
@@ -701,7 +843,7 @@ function cancel(){
 
 							<%--</select>--%>
                             <input type="text" class="layui-input test-item" name="reservationTime" id="reservationTime" placeholder=" - ">
-                            <a onclick="findRestStations()">查询（点击查询，查看可预约工位数）</a>
+                            <%--<a onclick="findRestStations()">查询（点击查询，查看可预约工位数）</a>--%>
 						</td>
 					</tr>
 					<tr>
@@ -756,10 +898,11 @@ function cancel(){
 							<th style="min-width:120px;text-align:right;">添加学生<a class="btn btn-common" href='javascript:void(0)'	onclick='newStudents()'>选择添加</a>
 								<br/>(或输入学生学号，以逗号分开)
 							</th>
-							<td style="text-align:left;"><textarea rows="" cols=""
+							<td colspan="3" style="text-align:left;"><textarea rows="" cols=""
 								name="students" id="students"
-								style="width: 400px;height: 60px;padding: 5px"></textarea></td>
-							<td></td>
+								style="height: 60px;padding: 5px"></textarea></td>
+								<%--style="width: 400px;height: 60px;padding: 5px"></textarea></td>--%>
+							<%--<td></td>--%>
 						</tr>
 					</c:if>
 					<tr>
@@ -918,8 +1061,11 @@ function cancel(){
 <div id="newStudents" class="easyui-window" title="选择添加学生" modal="true" dosize="true" maximizable="true" collapsible="true" minimizable="false" closed="true" iconcls="icon-add" style="width:800px; height:600px;">
 	<div class="TabbedPanelsContentGroup">
 	<div class="TabbedPanelsContent">
-	
-	<div class="content-box">
+	<div class="two_btn">
+		<a class='btn btn-common' href='javascript:void(0)' onclick="schoolClassSearch()">通过班级多选</a>
+		<a class='btn btn-common' href='javascript:void(0)' onclick="singleSearch()">通过搜索单选</a>
+	</div>
+	<div class="content-box search_schoolClass" style="display: none;">
 	<form:form action="" method="post">
 	<fieldset class="introduce-box">
          <legend>年级信息</legend>
@@ -929,8 +1075,8 @@ function cancel(){
           <tr>
          	<td>
          	<c:forEach items="${grade }" var="s" varStatus="i">
-         	<c:if test="${s.yearCode>2010 }">
-			 <a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClasses(${s.yearCode})' >${s.yearCode}</a>
+         	<c:if test="${s.classGrade>2010 }">
+			 <a class='btn btn-common' href='javascript:void(0)' onclick='getSchoolClasses(${s.classGrade})' >${s.classGrade}</a>
 			</c:if>
 			</c:forEach></td>
          </tr>
@@ -941,6 +1087,37 @@ function cancel(){
 	</fieldset>
 	</form:form>
 	</div>
+		<div class="content-box search_single" style="display: none;">
+			<form:form id="userForm" method="post">
+				<table class="tb" id="my_show">
+					<tr>
+						<td>姓名：<input type="text" id="cname"/>
+						</td>
+						<td>工号：<input type="text" id="username1"  />
+							<a onclick="queryUser();">搜索</a> <a onclick="cancleQuery();">取消</a>
+						</td>
+						<td><input type="hidden" id="adminType"> <input
+								type="button" value="添加" onclick="addUser();"></td>
+					</tr>
+				</table>
+			</form:form>
+
+			<table id="my_show">
+				<thead>
+				<tr>
+					<th style="width:10% !important">选择</th>
+					<th style="width:45% !important">姓名</th>
+					<th style="width:45% !important">工号</th>
+					<%--<th style="width:30% !important">所属学院</th>--%>
+
+				</tr>
+				</thead>
+
+				<tbody id="user_body_single">
+
+				</tbody>
+			</table>
+		</div>
 	</div>
 	</div>
 	
@@ -1000,38 +1177,58 @@ function cancel(){
 						    		data: {'classNumber':classNumber},
 						    		dataType:'json',
 						    		success:function(data){
-						    			var jslength=1;
-						    			var currLine=1;
-						    			var allLine=1;
-						    			for(var js2 in data){jslength++;}
-						    			if(jslength==0){alert("本周无课程数据");}else{}
+//						    			var jslength=1;
+//						    			var currLine=1;
+//						    			var allLine=1;
+//						    			for(var js2 in data){jslength++;}
+//						    			if(jslength==0){alert("本周无课程数据");}else{}
+//
+//						    			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td><b>选择学生</b></td><td colspan=3><input class='btn btn-primary btn-lg' type='button' onclick='putSchoolClassesUser()' value='提交'/></td></tr>";//新建html字符
+//						    			$.each(data,function(key,values){
+//						    			   if(currLine%4==0){
+//						    		           tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td><tr>";
+//						    			   }else  if(currLine%4==1){
+//						    			       tableStr = tableStr + "<tr><td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+//						    			   }else  if(currLine%4==2){
+//						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+//						    			   }else if(currLine%4==3){
+//						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
+//						    			   }
+//						    			   //currLine=currLine%4;
+//						    			   jslength=jslength+1;
+//						    			   currLine = currLine +1;
+//						    			   allLine =allLine+1;
+//						    			 });
+//						    			 if(currLine%4==0){
+//						    			   tableStr = tableStr + "</table>";
+//						    			 }else if(currLine%4==1){
+//						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td><td&nbsp;></td></tr></table>";
+//						    			 }else if(currLine%4==2){
+//						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td></tr></table>";
+//						    			 }else if(currLine%4==3){
+//						    			   tableStr = tableStr + "<td>&nbsp;</td></tr></table>";
+//						    			 }
+//
+										var tableStr='<table id="my_show" class="class_name"><input class="btn btn-primary btn-lg right-btn" type="button" onclick="putSchoolClassesUser()" value="提交"/>'+
+                                            '<thead>'+
+                                            '<tr>'+
+                                            '<th style="width:10% !important">选择</th>'+
+                                            '<th style="width:45% !important">姓名</th>'+
+                                            '<th style="width:45% !important">工号</th>'+
 
-						    			var tableStr="<table id='listTable' width='80%' cellpadding='0'><tr><td><b>选择学生</b></td><td colspan=3><input class='btn btn-primary btn-lg' type='button' onclick='putSchoolClassesUser()' value='提交'/></td></tr>";//新建html字符
-						    			$.each(data,function(key,values){  
-						    			   if(currLine%4==0){
-						    		           tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td><tr>";
-						    			   }else  if(currLine%4==1){
-						    			       tableStr = tableStr + "<tr><td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
-						    			   }else  if(currLine%4==2){
-						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
-						    			   }else if(currLine%4==3){
-						    			       tableStr = tableStr + "<td><input name='username' id='username" + allLine + "' type='checkbox' value='" + key + "' checked='checked' />" + key + "：" + values + "</a></td>";
-						    			   }
-						    			   //currLine=currLine%4;
-						    			   jslength=jslength+1;
-						    			   currLine = currLine +1;
-						    			   allLine =allLine+1;
-						    			 }); 
-						    			 if(currLine%4==0){
-						    			   tableStr = tableStr + "</table>";
-						    			 }else if(currLine%4==1){
-						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td><td&nbsp;></td></tr></table>";
-						    			 }else if(currLine%4==2){
-						    			   tableStr = tableStr + "<td>&nbsp;</td><td>&nbsp;</td></tr></table>";
-						    			 }else if(currLine%4==3){
-						    			   tableStr = tableStr + "<td>&nbsp;</td></tr></table>";
-						    			 }
-						    			
+                                            '</tr>'+
+                                            '</thead>'+
+
+                                            '<tbody id="user_body">'
+                                        $.each(data,function(key,values){
+                                            tableStr+="<tr>"+
+                                                "<td><input name='username' type='checkbox' value='" + key + "' checked='checked' /></td>"+
+                                                "<td>"+values+"</td>"+
+                                                "<td>"+key+"</td>"+
+                                                "</tr>";
+                                        });
+                                        tableStr+='</tbody>'+
+                                        '</table>';
 						    			 document.getElementById('schoolClassesUser').innerHTML=tableStr; 	
 						    		},
 						    		error:function(){
@@ -1119,6 +1316,8 @@ function cancel(){
                                             alert("预约失败，实验室已被借用");
                                         }else if(data=="reserved"){
                                             alert("预约失败，实验室已被预约");
+                                        }else if(data=="LIMIT"){
+                                            alert("预约失败，所选时间段在实验室禁用时间段内");
                                         }else if(data=="success"){
 						    				alert("预约信息已提交等待审核…");
 						    				flag = 0;
@@ -1223,7 +1422,139 @@ function cancel(){
                                     saveLabRoomReservation();
                                 }
                             }
-						    
+                            function schoolClassSearch() {
+								$('.search_schoolClass').show();
+                                $('.search_single').hide();
+                            }
+						    function singleSearch() {
+                                $('.search_schoolClass').hide();
+                                $('.search_single').show();
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+                                    }
+                                });
+                            }
+                            function queryUser(){
+                                var cname;
+                                var username;
+                                    cname=document.getElementById("cname").value;
+                                    username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+
+                            }
+                            function cancleQuery(){
+                                var cname="";
+                                var username="";
+                                $('#cname').val("");
+                                $('#username1').val("");
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page=1",
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            //首页
+                            function firstPage(page){
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            //上一页
+                            function previousPage(page){
+                                if(page==1){
+                                    page=1;
+                                }else{
+                                    page=page-1;
+                                }
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            //下一页
+                            function nextPage(page,totalPage){
+                                if(page>=totalPage){
+                                    page=totalPage;
+                                }else{
+                                    page=page+1
+                                }
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+                                    }
+                                });
+                            }
+                            //末页
+                            function lastPage(page){
+                                var cname=document.getElementById("cname").value;
+                                var username=document.getElementById("username1").value;
+                                $.ajax({
+                                    url:"${pageContext.request.contextPath}/LabRoomStationReservation/findUserByCnameAndUsername?cname="+cname+"&username="+username+"&page="+page,
+                                    type:"POST",
+                                    success:function(data){//AJAX查询成功
+                                            document.getElementById("user_body_single").innerHTML=data;
+
+                                    }
+                                });
+                            }
+                            function addUser(){
+                                var array=new Array();
+                                var s = "";
+                                var flag; //判断是否一个未选
+                                $("input[name='CK_name']:checkbox").each(function() { //遍历所有的name为CK_name的 checkbox
+                                    if ($(this).attr("checked")) { //判断是否选中
+                                        flag = true; //只要有一个被选择 设置为 true
+                                    }
+                                })
+
+                                if (flag) {
+                                    $("input[name='CK_name']:checkbox").each(function() { //遍历所有的name为selectFlag的 checkbox
+                                        if ($(this).attr("checked")) { //判断是否选中
+//                                            array.push($(this).val()); //将选中的值 添加到 array中
+                                            s+=$(this).val()+",";   //如果选中，将value添加到变量s中
+                                        }
+                                    })
+                                    var str = $('#students').val()  +s;
+                                    $('#students').val(str);
+                                    $("#newStudents").window('close');
+                                    <%--//将要所有要添加的数据传给后台处理--%>
+                                    <%--window.location.href="${pageContext.request.contextPath}/labRoom/saveLabRoomAdmin?roomId=${labRoom.id}&array="+array+"&typeId="+typeId+"&type=${type}";--%>
+                                } else {
+                                    alert("请至少选择一条记录");
+                                }
+                            }
 						   
 						</script>
 	</div></div>

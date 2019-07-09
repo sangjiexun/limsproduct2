@@ -119,7 +119,13 @@
                         array.push($(this).val()); //将选中的值 添加到 array中
                     }
                 })
-                window.location.href="${pageContext.request.contextPath}/operation/batchDeleteOperationItem?&array="+array+"&status=${status}";
+                $.ajax({
+                    url:'${pageContext.request.contextPath}/operation/batchDeleteOperationItem?&array='+array+'&status=${status}',
+                    type:'POST',
+                    success:function(){
+                        window.location.reload();
+                    }
+                });
             }else {
                 alert("请至少选择一条记录");
             }
@@ -377,7 +383,7 @@
                     <form:form name="queryForm" action="${pageContext.request.contextPath}/operation/listOperationItemLims?currpage=1&status=${status}&orderBy=${orderBy }" method="post" modelAttribute="operationItem">
                         <ul>
                             <li>名称:
-                                <form:input id="lp_name" path="lpName"/></li>
+                                <form:input id="lp_name" path="lpName" /></li>
                             <li>学期:
                                 <form:select class="chzn-select" path="schoolTerm.id" id="term_id" name="term_id">
                                 <option value="-1" >全部</option>

@@ -248,6 +248,18 @@ public interface OperationService {
      * 日期：2016-05-27
      **************************************************************************************/
 	public  OperationOutline   getoperationoutlineinfor(int idkey);
+	/***************************************************************************************
+	 * 功能 ：查找大纲对应的课程目标
+	 * 作者：刘博越
+	 * 日期：2019-6-26
+	 **************************************************************************************/
+	public  List<OperationOutlineCourseObjective> getOperationOutlineCourseObjectives(int outlineId);
+	/***************************************************************************************
+	 * 功能 ：查找课程目标数据
+	 * 作者：刘博越
+	 * 日期：2019-7-1
+	 **************************************************************************************/
+	public  List<OperationOutlineCourseObjectiveRelated> getOperationOutlineCourseObjectiveRelated(int outlineId,Integer type);
 	/***********************************************************************************
      * 功能 ： 查找未被大纲使用的项目卡项目卡数
      * 作者：徐文
@@ -583,4 +595,13 @@ public interface OperationService {
 	 * 日期：2016-05-31
 	 ***********************************************************************************/
 	public void saveoperationoutlineitems(int outlineId,String[] courseitems );
+
+	/**
+	 * Description 跟据条件查询项目列表
+	 * @param item
+	 * @param lab_id
+	 * @return
+	 * @author 陈乐为 2019-7-2
+	 */
+	public List<OperationItem> findItemByQuery(OperationItem item, Integer lab_id);
 }

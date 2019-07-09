@@ -599,10 +599,10 @@ function importLabRoomDevice(){
             <div class="title" style="display: block">
             设备列表<font>（只有添加了设备管理员，设备才可以出借）</font>
             <a class="btn btn-new" href="${pageContext.request.contextPath}/device/exportLabRoomDevice?roomId=${roomId }&page=1">导出</a>
-			<c:if test="${proj_name ne 'zjcclims'}">
+			<%--<c:if test="${proj_name ne 'zjcclims'}">
 				<a class="btn btn-new" onclick="importLabRoomDevice()">导入</a>
 				<a class="btn btn-new" onclick='newLabRoomDevice()'>新建</a>
-			</c:if>
+			</c:if>--%>
 
             <a class="btn btn-new"  href="javascript:void(0)" onclick="generateDimensionalCode(${roomId});">生成所有的二维码</a>
             </div>

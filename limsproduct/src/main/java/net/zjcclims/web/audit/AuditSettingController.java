@@ -134,8 +134,9 @@ public class AuditSettingController<JsonResult> {
             businessType = projectName + businessName;
             allType = 1;
         }else if (flag == 13){
-            businessName = "EquipmentLendingAudit";
+            businessName = "LabRoomDeviceLending";
             businessType = projectName + businessName;
+            allType=1;
 
             // 获取所有权限
             Set<Authority> authorities = authorityDAO.findAllAuthoritys();
@@ -151,6 +152,11 @@ public class AuditSettingController<JsonResult> {
             }
 
 
+        }
+        else if(flag == 14){
+            businessName = "CancelLabRoomStationReservation";
+            businessType = projectName + businessName;
+            allType = 1;
         }
         map.put("businessName", businessName);
         map.put("allType", allType);

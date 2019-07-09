@@ -1813,16 +1813,17 @@ public class OperationController<JsonResult> {
 	}
 	
 	/**
-	 * 批量删除实验项目
-	 * @author 贺子龙
-	 * 2015-11-30
+	 * Description 批量删除实验项目
+	 * @author 贺子龙 2015-11-30
+	 * @author 陈乐为 2019-6-28修改
 	 */
+	@ResponseBody
 	@RequestMapping("/batchDeleteOperationItem")
 	public String batchDeleteOperationItem(@RequestParam int[] array, int status){
 		for (int operationItemId : array) {
 			operationService.deleteOperationItem(operationItemId);
 		}
-		return "redirect:/operation/listOperationItemLims?currpage=1&status="+status+"&orderBy=9";
+		return "success";
 	}
 	/*********************************************************************************
 	 * 功能： 实验大纲管理

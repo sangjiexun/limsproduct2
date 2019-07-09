@@ -55,6 +55,7 @@
             <td align=left width="17%" ><h5>软件筛选：<input type="checkbox" name="select_check" value="SOFTWARE" onclick="checkSelected()" /></h5></td>
             <td width="80%"></td>
         </tr>
+        </c:if>
         <tr style="display:none" id="tr_soft">
             <td width="5%"></td>
             <td align=left width="17%" ><h5>选择软件<font color="red"> *</font>：</h5></td>
@@ -64,7 +65,6 @@
                 <label for="soft_id"></label>
             </td>
         </tr>
-        </c:if>
         <tr>
             <td width="5%"></td>
             <td align=left width="17%"><h5>请选择实验室<font color="red"> *</font>：</h5></td>

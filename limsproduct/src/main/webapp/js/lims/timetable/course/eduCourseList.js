@@ -97,7 +97,7 @@ function doAdjustTimetable(term, courseNo) {
         content: contextPath + '/lims/timetable/course/newEduAdjustCourse?currpage=1&flag=0&courseNo=' + courseNo + "&term=" + term
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -116,7 +116,7 @@ function studentTimetable(term, courseNo) {
         content: contextPath + '/lims/timetable/course/judgeTimetableConflictByStudent?courseNo=' + courseNo
         + '&term=' + term,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -139,7 +139,7 @@ function startTimetable(courseNo) {
         content: contextPath + '/lims/timetable/course/newEduDirectCourse?currpage=1&flag=0&courseNo=' + courseNo
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -161,7 +161,7 @@ function newEduReNoGroupCourse(term, courseNo) {
         content: contextPath + '/lims/timetable/course/newEduReTimetableCourse?currpage=1&flag=0&timetableStyle=3&courseNo=' + courseNo + "&term=" + term
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -180,7 +180,7 @@ function newEduReGroupCourse(term, courseNo) {
         content: contextPath + '/lims/timetable/course/newEduReGroupCourse?currpage=1&flag=0&courseNo=' + courseNo + "&term=" + term + "&groupId=-1"
         + '&tableAppId=' + 0,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -204,7 +204,7 @@ function publicTimetable(timetableStyle, courseNo, status) {
         //async: false,
         data: arrs,
         success: function (json) {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     //window.parent.location.reload();
@@ -232,7 +232,8 @@ function deleteTimetable(term, courseNo) {
             success: function (json) {
             }
         });
-        refreshBootstrapTable();
+        // refreshBootstrapTable();
+        refreshBootstrapTableLayer();
     }
 }
 
@@ -247,16 +248,17 @@ function deleteTimetableByBySameNumberId(sameNumberId) {
             dataType: "json",
             type: "post",
             success: function (json) {
-                layer.msg("已删除！");
+                layer.msg("已删除!", {icon: 1});
             },
             error: function () {
                 layer.msg('后台出了点问题，请重试!', {
-                    icon: 1,
+                    icon: 5,
                 });
                 return false;
             }
         });
-        refreshBootstrapTable();
+        // refreshBootstrapTable();
+        refreshBootstrapTableLayer();
     }
 }
 
@@ -281,8 +283,45 @@ function refreshBootstrapTable() {
     params.ajaxOptions.headers.Authorization =getJWTAuthority();
     params.url = url;
     params.silent=true;
+    // params.pageNumber=2;
+    var pageNumber = params.pageNumber;
+    $("#table_list").bootstrapTable('refresh', params);
+    // $("#table_list").bootstrapTable("refreshOptions",{pageNumber:pageNumber,url:url})
+    // if(timetableFlag == 1){
+    //     getTimetablePlanView(pageNumber);
+    // }else if(timetableFlag == 2){
+    //     getTimetableMangerView(pageNumber)
+    // }else if(timetableFlag == 3){
+    //     getTimetableHistoryView(pageNumber)
+    // }
+
+
+}
+function refreshBootstrapTableLayer() {
+    var url = "";
+    if(historyFlag == 1){
+        var view_radio =$("input[name='view_radio']:checked").val();
+        if (view_radio=="timetable") {
+            getTimetablePlanView();
+        }else{
+            getTimetableMangerView();
+        }
+        historyFlag = 0;
+    }
+    var view_radio =$("input[name='view_radio']:checked").val();
+    if (view_radio=="timetable") {
+        url = zuulUrl + "api/school/apiSchoolCourseListByPage";
+    }else{
+        url = zuulUrl + "api/school/apiEduSchoolCourseByPage";
+    }
+    var params = $("#table_list").bootstrapTable('getOptions')
+    params.ajaxOptions.headers.Authorization =getJWTAuthority();
+    params.url = url;
+    params.silent=true;
+    // params.pageNumber=2;
     var pageNumber = params.pageNumber;
     // $("#table_list").bootstrapTable('refresh', params);
+    // $("#table_list").bootstrapTable("refreshOptions",{pageNumber:pageNumber,url:url})
     if(timetableFlag == 1){
         getTimetablePlanView(pageNumber);
     }else if(timetableFlag == 2){
@@ -1113,7 +1152,7 @@ function auditTimetable(termId, courseNo) {
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/auditTimetable?businessAppUid=' + courseNo.toString()+'&businessType='+businessType+'&businessUid='+businessUid,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);
@@ -1129,7 +1168,7 @@ function courseBatchManage(course_no) {
         area: ['1100px', '500px'],
         content: contextPath + '/lims/timetable/course/batchManageList?course_no=' + course_no,
         end: function () {
-            refreshBootstrapTable();
+            refreshBootstrapTableLayer();
         }
     });
     layer.full(index);

@@ -821,6 +821,13 @@ public interface ShareService {
 	public boolean theSameDay(Date app_date);
 
 	/**
+	 * Description 从班级中获取可用学年
+	 * @return
+	 * @author 陈乐为
+	 */
+	public List<SchoolClasses> getYearCode();
+
+	/**
 	 * Description 获取当前数据源配置文件
 	 * @param
 	 * @return

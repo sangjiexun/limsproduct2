@@ -31,7 +31,47 @@
 
     </style>
     <script type="text/javascript">
+        function submitAuthorized(lab_id) {
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+            var username = $("#username").val();
 
+            if (username == null || username == "") {
+                alert("请选择被授权人员");
+                return false;
+            } else
+            if(startDate==null||startDate==""){
+                alert("请选择开始日期")
+                return false;
+            }
+            else if(endDate==null||endDate==""){
+                alert("请选择结束日期")
+                return false;
+            }
+            else if(startTime==null||startTime==""){
+                alert("请选择开始时间")
+                return false;
+            }
+            else if(endTime==null||endTime==""){
+                alert("请选择结束时间")
+                return false;
+            }
+
+            var array = new Array();
+            array.push(username); //将选中的值 添加到 array中
+            $.ajax({
+                url:'${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId='+ lab_id +'&array='+array ,
+                data: {'startDate':startDate,'endDate':endDate,'startTime':startTime,'endTime':endTime,'id':${id}},
+                type:'POST',
+                success:function(){
+                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    parent.layer.close(index);
+                }
+            });
+
+        }
     </script>
 </head>
 <body>
@@ -42,18 +82,14 @@
                 <div class="content-box">
                     <div class="title">
                         <div id="title">修改授权管理名单</div>
-
                     </div>
-                    <form:form action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoomAdmin.labRoom.id}&type=${type}" method="POST" modelAttribute="labRoomAdmin" >
+                    <form:form action="${pageContext.request.contextPath}/labRoom/saveLabRoomAuthorized?roomId=${labRoomAdmin.labRoom.id}" method="POST" modelAttribute="labRoomAdmin" >
                         <div class="new-classroom">
                             <fieldset>
                                 <form:hidden path="id" />
                                 <label>人员名称/编号：：</label>
-                                <form:select id="username" path="user.username" class="chzn-select">
-                                    <c:forEach items="${userList}" var="curr">
-                                        <form:option value="${curr.username}">${curr.cname }${curr.username}</form:option>
-                                    </c:forEach>
-                                </form:select>
+                                <input value="${user.username}" id="username" type="hidden" />
+                                <input value="${user.cname }${user.username}" readonly="true" />
                                 </td>
                             </fieldset>
                             <fieldset>
@@ -76,7 +112,7 @@
                         </div>
                         <div class="moudle_footer">
                             <div class="submit_link">
-                                <input class="btn" id="save" type="submit" value="确定">
+                                <input class="btn" id="save" type="button" onclick="submitAuthorized('${labRoomAdmin.labRoom.id}'); return false;" value="确定">
                                 <input class="btn btn-return" type="button" value="返回" onclick="window.history.go(-1)">
                             </div>
                         </div>

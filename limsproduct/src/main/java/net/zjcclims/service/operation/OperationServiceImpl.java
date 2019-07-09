@@ -1374,6 +1374,130 @@ public class OperationServiceImpl implements OperationService {
 		
 		return operationOutlineDAO.findOperationOutlineById(idkey);
 	}
+	/***************************************************************************************
+	 * 功能 ：查找大纲对应的课程目标
+	 * 作者：刘博越
+	 * 日期：2019-6-26
+	 **************************************************************************************/
+	@Override
+	public  List<OperationOutlineCourseObjective> getOperationOutlineCourseObjectives(int outlineId){
+		String sql="select id,operation_outline_id,objective_name,objective_content from operation_outline_course_objective " +
+				"where operation_outline_id="+outlineId;
+		Query query=entityManager.createNativeQuery(sql);
+		List<Object[]> objects=query.getResultList();
+		List<OperationOutlineCourseObjective> courseObjectives=new ArrayList<>();
+		for(Object[] o:objects){
+			OperationOutlineCourseObjective objective=new OperationOutlineCourseObjective();
+			objective.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+			objective.setOperationOutlineId(o[1]!=null?Integer.parseInt(o[1].toString()):null);
+			objective.setObjectiveName(o[2]!=null?o[2].toString():null);
+			objective.setObjectiveContent(o[3]!=null?o[3].toString():null);
+			courseObjectives.add(objective);
+		}
+		return  courseObjectives;
+	}
+    /***************************************************************************************
+     * 功能 ：查找课程目标数据
+     * 作者：刘博越
+     * 日期：2019-7-1
+     **************************************************************************************/
+    @Override
+    public  List<OperationOutlineCourseObjectiveRelated> getOperationOutlineCourseObjectiveRelated(int outlineId,Integer type){
+        //type记录数据类型。0：毕业要求；1：课程内容；2：考核方法；3：课程目标达成度
+        List<OperationOutlineCourseObjectiveRelated> objectiveRelateds=new ArrayList<>();
+        //课程目标与毕业要求指标点对应关系
+        if(type==0) {
+            String sql = "select id,operation_outline_id,type,objective_names,graduation_requirement,requirement_point from operation_outline_course_objective_related" +
+                    " where operation_outline_id=" + outlineId + " and type=" + type;
+            Query query = entityManager.createNativeQuery(sql);
+            List<Object[]> objects = query.getResultList();
+            for (Object[] o : objects) {
+                OperationOutlineCourseObjectiveRelated objectiveRelated = new OperationOutlineCourseObjectiveRelated();
+                objectiveRelated.setId(o[0] != null ? Integer.parseInt(o[0].toString()) : null);
+                objectiveRelated.setOperationOutlineId(o[1] != null ? Integer.parseInt(o[1].toString()) : null);
+                objectiveRelated.setType(o[2] != null ? Integer.parseInt(o[2].toString()) : null);
+                objectiveRelated.setObjectiveNames(o[3] != null ? o[3].toString() : null);
+                objectiveRelated.setGraduationRequirement(o[4] != null ? o[4].toString() : null);
+                objectiveRelated.setRequirementPoint(o[5] != null ? o[5].toString() : null);
+                objectiveRelateds.add(objectiveRelated);
+            }
+        }
+        //课程目标与课程内容对应关系
+        if(type==1){
+            String sql="select id,operation_outline_id,type,objective_names,course_content,course_requirement,course_hour,method from operation_outline_course_objective_related" +
+                    " where operation_outline_id="+outlineId+" and type="+type;
+            Query query=entityManager.createNativeQuery(sql);
+            List<Object[]> objects=query.getResultList();
+            for(Object[] o:objects){
+                OperationOutlineCourseObjectiveRelated objectiveRelated = new OperationOutlineCourseObjectiveRelated();
+                objectiveRelated.setId(o[0]!=null?Integer.parseInt(o[0].toString()):null);
+                objectiveRelated.setOperationOutlineId(o[1]!=null?Integer.parseInt(o[1].toString()):null);
+                objectiveRelated.setType(o[2]!=null?Integer.parseInt(o[2].toString()):null);
+                objectiveRelated.setObjectiveNames(o[3]!=null?o[3].toString():null);
+                objectiveRelated.setCourseContent(o[4]!=null?o[4].toString():null);
+                objectiveRelated.setCourseRequirement(o[5]!=null?o[5].toString():null);
+                objectiveRelated.setCourseHour(o[6]!=null?Integer.parseInt(o[6].toString()):null);
+                objectiveRelated.setMethod(o[7]!=null?o[7].toString():null);
+                objectiveRelateds.add(objectiveRelated);
+            }
+        }
+        //课程考核方法
+        if(type==2) {
+            String sql = "select id,operation_outline_id,type,objective_names,appraise_name,appraise_percentage,appraise_detail from operation_outline_course_objective_related" +
+                    " where operation_outline_id=" + outlineId + " and type=" + type;
+            Query query = entityManager.createNativeQuery(sql);
+            List<Object[]> objects = query.getResultList();
+            for (Object[] o : objects) {
+                OperationOutlineCourseObjectiveRelated objectiveRelated = new OperationOutlineCourseObjectiveRelated();
+                objectiveRelated.setId(o[0] != null ? Integer.parseInt(o[0].toString()) : null);
+                objectiveRelated.setOperationOutlineId(o[1] != null ? Integer.parseInt(o[1].toString()) : null);
+                objectiveRelated.setType(o[2] != null ? Integer.parseInt(o[2].toString()) : null);
+                objectiveRelated.setObjectiveNames(o[3] != null ? o[3].toString() : null);
+                objectiveRelated.setAppraiseName(o[4] != null ? o[4].toString() : null);
+                objectiveRelated.setAppraisePercentage(o[5] != null ? Integer.parseInt(o[5].toString()) : null);
+                objectiveRelated.setAppraiseDetail(o[6] != null ? o[6].toString() : null);
+                objectiveRelateds.add(objectiveRelated);
+            }
+        }
+        //课程目标达成度评价方法
+        if(type==3){
+            String sql ="select id,operation_outline_id,type,objective_names,appraise_name,appraise_percentage,average_score,objective_completion_rate from operation_outline_course_objective_related" +
+                    " where operation_outline_id=" + outlineId + " and type=" + type;
+            Query query = entityManager.createNativeQuery(sql);
+            //记录总分值
+            Integer totalScore = 0;
+            //记录总成绩表达式
+            String averageScore = "";
+            List<Object[]> objects = query.getResultList();
+            for (Object[] o : objects) {
+                OperationOutlineCourseObjectiveRelated objectiveRelated = new OperationOutlineCourseObjectiveRelated();
+                objectiveRelated.setId(o[0] != null ? Integer.parseInt(o[0].toString()) : null);
+                objectiveRelated.setOperationOutlineId(o[1] != null ? Integer.parseInt(o[1].toString()) : null);
+                objectiveRelated.setType(o[2] != null ? Integer.parseInt(o[2].toString()) : null);
+                objectiveRelated.setObjectiveNames(o[3] != null ? o[3].toString() : null);
+                objectiveRelated.setAppraiseName(o[4] != null ? o[4].toString() : null);
+                objectiveRelated.setAppraisePercentage(o[5] != null ? Integer.parseInt(o[5].toString()) : null);
+                totalScore += objectiveRelated.getAppraisePercentage();
+                objectiveRelated.setAverageScore(o[6] != null ? o[6].toString() : null);
+                if(averageScore.equals("")){
+                    averageScore = objectiveRelated.getAverageScore();
+                }else{
+                    averageScore = averageScore+"+"+objectiveRelated.getAverageScore();
+                }
+                objectiveRelated.setObjectiveCompletionRate(o[7] != null ? o[7].toString() : null);
+                objectiveRelateds.add(objectiveRelated);
+            }
+            //添加总评记录
+            OperationOutlineCourseObjectiveRelated objectiveRelated = new OperationOutlineCourseObjectiveRelated();
+            objectiveRelated.setObjectiveNames("课程总体目标");
+            objectiveRelated.setAppraiseName("总评成绩");
+            objectiveRelated.setAppraisePercentage(totalScore);
+            objectiveRelated.setAverageScore(averageScore);
+            objectiveRelated.setObjectiveCompletionRate("("+averageScore+")/"+totalScore);
+            objectiveRelateds.add(objectiveRelated);
+        }
+        return objectiveRelateds;
+    }
 	/***********************************************************************************
      * 功能 ： 查找未被大纲使用的项目卡项目卡数
      * 作者：徐文
@@ -2576,7 +2700,8 @@ public class OperationServiceImpl implements OperationService {
 	 * @author 陈乐为 2018-8-25
 	 */
 	@Override
-	public List<OperationItem> findOperationItemForLims(OperationItem item, String acno, int currpage, int pageSize) {
+	public List<OperationItem>
+	findOperationItemForLims(OperationItem item, String acno, int currpage, int pageSize) {
 		StringBuffer hql = new StringBuffer("select i from OperationItem i where 1=1");
 		if(!EmptyUtil.isObjectEmpty(item)) {// 有效传参
 			// 项目申请人
@@ -2722,6 +2847,35 @@ public class OperationServiceImpl implements OperationService {
 		String hql = "select o from OperationItem o where 1=1";
 		hql += " and o.schoolCourseInfo.courseNumber = '"+ courseNumber +"'";
 		return operationItemDAO.executeQuery(hql,0,-1);
+	}
+
+	/**
+	 * Description 跟据条件查询项目列表
+	 * @param item
+	 * @param lab_id
+	 * @return
+	 * @author 陈乐为 2019-7-2
+	 */
+	public List<OperationItem> findItemByQuery(OperationItem item, Integer lab_id) {
+		StringBuffer hql = new StringBuffer("select i from OperationItem i join i.labRooms room where 1=1");
+		if(!EmptyUtil.isObjectEmpty(item)) {// 有效传参
+			// 项目名称
+			if(!EmptyUtil.isStringEmpty(item.getLpName())) {
+				hql.append(" and i.lpName = '"+ item.getLpName() +"'");
+			}
+			// 所属课程
+			if(!EmptyUtil.isObjectEmpty(item.getSchoolCourseInfo()) && !EmptyUtil.isStringEmpty(item.getSchoolCourseInfo().getCourseNumber())) {
+				hql.append(" and i.schoolCourseInfo.courseNumber = '"+ item.getSchoolCourseInfo().getCourseNumber() +"'");
+			}
+			// 所属实验室
+			if (!EmptyUtil.isIntegerEmpty(lab_id)) {
+				hql.append(" and room.id = " + lab_id);
+			}
+		}
+		// 按照状态正序（草稿-审核中-...）
+		hql.append(" order by i.lpName");
+
+		return operationItemDAO.executeQuery(hql.toString(), 0, -1);
 	}
 
 }

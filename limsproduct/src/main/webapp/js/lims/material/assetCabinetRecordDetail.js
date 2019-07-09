@@ -4,6 +4,7 @@ var detailCols = [
     {field:'id', title: '序号', fixed: true, type: 'numbers',minwidth: 80,totalRowText: '总数量'}
     ,{field:'cabinetCode',title:'物品柜编号'}
     ,{field:'cabinetName', title: '物品柜名称', }
+    ,{field:'schoolAcademy', title: '所属学院', }
     ,{field:'stockNumber', title: '物资数量' ,sort: true, totalRow: true}
 ];
 var editCols = [

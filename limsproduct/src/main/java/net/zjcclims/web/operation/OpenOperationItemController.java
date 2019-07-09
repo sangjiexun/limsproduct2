@@ -33,7 +33,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Null;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -88,6 +91,17 @@ public class OpenOperationItemController<JsonResult> {
 		binder.registerCustomEditor(Double.class, new org.skyway.spring.util.databinding.NaNHandlingNumberEditor(Double.class, true));
 	}
 
+	/**
+	 * Description 开放项目管理--项目列表
+	 * @param request
+	 * @param currpage
+	 * @param status
+	 * @param orderBy
+	 * @param operationItem
+	 * @param acno
+	 * @return
+	 * @author 黄保钱 2019-4-26
+	 */
 	@RequestMapping("/listOpenOperationItem")
 	public ModelAndView listOpenOperationItem(HttpServletRequest request, @RequestParam int currpage, int status, int orderBy, @ModelAttribute OperationItem operationItem, @ModelAttribute("selected_academy") String acno){
 		ModelAndView mav = new ModelAndView();
@@ -826,7 +840,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("type", "0");
 		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
-		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+		mav.addObject("grade", shareService.getYearCode());
 		mav.addObject("title", "不分批选");
 		mav.setViewName("openOperationItem/arrangeNoBatchChoose.jsp");
 		return mav;
@@ -859,7 +873,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("type", "1");
 		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
-		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+		mav.addObject("grade", shareService.getYearCode());
 		mav.addObject("title", "分批自选");
 		mav.setViewName("openOperationItem/arrangeBatchChoose.jsp");
 		return mav;
@@ -892,7 +906,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("type", "2");
 		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
-		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+		mav.addObject("grade", shareService.getYearCode());
 		mav.addObject("title", "不分批排");
 		mav.setViewName("openOperationItem/arrangeNoBatchNoChoose.jsp");
 		return mav;
@@ -925,7 +939,7 @@ public class OpenOperationItemController<JsonResult> {
 		mav.addObject("type", "3");
 		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
-		mav.addObject("grade", schoolTermDAO.executeQuery("select st from SchoolTerm st group by st.yearCode"));
+		mav.addObject("grade", shareService.getYearCode());
 		mav.addObject("title", "分批直排");
 		mav.setViewName("openOperationItem/arrangeBatchNoChoose.jsp");
 		return mav;
@@ -1125,11 +1139,13 @@ public class OpenOperationItemController<JsonResult> {
 						 * 1.宁德需求：不分批排
 						 * 2.分组实验，数量按照组数计算；否则按照实际上课人数计算
 						 */
-						if (pConfigDTO.PROJECT_NAME.equals("ndyzlims") && operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {
+						if (pConfigDTO.PROJECT_NAME.equals("ndyzlims") && operationItem.getLpSetNumber()!=null && !operationItem.getLpSetNumber().equals("")) {
+							quantity = Integer.parseInt(operationItem.getLpSetNumber());
+                        } else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("2")) {// 分组实验
 							if (operationItem.getLpSetNumber()!=null && !operationItem.getLpSetNumber().equals("")) {
 								quantity = Integer.parseInt(operationItem.getLpSetNumber());
 							}
-                        } else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {
+						} else if (operationItem.getCDictionaryByLpCategoryApp().getCNumber().equals("1")) {// 演示实验
 							quantity = 1;
 						} else {
                             if (timetableSelfCourse.getItemPlans().iterator().next().getType() == 1 || timetableSelfCourse.getItemPlans().iterator().next().getType() == 3) {//分批自选、分批直排
@@ -1194,8 +1210,8 @@ public class OpenOperationItemController<JsonResult> {
 	/************************************************************
 	 * Descriptions：自主排课管理-自主排课二次分批排课的主显示页面
 	 *
-	 * @作者：魏诚
-	 * @时间：2018-09-04
+	 * @作者：黄保钱
+	 * @时间：2019-4-24
 	 ************************************************************/
 	@RequestMapping("/newSelfReGroupTimetableCourse")
 	public ModelAndView newSelfReGroupTimetableCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {

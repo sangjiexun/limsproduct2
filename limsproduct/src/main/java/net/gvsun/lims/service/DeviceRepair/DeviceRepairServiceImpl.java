@@ -13,6 +13,7 @@ import net.gvsun.lims.service.user.UserActionService;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
+import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -718,11 +719,9 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
                         }
                     }
                 }else {
-                    if (centers == null ||
-                            !centers.contains(this
-                                    .getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress())
-                                    .getLabRoom()
-                                    .getLabCenter())) {
+                    LabRoomDevice device = this.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
+                    if (centers == null || (!EmptyUtil.isObjectEmpty(device) && !EmptyUtil.isObjectEmpty(device.getLabRoom()) &&
+                            !centers.contains(device.getLabRoom().getLabCenter()) )) {
                         sameCenter = "noSameCenter";
                     }
                 }
@@ -1111,11 +1110,9 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
                         }
                     }
                 }else {
-                    if (centers == null ||
-                            !centers.contains(this
-                                    .getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress())
-                                    .getLabRoom()
-                                    .getLabCenter())) {
+                    LabRoomDevice device = this.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
+                    if (centers == null || (!EmptyUtil.isObjectEmpty(device) && !EmptyUtil.isObjectEmpty(device.getLabRoom()) &&
+                            !centers.contains(device.getLabRoom().getLabCenter()))) {
                         sameCenter = "noSameCenter";
                     }
                 }
@@ -1173,8 +1170,12 @@ public class DeviceRepairServiceImpl implements DeviceRepairService {
                 deviceNumber + "'" +
                 " and lrd.labRoom.labRoomName='" +
                 labRoomName + "'";
-        LabRoomDevice labRoomDevice = (LabRoomDevice) labRoomDeviceDAO.executeQuerySingleResult(sql);
-        return labRoomDevice;
+        List<LabRoomDevice> devices = labRoomDeviceDAO.executeQuery(sql);
+        if (devices != null && devices.size() > 0) {
+            return devices.get(0);
+        }else {
+            return null;
+        }
     }
 
     /**
