@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:task="http://www.springframework.org/schema/task"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -32,7 +32,7 @@
 	<context:component-scan base-package="net.gvsun.lims.web.*"/>
 	<context:component-scan base-package="net.gvsun.lims.api.*"/>
 	<context:component-scan base-package="net.zjcclims.datasource"/>
-	<context:component-scan base-package="net.zjcclims.aop"/>
+	<context:component-scan base-package="net.zjcclims.web.aop"/>
 	<aop:aspectj-autoproxy proxy-target-class="true"/>
 
 	<!-- ******************************************************************** -->
