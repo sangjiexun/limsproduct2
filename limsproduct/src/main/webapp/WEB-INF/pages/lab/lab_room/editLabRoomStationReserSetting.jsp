@@ -449,7 +449,7 @@ margin-left:3px;
 				 <a href="javascript:void(0);" onclick="editLabRoomTrainingRest(${device.id},${currpage },${type})">准入管理</a>
 			 </li>
 		 </c:if>
-         <c:if test="${device.labRoomReservation.toString() == '1'}">
+         <c:if test="${isOpen == 1}">
              <li class="TabbedPanelsTab" tabindex="0">
                  <a href="javascript:void(0);" onclick="editLabRoomOpenSettingRest(${device.id},${currpage },${type})">开放设置</a>
              </li>

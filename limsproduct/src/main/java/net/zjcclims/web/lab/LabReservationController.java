@@ -1110,6 +1110,14 @@ public class LabReservationController<JsonResult> {
 				openAcademyAndAuthorities.add(o);
 			}
 		}
+		int isOpen = 0;
+		//该实验室实验室或者工位可预约，开放设置的页面栏显示
+        LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+            isOpen =1;
+        }
+		mav.addObject("isOpen",isOpen);
+
 		mav.addObject("openAcademyAndAuthorities",openAcademyAndAuthorities);
 		mav.setViewName("/lab/lab_room/editLabRoomSetting.jsp");
 
@@ -1280,6 +1288,14 @@ public class LabReservationController<JsonResult> {
         mav.addObject("currpage", currpage);
         mav.addObject("labRoomWorker",labRoom.getLabRoomWorker());
 
+		int isOpen = 0;
+		//该实验室实验室或者工位可预约，开放设置的页面栏显示
+		LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+		if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+			isOpen =1;
+		}
+		mav.addObject("isOpen",isOpen);
+
 		mav.setViewName("/lab/lab_room/editLabRoomStationReserSetting.jsp");
         return mav;
     }
@@ -1356,6 +1372,14 @@ public class LabReservationController<JsonResult> {
         // 实验室禁用时间段列表
         mav.addObject("labRoomLimitTimes",
                 labRoomLimitTimeDAO.executeQuery("select c from LabRoomLimitTime c where c.type=0 and c.labId= " + labRoomId, 0, -1));
+
+        int isOpen = 0;
+        //该实验室实验室或者工位可预约，开放设置的页面栏显示
+        LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+            isOpen =1;
+        }
+        mav.addObject("isOpen",isOpen);
 
         mav.setViewName("/lab/lab_room/editLabRoomOpenSetting.jsp");
 
@@ -1477,6 +1501,23 @@ public class LabReservationController<JsonResult> {
 		}
 		if (paramLabSettingVO.getIsAppointment() != -1) {
 			labRoom.setLabRoomReservation(paramLabSettingVO.getIsAppointment());
+			//如果设置实验室可预约，该实验室没有开放时间段设置，进行默认设置开放时间段
+            if(paramLabSettingVO.getIsAppointment()==1){
+                if(reservationSetItemDAO.findReservationSetItemBylabRoomIdAndType(labRoom.getId(),0)==null){
+                    ReservationSetItem reservationSetItem = new ReservationSetItem();
+                    reservationSetItem.setLabRoomId(labRoom.getId());
+                    reservationSetItem.setItemType(0);
+                    BigDecimal startHour = new BigDecimal(8.5);
+                    BigDecimal endHour = new BigDecimal(21);
+                    reservationSetItem.setStartHourInweek(startHour);
+                    reservationSetItem.setEndHourInweek(endHour);
+                    reservationSetItem.setOpenInweekend(1);
+                    reservationSetItem.setStartHourInweekend(startHour);
+                    reservationSetItem.setEndHourInweekend(endHour);
+                    reservationSetItemDAO.store(reservationSetItem);
+                    reservationSetItemDAO.flush();
+                }
+            }
 		}
 
 		// 保存开放学院
@@ -1616,6 +1657,22 @@ public class LabReservationController<JsonResult> {
             }
             labRelevantConfigIsApp.setSetItem(isAppointment);
             labRelevantConfigDAO.store(labRelevantConfigIsApp);
+            if(isAppointment==1){
+                if(reservationSetItemDAO.findReservationSetItemBylabRoomIdAndType(labRoom.getId(),0)==null){
+                    ReservationSetItem reservationSetItem = new ReservationSetItem();
+                    reservationSetItem.setLabRoomId(labRoom.getId());
+                    reservationSetItem.setItemType(0);
+                    BigDecimal startHour = new BigDecimal(8.5);
+                    BigDecimal endHour = new BigDecimal(21);
+                    reservationSetItem.setStartHourInweek(startHour);
+                    reservationSetItem.setEndHourInweek(endHour);
+                    reservationSetItem.setOpenInweekend(1);
+                    reservationSetItem.setStartHourInweekend(startHour);
+                    reservationSetItem.setEndHourInweekend(endHour);
+                    reservationSetItemDAO.store(reservationSetItem);
+                    reservationSetItemDAO.flush();
+                }
+            }
         }
 
         //可预约工位数
@@ -1899,6 +1956,13 @@ public class LabReservationController<JsonResult> {
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("currpage", currpage);
 		mav.addObject("type",type);
+        int isOpen = 0;
+        //该实验室实验室或者工位可预约，开放设置的页面栏显示
+        LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+            isOpen =1;
+        }
+        mav.addObject("isOpen",isOpen);
 		return mav;
 	}
 	/****************************************************************************
@@ -1913,6 +1977,14 @@ public class LabReservationController<JsonResult> {
 		// id对应的实验分室
 		LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
 		mav.addObject("device", labRoom);
+        int isOpen = 0;
+        //该实验室实验室或者工位可预约，开放设置的页面栏显示
+        LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+            isOpen =1;
+        }
+        mav.addObject("isOpen",isOpen);
+
 		mav.setViewName("/labroom/lab_room_reservation/labroomVideo.jsp");
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("currpage", currpage);
@@ -1931,6 +2003,13 @@ public class LabReservationController<JsonResult> {
 		// id对应的实验分室
 		LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
 		mav.addObject("device", labRoom);
+        int isOpen = 0;
+        //该实验室实验室或者工位可预约，开放设置的页面栏显示
+        LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+            isOpen =1;
+        }
+        mav.addObject("isOpen",isOpen);
 		mav.setViewName("/labroom/lab_room_reservation/labroomDocument.jsp");
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("currpage", currpage);
@@ -2356,7 +2435,13 @@ public class LabReservationController<JsonResult> {
 		mav.setViewName("/labroom/lab_room_reservation/labRoomTraining.jsp");// 统一到集中培训页面
 		//if ((device.getCTrainingType()!=null&&device.getCTrainingType().getId()==1)||device.getCTrainingType()==null) {
 		//}else mav.setViewName("/device/specialAcademy/deviceTrainingForSingle.jsp");
-		
+        int isOpen = 0;
+        //该实验室实验室或者工位可预约，开放设置的页面栏显示
+        LabRelevantConfig labRelevantConfig = labRelevantConfigDAO.findLabRelevantConfigBylabRoomIdAndCategory(labRoomId,"lab_station_is_appointment");
+        if(labRoom.getLabRoomReservation()==1 ||labRelevantConfig.getSetItem()==1){
+            isOpen =1;
+        }
+        mav.addObject("isOpen",isOpen);
 		
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("currpage", page);

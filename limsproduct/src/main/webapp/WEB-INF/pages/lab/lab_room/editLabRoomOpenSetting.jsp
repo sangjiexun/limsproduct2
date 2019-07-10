@@ -130,7 +130,7 @@ margin-left:3px;
                  <a href="javascript:void(0);" onclick="editLabRoomTrainingRest(${labRoom.id},${currpage },${type})">准入管理</a>
              </li>
          </c:if>
-         <c:if test="${labRoom.labRoomReservation.toString() == '1'}">
+         <c:if test="${isOpen == 1}">
              <li class="TabbedPanelsTab selected" tabindex="0">
                  <a href="javascript:void(0);" onclick="editLabRoomOpenSettingRest(${labRoom.id},${currpage },${type})">开放设置</a>
              </li>

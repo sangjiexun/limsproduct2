@@ -222,6 +222,9 @@
                                         <option value="4">审核拒绝</option>
                                         <option value="-1">所有</option>
                                         <option value="5">取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
                                     </c:if>
                                     <c:if test="${auditStatus == 1}">
                                         <option value="2">审核中</option>
@@ -230,6 +233,9 @@
                                         <option value="4">审核拒绝</option>
                                         <option value="-1">所有</option>
                                         <option value="5">取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
                                     </c:if>
                                     <%--<c:if test="${auditStatus == 3}">
                                         <option value="2">审核中</option>
@@ -245,6 +251,9 @@
                                         <option value="4" selected>审核拒绝</option>
                                         <option value="-1">所有</option>
                                         <option value="5">取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
                                     </c:if>
                                     <c:if test="${auditStatus == -1}">
                                         <option value="2">审核中</option>
@@ -253,6 +262,9 @@
                                         <option value="4">审核拒绝</option>
                                         <option value="-1" selected>所有</option>
                                         <option value="5">取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
                                     </c:if>
                                     <c:if test="${auditStatus == 5}">
                                         <option value="2">审核中</option>
@@ -261,6 +273,42 @@
                                         <option value="4">审核拒绝</option>
                                         <option value="-1">所有</option>
                                         <option value="5" selected>取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 6}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <%--<option value="3">未审核</option>--%>
+                                        <option value="4">审核拒绝</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5">取消预约</option>
+                                        <option value="6" selected>取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 7}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <%--<option value="3">未审核</option>--%>
+                                        <option value="4">审核拒绝</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5">取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7" selected>取消预约审核拒绝</option>
+                                        <option value="8">预约作废</option>
+                                    </c:if>
+                                    <c:if test="${auditStatus == 8}">
+                                        <option value="2">审核中</option>
+                                        <option value="1">审核通过</option>
+                                        <%--<option value="3">未审核</option>--%>
+                                        <option value="4">审核拒绝</option>
+                                        <option value="-1">所有</option>
+                                        <option value="5">取消预约</option>
+                                        <option value="6">取消预约审核通过</option>
+                                        <option value="7">取消预约审核拒绝</option>
+                                        <option value="8" selected>预约作废</option>
                                     </c:if>
                                 </form:select>
                             </li>
@@ -305,19 +353,22 @@
                             <c:if test="${s.result==4}">审核拒绝</c:if>
                             <c:if test="${s.result==3}">未审核</c:if>
                             <c:if test="${s.result==5}">取消预约</c:if>
+                            <c:if test="${s.result==6}">取消预约审核通过</c:if>
+                            <c:if test="${s.result==7}">取消预约审核拒绝</c:if>
+                            <c:if test="${s.result==8}">预约作废</c:if>
                         </td>
                         <td>
                             <c:if test="${s.buttonMark eq 0 && s.result ne 5 && s.result ne 6}">
                                 <%--<a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">查看</a>--%>
                                 <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', ${s.labRoom.id});">查看</a>
                             </c:if>
-                            <c:if test="${s.buttonMark ne 0}">
+                            <c:if test="${isAudit eq 1 && s.result ne 5 }">
                                 <%--<a href="javascript:void(0)" onclick="openAuditWindow('${s.id}', '<c:if test="${isGraded}">${s.labRoom.labRoomLevel}</c:if>StationReservation');">审核</a>--%>
                                 <a href="javascript:void(0)" onclick="openAuditWindow('${s.id}',${s.labRoom.id});">审核</a>
                             </c:if>
                             <c:if test="${isAudit eq 1 && s.result eq 5 }">
                                 <a href="javascript:void(0)"
-                                   onclick="openCancelAuditWindow('${s.id}');">审核取消</a>
+                                   onclick="openCancelAuditWindow('${s.id}');">取消审核</a>
                             </c:if>
                             <c:if test="${(sessionScope.selected_role eq 'ROLE_LABMANAGER') && isAudit eq 1 && (auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0)}">
                                 <c:forEach items="${s.labRoom.labRoomAdmins}" var="la">

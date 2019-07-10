@@ -647,11 +647,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                 sql += " and l.result ="+ labRoomStationReservation.getResult();
             }
         }else{
-		    if(isAudit == 2){        //我的预约页面默认所有
-		        //do nothing
-            }else {               //我的审核页面默认审核中-包括未审核状态和取消预约未审核
-                sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
-            }
+			//我的预约/预约列表页面默认所有
+			//do nothing
         }
 		if(labRoomStationReservation.getLabRoom() != null){
 			if (labRoomStationReservation.getLabRoom().getLabRoomName() != null && !labRoomStationReservation.getLabRoom().getLabRoomName().equals("")) {
@@ -790,9 +787,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				sql += " and l.result ="+ labRoomStationReservation.getResult();
 			}
 		}else{
-			if(isAudit == 2){        //我的预约页面默认所有
-				//do nothing
-			}else {               //我的审核页面默认审核中-包括未审核状态和取消预约未审核
+			if(isAudit == 1){        //我的审核页面默认审核中 包含为审核状态和取消预约未审核
 				sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
 			}
 		}
@@ -2327,15 +2322,26 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
         refuseItemBackupDAO.store(refuseItemBackup);
         refuseItemBackupDAO.flush();
-        //删除相关数据
-        Set<LabRoomStationReservationStudent> labRoomStationReservationStudentSet = labRoomStationReservation.getLabRoomStationReservationStudents();
-        for(LabRoomStationReservationStudent labRoomStationReservationStudent:labRoomStationReservationStudentSet){
-            labRoomStationReservationStudentDAO.remove(labRoomStationReservationStudent);
-            labRoomStationReservationStudentDAO.flush();
-			labRoomStationReservation.setLabRoomStationReservationStudents(null);
+        //删除相关数据 --保留数据
+//        Set<LabRoomStationReservationStudent> labRoomStationReservationStudentSet = labRoomStationReservation.getLabRoomStationReservationStudents();
+//        for(LabRoomStationReservationStudent labRoomStationReservationStudent:labRoomStationReservationStudentSet){
+//            labRoomStationReservationStudentDAO.remove(labRoomStationReservationStudent);
+//            labRoomStationReservationStudentDAO.flush();
+//			labRoomStationReservation.setLabRoomStationReservationStudents(null);
+//        }
+//        labRoomStationReservationDAO.remove(labRoomStationReservation);
+//        labRoomStationReservationDAO.flush();
+        //type 2为取消预约
+        if(type == 2){
+            //设置结果为取消预约审核通过=6
+            labRoomStationReservation.setResult(6);
+            labRoomStationReservationDAO.store(labRoomStationReservation);
+        }else if(type ==1){  //type 1为预约作废
+            //设置结果为预约作废=8
+            labRoomStationReservation.setResult(8);
+            labRoomStationReservationDAO.store(labRoomStationReservation);
         }
-        labRoomStationReservationDAO.remove(labRoomStationReservation);
-        labRoomStationReservationDAO.flush();
+
         return "success";
     }
 

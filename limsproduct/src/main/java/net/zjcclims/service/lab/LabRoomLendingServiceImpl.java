@@ -1055,9 +1055,10 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
         // 审核微服务
         Map<String, String> params = new HashMap<>();
         //默认教务排课，type=1
-        String businessType = "CancelLabRoomReservation";
+        String businessType = pConfig.PROJECT_NAME + "CancelLabRoomReservation";
+        String businessAppUid = shareService.saveAuditSerialNumbers(labReservation.getId().toString(),businessType);
         params.put("businessUid", "-1");
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", businessType);
         params.put("businessAppUid", labReservation.getId().toString());
         String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
         JSONObject jsonObject = JSON.parseObject(s);
