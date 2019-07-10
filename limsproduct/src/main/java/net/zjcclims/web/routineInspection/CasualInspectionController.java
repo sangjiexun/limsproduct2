@@ -1,5 +1,6 @@
 package net.zjcclims.web.routineInspection;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.luxunsh.web.aop.SystemServiceLog;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -9,7 +10,6 @@ import net.zjcclims.service.lab.LabAnnexService;
 import net.zjcclims.service.lab.LabCenterService;
 import net.zjcclims.service.routineInspection.LabSecurityCheckService;
 import net.zjcclims.service.routineInspection.RoutineInspectionService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
@@ -70,8 +70,6 @@ public class CasualInspectionController<JsonResult> {
     private LabAnnexService labAnnexService;
     @Autowired
     private LabCenterService labCenterService;
-    @Autowired
-    private PConfig pConfig;
 
     /*****************************************************************
      * @抽检（学生，督导）-查询{首页、查询、分页都经由此,通过types判断是学生（1）还是督导（2）}
@@ -83,6 +81,7 @@ public class CasualInspectionController<JsonResult> {
                                       @ModelAttribute RoutineInspection routineInspection,
                                       @RequestParam int currpage, int types, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         //获取登录实验中心所属学院
         mav.addObject("schoolAcademy", schoolAcademyDAO.findSchoolAcademyByAcademyNumber(acno));
 
@@ -495,6 +494,7 @@ public class CasualInspectionController<JsonResult> {
     public String saveSpecialExamination(HttpServletRequest request, HttpServletResponse response,
                                          @ModelAttribute SpecialExamination specialExamination, @ModelAttribute("selected_academy") String acno) throws ParseException {
 
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         //上传附件
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         String sep = System.getProperty("file.separator");
@@ -578,7 +578,7 @@ public class CasualInspectionController<JsonResult> {
         message.setCreateTime(Calendar.getInstance());
         String content = "";
         content = "专项检查查看";
-        content += "<a  href='/" + pConfig.PROJECT_NAME + "/examineSpecialExamination?sEId=" + op.getId();
+        content += "<a  href='/" + pConfigDTO.getPROJECT_NAME() + "/examineSpecialExamination?sEId=" + op.getId();
         content += "'>点击进行查看</a>";
         message.setContent(content);
         message.setTage(2);

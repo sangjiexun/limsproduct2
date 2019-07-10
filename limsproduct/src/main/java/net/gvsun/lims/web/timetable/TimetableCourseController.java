@@ -2,6 +2,7 @@ package net.gvsun.lims.web.timetable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.timetable.TimetableParamVO;
 import net.gvsun.lims.service.timetable.EduCourseService;
 import net.gvsun.lims.service.timetable.TimetableCommonService;
@@ -13,7 +14,6 @@ import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.TimetableBatchService;
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.hibernate.Session;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +45,6 @@ import java.util.stream.Collectors;
 public class TimetableCourseController<JsonResult> {
     @Autowired
     private HttpServletRequest request;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private OuterApplicationService outerApplicationService;
     @Autowired
@@ -111,6 +109,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/eduCourseList")
     public ModelAndView listTimetableTerm(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
@@ -120,14 +120,14 @@ public class TimetableCourseController<JsonResult> {
         // 获取实验室排课的通用配置对象；
         CStaticValue cStaticValue = cStaticValueService.getCStaticValueByTimetableLabDevice(acno);
         mav.addObject("cStaticValue", cStaticValue);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
         // 操作权限配置
-        mav.addObject("eduAjust", pConfig.eduAjust);
-        mav.addObject("eduBatch", pConfig.eduBatch);
-        mav.addObject("eduDirect", pConfig.eduDirect);
-        mav.addObject("eduNoBatch", pConfig.eduNoBatch);
+        mav.addObject("eduAjust", pConfigDTO.eduAjust);
+        mav.addObject("eduBatch", pConfigDTO.eduBatch);
+        mav.addObject("eduDirect", pConfigDTO.eduDirect);
+        mav.addObject("eduNoBatch", pConfigDTO.eduNoBatch);
         // 是否审核
         mav.addObject("auditOrNot", shareService.getAuditOrNot("TimetableAuditOrNot"));
         // 审核参数
@@ -145,6 +145,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/eduCourseAdjustList")
     public ModelAndView eduCourseAdustList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
@@ -154,14 +156,14 @@ public class TimetableCourseController<JsonResult> {
         // 获取实验室排课的通用配置对象；
         CStaticValue cStaticValue = cStaticValueService.getCStaticValueByTimetableLabDevice(acno);
         mav.addObject("cStaticValue", cStaticValue);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
         // 操作权限配置
-        mav.addObject("eduAjust", pConfig.eduAjust);
-        mav.addObject("eduBatch", pConfig.eduBatch);
-        mav.addObject("eduDirect", pConfig.eduDirect);
-        mav.addObject("eduNoBatch", pConfig.eduNoBatch);
+        mav.addObject("eduAjust", pConfigDTO.eduAjust);
+        mav.addObject("eduBatch", pConfigDTO.eduBatch);
+        mav.addObject("eduDirect", pConfigDTO.eduDirect);
+        mav.addObject("eduNoBatch", pConfigDTO.eduNoBatch);
         mav.addObject("authName", request.getSession().getAttribute("selected_role"));
 
         mav.setViewName("lims/timetable/course/eduCourseAdjustList.jsp");
@@ -176,6 +178,7 @@ public class TimetableCourseController<JsonResult> {
      ************************************************************/
     @RequestMapping("/newEduDirectCourse")
     public ModelAndView newEduCourseList(@ModelAttribute("selected_academy") String acno) {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
         ModelAndView mav = new ModelAndView();
         String academyNumber="";
@@ -189,15 +192,15 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("schoolCourse",schoolCourse);
         mav.addObject("courseNo",request.getParameter("courseNo"));
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 虚拟镜像
-        mav.addObject("virtual", pConfig.virtual);
+        mav.addObject("virtual", pConfigDTO.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
         // 是否审核
         mav.addObject("auditOrNot", shareService.getAuditOrNot("TimetableAuditOrNot"));
         // 软件
-        mav.addObject("softManage", pConfig.softManage);
+        mav.addObject("softManage", pConfigDTO.softManage);
         mav.setViewName("lims/timetable/course/newEduDirectCourse.jsp");
         return mav;
     }
@@ -210,10 +213,11 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/judgeTimetableConflictByStudent")
     public ModelAndView judgeTimetableConflictByStudent(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
         mav.addObject("courseNo",request.getParameter("courseNo"));
         mav.addObject("term",request.getParameter("term"));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 
         mav.setViewName("lims/timetable/course/judgeTimetableConflictByStudent.jsp");
         return mav;
@@ -228,6 +232,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/newEduAdjustCourse")
     public ModelAndView newEduAdjustCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -245,13 +251,13 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("courseNumber",courseNumber);
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 虚拟镜像传参
-        mav.addObject("virtual", pConfig.virtual);
+        mav.addObject("virtual", pConfigDTO.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
         // 软件
-        mav.addObject("softManage", pConfig.softManage);
+        mav.addObject("softManage", pConfigDTO.softManage);
         mav.setViewName("lims/timetable/course/newEduAdjustCourse.jsp");
         return mav;
     }
@@ -265,6 +271,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/eduReCourseList")
     public ModelAndView eduReCourseList(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 获取学期列表
         List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
@@ -274,7 +282,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("cStaticValue", cStaticValue);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/eduReCourseList.jsp");
         return mav;
     }
@@ -288,6 +296,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/newEduReTimetableCourse")
     public ModelAndView newEduReNoGroupCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -308,13 +318,13 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
         mav.addObject("schoolCourse",schoolCourse);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 虚拟镜像
-        mav.addObject("virtual", pConfig.virtual);
+        mav.addObject("virtual", pConfigDTO.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
         // 软件
-        mav.addObject("softManage", pConfig.softManage);
+        mav.addObject("softManage", pConfigDTO.softManage);
         mav.setViewName("lims/timetable/course/newEduReTimetableCourse.jsp");
         return mav;
     }
@@ -328,6 +338,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/newEduReGroupTimetableCourse")
     public ModelAndView newEduReGroupTimetableCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -353,13 +365,13 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("courseNumber",courseNumber);
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 虚拟镜像
-        mav.addObject("virtual", pConfig.virtual);
+        mav.addObject("virtual", pConfigDTO.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
         // 软件
-        mav.addObject("softManage", pConfig.softManage);
+        mav.addObject("softManage", pConfigDTO.softManage);
         mav.setViewName("lims/timetable/course/newEduReGroupTimetableCourse.jsp");
         return mav;
     }
@@ -373,6 +385,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/updateEduReTimetableCourse")
     public ModelAndView updateEduReTimetableCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -406,7 +420,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("academyNumber",academyNumber);
         mav.addObject("adjustStatus",request.getParameter("adjustStatus"));
 
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/updateEduReTimetableCourse.jsp");
         return mav;
     }
@@ -420,6 +434,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/adjustEduReTimetableCourse")
     public ModelAndView adjustEduReTimetableCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -466,7 +482,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("adjustStatus",request.getParameter("adjustStatus"));
         mav.addObject("groupId", request.getParameter("groupId"));
 
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/adjustEduReTimetableCourse.jsp");
         return mav;
     }
@@ -480,6 +496,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/newEduReGroupCourse")
     public ModelAndView newEduReGroupCourse(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 获取学期列表
         List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         //获取课程编号
@@ -492,7 +510,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("schoolCourse",schoolCourse);
         mav.addObject("cStaticValue", cStaticValue);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
         mav.setViewName("lims/timetable/course/newEduReGroupCourse.jsp");
@@ -508,10 +526,11 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/schoolCourseStudnetList")
     public ModelAndView schoolCourseStudnetList(int term, String courseNo,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 获取可选的教师列表列表
         mav.addObject("courseNo", courseNo);
         mav.addObject("termId", term);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/schoolCourseStudentList.jsp");
         return mav;
     }
@@ -526,6 +545,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/updateEduAdjustCourse")
     public ModelAndView updateEduAdjustCourse(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String academyNumber = "";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -550,7 +571,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("courseNumber", courseNumber);
         mav.addObject("term", request.getParameter("term"));
         mav.addObject("academyNumber", academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/updateEduAdjustCourse.jsp");
         return mav;
     }
@@ -565,6 +586,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/auditTimetable")
     public ModelAndView auditTimetable(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 审核微服务传参
         String courseNo = request.getParameter("businessAppUid");
         String businessType = request.getParameter("businessType");
@@ -610,10 +633,10 @@ public class TimetableCourseController<JsonResult> {
         Integer curStage = -2;
         String curAuthName = "";
         Map<String, String> params = new HashMap<>();
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         params.put("businessUid", businessUid);
         params.put("businessAppUid", serialNumber);
-        String currStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+        String currStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
         JSONObject currJSONObject = JSONObject.parseObject(currStr);
         if ("success".equals(currJSONObject.getString("status"))) {
             JSONArray currArray = currJSONObject.getJSONArray("data");
@@ -627,7 +650,7 @@ public class TimetableCourseController<JsonResult> {
         /**
          * @description 获取审核配置
          */
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         List<Object[]> auditItems = new ArrayList<>();
         if ("success".equals(jsonObject.getString("status"))) {
@@ -666,6 +689,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/auditTimetableList")
     public ModelAndView auditTimetableList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         Integer isAudit = 0;
         Integer state = Integer.parseInt(request.getParameter("state"));
         Integer curStage = Integer.parseInt(request.getParameter("curStage"));
@@ -682,10 +707,10 @@ public class TimetableCourseController<JsonResult> {
         if (state < curStage || curStage == 0 || curStage == -1) {
             // 获取审核配置
             Map<String, String> params = new HashMap<>();
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             params.put("businessUid", businessUid);
             params.put("businessAppUid", businessAppUid);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
             JSONObject jsonObject = JSONObject.parseObject(s);
             if ("success".equals(jsonObject.getString("status"))) {
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -766,7 +791,7 @@ public class TimetableCourseController<JsonResult> {
             }
         }
         mav.addObject("isAudit", isAudit);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/auditTimetableList.jsp");
         return mav;
     }
@@ -774,6 +799,8 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/chooseCopyTimetableGroup")
     public ModelAndView chooseCopyTimetableGroup(@RequestParam Integer id, @RequestParam Integer batchId, @RequestParam String courseNo, Integer termId){
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         mav.addObject("batchId", batchId);
         mav.addObject("sourceId", id);
         mav.addObject("courseNo", courseNo);
@@ -783,7 +810,7 @@ public class TimetableCourseController<JsonResult> {
         groups.remove(timetableGroup);
         mav.addObject("groups", groups);
         mav.addObject("termId", termId);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/chooseCopyGroup.jsp");
         return mav;
     }
@@ -793,6 +820,8 @@ public class TimetableCourseController<JsonResult> {
                                            @RequestParam String courseNo, Integer termId,
                                            @ModelAttribute("selected_academy") String acno) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         TimetableGroup sourceGroup = timetableGroupDAO.findTimetableGroupById(sourceId);
         TimetableGroup destinationGroup = timetableGroupDAO.findTimetableGroupById(destinationId);
         String academyNumber="";
@@ -838,7 +867,7 @@ public class TimetableCourseController<JsonResult> {
         mav.addObject("courseNumber",courseNumber);
         mav.addObject("term",termId);
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/course/copyGroupTimetable.jsp");
         return mav;
     }
@@ -848,6 +877,8 @@ public class TimetableCourseController<JsonResult> {
     String saveCopyTimetableGroup(HttpServletRequest request){
         String[] ids = request.getParameter("timetableAppointmentIds").replace("[", "").replace("]", "").replace(" ", "").split(",");
         List<TimetableParamVO> timetableParamVOS = new ArrayList<>();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         for(String id: ids){
             TimetableParamVO timetableParamVO = new TimetableParamVO();
             timetableParamVO.setCourseNo(request.getParameter("courseNo"));
@@ -927,8 +958,10 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/batchManageList")
     public ModelAndView batchManageList(String course_no) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         mav.addObject("course_no", course_no);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 
         mav.setViewName("lims/timetable/self/batchManageList.jsp");
         return mav;
@@ -943,9 +976,11 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/adjustGroupStudent")
     public ModelAndView adjustGroupStudent(String course_no, Integer group_id) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         mav.addObject("group_id", group_id);
         mav.addObject("course_no", course_no);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 
         // 同一批次的小组
         TimetableGroup group = timetableGroupDAO.findTimetableGroupByPrimaryKey(group_id);
@@ -965,9 +1000,11 @@ public class TimetableCourseController<JsonResult> {
     @RequestMapping("/addGroupStudent")
     public ModelAndView addGroupStudent(String course_no, Integer group_id) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         mav.addObject("group_id", group_id);
         mav.addObject("course_no", course_no);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 
         mav.setViewName("lims/timetable/self/addGroupStudent.jsp");
         return mav;

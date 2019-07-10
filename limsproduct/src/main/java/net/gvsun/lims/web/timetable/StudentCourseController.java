@@ -5,9 +5,10 @@ package net.gvsun.lims.web.timetable;
  * @author 陈乐为 2019年6月5日
  ****************************************************************************/
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.web.common.PConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,7 +29,6 @@ import java.util.List;
 public class StudentCourseController<JsonResult> {
     @Autowired private HttpServletRequest request;
     @Autowired private ShareService shareService;
-    @Autowired private PConfig pConfig;
     /************************************************************
      * @初始化WebDataBinder，这个WebDataBinder用于填充被@InitBinder注释的处理 方法的command和form对象
      *
@@ -62,10 +62,11 @@ public class StudentCourseController<JsonResult> {
     @RequestMapping("/stuCourseList")
     public ModelAndView stuCourseList(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 获取学期列表
         List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
 

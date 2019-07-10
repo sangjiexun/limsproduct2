@@ -50,11 +50,6 @@
         <ul>
             <li><a href="javascript:void(0)">审核信息</a></li>
         </ul>
-        <ul>
-            <li>
-                <a href="javascript:void(0)" onclick="javascript:history.back(-1);">返回</a>
-            </li>
-        </ul>
     </div>
 </div>
 <!-- 结项申报列表 -->

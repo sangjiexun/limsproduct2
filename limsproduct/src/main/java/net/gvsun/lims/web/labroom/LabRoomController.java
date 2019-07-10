@@ -1,10 +1,10 @@
 package net.gvsun.lims.web.labroom;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.SystemTimeDAO;
 import net.zjcclims.domain.SchoolTerm;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -33,8 +33,6 @@ public class LabRoomController<JsonResult> {
     private OuterApplicationService outerApplicationService;
     @Autowired
     private ShareService shareService;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     SystemTimeDAO systemTimeDAO;
     /************************************************************
@@ -70,8 +68,9 @@ public class LabRoomController<JsonResult> {
     @RequestMapping("/labRoomList")
     public ModelAndView labRoomList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/labroom/manage/labRoomList.jsp");
         return mav;
     }

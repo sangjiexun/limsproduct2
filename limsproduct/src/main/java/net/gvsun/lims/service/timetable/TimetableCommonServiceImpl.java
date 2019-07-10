@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.common.BaseDTO;
 import net.gvsun.lims.dto.common.JsonValueDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.common.SelectDTO;
 import net.gvsun.lims.dto.timetable.TimetableDTO;
 import net.gvsun.lims.dto.timetable.TimetableMergeDTO;
@@ -16,7 +17,6 @@ import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,8 +61,6 @@ public class TimetableCommonServiceImpl implements TimetableCommonService {
     private TimetableManagerService timetableManagerService;
     @Autowired
     private TimetableSelfCourseDAO timetableSelfCourseDAO;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private ShareService shareService;
     @Autowired
@@ -964,6 +962,7 @@ public class TimetableCommonServiceImpl implements TimetableCommonService {
      *************************************************************************************/
     @Transactional
     public boolean publicTimetable(TimetableParamVO timetableParamVO) {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String businessAppUid = "";
         Integer type = 0;
         List<TimetableAppointment> timetableAppointments = new ArrayList<>();
@@ -1001,9 +1000,9 @@ public class TimetableCommonServiceImpl implements TimetableCommonService {
                 businessType = "SelfTimetableAudit";
             }
             params.put("businessUid", "-1");
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             params.put("businessAppUid", businessAppUid);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
             JSONObject jsonObject = JSON.parseObject(s);
             String status = jsonObject.getString("status");
             if (!"success".equals(status)) {
@@ -1014,9 +1013,9 @@ public class TimetableCommonServiceImpl implements TimetableCommonService {
                 return false;
             }
             Map<String, String> curParams = new HashMap<>();
-            curParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+            curParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             curParams.put("businessAppUid", businessAppUid);
-            String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+            String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
             JSONObject curJSONObject = JSON.parseObject(curStr);
             String curStatus = curJSONObject.getString("status");
             JSONArray curJSONArray = curJSONObject.getJSONArray("data");

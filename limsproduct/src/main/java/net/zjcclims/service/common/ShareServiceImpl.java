@@ -9,6 +9,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import excelTools.MatrixToImageWriter;
 import excelTools.People;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.luxunsh.util.DateUtil;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -19,6 +20,7 @@ import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.lab.LabWorkerTrainingService;
 import net.zjcclims.service.performance.PerformanceService;
 import net.zjcclims.service.software.SoftwareService;
+import net.zjcclims.util.CookieUtil;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +38,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -1789,14 +1789,14 @@ System.out.println("二维码路径："+url);
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public String getDimensionalCode(LabRoomDevice d, String serverName) throws Exception {
-
+		PConfigDTO pConfigDTO = this.getCurrentDataSourceConfiguration();
 		String url = "";
 		// 获取系统路径
 		String root = System.getProperty("zjcclims.root");
 		// 二维码的保存路径
 		// File.separator windows是\，unix是/
 		String path = "upload" + "/" + "dimensionalCode";
-		String text = "http://"+serverName + "/" + pConfig.PROJECT_NAME + "/cmsshow/showDevice?id=" + d.getId();
+		String text = "http://"+serverName + "/" + pConfigDTO.PROJECT_NAME + "/cmsshow/showDevice?id=" + d.getId();
 		int width = 300;
 		int height = 300;
 		// 二维码的图片格式
@@ -2284,6 +2284,7 @@ System.out.println("二维码路径："+url);
 	 * @author 周志辉 2017-11-08
 	 */
 	public void sendMsg(User receiveUser, Message message) {
+		PConfigDTO pConfigDTO = this.getCurrentDataSourceConfiguration();
 		message.setUsername(receiveUser.getUsername());
 		messageDAO.store(message);
 		messageDAO.flush();
@@ -2880,11 +2881,12 @@ System.out.println("二维码路径："+url);
 	 */
 	@Override
 	public boolean getAuditOrNot(String businessType) {
+		PConfigDTO pConfigDTO = this.getCurrentDataSourceConfiguration();
 		String status = "";
 		Map<String, String> params = new HashMap<>();
-		params.put("projectName", pConfig.PROJECT_NAME);
+		params.put("projectName", pConfigDTO.getPROJECT_NAME());
 		params.put("businessConfigItem", businessType);
-		String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getBusinessConfiguration", params);
+		String str = HttpClientUtil.doPost(pConfigDTO.getAuditServerUrl() + "/configuration/getBusinessConfiguration", params);
 		JSONObject jsonObject = JSONObject.parseObject(str);
 		if("success".equals(jsonObject.getString("status"))) {
 			status = jsonObject.getString("data");
@@ -2995,11 +2997,12 @@ System.out.println("二维码路径："+url);
 //		List<Object[]> queryHQLs = new ArrayList<Object[]>(query.getResultList());
 //		Object[] obj = queryHQLs.get(0);
 //		if(obj[3].equals(true)) {
+		PConfigDTO pConfigDTO = this.getCurrentDataSourceConfiguration();
 		String status = "";
 		Map<String, String> params = new HashMap<>();
-		params.put("projectName", pConfig.PROJECT_NAME);
+		params.put("projectName", pConfigDTO.PROJECT_NAME);
 		params.put("businessConfigItemExtend", businessType);
-		String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getBusinessConfigurationExtend", params);
+		String str = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/configuration/getBusinessConfigurationExtend", params);
 		JSONObject jsonObject = JSONObject.parseObject(str);
 		if("success".equals(jsonObject.getString("status"))) {
 			status = jsonObject.getString("data");
@@ -3157,4 +3160,113 @@ System.out.println("二维码路径："+url);
 		return schoolClassesDAO.executeQuery(sql);
 	}
 
+	/**
+	 * Description 获取当前数据源配置文件
+	 * @param
+	 * @return
+	 * @author lay
+	 */
+	@Override
+	public PConfigDTO getCurrentDataSourceConfiguration() {
+		PConfigDTO pConfigDTO = new PConfigDTO();
+		Cookie cookie = CookieUtil.getCookieByName("dataResource");
+		if (cookie!=null) {
+			try {
+				String data = cookie.getValue();
+				Properties p = new Properties();
+				//非实时动态获取l
+				//p.load(new InputStreamReader(this.class.getClassLoader().getResourceAsStream(fiePath), "UTF-8"));
+				//下面为动态获取
+				String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+				InputStream is = new FileInputStream(path + File.separator + "/config"+"/"+data+"/basic-config.properties");
+				p.load(is);
+				pConfigDTO.setPROJECT_NAME(p.getProperty("project.name"));
+				pConfigDTO.setAnnexManage(p.getProperty("annexManage"));
+				pConfigDTO.setSoftManage(p.getProperty("softManage"));
+				pConfigDTO.setBaseManage(p.getProperty("baseManage"));
+				pConfigDTO.setJobReservation(p.getProperty("jobReservation"));
+				pConfigDTO.setDeviceLend(p.getProperty("deviceLend"));
+				pConfigDTO.setStationNum(p.getProperty("stationNum"));
+				pConfigDTO.setAuditServerUrl(p.getProperty("auditServerUrl"));
+				pConfigDTO.setSchoolCode(p.getProperty("school.code"));
+				pConfigDTO.setSiteEnName(p.getProperty("siteEnName"));
+				pConfigDTO.setSiteSecret(p.getProperty("siteSecret"));
+				pConfigDTO.setApiGateWayHost(p.getProperty("apiGateWayHost"));
+				pConfigDTO.setZuulServerUrl(p.getProperty("zuulServerUrl"));
+				pConfigDTO.setAuthTimetableType(p.getProperty("authTimetableType"));
+				pConfigDTO.setProfessorIntroductionUrl(p.getProperty("professorIntroductionUrl"));
+				pConfigDTO.setCmsSiteUrl(p.getProperty("cmsSiteUrl"));
+				pConfigDTO.setCmsUrl(p.getProperty("cmsUrl"));
+				pConfigDTO.setBackToCms(p.getProperty("backToCms"));
+				pConfigDTO.setCmsAccess(p.getProperty("cmsAccess"));
+				pConfigDTO.setCms(p.getProperty("cms"));
+				pConfigDTO.setSchoolName(p.getProperty("school.name"));
+				pConfigDTO.setUserOperation(p.getProperty("userOperation"));
+				pConfigDTO.setShowroom(p.getProperty("showroom"));
+				pConfigDTO.setYuntai(p.getProperty("yuntai"));
+				pConfigDTO.setLabAddAdim(p.getProperty("labAddAdim"));
+				pConfigDTO.setEduDirect(p.getProperty("eduDirect"));
+				pConfigDTO.setEduAjust(p.getProperty("eduAjust"));
+				pConfigDTO.setEduBatch(p.getProperty("eduBatch"));
+				pConfigDTO.setEduNoBatch(p.getProperty("eduNoBatch"));
+				pConfigDTO.setSelfBatch(p.getProperty("selfBatch"));
+				pConfigDTO.setSelfNoBatch(p.getProperty("selfNoBatch"));
+				pConfigDTO.setNoREC(p.getProperty("noREC"));
+				pConfigDTO.setDirectTimetable(p.getProperty("directTimetable"));
+				pConfigDTO.setOperationItemName(p.getProperty("operationItemName"));
+				pConfigDTO.setRefuseTitle(p.getProperty("refuseTitle"));
+				pConfigDTO.setSelfRefuseTitle(p.getProperty("selfRefuseTitle"));
+				pConfigDTO.setNewServer(p.getProperty("newServer"));
+				pConfigDTO.setVirtual(p.getProperty("virtual"));
+				pConfigDTO.setLimsUrl(p.getProperty("limsUrl"));
+				pConfigDTO.setAdvanceCancelTime(p.getProperty("advanceCancelTime"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			pConfigDTO.setPROJECT_NAME(pConfig.PROJECT_NAME);
+			pConfigDTO.setAnnexManage(pConfig.annexManage);
+			pConfigDTO.setSoftManage(pConfig.softManage);
+			pConfigDTO.setBaseManage(pConfig.baseManage);
+			pConfigDTO.setJobReservation(pConfig.jobReservation);
+			pConfigDTO.setDeviceLend(pConfig.deviceLend);
+			pConfigDTO.setStationNum(pConfig.stationNum);
+			pConfigDTO.setAuditServerUrl(pConfig.auditServerUrl);
+			pConfigDTO.setSchoolCode(pConfig.schoolCode);
+			pConfigDTO.setSiteEnName(pConfig.siteEnName);
+			pConfigDTO.setSiteSecret(pConfig.siteSecret);
+			pConfigDTO.setApiGateWayHost(pConfig.apiGateWayHost);
+			pConfigDTO.setZuulServerUrl(pConfig.zuulServerUrl);
+			pConfigDTO.setAuthTimetableType(pConfig.authTimetableType);
+			pConfigDTO.setProfessorIntroductionUrl(pConfig.professorIntroductionUrl);
+			pConfigDTO.setCmsSiteUrl(pConfig.cmsSiteUrl);
+			pConfigDTO.setCmsUrl(pConfig.cmsUrl);
+			pConfigDTO.setBackToCms(pConfig.backToCms);
+			pConfigDTO.setCmsAccess(pConfig.cmsAccess);
+			pConfigDTO.setCms(pConfig.cms);
+			pConfigDTO.setSchoolName(pConfig.schoolName);
+			pConfigDTO.setUserOperation(pConfig.userOperation);
+			pConfigDTO.setShowroom(pConfig.showroom);
+			pConfigDTO.setYuntai(pConfig.yuntai);
+			pConfigDTO.setLabAddAdim(pConfig.labAddAdim);
+			pConfigDTO.setEduDirect(pConfig.eduDirect);
+			pConfigDTO.setEduAjust(pConfig.eduAjust);
+			pConfigDTO.setEduBatch(pConfig.eduBatch);
+			pConfigDTO.setEduNoBatch(pConfig.eduNoBatch);
+			pConfigDTO.setSelfBatch(pConfig.selfBatch);
+			pConfigDTO.setSelfNoBatch(pConfig.selfNoBatch);
+			pConfigDTO.setNoREC(pConfig.noREC);
+			pConfigDTO.setDirectTimetable(pConfig.directTimetable);
+			pConfigDTO.setOperationItemName(pConfig.operationItemName);
+			pConfigDTO.setRefuseTitle(pConfig.refuseTitle);
+			pConfigDTO.setSelfRefuseTitle(pConfig.selfRefuseTitle);
+			pConfigDTO.setNewServer(pConfig.newServer);
+			pConfigDTO.setVirtual(pConfig.virtual);
+			pConfigDTO.setLimsUrl(pConfig.limsUrl);
+			pConfigDTO.setAdvanceCancelTime(pConfig.advanceCancelTime);
+		}
+		return pConfigDTO;
+	}
 }

@@ -2,6 +2,7 @@ package net.zjcclims.service.common;
 
 import com.alibaba.fastjson.JSONObject;
 import excelTools.People;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -825,4 +826,12 @@ public interface ShareService {
 	 * @author 陈乐为
 	 */
 	public List<SchoolClasses> getYearCode();
+
+	/**
+	 * Description 获取当前数据源配置文件
+	 * @param
+	 * @return
+	 * @author lay
+	 */
+	public PConfigDTO getCurrentDataSourceConfiguration();
 }

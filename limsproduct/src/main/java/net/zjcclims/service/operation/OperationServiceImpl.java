@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -16,7 +17,6 @@ import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.system.SystemLogService;
 import net.zjcclims.service.timetable.SchoolCourseService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -91,8 +91,6 @@ public class OperationServiceImpl implements OperationService {
 	private LabRoomService labRoomService;
 	@Autowired
 	private SchoolMajorDAO schoolMajorDAO;
-	@Autowired
-	private PConfig pConfig;
 	/**
 	 * 根据主键获取实验项目对象
 	 * @author hly
@@ -689,6 +687,7 @@ public class OperationServiceImpl implements OperationService {
 	 */
 	@Override
 	public OperationItem submitOperationItem(OperationItem operationItem, String acno) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		OperationItem oi = new OperationItem();
 		if(operationItem.getId() != null)
 		{
@@ -697,17 +696,17 @@ public class OperationServiceImpl implements OperationService {
 			Map<String, String> params = new HashMap<>();
 			String businessType = "OperationItem";
 			params.put("businessUid", "-1");
-			params.put("businessType", pConfig.PROJECT_NAME + businessType);
+			params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			params.put("businessAppUid", operationItem.getId().toString());
-			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+			String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
 				operationItemDAO.store(oi);
 				operationItemDAO.flush();
 			// 提交完成后向审核人发送消息
 			// 获取当前审核权限
 				Map<String, String> curParams = new HashMap<>();
-			curParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+			curParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 			curParams.put("businessAppUid", operationItem.getId().toString());
-			String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+			String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
 			if("success".equals(JSONObject.parseObject(curStr).getString("status"))){
 				String nextAuthName = JSONObject.parseObject(curStr).getJSONArray("data").getJSONObject(0).getString("result");
 				// 获取权限所对应的用户
@@ -729,7 +728,7 @@ public class OperationServiceImpl implements OperationService {
 					message.setSendCparty(shareService.getUserDetail().getSchoolAcademy().getAcademyName());
 					message.setCond(0);
 					message.setTage(2);
-					message.setTitle(pConfig.operationItemName + "审核");
+					message.setTitle(pConfigDTO.operationItemName + "审核");
 					message.setContent("<a onclick='changeMessage(this)' href='../operation/operationItemAndAudit?oId=" + operationItem.getId() + "&cid=-1&flag=1'>审核</a>");
 					message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
 					message.setCreateTime(date);

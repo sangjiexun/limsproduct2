@@ -12,16 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
-import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 
-import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +51,6 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	private LabRoomAgentDAO labRoomAgentDAO;
 	@PersistenceContext
 	EntityManager entityManager;
-	@Autowired
-	private PConfig pConfig;
 	
 	
 	/*************************************************************************************
@@ -412,6 +406,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	@Override
 	public List<LabAttendance> findLabRoomAccessByIp(CommonHdwlog commonHdwlog,String ip,String port, Integer page,
 			int pageSize,HttpServletRequest request) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql="select c from CommonHdwlog c where 1=1";
 
 		if(port!=null&&!port.equals("")){
@@ -419,7 +414,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 
 		if(ip!=null&&!ip.equals("")){
-			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+			if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
 				sql += " and c.doorindex = '"+ ip +"'";
 			}else {
 				sql+=" and c.hardwareid='"+ip+"' ";
@@ -511,6 +506,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	 *************************************************************************************/
 	@Override
 	public int findLabRoomAccessByIpCount(CommonHdwlog commonHdwlog,String ip,String port,HttpServletRequest request) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql="select count(*) from CommonHdwlog c where 1=1";
 		
 		if(port!=null&&!port.equals("")){
@@ -518,7 +514,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 		
 		if(ip!=null&&!ip.equals("")){
-			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+			if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
 				sql += " and c.doorindex = '"+ ip +"'";
 			}else {
 				sql+=" and c.hardwareid='"+ip+"' ";
@@ -678,6 +674,11 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 			labAttendance.setMajor(temp[5].toString());//专业
 			labAttendance.setAttendanceTime(temp[6].toString());//考勤时间
 			labAttendance.setLabRoomName(lab_name);//实验室名称
+			if (temp[7] != null) {
+				labAttendance.setStatus(temp[7].toString());
+			}else {
+				labAttendance.setStatus("");
+			}
 			labAttendances.add(labAttendance);
 		}
 
@@ -708,6 +709,11 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 			labAttendance.setMajor(temp[5].toString());//专业
 			labAttendance.setAttendanceTime(temp[6].toString());//考勤时间
 			labAttendance.setLabRoomName(lab_name);//实验室名称
+			if (temp[7] != null) {
+				labAttendance.setStatus(temp[7].toString());
+			}else {
+				labAttendance.setStatus("");
+			}
 			labAttendances.add(labAttendance);
 		}
 
@@ -721,12 +727,13 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	 */
 	@Override
 	public List<Object[]> getCommonHwdlogList(CommonHdwlog commonHdwlog,String ip,HttpServletRequest request, Integer page, int pageSize){
-		StringBuffer sql = new StringBuffer("call proc_common_hwdlog(");
-
+		StringBuffer sql = new StringBuffer("call proc_common_hdwlog_roomId(");
+		// room_num，在此不传值
+		sql.append("''");
 		// hardware_ip
 		if(ip!=null&&!ip.equals("")){
-			sql.append("'"+ip+"'");
-		}else {sql.append("''");}
+			sql.append(",'"+ip+"'");
+		}else {sql.append(",''");}
 		// username 学号
 		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
 			sql.append(",'"+commonHdwlog.getUsername()+"'");
@@ -765,12 +772,14 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	@Override
 	public List<Object[]> getCommonHwdlogListByLabroomId(CommonHdwlog commonHdwlog,String labRoomId,HttpServletRequest request, Integer page, int pageSize){
 		labRoomId = labRoomDAO.findLabRoomById(Integer.parseInt(labRoomId)).getLabRoomNumber();
-		StringBuffer sql = new StringBuffer("call proc_common_hwdlog_roomId(");
+		StringBuffer sql = new StringBuffer("call proc_common_hdwlog_roomId(");
 
 		// labroom_id
 		if(labRoomId!=null&&!labRoomId.equals("")){
 			sql.append("'"+labRoomId+"'");
 		}else {sql.append("''");}
+		// 硬件IP-在此不传值
+		sql.append(",''");
 		// username 学号
 		if (commonHdwlog.getUsername()!=null&&!commonHdwlog.getUsername().equals("")) {
 			sql.append(",'"+commonHdwlog.getUsername()+"'");

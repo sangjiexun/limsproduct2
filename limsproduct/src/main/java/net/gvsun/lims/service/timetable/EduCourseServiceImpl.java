@@ -4,13 +4,13 @@ import api.net.gvsunlims.constant.ConstantInterface;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.timetable.TimetableParamVO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +36,6 @@ public class EduCourseServiceImpl implements EduCourseService {
     private TimetableManagerService timetableManagerService;
     @Autowired
     private TimetableCommonService timetableCommonService;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private MessageDAO messageDAO;
 
@@ -235,12 +233,14 @@ public class EduCourseServiceImpl implements EduCourseService {
     public boolean apiSaveTimetableAppointmentByEduDirectCourse(TimetableParamVO timetableParamVO) {
         // 先提交，如果失败则不往下进行
         // 提交到审核服务
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         Map<String, String> params = new HashMap<>();
         String businessType = "TimetableAudit";
         params.put("businessUid", "-1");
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         params.put("businessAppUid", timetableParamVO.getCourseNo());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
         if (!"success".equals(status)) {
@@ -314,9 +314,9 @@ public class EduCourseServiceImpl implements EduCourseService {
         }
 
         Map<String, String> curParams = new HashMap<>();
-        curParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+        curParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         curParams.put("businessAppUid", timetableParamVO.getCourseNo());
-        String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+        String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
         JSONObject curJSONObject = JSON.parseObject(curStr);
         String curStatus = curJSONObject.getString("status");
         JSONArray curJSONArray = curJSONObject.getJSONArray("data");

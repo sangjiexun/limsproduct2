@@ -4,6 +4,7 @@
 package net.zjcclims.web.video;
 
 import excelTools.Labreservationlist;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.sf.json.JSONObject;
 import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.dao.SchoolTermDAO;
@@ -13,7 +14,6 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabReservationService;
 import net.zjcclims.service.timetable.TimetableAttendanceService;
 import net.zjcclims.service.video.VideoPublishService;
-import net.zjcclims.web.common.PConfig;
 import org.apache.http.client.ClientProtocolException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -52,8 +52,6 @@ public class VideoPublishController<JsonResult> {
 	LabReservationService labReservationService;
 	@Autowired
 	SchoolTermDAO schoolTermDAO;
-	@Autowired
-	private PConfig pConfig;
 	/**
 	 * 功能:获取某个实验室的实时上课信息
 	 * 参数:
@@ -535,6 +533,8 @@ public class VideoPublishController<JsonResult> {
 	@RequestMapping("/public/classCard")
 	public ModelAndView classCard(@RequestParam int currpage, @RequestParam Integer type, HttpServletRequest request) {
 		// 获取参数
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
 		String id = request.getParameter("id");
 		Integer floor = request.getParameter("floor") == null ? 0 : Integer.valueOf(request.getParameter("floor"));
 		ModelAndView mav = new ModelAndView();
@@ -552,7 +552,7 @@ public class VideoPublishController<JsonResult> {
 		// 查询类型
 		mav.addObject("type", type);
 		mav.addObject("id", id);
-		if(pConfig.PROJECT_NAME.equals("zjcclims")){
+		if(pConfigDTO.PROJECT_NAME.equals("zjcclims")){
 			mav.setViewName("operation/classCardZjcc.jsp");
 		}else {
 			mav.setViewName("operation/classCard.jsp");

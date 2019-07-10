@@ -1,5 +1,6 @@
 package net.gvsun.lims.web.reservation.lab;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.SchoolCourseDAO;
 import net.zjcclims.dao.SchoolCourseDetailDAO;
 import net.zjcclims.domain.CStaticValue;
@@ -10,7 +11,6 @@ import net.zjcclims.domain.SystemTime;
 import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -37,8 +37,6 @@ public class LabReservationController<JsonResult> {
     private OuterApplicationService outerApplicationService;
     @Autowired
     private ShareService shareService;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     SystemTimeDAO systemTimeDAO;
     /************************************************************
@@ -74,8 +72,9 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labRoomList")
     public ModelAndView labRoomList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/reservation/lab/labRoomList.jsp");
         return mav;
     }
@@ -89,8 +88,9 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labReservationList")
     public ModelAndView labReservationList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/reservation/lab/labReservationList.jsp");
         return mav;
     }
@@ -104,8 +104,9 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labReservationAuditList")
     public ModelAndView labReservationAuditList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/reservation/lab/labReservationAuditList.jsp");
         return mav;
     }
@@ -119,8 +120,9 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/newLabReservation")
     public ModelAndView newLabReservation(HttpServletRequest request,@ModelAttribute("selected_academy") String acno,String labRoomId) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("labRoomMap", outerApplicationService.getLabRoomMap(acno));
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.addObject("labRoomId", labRoomId);
         mav.setViewName("lims/reservation/lab/newLabReservation.jsp");
         return mav;
@@ -135,7 +137,8 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/LabRoomReservation")
     public ModelAndView LabRoomReservation(HttpServletRequest request,@ModelAttribute("selected_academy") String acno,String labRoomId) {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.addObject("labRoomId", labRoomId);
         mav.setViewName("lims/reservation/lab/labReservationDetail.jsp");
         return mav;
@@ -150,7 +153,8 @@ public class LabReservationController<JsonResult> {
     @RequestMapping("/labReservationAudit")
     public ModelAndView labReservationAudit(HttpServletRequest request,@ModelAttribute("selected_academy") String acno,String labRId) {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.addObject("labRId", labRId);
         mav.setViewName("lims/reservation/lab/labReservationAudit.jsp");
         return mav;

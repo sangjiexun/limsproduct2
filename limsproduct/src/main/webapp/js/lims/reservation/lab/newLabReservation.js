@@ -695,6 +695,12 @@ $(document).ready(function () {
             $('#dateorsection').val(2);
         }
     );
+    $(".view_btn").click(
+        function () {
+            $(this).addClass("breadcrumb_select").siblings("a").removeClass("breadcrumb_select");
+            $('#dateorsection').val(3);
+        }
+    );
 
     <!-- 模式切换 -->
     $(".date_item").hide();
@@ -702,6 +708,7 @@ $(document).ready(function () {
 
     $(".section_btn").click(
         function () {
+            $("#date_section_form").show();
             $(".date_item").hide();
             $(".time_item").hide();
             $(".day_item").show();
@@ -713,11 +720,23 @@ $(document).ready(function () {
 
     $(".date_btn").click(
         function () {
+            $("#date_section_form").show();
             $(".day_item").hide();
             $(".week_item").hide();
             $(".section_item").hide();
             $(".date_item").show();
             $(".time_item").show();
+        }
+    );
+
+    $(".view_btn").click(
+        function () {
+            $("#date_section_form").hide();
+            $("#view_reservation").show();
+            // $(".week_item").hide();
+            // $(".section_item").hide();
+            // $(".date_item").show();
+            // $(".time_item").show();
         }
     );
 

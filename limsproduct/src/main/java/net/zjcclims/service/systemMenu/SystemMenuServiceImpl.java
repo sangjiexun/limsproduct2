@@ -1,10 +1,11 @@
 package net.zjcclims.service.systemMenu;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.AuthorityMenuDAO;
 import net.zjcclims.dao.SystemMenuDAO;
 import net.zjcclims.domain.AuthorityMenu;
 import net.zjcclims.domain.SystemMenu;
-import net.zjcclims.web.common.PConfig;
+import net.zjcclims.service.common.ShareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,8 @@ public class SystemMenuServiceImpl implements SystemMenuService {
     private AuthorityMenuDAO authorityMenuDAO;
 
     @Autowired
-    private PConfig pConfig;
+    private ShareService shareService;
+
 
     /**
      * Description 获取数据库中已有的顶级菜单权限列表
@@ -34,11 +36,12 @@ public class SystemMenuServiceImpl implements SystemMenuService {
      */
     @Override
     public List<AuthorityMenu> getAuthorityMenuByNoParent(String authName, String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String sql = "select distinct am from AuthorityMenu am where 1=1 ";
         sql += " and am.authority.authorityName like '" + authName + "' ";
         sql += " and am.systemMenu.parentMenu is null ";
         sql += " and am.systemMenu.isUsed = 1 ";
-        sql += " and am.systemMenu.projectName like '" + pConfig.PROJECT_NAME + "'";
+        sql += " and am.systemMenu.projectName like '" + pConfigDTO.PROJECT_NAME + "'";
         sql += " and (am.academyNumber like '" + acno + "' or am.academyNumber like '-1')";
         List<AuthorityMenu> list = authorityMenuDAO.executeQuery(sql);
         return list;
@@ -78,13 +81,14 @@ public class SystemMenuServiceImpl implements SystemMenuService {
      */
     @Override
     public List<SystemMenu> getSystemMenuByNoParent(String authName, String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String sql = "select distinct sm from SystemMenu sm " +
                 " join sm.authorityMenus aus " +
                 " where 1=1 ";
         sql += " and aus.authority.authorityName like '" + authName + "' ";
         sql += " and sm.parentMenu is null ";
         sql += " and sm.isUsed = 1 ";
-        sql += " and sm.projectName like '" + pConfig.PROJECT_NAME + "'";
+        sql += " and sm.projectName like '" + pConfigDTO.PROJECT_NAME + "'";
         sql += " and (aus.academyNumber like '" + acno + "')";
         List<SystemMenu> list = systemMenuDAO.executeQuery(sql);
         return list;
@@ -147,11 +151,12 @@ public class SystemMenuServiceImpl implements SystemMenuService {
      */
     @Override
     public List<SystemMenu> getAllSystemMenuByNoParent() {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String sql = "select distinct sm from SystemMenu sm " +
                 " where 1=1 ";
         sql += " and sm.parentMenu is null ";
         sql += " and sm.isUsed = 1 ";
-        sql += " and sm.projectName like '" + pConfig.PROJECT_NAME + "'";
+        sql += " and sm.projectName like '" + pConfigDTO.PROJECT_NAME + "'";
         List<SystemMenu> systemMenuList = systemMenuDAO.executeQuery(sql);
         return systemMenuList;
     }
@@ -186,10 +191,11 @@ public class SystemMenuServiceImpl implements SystemMenuService {
      */
     @Override
     public List<AuthorityMenu> getAuthorityMenuByAuth(String authName, String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String sql = "select distinct am from AuthorityMenu am where 1=1 ";
         sql += " and am.authority.authorityName like '" + authName + "' ";
         sql += " and am.systemMenu.isUsed = 1 ";
-        sql += " and am.systemMenu.projectName like '" + pConfig.PROJECT_NAME + "'";
+        sql += " and am.systemMenu.projectName like '" + pConfigDTO.PROJECT_NAME + "'";
         sql += " and (am.academyNumber like '" + acno + "')";
         List<AuthorityMenu> list = authorityMenuDAO.executeQuery(sql);
         return list;

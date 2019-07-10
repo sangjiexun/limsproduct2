@@ -7,12 +7,12 @@
 
 package net.zjcclims.web.chose;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.chose.ChoseProfessorService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabCenterService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,8 +81,6 @@ public class ChoseProfessorController<JsonResult> {
     private ChoseAttentionRecordDAO choseAttentionRecordDAO;
 	@Autowired
 	private ChoseUserDAO choseUserDAO;
-	@Autowired
-	private PConfig pConfig;
 
 	@RequestMapping("/ChoseRedirect")
 	public ModelAndView ChoseRedirect(HttpServletRequest request) {
@@ -1001,6 +999,7 @@ public class ChoseProfessorController<JsonResult> {
 	public ModelAndView toAddBatch(HttpServletRequest request, @RequestParam int i, Integer themeId, @ModelAttribute("selected_academy") String acno, @ModelAttribute ChoseProfessor choseProfessor, Integer currpage){
 		//找到需要填写的志愿批次
 		//ChoseProfessorBatch choseProfessorBatch = choseProfessorBatchDAO.findChoseProfessorBatchByPrimaryKey(choseTheme.getId());
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
 		ModelAndView mav = new ModelAndView();
 		//查询当前登陆人的信息-学生
@@ -1026,7 +1025,7 @@ public class ChoseProfessorController<JsonResult> {
 				professorIds.add(Integer.parseInt(s[3]));
 			}
 		}
-		mav.addObject("professorIntroductionUrl", pConfig.professorIntroductionUrl);
+		mav.addObject("professorIntroductionUrl", pConfigDTO.professorIntroductionUrl);
 		if(batchList!=null&batchList.size()!=0){
 			//当先的志愿属于某大纲下的某志愿
 			if(i<=batchList.size()){

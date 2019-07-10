@@ -1,0 +1,192 @@
+* {
+	padding: 0;
+	margin: 0;
+	font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+.app_main {
+	/*width: 1400px;*/
+	margin: 0 auto;
+}
+
+.app_title {
+	border-bottom: 2px solid #7b99db;
+	padding: 15px 10px;
+	font-weight: bold;
+}
+
+.app_describe {
+	position: relative;
+	overflow: hidden;
+	background-color: #e5e5e5;
+	border: 1px solid #c2c2c2;
+	height: 100px;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: center;
+	font-size: 14px;
+	font-weight: 600;
+	color: #fb2b25;
+	text-align: center;
+}
+
+.app_describe>div {
+	float: left;
+}
+
+.describe_title {
+	font-weight: 600;
+	font-size: 12px;
+	padding: 10px 0 2px 10px;
+}
+
+.describe_img {
+	height: 100%;
+	flex-basis: 160px;
+	flex-shrink: 0;
+}
+
+.describe_img>img {
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.describe {
+	flex: auto;
+	/* padding: 0 50px; */
+}
+
+.describe div:nth-child(2) {
+	max-height: 80px;
+	overflow: hidden;
+}
+
+.reservation_box {
+
+	float: right;
+	padding-left: 0px;
+	width: 100%;
+
+}
+
+.calendar_box {
+	float: left;
+}
+
+.public_message {
+	background: #d7d7d7;
+	border: 1px solid #ccc;
+	overflow: hidden;
+}
+
+.pub_select {
+	width: 91%;
+	margin: 10px auto 5px;
+	font-size: 14px;
+}
+
+.pub_select>div {
+	width: 100%;
+	clear: both;
+	padding: 7px 0;
+	min-height: 34px;
+}
+
+.pub_select div span:first-child {
+	display: inline-block;
+	width: 95px;
+	font-weight: 600;
+	color: #333;
+	width: 70px;
+}
+
+textarea,
+#content {
+	resize: none;
+	line-height: 19px;
+	padding: 6px 7px;
+	border-radius: 3px;
+	margin: 10px auto 20px;
+}
+
+.equip_btn_box input[type=submit],
+._box input,
+.equip_search_box select,
+input[type="submit"],
+.search,
+.btn-new,
+.btn_search,
+.before_button,
+input[type="button"],
+.normal_button,
+.updata,
+.sc_btn button:first-child,
+.sc_btn button:first-child,
+ml,
+form .title_box th button,
+.equip_box_btn,
+.l .newSchoolDevice， r,
+mt5,
+mb10,
+mr5p,
+.layui-layer-btn .layui-layer-btn1,
+.layui-layer-btn .layui-layer-btn0,
+add_btn,
+.btnbw,
+.main_btn {
+	display: inline-block;
+	cursor: pointer;
+	letter-spacing: 1px;
+	font-size: 12px;
+	box-sizing: border-box;
+	outline: none;
+	font-family: inherit;
+	color: #fff !important;
+	height: 24px !important;
+	line-height: 23px;
+	padding: 0 7px;
+	margin: 0 0 0 5px;
+	border-radius: 3px;
+	background-color: #409eff;
+	border: 0px;
+}
+
+.equip_btn_box .cancel,
+.cancel,
+.btn-cancel,
+inner_button,
+.mtb10lr5 .cancel,
+cf f14 w100p mlra .cancel,
+.layui-layer-btn .layui-layer-btn1 {
+	font-size: 12px;
+	color: #409eff !important;
+	background-color: #fff;
+	border: 1px solid #409eff;
+}
+
+.r {
+	float: right;
+}
+
+.sample {
+	min-height: 0px !important;
+	padding: 0px !important;
+}
+
+#time_list {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-start;
+}
+
+#time_list div {
+	width: auto;
+	background-color: #72c572;
+	padding: 10px;
+	margin: 5px;
+	font-weight: 600;
+	border-radius: 5px;
+
+}

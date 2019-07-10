@@ -7,6 +7,7 @@
 
 package net.zjcclims.web.device;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -26,7 +27,6 @@ import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.system.ShareDataService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -129,8 +129,6 @@ public class DeviceController<JsonResult> {
     @Autowired
     private LabDeviceReservationService labDeviceReservationService;
 
-    @Autowired
-    private PConfig pConfig;
     @InitBinder
     public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register
         // static
@@ -531,6 +529,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/listLabRoomDeviceNew")
     public ModelAndView listLabRoomDeviceNew(@ModelAttribute LabRoomDevice labRoomDevice, @RequestParam int roomId, Integer page, @ModelAttribute("selected_academy") String acno, @ModelAttribute("is_reservation") Integer isReservtaion) {
         // 新建ModelAndView对象；
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         ModelAndView mav = new ModelAndView();
         // roomId对应的实验室
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(roomId);
@@ -572,7 +571,7 @@ public class DeviceController<JsonResult> {
         User user = shareService.getUser();
         mav.addObject("user", user);
 
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/device/specialAcademy/specialAcademyForLabroom.jsp");
         return mav;
     }
@@ -993,9 +992,9 @@ public class DeviceController<JsonResult> {
     }
 
     /*
-     *Description:微服务设备预约保存
-     * author:Hezhaoyi
-     * 2019-3-1
+    *Description:微服务设备预约保存
+    * author:Hezhaoyi
+    * 2019-3-1
      */
     /*@Transactional
     @RequestMapping("/device/saveDeviceReservation")
@@ -1958,7 +1957,6 @@ public class DeviceController<JsonResult> {
         mav.addObject("user", shareService.getUser());
         mav.addObject("username", shareService.getUser().getUsername());
         return mav;
-
     }
 
     /****************************************************************************
@@ -1997,7 +1995,7 @@ public class DeviceController<JsonResult> {
                 labRoomDeviceService.saveDeviceAudit(id, auditResult, remark, acno);
             }
             labRoomDeviceService.sendMessageForDeviceLending(lendId, 3+"", 1);
-        }
+		}
         return "success";
     }
 
@@ -2148,6 +2146,7 @@ public class DeviceController<JsonResult> {
     public ModelAndView passDeviceLendList(@ModelAttribute LabRoomDeviceLending lrdl, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         //LabRoomDeviceLending lrdl = new LabRoomDeviceLending();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -2174,12 +2173,12 @@ public class DeviceController<JsonResult> {
         List<Integer> auditState=new ArrayList<>();
         for (int i=0;i<devicelendingList.size();i++) {
             Map<String, String> params2 = new HashMap<>();
-            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + devicelendingList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = pConfigDTO.PROJECT_NAME+"LabRoomDeviceLending" + devicelendingList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
             String businessAppUid = shareService.getSerialNumber(devicelendingList.get(i).getId().toString(), businessType);
             //String businessAppUid="b34a161e-96fa-468f-9df9-0d22f81fed5c";
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             //Integer auditNumber = null;
@@ -2204,7 +2203,7 @@ public class DeviceController<JsonResult> {
             }
         }
         mav.addObject("user", user);
-        mav.addObject("projectName", pConfig.PROJECT_NAME);
+        mav.addObject("projectName", pConfigDTO.PROJECT_NAME);
         mav.addObject("auditState",auditState);
         mav.setViewName("/device/lab_room_device/passDeviceLendList.jsp");
         return mav;
@@ -2257,6 +2256,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/rejectedDeviceLendList")
     public ModelAndView rejectedDeviceLendList(@ModelAttribute LabRoomDeviceLending lrdl, Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -2285,11 +2285,11 @@ public class DeviceController<JsonResult> {
         List<Integer> auditState=new ArrayList<>();
         for (int i=0;i<devicelendingRejectedList.size();i++) {
             Map<String, String> params2 = new HashMap<>();
-            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + devicelendingRejectedList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = pConfigDTO.PROJECT_NAME+"LabRoomDeviceLending" + devicelendingRejectedList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
             String businessAppUid = shareService.getSerialNumber(devicelendingRejectedList.get(i).getId().toString(), businessType);
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             if ("success".equals(status2)) {
@@ -4305,6 +4305,7 @@ public class DeviceController<JsonResult> {
     @RequestMapping("/device/deviceLendingApplyList")
     public ModelAndView deviceLendingApplyList(Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -4346,7 +4347,7 @@ public class DeviceController<JsonResult> {
             //String s=lrdl.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
             String s28=deviceLendList.get(i).getId().toString();
             String s3="nicai";
-            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = pConfigDTO.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
 
             //String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
             String businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
@@ -4360,7 +4361,7 @@ public class DeviceController<JsonResult> {
             }*/
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             Integer auditNumber = null;
@@ -4378,7 +4379,7 @@ public class DeviceController<JsonResult> {
                 allAuditStateParams.put("businessType", businessType);
                 allAuditStateParams.put("businessAppUid", businessAppUid);
                 allAuditStateParams.put("businessUid", "-1");
-                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
                 if(!"fail".equals(status2)) {
@@ -4429,6 +4430,7 @@ public class DeviceController<JsonResult> {
     public ModelAndView deviceLendingCheckList(@ModelAttribute LabRoomDeviceLending lrdl, @RequestParam Integer page, @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         // 新建ModelAndView对象；
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -4462,7 +4464,7 @@ public class DeviceController<JsonResult> {
             //String s=lrdl.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
             String s28=deviceLendList.get(i).getId().toString();
             String s3="nicai";
-            String businessType = pConfig.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+            String businessType = pConfigDTO.PROJECT_NAME+"LabRoomDeviceLending" + deviceLendList.get(i).getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
 
             //String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
             String businessAppUid = shareService.getSerialNumber(deviceLendList.get(i).getId().toString(), businessType);
@@ -4476,7 +4478,7 @@ public class DeviceController<JsonResult> {
             }*/
             params2.put("businessType", businessType);
             params2.put("businessAppUid", businessAppUid);
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             JSONObject jsonObject2 = JSON.parseObject(s2);
             String status2 = jsonObject2.getString("status");
             Integer auditNumber = null;
@@ -4494,7 +4496,7 @@ public class DeviceController<JsonResult> {
                 allAuditStateParams.put("businessType", businessType);
                 allAuditStateParams.put("businessAppUid", businessAppUid);
                 allAuditStateParams.put("businessUid", "-1");
-                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
                 if(!"fail".equals(status2)) {
@@ -4630,8 +4632,6 @@ public class DeviceController<JsonResult> {
         labRoomDeviceService.submitDeviceLending(idKey,acno);
         mav.setViewName("redirect:/device/deviceLendingApplyList?page=1");
         return mav;
-
-
     }
 
     /**

@@ -1,21 +1,16 @@
 package net.zjcclims.web.teachingArrangement;
 
-import excelTools.ExcelUtils;
-import excelTools.JsGridReportBase;
-import excelTools.TableData;
-import flex.messaging.io.ArrayList;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.service.operation.OperationService;
 import net.zjcclims.service.report.TeachingReportService;
 import net.zjcclims.service.system.SchoolWeekService;
 import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.timetable.*;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,12 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /****************************************************************************
@@ -77,8 +67,6 @@ public class TeachingArrangementCourseSchedulingController<JsonResult> {
 	private SchoolTermDAO schoolTermDAO;
 	@Autowired
 	private CStaticValueService cStaticValueService;
-	@Autowired
-	private PConfig pConfig;
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
@@ -272,7 +260,9 @@ public class TeachingArrangementCourseSchedulingController<JsonResult> {
 										 @ModelAttribute TimetableAppointment timetableAppointment,
 										 @RequestParam int currpage,int status) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("PROJECT_NAME",pConfig.PROJECT_NAME);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+		mav.addObject("PROJECT_NAME",pConfigDTO.PROJECT_NAME);
 		// 获取学期列表
 		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);

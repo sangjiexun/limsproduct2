@@ -7,6 +7,7 @@
 
 package net.zjcclims.web.visualization;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
@@ -19,7 +20,6 @@ import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.system.SystemBuildService;
 import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.visualization.VisualizationService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -67,8 +67,6 @@ public class visualizationShowController<JsonResult> {
 	@Autowired
 	private	LabRoomAgentDAO labRoomAgentDAO;
 	@Autowired
-	private	PConfig pConfig;
-	@Autowired
 	private SystemCampusDAO systemCampusDAO;
 	@Autowired
 	private AuthorityDAO authorityDAO;
@@ -95,6 +93,7 @@ public class visualizationShowController<JsonResult> {
 	@RequestMapping("/visualization/show/index")
 	public ModelAndView buildPlace(@RequestParam String campusNumber,HttpServletRequest request){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
 		//默认进入延安路校区
 		if(campusNumber == null || campusNumber.equals("")){
@@ -135,8 +134,8 @@ public class visualizationShowController<JsonResult> {
 //		}
 //		mav.addObject("authority", authority);
 //		}
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
-		mav.addObject("showroom",pConfig.showroom);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
+		mav.addObject("showroom",pConfigDTO.showroom);
 		mav.setViewName("visualization/show/index.jsp");
 		
 		return mav;
@@ -154,6 +153,7 @@ public class visualizationShowController<JsonResult> {
 	@RequestMapping("/visualization/show/floor")
 	public ModelAndView floor(@ModelAttribute LabRoom labRoom,@RequestParam String buildNumber,HttpServletRequest request) throws UnsupportedEncodingException{
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if(buildNumber.equals(new String(buildNumber.getBytes("iso8859-1"), "iso8859-1"))){
 			buildNumber = new String(buildNumber.getBytes("iso8859-1"), "utf-8");
 		}
@@ -207,15 +207,15 @@ public class visualizationShowController<JsonResult> {
 		}
 		mav.addObject("agentList", agentList);
 
-		mav.addObject("deviceLend", pConfig.deviceLend);
-		mav.addObject("jobReservation", pConfig.jobReservation);
-		mav.addObject("noREC", pConfig.noREC);
-		mav.addObject("proj_name", pConfig.PROJECT_NAME);
+		mav.addObject("deviceLend", pConfigDTO.deviceLend);
+		mav.addObject("jobReservation", pConfigDTO.jobReservation);
+		mav.addObject("noREC", pConfigDTO.noREC);
+		mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
 
 		// 视频
 		// 默认读取第一个视频
 		// 如果为空就是没有视频+当前权限不在禁用权限内
-		if (agentList != null && agentList.size() > 0 && !pConfig.noREC.contains(request.getSession().getAttribute("selected_role").toString())) {
+		if (agentList != null && agentList.size() > 0 && !pConfigDTO.noREC.contains(request.getSession().getAttribute("selected_role").toString())) {
 			LabRoomAgent agent = agentList.get(0);
 			// 流媒体服务器地址
 			mav.addObject("serverIp", agent.getCommonServer().getServerIp());
@@ -250,7 +250,7 @@ public class visualizationShowController<JsonResult> {
 			}
 		}
 
-		if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+		if (pConfigDTO.PROJECT_NAME.equals("zjcclims")) {
 			mav.setViewName("visualization/show/floorZjcc.jsp");
 		}else {
 			mav.setViewName("visualization/show/floor.jsp");
@@ -1013,6 +1013,8 @@ public class visualizationShowController<JsonResult> {
 	@RequestMapping("/visualization/show/visualNew")
 	public ModelAndView buildPlaceNew(@RequestParam String directoryName,String type){
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
 		List<SystemBuild> buils = systemBuildService.finAllSystemBuilds();
 		mav.addObject("buils", buils);
 		//当前登录人
@@ -1032,7 +1034,7 @@ public class visualizationShowController<JsonResult> {
 		}else{
 			mav.addObject("authority", null);
 		}
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 //		mav.addObject("resourceContainerHost", resourceContainerHost);
 //		mav.addObject("directoryEngineHost", directoryEngineHost);
 //		mav.addObject("visualHost", visualHost);
@@ -1104,6 +1106,7 @@ public class visualizationShowController<JsonResult> {
 	@RequestMapping("/visualization/mapNew")
 	public ModelAndView mapNew() {
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		List<SystemBuild> buils = systemBuildService.finAllSystemBuilds();
 		mav.addObject("buils", buils);
 		//当前登录人
@@ -1127,7 +1130,7 @@ public class visualizationShowController<JsonResult> {
 			mav.addObject("authority", null);
 
 		}
-		mav.addObject("PROJECT_NAME", pConfig.PROJECT_NAME);
+		mav.addObject("PROJECT_NAME", pConfigDTO.PROJECT_NAME);
 //		mav.addObject("resourceContainerHost", resourceContainerHost);
 //		mav.addObject("directoryEngineHost", directoryEngineHost);
 //		mav.addObject("visualHost", visualHost);
@@ -1164,6 +1167,7 @@ public class visualizationShowController<JsonResult> {
 	@RequestMapping("/visualization/show/changeMovie")
 	public ModelAndView changeMovie(@RequestParam int lab_id, int agent_id,HttpServletRequest request) throws UnsupportedEncodingException{
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		LabRoom labRoom = visualizationService.findLabRoomByPrimaryKey(lab_id);
 		mav.addObject("labRoom", labRoom);
 		String buildNumber = labRoom.getSystemBuild().getBuildNumber();
@@ -1210,17 +1214,17 @@ public class visualizationShowController<JsonResult> {
 		}
 		mav.addObject("agentList", agentList);
 
-		mav.addObject("deviceLend", pConfig.deviceLend);
-		mav.addObject("jobReservation", pConfig.jobReservation);
-		mav.addObject("noREC", pConfig.noREC);
-		mav.addObject("proj_name", pConfig.PROJECT_NAME);
+		mav.addObject("deviceLend", pConfigDTO.deviceLend);
+		mav.addObject("jobReservation", pConfigDTO.jobReservation);
+		mav.addObject("noREC", pConfigDTO.noREC);
+		mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
 		mav.setViewName("visualization/show/floor_movie.jsp");
 
 		// 视频
 		// 实验室全景图
 		String labPic = "";
 		// 如果为空就是没有视频+当前权限不在禁用权限内
-		if (!pConfig.noREC.contains(request.getSession().getAttribute("selected_role").toString())) {
+		if (!pConfigDTO.noREC.contains(request.getSession().getAttribute("selected_role").toString())) {
 			LabRoomAgent agent = labRoomAgentDAO.findLabRoomAgentByPrimaryKey(agent_id);
 			// 流媒体服务器地址
 			mav.addObject("serverIp", agent.getCommonServer().getServerIp());

@@ -15,6 +15,21 @@
 	<!-- 全局的引用 -->
 	<!-- layui多选，首先引入css, 和js, 唯一依赖: jQuery -->
    	<script src="${pageContext.request.contextPath}/js/lims/reservation/lab/optionRule.js"></script>
+   	<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="${pageContext.request.contextPath}/plugins/jsUtils.js" type="text/javascript" charset="utf-8"></script>
+   	<%--<script src="${pageContext.request.contextPath}/plugins/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>--%>
+   	<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/WdatePicker.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/jquery.mousewheel.min.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/dateLine.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/datecanlendar.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/js/bootstrap/css/bootstrap-datetimepicker.min.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/css/index.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/lims/basic.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/css/order.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/css/list.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/css/new2015.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/css/styles.css" />
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/plugins/dateviewer_day/js/bootstrap/css/bootstrap.min.css" />
 	<style type="text/css">
 		.layui-breadcrumb .breadcrumb_select {
 			color: #409eff!important;
@@ -66,6 +81,54 @@
 			}
 		}
 	</style>
+	<style type="text/css">
+		#secSchedule table td,
+		#secSchedule table th {
+			border: 1px solid #bbb;
+		}
+
+		.pub_select div span:first-child {
+			display: inline-block;
+			width: 95px;
+		}
+
+		.orderDiv {
+			width: 93%;
+			padding: 0;
+			margin-top: 20px;
+		}
+
+		.timeDiv {
+			width: 13%;
+		}
+
+		body {
+			min-width: 1000px !important;
+		}
+
+		.chzn-container-single {
+			height: 30px;
+			line-height: 30px !important;
+		}
+
+		.pub_select div input {
+			float: none;
+		}
+
+		#notNeedRepair>div {
+			width: 100%;
+			clear: both;
+			padding: 7px 0;
+			min-height: 34px;
+		}
+
+		.notice p {
+			color: #ff5500 !important;
+		}
+		.dropdown-menu{
+			top: 252.8px!important;
+		}
+	</style>
 </head>
 
 <body>
@@ -76,12 +139,15 @@
 			<span class="layui-breadcrumb breadcrumb_top" lay-separator="|">
 				<a href="javascript:void(0);" class="breadcrumb_select section_btn">节次模式</a>
                 <a href="javascript:void(0);" class="date_btn">日期模式</a>
+                <a href="javascript:void(0);" class="view_btn">图表模式</a>
 			</span>
 		</fieldset>
+		<div id="date_section_form">
 		<form class="layui-form" action="" lay-filter="cappointment_tab">
 			<input type="hidden" id="zuulServerUrl" value="${zuulServerUrl}" />
 			<input type="hidden" id="dateorsection" value="${dateorsection}" />
 			<input type="hidden" id="labRoomId" value="${labRoomId}" />
+
 			<div class="layui-row layui-col-space10 layui-form-item">
 				<div class="layui-col-lg4">
 					<label class="layui-form-label">当前学期：</label>
@@ -232,6 +298,8 @@
 					<textarea name="content" id="content"  placeholder="请填写备注" class="layui-textarea"></textarea>
 				</div>
 			</div>
+
+
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button class="layui-btn" lay-submit lay-filter="reservationSubmit">立即提交</button>
@@ -240,7 +308,171 @@
 			</div>
 		</form>
 	</div>
+		<div id="view_reservation">
+			<div class="app_main">
+				<div class="app_header">
+					<%--<div class="app_title">--%>
+						<%--工位预约--%>
+					<%--</div>--%>
+					<div class="describe_title">
+						202xxxx实验室，共100个工位
+					</div>
+					<div class="app_describe">
+						<div class="describe_img">
+							<img src="https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=1184428518,159584777&fm=58&bpow=1024&bpoh=680">
+						</div>
+						<div class="describe">
+							<div>注意事项:</div>
+							<div>这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长</div>
+						</div>
+					</div>
+				</div>
+				<!-- 时间跨度默认1.0小时 可设置0.5小时 -->
+				<input type="hidden" id="timeLineInterval" value="1.0" />
+				<input id="usernames" name="usernames" type="hidden" value="admin" />
+				<div class=" mt20">
+					<div class=" mt20  w100p pb20 pt2">
+						<div class="user_info w98p mlra mb20 f14">
+							<div>
+								<div class="content-box" style="width:100%;margin-bottom:10px;">
+									<div class="mt20 cf">
+										<div class="w74p l calendar_box" style="width:70%;">
+											<div class="iStyle_DateConteiner">
+
+												<!--	<div class="iStyle_Years"></div>-->
+												<div id="flightlistnav" style="float:left; width:91%;">
+													<ul id="lowlistnav" class="navcols_ul clx" style="width:100%;">
+														<li class="navcols_on"></li>
+
+														<!-- 左箭头-->
+														<li id="prev" method="prevweek" class="navcols firstcols" style="width:5.5%;">
+															<div class="f_l_na f_l_na_l" style="display:block;">
+																<em class="enable"></em>
+															</div>
+														</li>
+														<!-- 显示从今天开始的七天日期-->
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<li class="navcols">
+															<a rel="nofollow" style="text-decoration: none">
+																<div method="seachflightbyday" class="f_l_na" style="width:100%;">
+																</div>
+															</a>
+														</li>
+														<!--右箭头-->
+														<li id="next" method="nextweek" style="width:5.5%;">
+															<div class="f_l_na f_l_na_r" style="display:block;">
+																<em class="enable"></em>
+															</div>
+														</li>
+													</ul>
+												</div>
+
+												<!-- 日历图标显示-->
+												<div class="input-group date form_date col-md-3" style="width:30px" data-date="" data-date-format="dd MM yyyy"
+													 data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+													<input id="#dateInput" style="width:auto;display:none;" class="form-control" size="16" type="text" value=""
+														   readonly="readonly" />
+													<span id="dateChose" style="padding:9px 12px!important;width:auto;border-left:1px solid #ccc;border-bottom-left-radius: 4px;border-top-left-radius:4px;"
+														  class="input-group-addon">
+													<span class="glyphicon glyphicon-calendar"></span>
+												</span>
+												</div>
+											</div>
+											<!--预约框-->
+											<div class="orderDiv cf" id="orderDiv">
+											</div>
+										</div>
+
+										<form action="" method="post" name="searchForm" id="searchForm" style="width: 30%;float: right;">
+											<div class="w35p r reservation_box">
+												<div class="public_message">
+													<div class="pub_select">
+														<input type="hidden" name="configId" id="configId" value="" />
+														<div class="sample">
+															<input type="hidden" value="" id="labRoomAdminUsername" name="labRoomAdminUsername" />
+															<input type="hidden" id="authority" name="authority" value="" />
+														</div>
+														<div>
+															<span class="pr5">预计时间:</span>
+															<input id="searchDate" name="searchDate" value="2019-06-18" />
+														</div>
+														<div>
+															<span class="pr5">预计时长:</span>
+															<span id="duration">0小时</span>
+															<input type="hidden" value="0" id="durationHours" />
+														</div>
+														<div id="time_list" style="display:none;">
+														</div>
+														<div>
+															<span class="pr5">预约人:</span>
+															<span>admin</span>
+															<input value="" type="hidden" />
+														</div>
+														<div>
+															<span class="pr5">说明:</span>
+															<textarea placeholder="说明:" style="width:100%;"></textarea>
+														</div>
+													</div>
+													<div class="w100p ovh">
+														<button class="r mt5 mb10 mr5p search cancel" type="button">取消</button>
+														<button class="r mt5 mb10 mr5p search" type="button">提交</button>
+													</div>
+												</div>
+											</div>
+										</form>
+										<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/orderDiv.js" type="text/javascript" charset="utf-8"></script>
+									</div>
+								</div>
+
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+				</div>
+		</div>
+	</div>
 </div>
 <script src="${pageContext.request.contextPath}/js/lims/reservation/lab/newLabReservation.js" charset="utf-8"></script>
+<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/bootstrap/js/bootstrap-datetimepicker.js" charset="utf-8"></script>
+<script src="${pageContext.request.contextPath}/plugins/dateviewer_day/js/bootstrap/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="utf-8"></script>
+<script src="${pageContext.request.contextPath}/js/lims/reservation/lab/doInstrumentMachineApp.js" charset="utf-8"></script>
 </body>
 </html>

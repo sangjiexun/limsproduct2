@@ -14,7 +14,6 @@ import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.SchoolCourseDetailService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
 import net.zjcclims.service.timetable.TimetableReSchedulingService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -94,8 +93,6 @@ public class TimetableReSchedulingController<JsonResult> {
 	private SchoolWeekService schoolWeekService;
 	@Autowired
 	private MySQLService mySQLService;
-	@Autowired
-	private PConfig pConfig;
 	/************************************************************
 	 * @二次排课： 实现二次排课（只有不含分组）的功能入口
 	 * @页面跳转：listReTimetable-listReTimetable-doIframeGroupReTimetable-saveGroupReTimetable

@@ -877,6 +877,7 @@
 	<!-- 保存整个实训室项目卡 -->
 	<c:if test="${flagId==1 || flagId==10 }">
 	<input class="btn" id="save" type="button" onclick="saveOperationItemAll()" value="保存">
+		<input class="btn" id="save" type="button" onclick="window.history.go(-1); return false;" value="返回">
 	</c:if>
 	</div>
 	<!-- 下拉框的js -->

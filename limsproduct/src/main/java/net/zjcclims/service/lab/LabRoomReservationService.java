@@ -130,6 +130,13 @@ public interface LabRoomReservationService {
 	public List<LabRoomStationReservation> findLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,
 			int pageSize, String acno,int isAudit);
 	/*************************************************************************************
+	 * Description 得到实验室工位预约列表
+	 *
+	 * @author Hezhaoyi
+	 * @date 2019-7-7
+	 *************************************************************************************/
+	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit);
+	/*************************************************************************************
 	 * Description 保存不同身份的审核结果
 	 * @author 孙虎
 	 * @throws NoSuchAlgorithmException 
@@ -232,4 +239,36 @@ public interface LabRoomReservationService {
 	 */
 	@Transactional
 	List<User> getNextAuditUser(String nextAuth, String businessAppUid,String businessType);
+
+	/**
+	 * 工位预约取消
+	 * @param id 预约id
+	 * @return 成功的字符串
+	 * @author Hezhaoyi 2019-7-5
+	 */
+	public String cancelLabStationReservation(Integer id);
+
+	/**
+	 * 工位预约作废
+	 * @param id 预约id
+	 * @return 成功的字符串
+	 * @author Hezhaoyi 2019-7-5
+	 */
+	public String obsoleteLabStationReservation(Integer id,Integer type);
+    /**
+     * Description 获取实验室预约审核拒绝日志列表
+     * @param firstResult 偏移量
+     * @param maxResult 获取的最大数据数量
+     * @param labName 实验室名称
+     * @return 工位预约审核拒绝日志列表
+     * @author Hezhaoyi 2019-7-5
+     */
+    public List<AuditRefuseBackup> getAuditRefuseBackupForLabStationReservation(Integer firstResult, Integer maxResult, String labName);
+    /**
+     * Description 获取实验室预约审核拒绝日志总数量
+     * @param labName 实验室名称
+     * @return 工位预约审核拒绝日志总数量
+     * @author Hezhaoyi 2019-7-5
+     */
+    public Integer getCountAuditRefuseBackupForLabStationReservation(String labName);
 }

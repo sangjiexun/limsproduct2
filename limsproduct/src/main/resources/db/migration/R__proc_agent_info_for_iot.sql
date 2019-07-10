@@ -10,7 +10,7 @@ BEGIN
 		##########################################门禁开始###########################################
 		###################实验室管理员开始######################
 		SELECT
-		CONCAT('door_admin_',lrg.id,'_',lra.id) AS id,
+		CONCAT('door_admin_',lrg.id,'_',lra.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.aclcard AS cardno,
@@ -27,7 +27,7 @@ BEGIN
 		###################排课上课教师开始######################
 		UNION
 		SELECT
-		CONCAT('door_ta_',tlr.appointment_id,'_',tlr.id,'_',ttr.id,'_',lrg.id) AS id,
+		CONCAT('door_ta_',tlr.appointment_id,'_',tlr.id,'_',ttr.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.aclcard AS cardno,
@@ -48,7 +48,7 @@ BEGIN
 		###################实验室预约人开始######################
 		UNION
 		SELECT
-		CONCAT('door_lab_',lres.id,'_',lrtt.id,'_',lrg.id) AS id,
+		CONCAT('door_lab_',lres.id,'_',lrtt.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.aclcard AS cardno,
@@ -67,7 +67,7 @@ BEGIN
 		###################工位预约人开始########################
 		UNION
 		SELECT
-		CONCAT('door_sta_',lrsr.id,'_',lrg.id) AS id,
+		CONCAT('door_sta_',lrsr.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.aclcard AS cardno,
@@ -85,7 +85,7 @@ BEGIN
 		###################设备预约人开始########################
 		UNION
 		SELECT
-		CONCAT('door_dev_',lrdr.id,'_',lrg.id) AS id,
+		CONCAT('door_dev_',lrdr.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.aclcard AS cardno,
@@ -108,7 +108,7 @@ BEGIN
 		###################实验室管理员开始######################
 		############实验室电控开始############
 		SELECT
-		CONCAT('inst_dooradmin_',lrg.id,'_',lra.id) AS id,
+		CONCAT('inst_dooradmin_',lrg.id,'_',lra.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -125,7 +125,7 @@ BEGIN
 		##########实验室设备电控开始##########
 		UNION
 		SELECT
-		CONCAT('inst_labadmin_',lra.id) AS id,
+		CONCAT('inst_labadmin_',lra.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -144,7 +144,7 @@ BEGIN
 		###################排课上课教师开始######################
 		UNION
 		SELECT
-		CONCAT('inst_ta_',tlr.appointment_id,'_',tlr.id,'_',ttr.id,'_',lrg.id) AS id,
+		CONCAT('inst_ta_',tlr.appointment_id,'_',tlr.id,'_',ttr.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -165,7 +165,7 @@ BEGIN
 		###################实验室预约人开始######################
 		UNION
 		SELECT
-		CONCAT('inst_lab_',lres.id,'_',lrtt.id,'_',lrg.id) AS id,
+		CONCAT('inst_lab_',lres.id,'_',lrtt.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -184,7 +184,7 @@ BEGIN
 		###################工位预约人开始########################
 		UNION
 		SELECT
-		CONCAT('inst_sta_',lrsr.id) AS id,
+		CONCAT('inst_sta_',lrsr.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -203,7 +203,7 @@ BEGIN
 		############设备电控开始############
 		UNION
 		SELECT
-		CONCAT('inst_dev_',lrdr.id) AS id,
+		CONCAT('inst_dev_',lrdr.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -222,7 +222,7 @@ BEGIN
 		############门禁电控开始############
 		UNION
 		SELECT
-		CONCAT('inst_labdev_',lrdr.id) AS id,
+		CONCAT('inst_labdev_',lrdr.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,
@@ -242,7 +242,7 @@ BEGIN
 		###################设备管理员开始########################
 		UNION
 		SELECT
-		CONCAT('inst_admin_',lrd.id,'_',lrg.id) AS id,
+		CONCAT('inst_admin_',lrd.id,'_',lrg.id,'_',vu.id) AS id,
 		vu.username,
 		ur.cname,
 		vu.card_no AS cardno,

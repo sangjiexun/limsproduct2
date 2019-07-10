@@ -56,7 +56,6 @@ public class LabBaseController<JsonResult> {
 	public ModelAndView listLabBase(@RequestParam int currpage, @ModelAttribute LabAnnex labAnnex, HttpServletRequest request){
 		ModelAndView mav = new ModelAndView();
 		int pageSize = CommonConstantInterface.INT_PAGESIZE;  //分页记录数
-		
 		int totalRecords = labBaseService.getAllLabBaseByQueryCount(labAnnex, request);
 
 		mav.addObject("labAnnex", labAnnex);

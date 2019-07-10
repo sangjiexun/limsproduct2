@@ -58,14 +58,14 @@
             var range = $("#selectedSchoolAcademy").val();
             if (range == null && ${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
              and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit' and businessName ne 'StationReservation'
-             and businessName ne 'CancelLabRoomReservation'}) {
+             and businessName ne 'CancelLabRoomReservation' and businessName ne 'CancelLabRoomStationReservation'}) {
                 alert("确认权限已保存，请选择开放范围！");
                 window.location.reload();
                 return false;
             }
             if (${businessName eq 'OperationItem' or businessName eq 'TimetableAudit'or businessName eq 'VirtualImageReservation' or businessName eq 'SelfTimetableAudit'
              or businessName eq 'AdjustTimetableAudit' or businessName eq 'CloseTimetableAudit' or businessName eq 'OperationItemNewAudit'
-             or businessName eq 'CancelLabRoomReservation'}) {
+             or businessName eq 'CancelLabRoomReservation'or businessName eq 'CancelLabRoomStationReservation'}) {
                 range = "";
             }
             var rangeStr = range.toString();
@@ -244,10 +244,13 @@
                     href="${pageContext.request.contextPath}/audit/auditSetting?flag=11">工位预约审核设置</a>
             </li>
             <li class="TabbedPanelsTab" id="s12" onclick="changeTag(12)"><a
-                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=12">取消预约审核设置</a>
+                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=12">取消实验室预约审核设置</a>
             </li>
             <li class="TabbedPanelsTab" id="s13" onclick="changeTag(13)"><a
                     href="${pageContext.request.contextPath}/audit/auditSetting?flag=13">设备借用审核设置</a>
+            </li>
+            <li class="TabbedPanelsTab" id="s14" onclick="changeTag(14)"><a
+                    href="${pageContext.request.contextPath}/audit/auditSetting?flag=14">取消工位预约审核设置</a>
             </li>
         </ul>
         <div class="TabbedPanelsContentGroup">
@@ -267,7 +270,7 @@
                         </c:if>--%>
                         <c:if test="${businessName ne 'OperationItem' and businessName ne 'TimetableAudit' and businessName ne 'VirtualImageReservation' and businessName ne 'SelfTimetableAudit'
                          and businessName ne 'AdjustTimetableAudit' and businessName ne 'CloseTimetableAudit' and businessName ne 'OperationItemNewAudit'
-                         and businessName ne 'CancelLabRoomReservation'}">
+                         and businessName ne 'CancelLabRoomReservation'and businessName ne 'CancelLabRoomStationReservation'}">
                             <tr>
                                 <th>开放范围</th>
                                 <td colspan="3">
@@ -594,7 +597,7 @@
         });
         // 原来的判断修改为如下
         // 标签栏数量，增加标签栏时需修改此值
-        var titleNum = 13;
+        var titleNum = 14;
         // 遍历所有标签栏修改样式
         for (var i = 1; i <= titleNum; i++) {
             if($.cookie("auditSettingTag") == i){

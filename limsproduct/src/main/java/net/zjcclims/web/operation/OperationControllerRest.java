@@ -14,7 +14,6 @@ import net.zjcclims.service.operation.OperationService;
 import net.zjcclims.service.system.SystemLogService;
 import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.timetable.SchoolCourseInfoService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,8 +68,6 @@ public class OperationControllerRest<JsonResult> {
 	AssetCabinetWarehouseAccessRecordDAO assetCabinetWarehouseAccessRecordDAO;
 	@Autowired
 	private OperItemAuditDAO operItemAuditDAO;
-	@Autowired
-	private PConfig pConfig;
 	/**
 	 * 查看实验项目信息
 	 * @author hly

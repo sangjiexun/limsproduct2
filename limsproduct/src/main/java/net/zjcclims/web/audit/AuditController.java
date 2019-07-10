@@ -8,6 +8,7 @@ package net.zjcclims.web.audit;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.AuditSaveParamDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.AuthorityDAO;
 import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.dao.LabRoomStationReservationDAO;
@@ -17,7 +18,6 @@ import net.zjcclims.service.lab.LabRoomLendingService;
 import net.zjcclims.service.lab.LabRoomReservationService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +36,6 @@ public class AuditController<JsonResult> {
     @Autowired
     private ShareService shareService;
     @Autowired
-    private PConfig pConfig;
-    @Autowired
     private AuthorityDAO authorityDAO;
     @Autowired
     private LabRoomDAO labRoomDAO;
@@ -52,10 +50,18 @@ public class AuditController<JsonResult> {
     @RequestMapping("/auditList")
     public ModelAndView auditList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String businessUid = request.getParameter("businessUid");
         String businessAppUid = request.getParameter("businessAppUid");
-        LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
-        String businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        String businessType= "";
+        if(labRoomDAO.findLabRoomById(Integer.valueOf(businessUid))!=null){
+            LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
+            businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+        }
+        if(request.getParameter("businessType")!=null){
+            businessType = pConfigDTO.PROJECT_NAME + request.getParameter("businessType");
+        }
         // 获取审核状态
         Integer curStage = -2;
         String curAuthName = "";
@@ -70,7 +76,7 @@ public class AuditController<JsonResult> {
         params.put("businessType", businessType);
         params.put("businessUid", businessUid);
         params.put("businessAppUid", businessAppUid);
-        String currStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+        String currStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
         JSONObject currJSONObject = JSONObject.parseObject(currStr);
         if ("success".equals(currJSONObject.getString("status"))) {
             JSONArray currArray = currJSONObject.getJSONArray("data");
@@ -82,7 +88,7 @@ public class AuditController<JsonResult> {
         }
 
         // 获取审核配置
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         List<Object[]> auditItems = new ArrayList<>();
         if ("success".equals(jsonObject.getString("status"))) {
@@ -116,6 +122,8 @@ public class AuditController<JsonResult> {
     @RequestMapping("/auditSingle")
     public ModelAndView auditSingle(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         Integer isAudit = 0;
         Integer state = 0;
         if(request.getParameter("state") != null){
@@ -139,7 +147,7 @@ public class AuditController<JsonResult> {
             params.put("businessType",businessType);
             params.put("businessUid", businessUid);
             params.put("businessAppUid", businessAppUid);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
             JSONObject jsonObject = JSONObject.parseObject(s);
             if ("success".equals(jsonObject.getString("status"))) {
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -210,13 +218,15 @@ public class AuditController<JsonResult> {
     @ResponseBody
     public String saveAudit(@RequestBody AuditSaveParamDTO auditSaveParamDTO) {
         Map<String, String> params = new HashMap<>();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         params.put("businessType", auditSaveParamDTO.getBusinessType());
         params.put("businessAppUid", auditSaveParamDTO.getBusinessAppUid());
         params.put("businessUid", auditSaveParamDTO.getBusinessUid());
         params.put("result", auditSaveParamDTO.getAuditResult() == 1 ? "pass" : "fail");
         params.put("info", auditSaveParamDTO.getRemark());
         params.put("username", shareService.getUserDetail().getUsername());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 
         String nextAuthName = "";
         JSONObject jsonObject = JSONObject.parseObject(s);
@@ -237,10 +247,16 @@ public class AuditController<JsonResult> {
             LabRoomStationReservation labRoomStationReservation =
                     labRoomStationReservationDAO.findLabRoomStationReservationById(Integer.valueOf(businessAppUid));
             if(nextAuthName.equals("pass")){   //审核通过，设置该条预约记录的状态值为审核通过
-                labRoomStationReservation.setResult(1);
-                labRoomStationReservation.setState(6);
-                labRoomStationReservationDAO.store(labRoomStationReservation);
-                labRoomStationReservationDAO.flush();
+                if(auditSaveParamDTO.getBusinessType().contains("CancelLabRoomStationReservation")){  //取消预约审核通过
+                    //备份流程记录 并删除相关记录
+                    //type 2为取消预约
+                    labRoomReservationService.obsoleteLabStationReservation(labRoomStationReservation.getId(),2);
+                }else {
+                    labRoomStationReservation.setResult(1);
+                    labRoomStationReservation.setState(6);
+                    labRoomStationReservationDAO.store(labRoomStationReservation);
+                    labRoomStationReservationDAO.flush();
+                }
                 // 判断当天预约--下发权限
                 Boolean bln = shareService.theSameDay(labRoomStationReservation.getReservation().getTime());
                 // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
@@ -252,9 +268,13 @@ public class AuditController<JsonResult> {
                 labRoomStationReservationDAO.store(labRoomStationReservation);
                 labRoomStationReservationDAO.flush();
             }else {
-                labRoomStationReservation.setResult(2);        //审核中
-                labRoomStationReservationDAO.store(labRoomStationReservation);
-                labRoomStationReservationDAO.flush();
+                if(auditSaveParamDTO.getBusinessType().contains("CancelLabRoomStationReservation")){
+                    //工位预约取消审核 do nothing
+                }else {
+                    labRoomStationReservation.setResult(2);        //审核中
+                    labRoomStationReservationDAO.store(labRoomStationReservation);
+                    labRoomStationReservationDAO.flush();
+                }
             }
         }
 
