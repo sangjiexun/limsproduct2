@@ -427,12 +427,12 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
             }
             labReservationAudit.setStatus(1);
             if (shareService.getUserDetail().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
+                try {
+                    String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             messageDAO.store(message);
             messageDAO.flush();
@@ -469,12 +469,12 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
             }
             labReservationAudit.setStatus(2);
             if (shareService.getUserDetail().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
+                try {
+                    String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             messageDAO.store(message);
             messageDAO.flush();
@@ -494,12 +494,12 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
             }
             labReservationAudit.setStatus(3);
             if (shareService.getUserDetail().getTelephone() != null) {
-//                try {
-//                    String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
-//                } catch (InterruptedException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
+                try {
+                    String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             messageDAO.store(message);
             messageDAO.flush();
@@ -860,19 +860,6 @@ public class LabRoomLendingServiceImpl implements LabRoomLendingService {
 
         return lendingStatus;
     }
-
-//    private void sendMsg(User receiveUser, Message message) {
-//        message.setUsername(receiveUser.getUsername());
-//        messageDAO.store(message);
-//        messageDAO.flush();
-//        if (receiveUser.getTelephone() != null) {
-//            try {
-//                String result = shareService.sendMessage(receiveUser.getTelephone(), message.getTitle());
-//            } catch (InterruptedException | NoSuchAlgorithmException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     /**
      * 实验室预约作废

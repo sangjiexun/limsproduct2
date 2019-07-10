@@ -1,7 +1,5 @@
 package net.zjcclims.service.common;
 
-import cn.com.pubinfo.service.SendMsgPortType;
-import cn.com.pubinfo.service.SendMsg_Service;
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -23,6 +21,10 @@ import net.zjcclims.service.software.SoftwareService;
 import net.zjcclims.util.CookieUtil;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.web.common.PConfig;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -2289,12 +2291,8 @@ System.out.println("二维码路径："+url);
 		messageDAO.store(message);
 		messageDAO.flush();
 		if (receiveUser.getTelephone() != null && (pConfig.PROJECT_NAME.equals("zjcclims") || pConfig.PROJECT_NAME.equals("limsproduct"))) {// 暂时给浙江建设/鲁班楼发送短信
-//			try {
-//				String mess = receiveUser.getCname() + "您好，您有" + message.getTitle() + "，请登录平台处理或查阅！";
-//				String result = this.sendMessage(receiveUser.getTelephone(), mess);
-//			} catch (InterruptedException | NoSuchAlgorithmException e) {
-//				e.printStackTrace();
-//			}
+            String mess = receiveUser.getCname() + "您好，您有" + message.getTitle() + "，请登录平台处理或查阅！";
+            String result = this.sendMessage(receiveUser.getTelephone(), mess);
 		}
 	}
     
@@ -2307,23 +2305,31 @@ System.out.println("二维码路径："+url);
 	 * @date：2017-11-08
 	 ***********************************************************************************************/
 	@Override
-	public synchronized String  sendMessage(String tel, String content) throws NoSuchAlgorithmException, InterruptedException {
+	public synchronized String sendMessage(String tel, String content) {
 		if(tel != null && !"".equals(tel)){
-			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");//设置日期格式
-			int date=Integer.parseInt(df.format(new Date()));
-			int result1=57100053&date;
-			String str1=String.valueOf(result1);
-			String str=str1.substring(str1.length()-6,str1.length());
-			MessageDigest md;
-			md=MessageDigest.getInstance("MD5");
-			byte[] str_byte = str.getBytes();
-			byte[] md5_result_byte = md.digest(str_byte);  
-			String md5_result = bytesToHex(md5_result_byte).toLowerCase();
-			SendMsgPortType sendMsg = new SendMsg_Service().getSendMsgHttpPort();
-			String result=sendMsg.sendMsg("0571053",md5_result, tel, content);
-			return result;
+			// 调用短信中心接口
+			PConfigDTO pConfigDTO = this.getCurrentDataSourceConfiguration();
+			String url = pConfigDTO.messageServiceUrl;
+
+			HttpClient httpclient = new HttpClient();
+			PostMethod postMethod = new PostMethod(url);
+			//传参
+			NameValuePair[] postData = new NameValuePair[3];
+			postData[0] = new NameValuePair("project", pConfigDTO.messageProject);
+			postData[1] = new NameValuePair("mobile", tel);
+			postData[2] = new NameValuePair("mess", content);
+			postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+			postMethod.addParameters(postData);
+			try {
+				httpclient.executeMethod(postMethod);
+				return postMethod.getResponseBodyAsString();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "fail";
+			}
+		}else {
+			return "no phoneNumber";
 		}
-		return "no phoneNumber";
 	}
 	public static String bytesToHex(byte[] bytes) {  
         StringBuffer md5str = new StringBuffer();  
@@ -2337,7 +2343,7 @@ System.out.println("二维码路径："+url);
             }  
             if(digital < 16){  
                 md5str.append("0");//如果是0~16之间的数的话则变成0X  
-            }  
+            }
             md5str.append(Integer.toHexString(digital));  
         }  
         return md5str.toString().toUpperCase();  
@@ -3220,6 +3226,8 @@ System.out.println("二维码路径："+url);
 				pConfigDTO.setVirtual(p.getProperty("virtual"));
 				pConfigDTO.setLimsUrl(p.getProperty("limsUrl"));
 				pConfigDTO.setAdvanceCancelTime(p.getProperty("advanceCancelTime"));
+				pConfigDTO.setMessageServiceUrl(p.getProperty("messageServiceUrl"));
+				pConfigDTO.setMessageProject(p.getProperty("messageProject"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -3266,6 +3274,8 @@ System.out.println("二维码路径："+url);
 			pConfigDTO.setVirtual(pConfig.virtual);
 			pConfigDTO.setLimsUrl(pConfig.limsUrl);
 			pConfigDTO.setAdvanceCancelTime(pConfig.advanceCancelTime);
+			pConfigDTO.setMessageServiceUrl(pConfig.messageServiceUrl);
+			pConfigDTO.setMessageProject(pConfig.messageProject);
 		}
 		return pConfigDTO;
 	}

@@ -95,6 +95,10 @@ public class PConfig {
     public String limsUrl;
     @Value("${advanceCancelTime}")
     public String advanceCancelTime;
+    @Value("${messageServiceUrl}")
+    public String messageServiceUrl;
+    @Value("${messageProject}")
+    public String messageProject;
 
     @PostConstruct
     public void getApiToken() {

@@ -1190,12 +1190,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1271,12 +1271,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1341,12 +1341,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}			
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1402,12 +1402,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1444,12 +1444,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(4);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1578,12 +1578,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			}
 			softwareReserveAudit.setStatus(2);
 			if(shareService.getUserDetail().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			shareService.sendMsg(softwareReserve.getUser(), message);
 		}else if(softwareReserve.getState() == 3){//实验室管理员审核结果保存

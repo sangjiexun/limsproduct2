@@ -9,12 +9,11 @@ import net.zjcclims.dao.MessageDAO;
 
 import net.zjcclims.domain.Message;
 
+import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.message.MessageService;
 
-import net.zjcclims.service.message.PromoteActProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.WebDataBinder;
@@ -35,10 +34,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller("MessageController")
 public class MessageController {
 
-	@Autowired private PromoteActProducerService promoteActProducerService;
-	@Autowired
-	@Qualifier("queueDestination")
-	private Destination destination;
 	/**
 	 * DAO injected by Spring that manages Message entities
 	 * 
@@ -52,6 +47,8 @@ public class MessageController {
 	 */
 	@Autowired
 	private MessageService messageService;
+
+	@Autowired private ShareService shareService;
 
 	/**
 	 * Show all Message entities
@@ -191,12 +188,13 @@ public class MessageController {
 	@RequestMapping("/activeMq/sendMessage")
 	public @ResponseBody String  sendMessage(@RequestParam String project, @RequestParam String mobile, @RequestParam String mess){
 		try {
-			String jsonStr = "{\"project\":\""+project+"\",\"mobile\":\""+mobile+"\",\"mess\":\""+mess+"\"}";
-			promoteActProducerService.sendMessage(destination, jsonStr);
+			String result = shareService.sendMessage(mobile, mess);
+			return result;
+//			String jsonStr = "{\"project\":\""+project+"\",\"mobile\":\""+mobile+"\",\"mess\":\""+mess+"\"}";
+//			promoteActProducerService.sendMessage(destination, jsonStr);
 		}catch (Exception e){
 			e.printStackTrace();
 			return "fail";
 		}
-		return "success";
 	}
 }
