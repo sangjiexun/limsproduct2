@@ -399,7 +399,7 @@ var s=${isAudit};
              <a href="javascript:void(0)"
                 onclick="openCancelAuditWindow('${s.id}');">查看</a> <%--取消预约查看--%>
          </c:if>
-         <c:if test="${(sessionScope.selected_role eq 'ROLE_LABMANAGER') && isAudit eq 1 && (auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0) && (s.result eq 5 || s.result eq 6)}">
+         <c:if test="${(sessionScope.selected_role eq 'ROLE_LABMANAGER') && isAudit eq 1 && (auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0) && (s.result ne 5 || s.result ne 6 || s.result ne 8) }">
              <c:forEach items="${s.labRoom.labRoomAdmins}" var="la">
                  <c:if test="${la.user.username eq user.username}">
                      <a href="javascript:void(0)"
