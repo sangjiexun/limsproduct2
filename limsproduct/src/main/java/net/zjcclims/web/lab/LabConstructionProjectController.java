@@ -29,7 +29,6 @@ import net.zjcclims.service.common.CommonDocumentService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabConstructionProjectService;
 
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -70,8 +69,6 @@ public class LabConstructionProjectController {
 	private MessageDAO messageDAO;
 	@Autowired 
 	private CommonDocumentService commonDocumentService;
-	@Autowired
-	PConfig pConfig;
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register // static // property // editors.

@@ -8,13 +8,13 @@ package net.zjcclims.web.audit;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.AuthorityDAO;
 import net.zjcclims.domain.Authority;
 import net.zjcclims.domain.SchoolAcademy;
 import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +32,6 @@ public class AuditSettingController<JsonResult> {
     @Autowired
     private ShareService shareService;
     @Autowired
-    private PConfig pConfig;
-    @Autowired
     private AuthorityDAO authorityDAO;
 
     /**
@@ -45,9 +43,11 @@ public class AuditSettingController<JsonResult> {
     public String auditSetting(HttpServletRequest request, Map<String, Object> map, @RequestParam int flag,
                                @ModelAttribute("selected_academy") String acno) {
         User user = shareService.getUserDetail();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         map.put("user", user);
         // 项目名
-        String projectName = pConfig.PROJECT_NAME;
+        String projectName = pConfigDTO.PROJECT_NAME;
         String businessType = "";
         String businessName = "";
         Integer allType = 1;
@@ -72,21 +72,21 @@ public class AuditSettingController<JsonResult> {
             Map<String, String> params = new HashMap<>();
             // 获取原有的验收权限
             params.put("businessType", projectName + "RepairAcceptance");
-            String res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+            String res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
             JSONObject j = JSONObject.parseObject(res);
             if(j.getJSONArray("data").size() != 0) {
                 map.put("acceptanceVal", j.getJSONArray("data").getJSONObject(0).getString("authId"));
             }
             // 获取原有的编写权限
             params.put("businessType", projectName + "RepairWrite");
-            res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+            res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
             j = JSONObject.parseObject(res);
             if(j.getJSONArray("data").size() != 0) {
                 map.put("writeVal", j.getJSONArray("data").getJSONObject(0).getString("authId"));
             }
             // 获取原有的入账权限
             params.put("businessType", projectName + "RepairRecord");
-            res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
+            res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel", params);
             j = JSONObject.parseObject(res);
             if(j.getJSONArray("data").size() != 0) {
                 map.put("recordVal", j.getJSONArray("data").getJSONObject(0).getString("authId"));
@@ -145,7 +145,7 @@ public class AuditSettingController<JsonResult> {
             Map<String, String> params = new HashMap<>();
             //获取原有的归还权限
             params.put("businessType", projectName + "EquipmentReturn");
-            String res = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevel",params);
+            String res = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevel",params);
             JSONObject j = JSONObject.parseObject(res);
             if(j.getJSONArray("data").size() != 0) {
                 map.put("returnVal", j.getJSONArray("data").getJSONObject(0).getString("authId"));
@@ -169,7 +169,7 @@ public class AuditSettingController<JsonResult> {
 //        }
         Map<String, String> params = new HashMap<>();
         params.put("businessType",businessType);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/getBusinessAuditConfigLevelContaining", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/getBusinessAuditConfigLevelContaining", params);
         JSONObject jsonObject = JSON.parseObject(s);
         JSONArray auditConfig = jsonObject.getJSONArray("data");
         List<String> auditConfigLevel = new ArrayList<>();
@@ -244,7 +244,9 @@ public class AuditSettingController<JsonResult> {
     @ResponseBody
     public String saveAuditLevelConfig(HttpServletRequest request,Map<String, Object> map,
                                        @ModelAttribute("selected_academy") String acno) throws ParseException {
-        String projectName = pConfig.PROJECT_NAME;
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String projectName = pConfigDTO.PROJECT_NAME;
 //        String type = projectName + request.getParameter("type") + acno;// 每个学院各自设置，暂时隐藏
         String type = projectName + request.getParameter("type");
         String allType = request.getParameter("allType");
@@ -258,7 +260,7 @@ public class AuditSettingController<JsonResult> {
                     Map<String, String> params = new HashMap<>();
                     params.put("auditLevelConfig", auditLevelConfig);
                     params.put("businessType", type + academy.getAcademyNumber());
-                    String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
+                    String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
                     if("1".equals(allType)) {
                         int configNum = auditLevelConfig.split(",").length;
                         StringBuilder config = new StringBuilder();
@@ -270,7 +272,7 @@ public class AuditSettingController<JsonResult> {
                         params.put("businessUid", "-1");
                         params.put("config", config.toString());
                         params.put("businessType", type + aRangeSplit);
-                        HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
+                        HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
                     }
                 }
                 break;
@@ -278,7 +280,7 @@ public class AuditSettingController<JsonResult> {
                 Map<String, String> params = new HashMap<>();
                 params.put("auditLevelConfig", auditLevelConfig);
                 params.put("businessType", type + aRangeSplit);
-                String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
+                String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
                 if("1".equals(allType)) {
                     int configNum = auditLevelConfig.split(",").length;
                     StringBuilder config = new StringBuilder();
@@ -290,7 +292,7 @@ public class AuditSettingController<JsonResult> {
                     params.put("businessUid", "-1");
                     params.put("config", config.toString());
                     params.put("businessType", type + aRangeSplit);
-                    HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
+                    HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigs", params);
                 }
             }
         }
@@ -306,15 +308,17 @@ public class AuditSettingController<JsonResult> {
     @RequestMapping("/deleteAudit")
     @ResponseBody
     public String deleteAudit(HttpServletRequest request){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         Map<String, String> params = new HashMap<>();
-        String projectName = pConfig.PROJECT_NAME;
+        String projectName = pConfigDTO.PROJECT_NAME;
         String type = projectName + request.getParameter("type");
         String acno = request.getParameter("deleteNumber");
 
         // 置空后保存为删除
         params.put("auditLevelConfig", "");
         params.put("businessType", type + acno);
-        HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
+        HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
         return "success";
     }
 
@@ -328,11 +332,13 @@ public class AuditSettingController<JsonResult> {
     @ResponseBody
     public String saveConfirmAuthority(HttpServletRequest request){
         String authName = request.getParameter("authName");
-        String saveType = pConfig.PROJECT_NAME + request.getParameter("saveType");
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
+        String saveType = pConfigDTO.PROJECT_NAME + request.getParameter("saveType");
         Map<String, String> params = new HashMap<>();
         params.put("auditLevelConfig", authName);
         params.put("businessType", saveType);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/audit/saveBusinessAuditConfigLevel", params);
         return JSONObject.parseObject(s).getString("status");
     }
 
@@ -347,9 +353,11 @@ public class AuditSettingController<JsonResult> {
 
         // 获取配置项
         Map<String, String> params = new HashMap<>();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         // 项目名
-        params.put("projectName", pConfig.PROJECT_NAME);
-        String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getBusinessConfigurationList", params);
+        params.put("projectName", pConfigDTO.PROJECT_NAME);
+        String str = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/configuration/getBusinessConfigurationList", params);
         JSONObject listReturnObject = JSONObject.parseObject(str);
         List<Object[]> objects = new ArrayList<>();
         Map<Object, List<Object[]>> extendItems = new HashMap<>();
@@ -372,7 +380,7 @@ public class AuditSettingController<JsonResult> {
                     params = new HashMap<>();
                     // 项目名
                     params.put("id", objectArray[3].toString());
-                    str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/getConfigurationExtensions", params);
+                    str = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/configuration/getConfigurationExtensions", params);
                     JSONObject extendJSONObject = JSONObject.parseObject(str);
                     List<Object[]> extendObjectList = new ArrayList<>();
                     if ("success".equals(extendJSONObject.getString("status"))) {
@@ -414,6 +422,8 @@ public class AuditSettingController<JsonResult> {
     public String saveConfigurationSetting(HttpServletRequest request){
         // 页面传入参数
         Map<String, String[]> map = request.getParameterMap();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         for(Map.Entry<String, String[]> entry: map.entrySet()){
             if(entry.getValue().length > 0) {
                 Map<String, String> params = new HashMap<>();
@@ -422,13 +432,13 @@ public class AuditSettingController<JsonResult> {
                     params.put("id", entry.getKey().substring(6));
                     // 配置项状态
                     params.put("status", entry.getValue()[0]);
-                    String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/setBusinessConfigurationExtendStat", params);
+                    String str = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/configuration/setBusinessConfigurationExtendStat", params);
                 }else{
                     // 配置项id
                     params.put("id", entry.getKey());
                     // 配置项状态
                     params.put("status", entry.getValue()[0]);
-                    String str = HttpClientUtil.doPost(pConfig.auditServerUrl + "/configuration/setBusinessConfigurationStat", params);
+                    String str = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "/configuration/setBusinessConfigurationStat", params);
                 }
             }
         }

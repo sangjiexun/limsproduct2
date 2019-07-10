@@ -1,5 +1,6 @@
 package net.gvsun.lims.web.timetable;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.timetable.TimetableSelfCourseService;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -7,7 +8,6 @@ import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.virtual.VirtualService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -33,8 +33,6 @@ import java.util.Objects;
 public class SelfController<JsonResult> {
     @Autowired
     private OuterApplicationService outerApplicationService;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private ShareService shareService;
     @Autowired
@@ -89,6 +87,7 @@ public class SelfController<JsonResult> {
     @RequestMapping("/selfCourseList")
     public ModelAndView selfCourseList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
@@ -98,10 +97,10 @@ public class SelfController<JsonResult> {
         // 获取实验室排课的通用配置对象；
         CStaticValue cStaticValue = cStaticValueService.getCStaticValueByTimetableLabDevice(acno);
         mav.addObject("cStaticValue", cStaticValue);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 操作权限配置
-        mav.addObject("selfBatch", pConfig.selfBatch);
-        mav.addObject("selfNoBatch", pConfig.selfNoBatch);
+        mav.addObject("selfBatch", pConfigDTO.selfBatch);
+        mav.addObject("selfNoBatch", pConfigDTO.selfNoBatch);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
         // 是否审核
@@ -121,6 +120,7 @@ public class SelfController<JsonResult> {
     @RequestMapping("/selfCourseAdjustList")
     public ModelAndView selfCourseAdjustList(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
@@ -130,10 +130,10 @@ public class SelfController<JsonResult> {
         // 获取实验室排课的通用配置对象；
         CStaticValue cStaticValue = cStaticValueService.getCStaticValueByTimetableLabDevice(acno);
         mav.addObject("cStaticValue", cStaticValue);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 操作权限配置
-        mav.addObject("selfBatch", pConfig.selfBatch);
-        mav.addObject("selfNoBatch", pConfig.selfNoBatch);
+        mav.addObject("selfBatch", pConfigDTO.selfBatch);
+        mav.addObject("selfNoBatch", pConfigDTO.selfNoBatch);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
         mav.setViewName("lims/timetable/self/selfCourseAdjustList.jsp");
@@ -149,6 +149,7 @@ public class SelfController<JsonResult> {
     @RequestMapping("/newSelfReTimetableCourse")
     public ModelAndView newSelfReTimetableCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -167,13 +168,13 @@ public class SelfController<JsonResult> {
         mav.addObject("courseNumber",courseNumber);
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 虚拟镜像
-        mav.addObject("virtual", pConfig.virtual);
+        mav.addObject("virtual", pConfigDTO.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
         // 软件
-        mav.addObject("softManage", pConfig.softManage);
+        mav.addObject("softManage", pConfigDTO.softManage);
         mav.setViewName("lims/timetable/self/newSelfReTimetableCourse.jsp");
         return mav;
     }
@@ -187,6 +188,7 @@ public class SelfController<JsonResult> {
     @RequestMapping("/newSelfReGroupTimetableCourse")
     public ModelAndView newSelfReGroupTimetableCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -211,13 +213,13 @@ public class SelfController<JsonResult> {
         mav.addObject("courseNumber",courseNumber);
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 虚拟镜像
-        mav.addObject("virtual", pConfig.virtual);
+        mav.addObject("virtual", pConfigDTO.virtual);
         List<VirtualImage> virtualImageList = virtualService.getAllVirtualImage(null, 1, -1);
         mav.addObject("virtualImageList", virtualImageList);
         // 软件
-        mav.addObject("softManage", pConfig.softManage);
+        mav.addObject("softManage", pConfigDTO.softManage);
         mav.setViewName("lims/timetable/self/newSelfReGroupTimetableCourse.jsp");
         return mav;
     }
@@ -231,6 +233,7 @@ public class SelfController<JsonResult> {
     @RequestMapping("/newSelfReGroupCourse")
     public ModelAndView newSelfReGroupCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 获取学期列表
         List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
@@ -240,7 +243,7 @@ public class SelfController<JsonResult> {
         mav.addObject("selfId",request.getParameter("selfId"));
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("cStaticValue", cStaticValue);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
         // 虚拟镜像
@@ -260,6 +263,7 @@ public class SelfController<JsonResult> {
     public ModelAndView newSelfCourse(@RequestParam Integer id,Integer term,
                                                   @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 登陆用户
         mav.addObject("user", shareService.getUserDetail());
 
@@ -282,7 +286,7 @@ public class SelfController<JsonResult> {
         // 获取学期列表
         List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
         mav.addObject("schoolTerms", schoolTerms);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 年级列表
         mav.addObject("grade", shareService.getYearCode());
         mav.addObject("acno", acno);
@@ -299,10 +303,11 @@ public class SelfController<JsonResult> {
     @RequestMapping("/timetableCourseStudentList")
     public ModelAndView timetablecourseStudentList(int term, int selfId,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 获取可选的教师列表列表
         mav.addObject("selfId", selfId);
         mav.addObject("termId", term);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/self/timetableCourseStudentList.jsp");
         return mav;
     }
@@ -316,6 +321,7 @@ public class SelfController<JsonResult> {
     @RequestMapping("/updateSelfReTimetableCourse")
     public ModelAndView updateSelfReTimetableCourse(HttpServletRequest request,@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String academyNumber="";
         // 如果没有获取有效的实验分室列表-根据登录用户的所属学院
         if (!acno.equals("-1")) {
@@ -340,7 +346,7 @@ public class SelfController<JsonResult> {
         mav.addObject("courseNumber",courseNumber);
         mav.addObject("term",request.getParameter("term"));
         mav.addObject("academyNumber",academyNumber);
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         mav.setViewName("lims/timetable/self/updateSelfReTimetableCourse.jsp");
         return mav;
     }

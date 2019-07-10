@@ -1,18 +1,16 @@
 package net.zjcclims.service.system;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.SystemBuildDAO;
 import net.zjcclims.dao.SystemRoomDAO;
 import net.zjcclims.domain.SystemBuild;
 import net.zjcclims.domain.SystemRoom;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service("SystemBuildService")
 public class SystemBuildServiceImpl implements SystemBuildService {
@@ -21,8 +19,6 @@ public class SystemBuildServiceImpl implements SystemBuildService {
 	@Autowired SystemRoomDAO systemRoomDAO;
 	@Autowired
 	ShareService shareService;
-	@Autowired
-	PConfig pConfig;
 	/*************************************************************************************
 	 * @內容：根据校区id查询楼栋
 	 * @作者：李小龙
@@ -145,6 +141,8 @@ public class SystemBuildServiceImpl implements SystemBuildService {
 	 * @data 2018-12-21
 	 */
 	public List<SystemBuild> findBuildByCampusIdAndAcno(String campusNumber,HttpServletRequest request){
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
 		//查询语句
 		String sql="select b from SystemBuild b where b.systemCampus.campusNumber='"+campusNumber+"'";
 		if(request.getSession().getAttribute("selected_role") == null){
@@ -155,7 +153,7 @@ public class SystemBuildServiceImpl implements SystemBuildService {
 			} catch (Exception e){
 				e.printStackTrace();
 			}
-		}else if(pConfig.PROJECT_NAME.equals("tjpulims")) {
+		}else if(pConfigDTO.PROJECT_NAME.equals("tjpulims")) {
 			// 获取当前系统权限
 			String auth = request.getSession().getAttribute("selected_role").toString();
 			// 根据权限等级筛选

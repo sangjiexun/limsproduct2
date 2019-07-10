@@ -1,5 +1,6 @@
 package net.zjcclims.web.schedule;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.SchoolWeekDAO;
 import net.zjcclims.domain.LabRoom;
 import net.zjcclims.domain.SchoolTerm;
@@ -10,13 +11,11 @@ import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.schedule.ScheduleService;
 import net.zjcclims.service.system.SchoolWeekService;
 import net.zjcclims.vo.ScheduleVO;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -46,7 +45,6 @@ public class ScheduleController<JsonResult> {
     @Autowired private ShareService shareService;
     @Autowired private ScheduleService scheduleService;
     @Autowired private LabRoomService labRoomService;
-    @Autowired private PConfig pConfig;
     @Autowired private SchoolWeekService schoolWeekService;
     @Autowired private SchoolWeekDAO schoolWeekDAO;
     /**************************************************************************************/
@@ -59,6 +57,7 @@ public class ScheduleController<JsonResult> {
     @RequestMapping("/myScheduleList")
     public ModelAndView myScheduleList(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         User user = shareService.getUserDetail();
         mav.addObject("user", user);
         // 当前学期
@@ -67,7 +66,7 @@ public class ScheduleController<JsonResult> {
         // 列表备用
 //        List<ScheduleVO> list = scheduleService.findScheduleByQuery();
 //        mav.addObject("lists", list);
-        mav.addObject("zuulServerUrl", pConfig.auditServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.auditServerUrl);
         // 周次集合
         List<SchoolWeek> schoolWeeks = schoolWeekService.findallschoolweekbytermId(schoolTerm.getId());
         mav.addObject("schoolWeeks", schoolWeeks);
@@ -108,12 +107,13 @@ public class ScheduleController<JsonResult> {
     @RequestMapping("/comprehensiveTimetable")
     public ModelAndView comprehensiveTimetable(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         User user = shareService.getUserDetail();
         mav.addObject("user", user);
         // 当前学期listGeneralTimetable
         SchoolTerm schoolTerm = shareService.getBelongsSchoolTerm(Calendar.getInstance());
         mav.addObject("term", schoolTerm.getTermName());
-        mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+        mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
         // 周次集合
         List<SchoolWeek> schoolWeeks = schoolWeekService.findallschoolweekbytermId(schoolTerm.getId());
         mav.addObject("schoolWeeks", schoolWeeks);

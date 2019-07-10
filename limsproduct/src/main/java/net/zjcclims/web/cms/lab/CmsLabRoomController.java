@@ -1,21 +1,10 @@
 package net.zjcclims.web.cms.lab;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.zjcclims.constant.LabAttendance;
-import net.zjcclims.domain.CommonHdwlog;
-import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.AuthorityDAO;
 import net.zjcclims.dao.CDictionaryDAO;
 import net.zjcclims.dao.CommonServerDAO;
@@ -28,23 +17,7 @@ import net.zjcclims.dao.MessageDAO;
 import net.zjcclims.dao.OperationItemDAO;
 import net.zjcclims.dao.TimetableSelfCourseDAO;
 import net.zjcclims.dao.UserDAO;
-import net.zjcclims.domain.Authority;
-import net.zjcclims.domain.CDictionary;
-import net.zjcclims.domain.CommonServer;
-import net.zjcclims.domain.LabCenter;
-import net.zjcclims.domain.LabReservation;
-import net.zjcclims.domain.LabRoom;
-import net.zjcclims.domain.LabRoomAdmin;
 import net.zjcclims.domain.LabRoomAgent;
-import net.zjcclims.domain.LabRoomDevice;
-import net.zjcclims.domain.LabRoomFurniture;
-import net.zjcclims.domain.LabWorker;
-import net.zjcclims.domain.Message;
-import net.zjcclims.domain.OperationItem;
-import net.zjcclims.domain.SchoolAcademy;
-import net.zjcclims.domain.SchoolDevice;
-import net.zjcclims.domain.TimetableAppointmentSameNumber;
-import net.zjcclims.domain.User;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.device.SchoolDeviceService;
@@ -55,31 +28,21 @@ import net.zjcclims.service.lab.LabRoomFurnitureService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.system.SystemService;
 
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.ModelAndView;
 
-import excelTools.Labreservationlist;
-
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.BufferedReader;
 
 import java.io.ByteArrayOutputStream;
 
@@ -144,8 +107,6 @@ public class CmsLabRoomController<JsonResult> {
     private TimetableSelfCourseDAO timetableSelfCourseDAO;
     @Autowired
     private MessageDAO messageDAO;
-    @Autowired
-	PConfig pConfig;
 
   /****************************************************************************
      * 功能：socket方法远程开门

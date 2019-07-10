@@ -330,6 +330,129 @@ public class JsGridReportBase {
 		return wb;
 	}
 
+
+	/*设备维修
+	写入工作表*/
+	public HSSFWorkbook writeSheet2(HSSFWorkbook wb, String title, HashMap<String, HSSFCellStyle> styles, String creator, TableData tableData) throws Exception {
+
+		TableHeaderMetaData headerMetaData = tableData.getTableHeader();// 获得HTML的表头元素
+
+		SimpleDateFormat formater = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
+		String create_time = formater.format(new Date());
+
+		HSSFSheet sheet = wb.createSheet(title);// 在Excel工作簿中建一工作表
+		sheet.setDisplayGridlines(false);// 设置表标题是否有表格边框
+
+		//创建标题
+		HSSFRow row = sheet.createRow(0);// 创建新行
+		HSSFCell cell = row.createCell(0);// 创建新列
+		int rownum = 0;
+		cell.setCellValue(new HSSFRichTextString(title));
+		HSSFCellStyle style = styles.get("TITLE");//设置标题样式
+		if (style != null)
+			cell.setCellStyle(style);
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, headerMetaData
+				.getColumnCount() - 1));//合并标题行：起始行号，终止行号， 起始列号，终止列号
+
+		//创建副标题
+		row = sheet.createRow(1);
+		cell = row.createCell(0);
+		cell.setCellValue(new HSSFRichTextString("创建人:"));
+		style = styles.get("SUB_TITLE");
+		if (style != null)
+			cell.setCellStyle(style);
+
+		cell = row.createCell(1);
+		cell.setCellValue(new HSSFRichTextString(creator));
+		style = styles.get("SUB_TITLE2");
+		if (style != null)
+			cell.setCellStyle(style);
+
+		cell = row.createCell(2);
+		cell.setCellValue(new HSSFRichTextString("创建时间:"));
+		style = styles.get("SUB_TITLE");
+		if (style != null)
+			cell.setCellStyle(style);
+
+		cell = row.createCell(3);
+		style = styles.get("SUB_TITLE2");
+		cell.setCellValue(new HSSFRichTextString(create_time));
+		if (style != null)
+			cell.setCellStyle(style);
+
+		rownum = 3;// 如果rownum = 1，则去掉创建人、创建时间等副标题；如果rownum = 0， 则把标题也去掉
+
+		HSSFCellStyle headerstyle = styles.get("TABLE_HEADER");
+
+		int colnum = 0;
+		for (int i = 0; i < headerMetaData.getOriginColumns().size(); i++) {
+			TableColumn tc = headerMetaData.getOriginColumns().get(i);
+			if (i != 0) {
+				colnum += headerMetaData.getOriginColumns().get(i - 1)
+						.getLength();
+			}
+			generateColumn(sheet, tc, headerMetaData.maxlevel, rownum, colnum,
+					headerstyle);
+		}
+		rownum += headerMetaData.maxlevel;
+
+		List<TableDataRow> dataRows = tableData.getRows();
+
+		HashMap<Integer, Integer> counter = new HashMap<Integer, Integer>();
+		HashMap<Integer, String> word = new HashMap<Integer, String>();
+		int index = 0;
+		for (TableDataRow dataRow : dataRows) {
+			row = sheet.createRow(rownum);
+
+			List<TableDataCell> dataCells = dataRow.getCells();
+			int size = headerMetaData.getColumns().size();
+			index = -1;
+			for (int i = 0; i < size; i++) {
+				TableColumn tc = headerMetaData.getColumns().get(i);
+				if (!tc.isVisible())
+					continue;
+				index++;
+
+				String value = dataCells.get(i).getValue();
+				if (tc.isGrouped()) {
+					String w = word.get(index);
+					if (w == null) {
+						word.put(index, value);
+						counter.put(index, 1);
+						createCell2(row, tc, dataCells, i, index, styles);
+					} else {
+						if (w.equals(value)) {
+							counter.put(index, counter.get(index) + 1);
+						} else {
+							stopGrouping(sheet, word, counter, index, size,
+									rownum, styles.get("D2"));
+
+							word.put(index, value);
+							counter.put(index, 1);
+							createCell2(row, tc, dataCells, i, index, styles);
+						}
+					}
+				} else {
+					createCell2(row, tc, dataCells, i, index, styles);
+				}
+			}
+			rownum++;
+		}
+
+		stopGrouping(sheet, word, counter, 0, index, rownum, styles
+				.get("D2"));
+		// 设置前两列根据数据自动列宽
+		for (int c = 0; c < headerMetaData.getColumns().size(); c++) {
+			sheet.autoSizeColumn((short) c);
+			String t = headerMetaData.getColumns().get(c).getDisplay();
+			if(sheet.getColumnWidth(c)<t.length()*256*3)
+				sheet.setColumnWidth(c, t.length()*256*3);
+		}
+		sheet.setGridsPrinted(true);
+
+		return wb;
+	}
+
 	/**
 	 * 写入工作表
 	 * @param wb Excel工作簿
@@ -569,6 +692,78 @@ public class JsGridReportBase {
 			style = styles.get("STRING");
 			if (row.getRowNum() % 2 != 0)
 				style = styles.get("STRING_C");
+			if (style != null)
+				cell.setCellStyle(style);
+		}
+	}
+
+	/*设备维修导出
+	* 设置真实维修金额为数据列*/
+	public void createCell2(HSSFRow row, TableColumn tc,
+						   List<TableDataCell> data, int i, int index,
+						   HashMap<String, HSSFCellStyle> styles) {
+		TableDataCell dc = data.get(i);
+		HSSFCell cell = row.createCell(index);
+		switch (tc.getColumnType()) {
+			case TableColumn.COLUMN_TYPE_INTEGER:
+				cell.setCellValue(dc.getIntValue());
+				HSSFCellStyle style = styles.get("INT");
+				if (row.getRowNum() % 2 != 0)
+					style = styles.get("INT_C");
+				if (style != null)
+					cell.setCellStyle(style);
+				break;
+			case TableColumn.COLUMN_TYPE_FLOAT_2:
+				cell.setCellValue(dc.getDoubleValue());
+				style = styles.get("D2");
+				if (row.getRowNum() % 2 != 0)
+					style = styles.get("D2_C");
+				if (style != null)
+					cell.setCellStyle(style);
+				break;
+			case TableColumn.COLUMN_TYPE_FLOAT_3:
+				cell.setCellValue(dc.getDoubleValue());
+				style = styles.get("D3");
+				if (row.getRowNum() % 2 != 0)
+					style = styles.get("D3_C");
+				if (style != null)
+					cell.setCellStyle(style);
+				break;
+			case TableColumn.COLUMN_TYPE_RED_BG:
+				cell.setCellValue(dc.getValue());
+				style = styles.get("RED_BG");
+				if (style != null)
+					cell.setCellStyle(style);
+				break;
+			case TableColumn.COLUMN_TYPE_YELLOW_BG:
+				cell.setCellValue(dc.getValue());
+				style = styles.get("YELLOW_BG");
+				if (style != null)
+					cell.setCellStyle(style);
+				break;
+			case TableColumn.COLUMN_TYPE_GREEN_BG:
+				cell.setCellValue(dc.getValue());
+				style = styles.get("GREEN_BG");
+				if (style != null)
+					cell.setCellStyle(style);
+				break;
+			default:
+				if (dc.getValue().equalsIgnoreCase("&nbsp;"))
+					cell.setCellValue("");
+				else
+					cell.setCellValue(dc.getValue());
+				style = styles.get("STRING");
+				if (row.getRowNum() % 2 != 0)
+					style = styles.get("STRING_C");
+				if (style != null)
+					cell.setCellStyle(style);
+		}
+		if (index==16){
+			//cell.setCellStyle(HSSFCell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(dc.getDoubleValue());
+			HSSFCellStyle style = styles.get("D2");
+			if (row.getRowNum() % 2 != 0)
+				style = styles.get("D2_C");
 			if (style != null)
 				cell.setCellStyle(style);
 		}
@@ -1169,6 +1364,30 @@ public class JsGridReportBase {
 		for(TableData tableData : tableDataList){
 			String sheetTitle = title + i;
 			wb = writeSheet(wb,sheetTitle,styles,creator,tableData);//写入工作表
+			i++;
+		}
+
+		String sFileName = title + ".xls";
+		response.setHeader("Content-Disposition", "attachment;filename="
+				.concat(String.valueOf(URLEncoder.encode(sFileName, "UTF-8"))));
+		response.setHeader("Connection", "close");
+		response.setHeader("Content-Type", "application/vnd.ms-excel");
+
+		wb.write(response.getOutputStream());
+	}
+
+	/*导出设备维修Excel
+	* */
+	public void exportToExcelForRepair(String title, String creator, List<TableData> tableDataList)
+			throws Exception {
+
+		HSSFWorkbook wb = new HSSFWorkbook();// 创建新的Excel 工作簿
+		HashMap<String, HSSFCellStyle> styles = initStyles(wb);// 初始化表头样式
+
+		int i = 1;
+		for(TableData tableData : tableDataList){
+			String sheetTitle = title + i;
+			wb = writeSheet2(wb,sheetTitle,styles,creator,tableData);//写入工作表
 			i++;
 		}
 

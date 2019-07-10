@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.web.util.Authorization;
 import net.gvsun.web.util.AuthorizationUtil;
 import net.luxunsh.util.EmptyUtil;
@@ -16,7 +17,6 @@ import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.util.HttpClientUtil;
 import net.zjcclims.vo.AgentIOT;
-import net.zjcclims.web.common.PConfig;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -98,8 +97,6 @@ public class LabRoomServiceImpl implements LabRoomService {
 	private LabRoomAttentionDAO labRoomAttentionDAO;
 	@Autowired
 	private SchoolDeviceService schoolDeviceService;
-	@Autowired
-	private PConfig pConfig;
 	@Autowired
 	private AuthorityDAO authorityDAO;
 	@Autowired
@@ -1115,6 +1112,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 ****************************************************************************/
 	@Override
 	public List<LabRoom> findLabRoomWithDevices(LabRoomDevice device, Integer page, int pageSize, Integer isReservation, String acno, HttpServletRequest request) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql = "select distinct m from LabRoom m, LabRoomDevice lr, LabRoomAdmin la where 1=1 and m.id=lr.labRoom.id";
 		if (device.getLabRoom() != null) {
 			if (device.getLabRoom().getId() != null && !device.getLabRoom().getId().equals("")) {
@@ -1129,9 +1127,9 @@ public class LabRoomServiceImpl implements LabRoomService {
 		if (isReservation != null && isReservation == 1) {
 			sql += " and m.labRoomActive = 1";
 		}
-		if (pConfig.PROJECT_NAME.equals("zjcclims") && !acno.equals("1036")) {
+		if (pConfigDTO.PROJECT_NAME.equals("zjcclims") && !acno.equals("1036")) {
 			sql += " and m.schoolAcademy.academyNumber='" + acno + "'";
-		} else if (pConfig.PROJECT_NAME.equals("zjcclims") && acno.equals("1036")) {
+		} else if (pConfigDTO.PROJECT_NAME.equals("zjcclims") && acno.equals("1036")) {
 
 		} else if (acno != null && !"".equals(acno) &&!acno.equals("-1")) {
 			sql += " and m.schoolAcademy.academyNumber='" + acno + "'";
@@ -2554,6 +2552,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 */
 	@Override
 	public Integer getAuditNumber(LabRoom labRoom, Integer state) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		if (state == null || state <= 0) return state;
 		Integer auditNumber;
 		if (labRoom.getCDictionaryByIsAudit() != null
@@ -2562,8 +2561,8 @@ public class LabRoomServiceImpl implements LabRoomService {
 			String[] RSWITCH = {"on", "off"};
 			Map<String, String> params = new HashMap<>();
 			params.put("businessUid", labRoom.getId().toString());
-			params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-			String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+			params.put("businessType", pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+			String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
 			com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
 			String status = jsonObject.getString("status");
 			Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
@@ -2594,6 +2593,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @author 廖文辉 2018-08-27
 	 */
 	public List<LabRoom> findLabRoom(String acno, HttpServletRequest request) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		StringBuffer hql = new StringBuffer("select distinct l from LabRoom l,LabOpenUpAcademy loua");
         hql.append(" where l.id = loua.labRoomId");
 /* 		if(acno!=null && !acno.equals("-1")){
@@ -2601,7 +2601,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 		}*/
 		hql.append(" and l.labRoomActive=1 and l.labRoomReservation=1");
 		// 浙江建设{实验室管理员和物联管理员不可预约自己管理的实验室}
-		if (pConfig.PROJECT_NAME.equals("zjcclims") &&
+		if (pConfigDTO.PROJECT_NAME.equals("zjcclims") &&
 				(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN"))) {
 			hql.append(" and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')");
 		}
@@ -3048,8 +3048,9 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @author 廖文辉 2019-01-10
 	 */
 	public List<User> findUserByacno(String academyNumber, String search, int currpage, int pagesize){
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql="select u from User u where 1=1";
-		if(pConfig.PROJECT_NAME.equals("fdulims")){
+		if(pConfigDTO.PROJECT_NAME.equals("fdulims")){
 			// 复旦需要添加外院的人员
 		}else if (academyNumber != null && !academyNumber.equals("")) {
 			sql += " and u.schoolAcademy.academyNumber = '" + academyNumber + "'";
@@ -3061,7 +3062,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 		sql += " and u.enabled=true";
 		// 筛选老师和近五年的学生
 		sql += " and (u.userRole = 1 or u.grade > (" + Calendar.getInstance().get(Calendar.YEAR) + "-6))";
-		return userDAO.executeQuery(sql,(currpage-1)*pagesize, pagesize);
+		return userDAO.executeQuery(sql,0,-1);
 	}
 	/**
 	 * Description 查找本学期的操作日志
@@ -3163,7 +3164,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 //		jwtStr[0] = "Authorization";
 //		jwtStr[1] = a.getJwtToken();
 		// 以jwt形式发送请求
-//		String s =  HttpClientUtil.doPost(pConfig.refreshReservationUrl + "add/", jwtStr);
+//		String s =  HttpClientUtil.doPost(pConfigDTO.refreshReservationUrl + "add/", jwtStr);
 		// 2019年6月14日  新版物联
 		Map<String,String> headers = new HashMap<>();
 		headers.put("Authorization", "gvsunopendoorbyfallenleaf");
@@ -3313,7 +3314,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	 * @author 陈乐为 2019-4-3
 	 */
 	public String saveMultipleManager(int type_code, String[] labs, String[] users) {
-		String memo = "提示：";
+		String memo = "异常提示：";
 		for (String lab : labs) {
 			int lab_id = Integer.valueOf(lab);
 			LabRoom labRoom = this.findLabRoomByPrimaryKey(lab_id);
@@ -3365,7 +3366,6 @@ public class LabRoomServiceImpl implements LabRoomService {
 					refuseItemBackup.setLabRoomName(labRoom.getLabRoomName());
 					refuseItemBackup.setCreator(shareService.getUserDetail().getUsername());
 					refuseItemBackupDAO.store(refuseItemBackup);
-					memo = "提示：添加完成";
 				}else {
 //					memo += user.getCname()+"["+user.getUsername()+"]已经是"+labRoom.getLabRoomName()+"["+labRoom.getLabRoomNumber()+"]的管理人员<br>";
 					memo += user.getCname()+"已经是"+labRoom.getLabRoomName()+"的管理人员；";

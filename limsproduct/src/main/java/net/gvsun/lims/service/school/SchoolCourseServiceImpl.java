@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.common.BaseActionAuthDTO;
 import net.gvsun.lims.dto.common.BaseDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.school.SchoolCourseDetailDTO;
 import net.gvsun.lims.dto.timetable.TimetableDTO;
 import net.gvsun.lims.dto.timetable.TimetableMergeDTO;
@@ -16,7 +17,7 @@ import net.zjcclims.dao.SchoolCourseDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,6 @@ public class SchoolCourseServiceImpl implements SchoolCourseService {
     private TimetableCommonService timetableCommonService;
     @Autowired
     private ShareService shareService;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private AuditRefuseBackupDAO auditRefuseBackupDAO;
 
@@ -262,6 +261,7 @@ public class SchoolCourseServiceImpl implements SchoolCourseService {
      * @date 2018年10月17日
      **************************************************************************/
     public BaseDTO apiEduSchoolCourseByPage(int termId, String search,String status, int offset, int limit, String sort, String sortOrder,HttpServletRequest request) {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         //获取列表主查询语句
         StringBuffer sql = new StringBuffer("select distinct c from SchoolCourse c ");
         //如果是学生，则只能查看自己的选课
@@ -482,8 +482,8 @@ public class SchoolCourseServiceImpl implements SchoolCourseService {
             Map<String, String> params = new HashMap<>();
             String businessType = "TimetableAudit";
             params.put("businessAppUid", schoolCourse.getCourseNo());
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
-            String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+            String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
             JSONObject jsonObject = JSON.parseObject(curStr);
             String curStatus = jsonObject.getString("status");
             if ("success".equals(curStatus)) {

@@ -6,6 +6,7 @@ import edu.emory.mathcs.backport.java.util.LinkedList;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -13,7 +14,6 @@ import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -108,8 +108,6 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
     SchoolDeviceService schoolDeviceService;
     @Autowired
     private MessageDAO messageDAO;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     LabRoomTrainingPeopleDAO labRoomTrainingPeopleDAO;
     @Autowired
@@ -999,6 +997,8 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
     @Override
     public String securityAccess(String username, Integer id) {
         // TODO Auto-generated method stub
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String str = "success";
         User user = shareService.getUserDetail();
         //id对应的设备
@@ -1011,8 +1011,8 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
         boolean flag = false;
         Map<String, String> params = new HashMap<>();
         params.put("businessUid", device.getId().toString());
-        params.put("businessType", pConfig.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         if("success".equals(jsonObject.getString("status"))) {
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
@@ -4138,11 +4138,12 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      */
     @Override
     public void saveDeviceAudit(Integer idKey, Integer auditResult, String remark, String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabRoomDeviceLending labRoomDeviceLending = findDeviceLendingById(idKey);
         LabRoomDevice labRoomDevice=labRoomDeviceLending.getLabRoomDevice();
         LabRoom labRoom=labRoomDevice.getLabRoom();
         //User createUser=shareService.getUserDetail();
-        String businessType=pConfig.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType=pConfigDTO.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         String businessAppUid="";
         if (shareService.getSerialNumber(labRoomDeviceLending.getId().toString(),businessType)=="fail"){
             businessAppUid=labRoomDeviceLending.getId().toString();
@@ -4161,7 +4162,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
             params.put("result","pass");
             params.put("info",remark);
             params.put("username",user.getUsername());
-            String s=HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+            String s=HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
            /*JSONObject jsonObject5 = JSON.parseObject(s);
            JSONObject status = jsonObject5.getJSONObject("status");
            System.out.println(status);*/
@@ -4187,7 +4188,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
             params.put("result","fail");
             params.put("info",remark);
             params.put("username",user.getUsername());
-            HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+            HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 
         }
         labRoomDeviceLendingDAO.store(labRoomDeviceLending);
@@ -4199,8 +4200,9 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
      */
     @Override
     public String submitDeviceLending(Integer id,String acno){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabRoomDeviceLending labRoomDeviceLending=labRoomDeviceLendingDAO.findLabRoomDeviceLendingById(id);
-        String businessType=pConfig.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType=pConfigDTO.PROJECT_NAME+ "LabRoomDeviceLending" + labRoomDeviceLending.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         String businessAppUid=shareService.saveAuditSerialNumbers(labRoomDeviceLending.getId().toString(),businessType);
         /*String config="on,on,on";
         Map<String,String> params2=new HashMap<>();
@@ -4212,7 +4214,7 @@ public class LabRoomDeviceServiceImpl implements LabRoomDeviceService {
         params.put("businessUid","-1");
         params.put("businessType",businessType);
         params.put("businessAppUid",businessAppUid);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl+"audit/saveInitBusinessAuditStatus",params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"audit/saveInitBusinessAuditStatus",params);
         return "success";
 
     }

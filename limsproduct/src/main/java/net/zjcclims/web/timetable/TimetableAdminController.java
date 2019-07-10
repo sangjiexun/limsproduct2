@@ -1,6 +1,7 @@
 package net.zjcclims.web.timetable;
 
 import api.net.gvsunlims.constant.ConstantInterface;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -10,14 +11,12 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.operation.OperationService;
 import net.zjcclims.service.timetable.*;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
@@ -100,8 +99,6 @@ public class TimetableAdminController<JsonResult> {
 	@Autowired
 	private 
 	TimetableAppointmentResultDAO timetableAppointmentResultDAO;
-	@Autowired
-	private PConfig pConfig;
 	@Autowired
 	private SchoolCourseInfoService schoolCourseInfoService;
 	@Autowired
@@ -210,7 +207,8 @@ public class TimetableAdminController<JsonResult> {
 			@ModelAttribute TimetableAppointment timetableAppointment,
 			@RequestParam int currpage,int status) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("PROJECT_NAME",pConfig.PROJECT_NAME);
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+		mav.addObject("PROJECT_NAME",pConfigDTO.PROJECT_NAME);
 		// 获取学期列表
 		List<SchoolTerm> schoolTerms = shareService.findAllSchoolTerms();
 		mav.addObject("schoolTerms", schoolTerms);

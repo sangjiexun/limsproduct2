@@ -4,6 +4,7 @@ import api.net.gvsunlims.constant.ConstantInterface;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -13,6 +14,7 @@ import net.zjcclims.service.lab.*;
 import net.zjcclims.service.message.MessageService;
 import net.zjcclims.service.system.SystemService;
 import net.zjcclims.util.HttpClientUtil;
+
 import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -83,8 +85,6 @@ public class LabRoomLendingController<JsonResult> {
     @Autowired
     private TimetableLabRelatedDAO timetableLabRelatedDAO;
     @Autowired
-    PConfig pConfig;
-    @Autowired
     private LabReservationTimeTableDAO labReservationTimeTableDAO;
     @PersistenceContext
     private EntityManager entityManager;
@@ -144,6 +144,7 @@ public class LabRoomLendingController<JsonResult> {
     @RequestMapping("/showLabRoomLending")
     public ModelAndView showLabRoomLending(@RequestParam Integer labRoomId, @ModelAttribute("selected_academy") String acno) {
         // 新建ModelAndView对象；
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         ModelAndView mav = new ModelAndView();
         User user = shareService.getUserDetail();
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
@@ -152,8 +153,8 @@ public class LabRoomLendingController<JsonResult> {
         Map<String, String> params = new HashMap<>();
         String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
         params.put("businessUid", labRoomId.toString());
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         if("success".equals(jsonObject.getString("status"))){
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
@@ -212,6 +213,7 @@ public class LabRoomLendingController<JsonResult> {
     @RequestMapping("/saveLabRoomLending")
     public String saveLabRoomLending(HttpServletRequest request, @RequestParam Integer labRoomId, @ModelAttribute("selected_academy") String acno) throws ParseException, NoSuchAlgorithmException, InterruptedException {
         //使用时间段
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String[] reservationTimes = request.getParameterValues("reservationTime[]");
         String successOrNotResult = "success";
         //使用日期
@@ -257,7 +259,7 @@ public class LabRoomLendingController<JsonResult> {
         message.setMessageState(CommonConstantInterface.INT_Flag_ZERO);
         message.setCreateTime(Calendar.getInstance());
         message.setTage(2);
-        String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
         // 业务和流水号转换
         String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
         if (businessAppUid.equals("fail")) {
@@ -268,7 +270,7 @@ public class LabRoomLendingController<JsonResult> {
             params.put("businessUid", labRoom.getId().toString());
             params.put("businessType", businessType);
             params.put("businessAppUid", businessAppUid);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
             JSONObject jsonObject = JSON.parseObject(s);
             String status = jsonObject.getString("status");
             if (!"success".equals(status)) {
@@ -278,7 +280,7 @@ public class LabRoomLendingController<JsonResult> {
         Map<String, String> params2 = new HashMap<>();
         params2.put("businessType", businessType);
         params2.put("businessAppUid", labReservation.getId().toString());
-        String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+        String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
         JSONObject jsonObject2 = JSON.parseObject(s2);
         String status2 = jsonObject2.getString("status");
         JSONArray jsonArray = jsonObject2.getJSONArray("data");
@@ -293,7 +295,7 @@ public class LabRoomLendingController<JsonResult> {
             params3.put("result", "pass");
             params3.put("info", "不是学生不需要导师审核");
             params3.put("username", "username");
-            String s3 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params3);
+            String s3 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params3);
             JSONObject jsonObject4 = JSON.parseObject(s3);
             String status3 = jsonObject4.getString("status");
             if (status3.equals("fail")) {
@@ -303,7 +305,7 @@ public class LabRoomLendingController<JsonResult> {
         Map<String, String> params4 = new HashMap<>();
         params4.put("businessType", businessType);
         params4.put("businessAppUid", labReservation.getId().toString());
-        String s4 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params4);
+        String s4 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params4);
         JSONObject jsonObject5 = JSON.parseObject(s4);
         String status4 = jsonObject5.getString("status");
         JSONArray jsonArray4 = jsonObject5.getJSONArray("data");
@@ -901,6 +903,7 @@ public class LabRoomLendingController<JsonResult> {
             @ModelAttribute LabReservation labReservation, Integer page, Integer isaudit, Integer tage,
             @ModelAttribute("selected_academy") String acno,HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 学期
         List<SchoolTerm> terms = shareService.findAllSchoolTerms();
         mav.addObject("terms", terms);
@@ -917,7 +920,7 @@ public class LabRoomLendingController<JsonResult> {
         //判断所处审核阶段，关联到前端的按钮
         if (labReservations != null) {
             Calendar currentTime = Calendar.getInstance();
-            currentTime.add(Calendar.HOUR, Integer.parseInt(pConfig.advanceCancelTime));
+            currentTime.add(Calendar.HOUR, Integer.parseInt(pConfigDTO.advanceCancelTime));
             boolean[] isBeforeTime = new boolean[labReservations.size()];
             for (int i = 0; i < labReservations.size(); i++) {
                 //首先设置页面关联按钮
@@ -928,13 +931,7 @@ public class LabRoomLendingController<JsonResult> {
                 }
                 // 获取当前审核状态
                 Map<String, String> params2 = new HashMap<>();
-                String businessUid = labReservations.get(i).getLabRoom().getId().toString();
-                String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservations.get(i).getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
-                //判断是不是取消审核的数据  切换businessType businessAppUid
-                if(labReservations.get(i).getAuditStage()!=null && labReservations.get(i).getAuditStage()==7){
-                    businessUid = "-1";
-                    businessType = pConfig.PROJECT_NAME + "CancelLabRoomReservation";
-                }
+                String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labReservations.get(i).getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
                 // 业务转流水号，保存并返回流水号
                 String businessAppUid = "";
                 if(shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType)=="fail"){
@@ -947,7 +944,7 @@ public class LabRoomLendingController<JsonResult> {
 //                String businessAppUid = shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType);
                 params2.put("businessType", businessType);
                 params2.put("businessAppUid", businessAppUid);
-                String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+                String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
                 JSONObject jsonObject2 = JSON.parseObject(s2);
                 String status2 = jsonObject2.getString("status");
                 Integer auditNumber = null;
@@ -968,8 +965,8 @@ public class LabRoomLendingController<JsonResult> {
                 Map<String, String> allAuditStateParams = new HashMap<>();
                 allAuditStateParams.put("businessType", businessType);
                 allAuditStateParams.put("businessAppUid", businessAppUid);
-                allAuditStateParams.put("businessUid", businessUid);
-                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                allAuditStateParams.put("businessUid", labReservations.get(i).getLabRoom().getId().toString());
+                String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
                 if(!"fail".equals(status2)) {
@@ -1080,9 +1077,9 @@ public class LabRoomLendingController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("isAudit", isaudit);
         mav.addObject("tage", tage);
-        mav.addObject("jobReservation", pConfig.jobReservation);
+        mav.addObject("jobReservation", pConfigDTO.jobReservation);
         mav.addObject("user", user);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
 
         mav.setViewName("/lab/lab_lending/labReservationList.jsp");
         return mav;
@@ -1100,7 +1097,8 @@ public class LabRoomLendingController<JsonResult> {
             @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav=new ModelAndView();
         LabReservation labReservation =labReservationDAO.findLabReservationByPrimaryKey(id);
-        String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
 
         if(labReservation!=null) {
@@ -1130,7 +1128,7 @@ public class LabRoomLendingController<JsonResult> {
         Map<String, String> params = new HashMap<>();
         params.put("businessType", businessType);
         params.put("businessAppUid", businessAppUid);
-        String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/deleteBusinessAudit", params);
+        String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/deleteBusinessAudit", params);
         //删除流水单
         shareService.deleteSerialNumber(businessAppUid);
         //重定向
@@ -1147,6 +1145,7 @@ public class LabRoomLendingController<JsonResult> {
     public ModelAndView checkButtonforlabRoomLend(@RequestParam int id, int tage, int state, Integer page, HttpServletRequest request,
                                                   @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabReservation labReservation = labReservationDAO.findLabReservationById(id);
         // 如果查不到预约，则说明该预约已撤回或者作废
         if(labReservation == null){
@@ -1166,15 +1165,10 @@ public class LabRoomLendingController<JsonResult> {
         List<String> titles = new ArrayList<>();
         List<Integer> isOpens = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
-        String businessType = pConfig.PROJECT_NAME +"LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
-        String businessUid = labRoom.getId().toString();
-        if(labReservation.getAuditStage()!=null && labReservation.getAuditStage()==7){
-            businessUid = "-1";
-            businessType = pConfig.PROJECT_NAME + "CancelLabRoomReservation";
-        }
-        params.put("businessUid", businessUid);
-        params.put("businessType", businessType);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+        params.put("businessUid", labRoom.getId().toString());
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
         if("success".equals(status)) {
@@ -1492,13 +1486,14 @@ public class LabRoomLendingController<JsonResult> {
         LabReservation labReservation = labReservationDAO.findLabReservationById(id);
 //        LabReservationAudit labReservationAudit = new LabReservationAudit();
 //        labReservationAudit.setResult(auditResult);
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         labReservation = labRoomLendingService.saveAuditResult(labReservation, auditResult, remark, acno);
         if (labReservation.getAuditStage()!=null && labReservation.getAuditStage()==6) {
             // 判断当天预约--下发权限
             Boolean bln = shareService.theSameDay(labReservation.getLendingTime().getTime());
             // 如果当前日期和预约日期相同即同一天，则向物联发送刷新权限请求
             if(bln) {
-                if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+                if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
                     HttpClientUtil.doGet("http://10.50.20.100:85/setplan");
                 } else {
                     labRoomService.sendAgentInfoTodayToIOT(labReservation.getLabRoom().getId());
@@ -1511,11 +1506,12 @@ public class LabRoomLendingController<JsonResult> {
 
     private JSONObject getAllState(LabReservation labReservation, String authName, String acno){
         Map<String, String> params = new HashMap<>();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String businessType = "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         params.put("businessAppUid", labReservation.getId().toString());
         params.put("businessUid", labReservation.getLabRoom().getId().toString());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
         JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -1540,19 +1536,15 @@ public class LabRoomLendingController<JsonResult> {
     public ModelAndView labReservationAllAudit(@RequestParam int id, int tage,int state,Integer page, HttpServletRequest request,
                                                @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabReservation labReservation =labReservationDAO.findLabReservationById(id);
         User user = shareService.getUserDetail();
         List<User> isAuditUsers = new ArrayList<>();
         JSONObject resultObject = new JSONObject();
         Map<String, String> allParams = new HashMap<>();
-        String businessType = pConfig.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         // 业务转流水号，保存并返回流水号
         String businessAppUid = "";
-        String businessUid = labReservation.getLabRoom().getId().toString();
-        if(labReservation.getAuditStage()!=null && labReservation.getAuditStage()==7){
-            businessUid = "-1";
-            businessType = pConfig.PROJECT_NAME + "CancelLabRoomReservation";
-        }
         if(shareService.getSerialNumber(labReservation.getId().toString(), businessType)=="fail"){
             //没有流水单号就是用预约id用作业务id
             businessAppUid = labReservation.getId().toString();
@@ -1563,8 +1555,8 @@ public class LabRoomLendingController<JsonResult> {
 //        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
         allParams.put("businessType", businessType);
         allParams.put("businessAppUid", businessAppUid);
-        allParams.put("businessUid", businessUid);
-        String allString = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
+        allParams.put("businessUid", labReservation.getLabRoom().getId().toString());
+        String allString = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
         JSONObject allObject = JSON.parseObject(allString);
         String allStatus = allObject.getString("status");
         JSONArray allJSONArray = allObject.getJSONArray("data");
@@ -1580,7 +1572,7 @@ public class LabRoomLendingController<JsonResult> {
         Map<String, String> curParams = new HashMap<>();
         curParams.put("businessType", businessType);
         curParams.put("businessAppUid", businessAppUid);
-        String curString = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+        String curString = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
         JSONObject curObject = JSONObject.parseObject(curString);
         String curPassStatus = curObject.getString("status");
         JSONArray curJSONArray = curObject.getJSONArray("data");

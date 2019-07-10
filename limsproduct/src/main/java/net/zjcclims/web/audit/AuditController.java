@@ -8,6 +8,7 @@ package net.zjcclims.web.audit;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.audit.AuditSaveParamDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.AuthorityDAO;
 import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.dao.LabRoomStationReservationDAO;
@@ -17,7 +18,6 @@ import net.zjcclims.service.lab.LabRoomLendingService;
 import net.zjcclims.service.lab.LabRoomReservationService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +36,6 @@ public class AuditController<JsonResult> {
     @Autowired
     private ShareService shareService;
     @Autowired
-    private PConfig pConfig;
-    @Autowired
     private AuthorityDAO authorityDAO;
     @Autowired
     private LabRoomDAO labRoomDAO;
@@ -52,15 +50,17 @@ public class AuditController<JsonResult> {
     @RequestMapping("/auditList")
     public ModelAndView auditList(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String businessUid = request.getParameter("businessUid");
         String businessAppUid = request.getParameter("businessAppUid");
         String businessType= "";
         if(labRoomDAO.findLabRoomById(Integer.valueOf(businessUid))!=null){
             LabRoom labRoom = labRoomDAO.findLabRoomById(Integer.valueOf(businessUid));
-            businessType = pConfig.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+            businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (labRoom.getLabCenter() == null ? "-1" : labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
         }
         if(request.getParameter("businessType")!=null){
-            businessType = pConfig.PROJECT_NAME + request.getParameter("businessType");
+            businessType = pConfigDTO.PROJECT_NAME + request.getParameter("businessType");
         }
         // 获取审核状态
         Integer curStage = -2;
@@ -76,7 +76,7 @@ public class AuditController<JsonResult> {
         params.put("businessType", businessType);
         params.put("businessUid", businessUid);
         params.put("businessAppUid", businessAppUid);
-        String currStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+        String currStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
         JSONObject currJSONObject = JSONObject.parseObject(currStr);
         if ("success".equals(currJSONObject.getString("status"))) {
             JSONArray currArray = currJSONObject.getJSONArray("data");
@@ -88,7 +88,7 @@ public class AuditController<JsonResult> {
         }
 
         // 获取审核配置
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         List<Object[]> auditItems = new ArrayList<>();
         if ("success".equals(jsonObject.getString("status"))) {
@@ -122,6 +122,8 @@ public class AuditController<JsonResult> {
     @RequestMapping("/auditSingle")
     public ModelAndView auditSingle(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         Integer isAudit = 0;
         Integer state = 0;
         if(request.getParameter("state") != null){
@@ -145,7 +147,7 @@ public class AuditController<JsonResult> {
             params.put("businessType",businessType);
             params.put("businessUid", businessUid);
             params.put("businessAppUid", businessAppUid);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
             JSONObject jsonObject = JSONObject.parseObject(s);
             if ("success".equals(jsonObject.getString("status"))) {
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -221,13 +223,15 @@ public class AuditController<JsonResult> {
     @ResponseBody
     public String saveAudit(@RequestBody AuditSaveParamDTO auditSaveParamDTO) {
         Map<String, String> params = new HashMap<>();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         params.put("businessType", auditSaveParamDTO.getBusinessType());
         params.put("businessAppUid", auditSaveParamDTO.getBusinessAppUid());
         params.put("businessUid", auditSaveParamDTO.getBusinessUid());
         params.put("result", auditSaveParamDTO.getAuditResult() == 1 ? "pass" : "fail");
         params.put("info", auditSaveParamDTO.getRemark());
         params.put("username", shareService.getUserDetail().getUsername());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 
         String nextAuthName = "";
         JSONObject jsonObject = JSONObject.parseObject(s);

@@ -1,0 +1,79 @@
+/* 
+* @Author: xiaoyingx
+* @Date:   2016-12-02 09:59:01
+* @Last Modified by:   Marte
+* @Last Modified time: 2017-05-03 14:48:45
+*/
+body{
+    line-height: 1.4;
+  color: #333;
+  font-family: Helvetica,"Hiragino Sans GB","WenQuanYi Micro Hei","Microsoft YaHei",sans-serif,"Noto Sans CJK SC";
+    padding:0;
+    margin:0;
+}
+
+.orderDiv{
+	/*width:940px;*/
+	padding-left:52px;
+	margin-top:20px;
+}
+.timeDiv{
+	width:111px;
+	height:76px;
+	border-radius:6px;
+	float:left;
+	margin-right:10px;
+	margin-top:10px;
+	position:relative;
+	cursor:pointer;
+}
+.timespan{
+	position:absolute;
+	bottom:10px;
+	font-size:13px;
+	display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+.bggreen{
+	background:#66cc99;
+}
+.bgblue{
+	background:#0086B3;
+}
+.bgpink{
+	background:#f0b4a0;
+}
+.bggrey{
+	background: #fdfffd;
+	border: 2px solid #63d66c;
+}
+.bgred{
+	background:#e2e6ea;
+}
+.userspan{
+	font-size: 12px;
+	line-height: 18px;
+	letter-spacing: 0.5px;
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+}
+
+.bgred .userspan{
+	color:#7f89a5;
+}
+
+.bggrey .userspan{
+	color:#0fb15f;
+}
+
+.cw{
+    color: #fafafa;
+}
+.cg{
+	color:#666;
+}
+.mt5{
+	margin-top:5px;
+}

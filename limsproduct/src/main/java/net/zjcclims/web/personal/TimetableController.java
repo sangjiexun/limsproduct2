@@ -1,9 +1,5 @@
 package net.zjcclims.web.personal;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import net.zjcclims.JsonDateValueProcessor;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
@@ -17,12 +13,7 @@ import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.timetable.SchoolCourseDetailService;
 import net.zjcclims.service.timetable.TimetableAppointmentService;
 import net.zjcclims.service.virtual.VirtualService;
-import net.zjcclims.web.common.PConfig;
-import org.hibernate.*;
-import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
@@ -31,11 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.*;
 import java.text.SimpleDateFormat;
@@ -93,8 +80,6 @@ public class TimetableController {
     private SchoolWeekService schoolWeekService;
     @Autowired
     private LabRoomDAO labRoomDAO;
-    @Autowired
-    PConfig pConfig;
     @Autowired
     private VirtualService virtualService;
     @InitBinder

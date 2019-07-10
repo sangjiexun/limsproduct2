@@ -7,7 +7,6 @@ import net.zjcclims.dao.LabRoomDeviceDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,6 @@ public class LabCenterServiceImpl implements LabCenterService {
 	private LabRoomDeviceDAO labRoomDeviceDAO;
 	@Autowired
 	private ShareService shareService;
-	@Autowired
-	private PConfig pConfig;
 	/**
 	 * 根据实验中心主键查找实验中心对象
 	 * @author hly

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>日期选择页面</title>
+<script src="js/jquery-1.11.2.min.js"></script>
+<script src="js/WdatePicker.js"></script>
+<script src="js/jquery.mousewheel.min.js"></script>
+<script type="text/javascript" src="js/dateLine.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+<link rel="stylesheet" type="text/css" href="css/order.css" />
+<script>
+var is_dater;
+var is_table;
+var data = [
+		{"id":11, "date":"2017-05-31","purpose":"金相分析", "startTime":"8:30", "endTime":"11:30", "user": "admin"},
+		{"id":1, "date":"2017-05-31", "startTime":"13:00", "endTime":"15:00", "user": "curr"},
+		{"id":23, "date":"2017-05-25", "startTime":"11:00", "endTime":"13:00", "user":"curr"}
+	]
+$(document).ready(function(e) {
+	is_dater = new iStyle_LineDatepicker("#iStyle_DateViewer","");
+	var date1 = new Date();
+	date1.setHours(8,0)
+	var date2 = new Date();
+	date2.setHours(20,0);
+	var interval = 30;
+	is_table = new iStyle_TimeDiv(date1,date2,interval);
+	is_table.load(data,date1,"admin");
+});
+
+
+</script>
+<style>
+
+</style>
+</head>
+<body>
+
+<div class="iStyle_DateConteiner">
+	
+	<div class="iStyle_Years"></div>
+	<a class="iStyle_LineDater_left">◀</a>
+	<div class="iStyle_LineDater">
+		<div class="iStyle_Datepicker"></div>
+	</div>
+	<a class="iStyle_LineDater_right">▶</a>
+	<input id="iStyle_DateViewer" type="text" onClick="WdatePicker()" onFocus="WdatePicker({onpicked:is_dater.getdate()})"/>
+	<img onclick="WdatePicker({el:'iStyle_DateViewer'})" id="iStyle_Datebutton" src="js/skin/datePicker.gif" width="40" height="40" align="absmiddle">
+	
+</div>
+<div class="orderDiv" id="orderDiv">
+
+</div>
+    
+<script type="text/javascript" src="js/orderDiv.js"></script>
+</body>
+</html>

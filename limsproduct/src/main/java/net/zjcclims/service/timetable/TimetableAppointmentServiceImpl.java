@@ -10,7 +10,6 @@ import net.zjcclims.service.common.MySQLService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.evaluation.EvaluationService;
 import net.zjcclims.service.system.SchoolWeekService;
-import net.zjcclims.web.common.PConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

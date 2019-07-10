@@ -7,6 +7,7 @@
 
 package net.zjcclims.web.system;
 
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.user.AuthorityDTO;
 import net.sf.json.JSONObject;
 import net.zjcclims.dao.AuthorityDAO;
@@ -43,7 +44,7 @@ import java.util.*;
 @Controller("CommonController")
 @SessionAttributes("selected_academy")
 public class CommonController<JsonResult> {
-	
+
 	@InitBinder
 	public void initBinder(WebDataBinder binder, HttpServletRequest request) { // Register
 																				// static
@@ -155,7 +156,7 @@ public class CommonController<JsonResult> {
 				i = a.getType();
 				id=a.getId();
 			}
-		} 
+		}
 		mav.addObject("authority", authority);
 		//多角色
 		if (auths != null && auths.size() > 1) {
@@ -230,7 +231,7 @@ public class CommonController<JsonResult> {
 			session.setAttribute("selected_role", "ROLE_" + authorityDAO.findAuthorityById(id).getAuthorityName());
 		}
         String sss = session.getAttribute("selected_role").toString();
-		
+
 		//将当前登录人放到session中
 		session.setAttribute("loginUser", user);
 		session.setAttribute("messageNum", messageService.countmessage( ));
@@ -568,9 +569,10 @@ public class CommonController<JsonResult> {
 	@RequestMapping("/redirect")
 	public ModelAndView redirect(HttpServletRequest request){
 		String name=shareService.getUser().getUsername();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		ModelAndView mav = new ModelAndView();
 		String add=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
-		String pathPj = pConfig.PROJECT_NAME;
+		String pathPj = pConfigDTO.PROJECT_NAME;
 		mav.setViewName("redirect:"+add+"/"+pathPj+"cms/cmsAdmin?name="+name);
 
 		return mav;

@@ -1,6 +1,7 @@
 package net.gvsun.lims.service.labConstruction;
 
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.dto.labConstruction.GrandSonProjectDTO;
 import net.gvsun.lims.dto.labConstruction.ParentProjectDTO;
 import net.gvsun.lims.dto.labConstruction.SonProjectDTO;
@@ -8,7 +9,6 @@ import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,8 +38,6 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
     private LabConstructionProjectAuditNewDAO labConstructionProjectAuditNewDAO;
     @Autowired
     private LabConstructionProjectDocumentDAO labConstructionProjectDocumentDAO;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private CommonDocumentDAO commonDocumentDAO;
 
@@ -1212,10 +1210,12 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
     @Override
     public String getCurState(String businessId){
         Map<String, String> params = new HashMap<>();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         String businessType = "OperationItemNewAudit";
         params.put("businessAppUid", businessId);
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
-        String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+        String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
         return JSONObject.parseObject(curStr).getJSONArray("data").getJSONObject(0).getString("result");
     }
 
@@ -1230,9 +1230,10 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
      */
     @Override
     public String saveCurState(String businessId, int audit, String remark, int repeat){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         Map<String, String> params = new HashMap<>();
         String businessType = "OperationItemNewAudit";
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         params.put("businessAppUid", businessId);
         params.put("businessUid", "-1");
         params.put("result", audit == 1 ? "pass" : "fail");
@@ -1240,11 +1241,11 @@ public class LabConstructionProjectServiceImpl implements LabConstructionProject
         params.put("username", shareService.getUserDetail().getUsername());
         String curStr;
         if(repeat == 2) {
-            curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+            curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
         }else if(repeat == 0){
-            curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
+            curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveInitBusinessAuditStatus", params);
         }else{
-            curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAuditForRepeatable", params);
+            curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAuditForRepeatable", params);
         }
         if(repeat != 0) {
             return (String) JSONObject.parseObject(curStr).getJSONObject("data").entrySet().iterator().next().getValue();

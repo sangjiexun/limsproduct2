@@ -2,6 +2,7 @@ package net.zjcclims.web.lab;
 
 import api.net.gvsunlims.constant.ConstantInterface;
 import com.alibaba.fastjson.JSON;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.vo.labRoom.LabRoomVO;
 import net.luxunsh.util.EmptyUtil;
 import net.sf.json.JSONArray;
@@ -32,7 +33,6 @@ import net.zjcclims.service.system.SystemService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.service.visualization.VisualizationService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,8 +196,6 @@ public class LabRoomController<JsonResult> {
     @Autowired
     CreditOptionService creditOptionService;
     @Autowired
-    private PConfig pConfig;
-    @Autowired
     private SystemBuildService systemBuildService;
     @Autowired
     private VisualizationService visualizationService;
@@ -212,6 +210,7 @@ public class LabRoomController<JsonResult> {
                                     @ModelAttribute LabRoom labRoom,
                                     @ModelAttribute("selected_academy") String acno, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         int pageSize = CommonConstantInterface.INT_PAGESIZE;
         int totalRecords=0;
         if(type==ConstantInterface.LAB_FOR_ROOM) {// 实验室
@@ -281,7 +280,7 @@ public class LabRoomController<JsonResult> {
         if (orderBy < 10) {
             asc = false;
         }
-        mav.addObject("newServer", pConfig.newServer);
+        mav.addObject("newServer", pConfigDTO.newServer);
         mav.addObject("asc", asc);
         mav.addObject("orderBy", orderBy);
         mav.addObject("worker", request.getParameter("worker"));
@@ -291,7 +290,7 @@ public class LabRoomController<JsonResult> {
         // 有无多媒体
         mav.addObject("isMultimedia", shareService.getCDictionaryData("c_is_multimedia"));
         //读取左侧栏显示配置文件
-        mav.addObject("baseManage", pConfig.baseManage);
+        mav.addObject("baseManage", pConfigDTO.baseManage);
         //实验中心下拉框
         mav.addObject("listLabCenter",labCenterService.findAllCenters());
         mav.addObject("type",type);
@@ -358,6 +357,7 @@ public class LabRoomController<JsonResult> {
     @RequestMapping("/editLabRoom")
     public ModelAndView editLabRoom(@RequestParam int labRoomId,int type, @ModelAttribute("selected_academy") String acno,HttpServletRequest request,int page) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         if(labRoomId>0) {
             LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(labRoomId);
             mav.addObject("labRoom", labRoom);
@@ -371,18 +371,18 @@ public class LabRoomController<JsonResult> {
         }
 //        mav.addObject("labRoomId",labRoomId);
         //读取左侧栏显示配置文件
-        mav.addObject("annexManage", pConfig.annexManage);
-        mav.addObject("baseManage", pConfig.baseManage);
-        if("true".equals(pConfig.annexManage)) {
+        mav.addObject("annexManage", pConfigDTO.annexManage);
+        mav.addObject("baseManage", pConfigDTO.baseManage);
+        if("true".equals(pConfigDTO.annexManage)) {
             List<LabAnnex> labAnnexList = labAnnexService.findLabAnnexByLabType(-1,acno);
             mav.addObject("labAnnexList",labAnnexList);
         }
-        if("true".equals(pConfig.baseManage)) {
+        if("true".equals(pConfigDTO.baseManage)) {
             List<LabAnnex> labBaseList = labAnnexService.findLabAnnexByLabType(4,acno);
             mav.addObject("labBaseList",labBaseList);
         }
-        mav.addObject("stationNum", pConfig.stationNum);
-        mav.addObject("project", pConfig.PROJECT_NAME);
+        mav.addObject("stationNum", pConfigDTO.stationNum);
+        mav.addObject("project", pConfigDTO.PROJECT_NAME);
 
         // 实验室类型
         mav.addObject("labRoomTypes", shareService.getCDictionaryData("c_lab_room_type"));
@@ -433,6 +433,7 @@ public class LabRoomController<JsonResult> {
     public ModelAndView saveLabRoom(@ModelAttribute LabRoom labRoom,int type,
                               HttpServletRequest request,@ModelAttribute("selected_academy") String acno,int page) {
         ModelAndView mav=new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         //开放范围
         LabRoom labRoom1 = labRoomDAO.findLabRoomByPrimaryKey(labRoom.getId());
         if (labRoom1 == null) {
@@ -457,7 +458,7 @@ public class LabRoomController<JsonResult> {
         // 所在楼层
         labRoom1.setFloorNo(labRoom.getFloorNo());
         // 浙江建设--所有实验室允许跨学院排课
-        if (pConfig.PROJECT_NAME.equals("zjcclims")) {
+        if (pConfigDTO.PROJECT_NAME.equals("zjcclims")) {
             labRoom1.setIsOpen(1);
         }
         // 可预约工位数
@@ -788,6 +789,7 @@ public class LabRoomController<JsonResult> {
                                    @ModelAttribute Software software, @RequestParam Integer currpage, HttpServletRequest request) {
         // 新建ModelAndView对象；
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         User user = shareService.getUser();
         boolean flag = labRoomService.getLabRoomAdminReturn(id, user);
         mav.addObject("flag", flag);
@@ -862,7 +864,7 @@ public class LabRoomController<JsonResult> {
             }
         }
         // 云台参数
-        mav.addObject("yuntai",pConfig.yuntai);
+        mav.addObject("yuntai",pConfigDTO.getYuntai());
         //禁用时间段
         // 实验室禁用时间段列表
         mav.addObject("labRoomLimitTimes",
@@ -915,8 +917,8 @@ public class LabRoomController<JsonResult> {
         mav.addObject("authLevel", authLevel);
         List<Object[]> logs = labRoomService.getRefuseItemBackup(id);
         mav.addObject("logs",logs);
-        mav.addObject("newServer", pConfig.newServer);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("newServer", pConfigDTO.getNewServer());
+        mav.addObject("proj_name",pConfigDTO.getPROJECT_NAME());
         mav.setViewName("lab/lab_room/labRoomDetail.jsp");
         return mav;
     }
@@ -1052,6 +1054,8 @@ public class LabRoomController<JsonResult> {
     String findUserByCnameAndUsername(@RequestParam String cname,
                                       String username, Integer roomId, Integer page, Integer typeId)
             throws UnsupportedEncodingException {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+
         if (cname != null) {
             // cname = java.net.URLDecoder.decode(cname, "UTF-8");// 转成utf-8；
         }
@@ -1060,7 +1064,7 @@ public class LabRoomController<JsonResult> {
         if (u.getSchoolAcademy() != null) {
             academyNumber = u.getSchoolAcademy().getAcademyNumber();
         }
-        if("true".equals(pConfig.labAddAdim)){
+        if("true".equals(pConfigDTO.labAddAdim)){
             academyNumber = null;
         }
         User user = new User();
@@ -1182,9 +1186,10 @@ public class LabRoomController<JsonResult> {
     @RequestMapping("/deleteLabRoomAdmin")
     public ModelAndView deleteLabRoomAdmin(@RequestParam Integer id,@RequestParam int type) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // id对应的实验室物联管理员
         LabRoomAdmin admin = labRoomAdminDAO.findLabRoomAdminByPrimaryKey(id);
-        if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+        if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
             List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(admin.getLabRoom().getId());
             String str = "{\"Table1\":[";
             // 遍历门禁
@@ -1705,10 +1710,11 @@ public class LabRoomController<JsonResult> {
 
         // 门禁设备
         LabRoomAgent a = labRoomAgentDAO.findLabRoomAgentByPrimaryKey(agentId);
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String ip=a.getHardwareIp();
         String sn=a.getManufactor();
 
-        if(pConfig.PROJECT_NAME.equals("zjcclims")) {
+        if(pConfigDTO.PROJECT_NAME.equals("zjcclims")) {
             User user = shareService.getUser();//当前登陆人
             List<LabRoomAgent> agentList = labRoomService.findLabRoomAgentAccessByRoomId(a.getLabRoom().getId());// 根据roomId查询该实验室的门禁
             LabRoom labRoom = labRoomDAO.findLabRoomById(a.getLabRoom().getId());
@@ -1734,7 +1740,7 @@ public class LabRoomController<JsonResult> {
             proc.waitFor();
 
             return "success";
-        }else if (pConfig.PROJECT_NAME.equals("zisulims")) {
+        }else if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {
             //卡号转换
             String cardNo = shareService.getUserDetail().getCardno();
             return HttpClientUtil.doPost("http://"+ a.getCommonServer().getServerIp()+":85/opendoor?username='"+ cardNo +"'&doorNum=" + a.getDoorindex());
@@ -1751,7 +1757,7 @@ public class LabRoomController<JsonResult> {
                 } else {
                     cmd = "opendoor";
                 }
-                String sysName = pConfig.PROJECT_NAME;
+                String sysName = pConfigDTO.PROJECT_NAME;
                 String doorIndex = "01";
                 if (a.getDoorindex() != null) {
                     if(sysName.contains("fdulims")) {
@@ -1874,7 +1880,7 @@ public class LabRoomController<JsonResult> {
     public @ResponseBody
     String refreshPermissions(@RequestParam Integer roomId,
                               HttpServletResponse response) throws IOException,InterruptedException {
-
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 根据roomId查询该实验室的门禁
         List<LabRoomAgent> agentList = labRoomService
                 .findLabRoomAgentAccessByRoomId(roomId);
@@ -1883,13 +1889,13 @@ public class LabRoomController<JsonResult> {
             a = agentList.get(0);
         }
 
-        if(pConfig.PROJECT_NAME.equals("zjcclims")) {
+        if(pConfigDTO.PROJECT_NAME.equals("zjcclims")) {
             // 调用Python脚本
             Process proc = Runtime.getRuntime().exec("python  /opt/python/lims2opendoor.py");
             proc.waitFor();
 
             return "success";
-        } else if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+        } else if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
             // 实验室管理员&物联管理员
             List<LabRoomAdmin> admins = new ArrayList<LabRoomAdmin>();
             admins.addAll(labRoomDeviceService.findLabRoomAdminByRoomId(roomId, 1));
@@ -1930,10 +1936,10 @@ public class LabRoomController<JsonResult> {
             //3、获取输入流，并读取服务器端的响应信息
             InputStream is = socket.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            if (pConfig.PROJECT_NAME.equals("jitsoft")) {
+            if (pConfigDTO.PROJECT_NAME.equals("jitsoft")) {
                 System.out.println("GET /services/ofthings/acldoor.asp?cmd=regcard&roomnumber=" + agentPort + " HTTP/1.1\n");
                 pw.write("GET /services/ofthings/acldoor.asp?cmd=regcard&roomnumber=" + agentPort + " HTTP/1.1\n");
-            }else if(pConfig.PROJECT_NAME.equals("fdulims")) {
+            }else if(pConfigDTO.PROJECT_NAME.equals("fdulims")) {
                 pw.write("GET /services/ofthings/room.asp?cmd=regcard&roomnumber=" + roomId + " HTTP/1.1\n");
                 System.out.println("GET /services/ofthings/room.asp?cmd=regcard&roomnumber=" + roomId + " HTTP/1.1\n");
             } else {
@@ -2570,6 +2576,7 @@ public class LabRoomController<JsonResult> {
     @RequestMapping(value = "/securityAccess", method = RequestMethod.POST)
     public @ResponseBody
     String securityAccess(@RequestParam Integer id, HttpServletRequest request) throws ParseException {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(id);
 //        if (labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0) {
 //            return "noReservation";
@@ -2595,12 +2602,12 @@ public class LabRoomController<JsonResult> {
             String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", labRoom.getId().toString());
-            params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+            params.put("businessType", pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             if (request.getParameter("requestType") != null && request.getParameter("requestType").equals("labRoomStation")) {
                 params.put("businessUid", labRoom.getId().toString());
-                params.put("businessType",pConfig.PROJECT_NAME + "StationReservation"+ labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+                params.put("businessType",pConfigDTO.PROJECT_NAME + "StationReservation"+ labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
             }
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
             if (auditConfigs != null && auditConfigs.size() != 0) {
@@ -2646,7 +2653,7 @@ public class LabRoomController<JsonResult> {
     @RequestMapping(value = "/labSecurityAccess", method = RequestMethod.POST)
     public @ResponseBody
     String labSecurityAccess(@RequestParam Integer id, HttpServletRequest request) throws ParseException {
-
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String returnStr = "success";
         LabRoom labRoom = labRoomService.findLabRoomByPrimaryKey(id);
         if(labRoom.getLabRoomReservation() == null || labRoom.getLabRoomReservation() == 0){
@@ -2684,8 +2691,8 @@ public class LabRoomController<JsonResult> {
             String[] auditLevelName = {"TEACHER", "CFO", "LABMANAGER", "EXCENTERDIRECTOR", "PREEXTEACHING"};
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", labRoom.getId().toString());
-            params.put("businessType", pConfig.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber());
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
             Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
             if (auditConfigs != null && auditConfigs.size() != 0) {

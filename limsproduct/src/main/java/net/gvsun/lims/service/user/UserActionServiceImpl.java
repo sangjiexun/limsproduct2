@@ -3,8 +3,9 @@ package net.gvsun.lims.service.user;
 import api.net.gvsunlims.constant.ConstantInterface;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import net.gvsun.lims.dto.common.BaseActionAuthDTO;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.web.common.PConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,7 @@ import java.util.List;
 public class UserActionServiceImpl implements UserActionService {
     @Autowired
     private ShareService shareService;
-    @Autowired
-    PConfig pConfig;
+
 
     /*************************************************************************************
      * Description:用户权限管理-获取vo的用户行为权限
@@ -25,11 +25,12 @@ public class UserActionServiceImpl implements UserActionService {
      *************************************************************************************/
     public BaseActionAuthDTO getBaseActionAuthDTO(String action, String author, String username) {
         BaseActionAuthDTO baseActionAuthDTO = new BaseActionAuthDTO();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 
-        if (ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE.equals(action) && ConstantInterface.AUTHORITY_TIMETABLE_BY_TEACHER.equals(pConfig.authTimetableType)) {
+        if (ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE.equals(action) && ConstantInterface.AUTHORITY_TIMETABLE_BY_TEACHER.equals(pConfigDTO.authTimetableType)) {
             //BY_TEACHER策略
             baseActionAuthDTO = this.getAuthTimetableTypeByTeacher(author, username);
-        }else if(ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE.equals(action) && ConstantInterface.AUTHORITY_TIMETABLE_BY_ACADEMY.equals(pConfig.authTimetableType)){
+        }else if(ConstantInterface.FUNCTION_MODEL_ACTION_TIMETABLE.equals(action) && ConstantInterface.AUTHORITY_TIMETABLE_BY_ACADEMY.equals(pConfigDTO.authTimetableType)){
             //BY_ACADEMY策略
             baseActionAuthDTO = this.getAuthTimetableTypeByAcademy(author, username);
         }

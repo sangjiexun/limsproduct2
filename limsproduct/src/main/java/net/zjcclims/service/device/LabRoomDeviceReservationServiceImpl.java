@@ -2,6 +2,7 @@ package net.zjcclims.service.device;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.dao.LabRoomDeviceReservationCreditDAO;
 import net.zjcclims.dao.LabRoomDeviceReservationDAO;
 import net.zjcclims.dao.UserDAO;
@@ -10,7 +11,6 @@ import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +42,6 @@ LabRoomDeviceReservationService {
 	@Autowired ViewTimetableDAO viewTimetableDAO;
 	@Autowired private UserDAO userDAO;
 	@Autowired private ShareService shareService;
-	@Autowired private PConfig pConfig;
 	@Transactional
 	public void deleteLabRoomDeviceReservation(LabRoomDeviceReservation labRoomDeviceReservation) {
 		labRoomDeviceReservationDAO.remove(labRoomDeviceReservation);
@@ -460,11 +459,12 @@ LabRoomDeviceReservationService {
 	@Override
 	public Object[] getCurrJSONObject(LabRoomDeviceReservation labRoomDeviceReservation, Integer stage){
 		Map<String, String> params = new HashMap<>();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String businessType = "DeviceReservation" + labRoomDeviceReservation.getLabRoomDevice().getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
-		params.put("businessType", pConfig.PROJECT_NAME + businessType);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
 		params.put("businessUid", labRoomDeviceReservation.getLabRoomDevice().getId().toString());
 		params.put("businessAppUid", labRoomDeviceReservation.getId().toString());
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
 		JSONObject jsonObject = JSONObject.parseObject(s);
 		if("success".equals(jsonObject.getString("status"))) {
 			JSONArray jsonArray = jsonObject.getJSONArray("data");

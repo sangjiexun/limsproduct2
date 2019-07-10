@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import net.zjcclims.dao.LabRoomAgentDAO;
 import net.zjcclims.dao.LabRoomDAO;
@@ -19,7 +18,6 @@ import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.sf.json.JSONObject;
 
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -57,8 +55,6 @@ public class ApiController<JsonResult> {
 	private LabRoomDeviceReservationDAO labRoomDeviceReservationDAO;
 	@Autowired
 	private LabRoomService labRoomService;
-	@Autowired
-	private PConfig pConfig;
 	@Autowired
 	private LabRoomAgentDAO labRoomAgentDAO;
 	@Autowired

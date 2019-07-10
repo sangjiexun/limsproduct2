@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -82,8 +83,6 @@ public class UsersController<JsonResult>
 	private SchoolMajorDAO schoolMajorDAO;
 	@Autowired
 	private UserCardDAO userCardDAO;
-	@Autowired
-	private PConfig pConfig;
 	@Autowired private CommonServerDAO commonServerDAO;
 	/************************************************************
 	 * @内容：用户列表
@@ -94,6 +93,7 @@ public class UsersController<JsonResult>
 	public ModelAndView listUser(HttpServletRequest request, @ModelAttribute User user,@RequestParam int currpage,@ModelAttribute("selected_academy") String acno)
 	{
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// 设置分页变量并赋值为20
 		int pageSize = CommonConstantInterface.INT_PAGESIZE;
 		if(request.getSession().getAttribute("selected_role").equals("ROLE_SUPERADMIN")){
@@ -111,7 +111,7 @@ public class UsersController<JsonResult>
 		mav.addObject("page", currpage);
 		//将totalRecords映射到totalRecords，用来获取总记录数
 		mav.addObject("totalRecords", totalRecords);
-		mav.addObject("userOperation", pConfig.userOperation);
+		mav.addObject("userOperation", pConfigDTO.userOperation);
 		
 		//获取用户列表
 		mav.addObject("userMap", userDetailService.getUserTotalRecords(user,acno,currpage,pageSize));

@@ -4,6 +4,7 @@ import api.net.gvsunlims.constant.ConstantInterface;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -11,7 +12,6 @@ import net.zjcclims.service.common.CStaticValueService;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.timetable.OuterApplicationService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -47,8 +47,6 @@ public class EduCourseController<JsonResult> {
     private SchoolAcademyDAO schoolAcademyDAO;
     @Autowired
     private TimetableAppointmentSameNumberDAO timetableAppointmentSameNumberDAO;
-    @Autowired
-    private PConfig pConfig;
     @Autowired
     private AuthorityDAO authorityDAO;
     @Autowired
@@ -95,6 +93,7 @@ public class EduCourseController<JsonResult> {
     @RequestMapping("/eduCourseList")
     public ModelAndView listTimetableTerm(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 当前学期
         mav.addObject("termId", shareService.getBelongsSchoolTerm(Calendar.getInstance()).getId());
         // 获取学期列表
@@ -106,11 +105,11 @@ public class EduCourseController<JsonResult> {
         mav.addObject("cStaticValue", cStaticValue);
         // 获取可选的教师列表列表
         mav.addObject("timetableTearcherMap", outerApplicationService.getTimetableTearcherMap(acno));
-        mav.addObject("directTimetable", pConfig.directTimetable);
-        mav.addObject("eduDirect", pConfig.eduDirect);
-        mav.addObject("eduAjust", pConfig.eduAjust);
-        mav.addObject("eduBatch", pConfig.eduBatch);
-        mav.addObject("eduNoBatch", pConfig.eduNoBatch);
+        mav.addObject("directTimetable", pConfigDTO.directTimetable);
+        mav.addObject("eduDirect", pConfigDTO.eduDirect);
+        mav.addObject("eduAjust", pConfigDTO.eduAjust);
+        mav.addObject("eduBatch", pConfigDTO.eduBatch);
+        mav.addObject("eduNoBatch", pConfigDTO.eduNoBatch);
         mav.setViewName("lims/timetable/engineer/educourse/eduCourseList.jsp");
         return mav;
     }
@@ -212,6 +211,7 @@ public class EduCourseController<JsonResult> {
     @RequestMapping("/auditTimetable")
     public ModelAndView auditTimetable(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         Integer type = Integer.valueOf(request.getParameter("type"));
         mav.addObject("type", type);
         SchoolCourse schoolCourse = schoolCourseDAO.findSchoolCourseByPrimaryKey(request.getParameter("courseNo"));
@@ -230,10 +230,10 @@ public class EduCourseController<JsonResult> {
         Integer curStage = -2;
         String curAuthName = "";
         Map<String, String> params = new HashMap<>();
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         params.put("businessUid", "-1");
         params.put("businessAppUid", courseNo);
-        String currStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params);
+        String currStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params);
         JSONObject currJSONObject = JSONObject.parseObject(currStr);
         if ("success".equals(currJSONObject.getString("status"))) {
             JSONArray currArray = currJSONObject.getJSONArray("data");
@@ -245,7 +245,7 @@ public class EduCourseController<JsonResult> {
         }
 
         // 获取审核配置
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
         JSONObject jsonObject = JSONObject.parseObject(s);
         List<Object[]> auditItems = new ArrayList<>();
         if ("success".equals(jsonObject.getString("status"))) {
@@ -276,6 +276,7 @@ public class EduCourseController<JsonResult> {
     @RequestMapping("/auditTimetableSingle")
     public ModelAndView auditTimetableSingle(HttpServletRequest request, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         Integer isAudit = 0;
         Integer type = Integer.valueOf(request.getParameter("type"));
         String courseNo = request.getParameter("courseNo");
@@ -295,10 +296,10 @@ public class EduCourseController<JsonResult> {
             if(type == 2){//自主排课，type=2
                 businessType = "SelfTimetableAudit";
             }
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             params.put("businessUid", "-1");
             params.put("businessAppUid", courseNo);
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", params);
             JSONObject jsonObject = JSONObject.parseObject(s);
             if ("success".equals(jsonObject.getString("status"))) {
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -376,6 +377,7 @@ public class EduCourseController<JsonResult> {
     @RequestMapping("/saveCourseTimetableAudit")
     public @ResponseBody
     String saveCourseTimetableAudit(HttpServletRequest request) {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String courseNo = request.getParameter("courseNo");
         Integer auditResult = Integer.parseInt(request.getParameter("auditResult"));
         String remark = request.getParameter("remark");
@@ -388,13 +390,13 @@ public class EduCourseController<JsonResult> {
             businessType = "SelfTimetableAudit";
         }
         Map<String, String> params = new HashMap<>();
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         params.put("businessAppUid", courseNo);
         params.put("businessUid", "-1");
         params.put("result", auditResult == 1 ? "pass" : "fail");
         params.put("info", remark);
         params.put("username", shareService.getUserDetail().getUsername());
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
 
         String nextAuthName = "";
         JSONObject jsonObject = JSONObject.parseObject(s);
@@ -423,10 +425,10 @@ public class EduCourseController<JsonResult> {
             message.setCreateTime(Calendar.getInstance());
             String content = "";
             if (type == 1) {
-                message.setTitle(pConfig.refuseTitle);
+                message.setTitle(pConfigDTO.refuseTitle);
                 content = "<a onclick='changeMessage(this)' href='../lims/timetable/engineer/educourse/eduCourseList'>查看</a>";
             }else {
-                message.setTitle(pConfig.selfRefuseTitle);
+                message.setTitle(pConfigDTO.selfRefuseTitle);
                 content = "<a onclick='changeMessage(this)' href='../lims/timetable/engineer/selfcourse/selfCourseList'>查看</a>";
             }
             message.setContent(content);
@@ -436,10 +438,10 @@ public class EduCourseController<JsonResult> {
             messageDAO.flush();
 
             Map<String, String> allParams = new HashMap<>();
-            allParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+            allParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             allParams.put("businessAppUid", courseNo);
             allParams.put("businessUid", "-1");
-            String allStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
+            String allStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
             JSONArray allJsonArray = JSONObject.parseObject(allStr).getJSONArray("data");
             String auditInfo = "";
             String auditContent = "";
@@ -465,8 +467,8 @@ public class EduCourseController<JsonResult> {
             auditRefuseBackup = auditRefuseBackupDAO.store(auditRefuseBackup);
             Map<String, String> delParams = new HashMap<>();
             delParams.put("businessAppUid", courseNo);
-            delParams.put("businessType", pConfig.PROJECT_NAME + businessType);
-            String delStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/deleteBusinessAudit", delParams);
+            delParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+            String delStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/deleteBusinessAudit", delParams);
         }
 
         // 审核拒绝的业务信息保存
@@ -569,9 +571,9 @@ public class EduCourseController<JsonResult> {
             return "refuse";
         }
         Map<String, String> curParams = new HashMap<>();
-        curParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+        curParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         curParams.put("businessAppUid", courseNo);
-        String curStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+        String curStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
         JSONObject curJSONObject = JSON.parseObject(curStr);
         String curStatus = curJSONObject.getString("status");
         JSONArray curJSONArray = curJSONObject.getJSONArray("data");

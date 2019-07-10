@@ -74,7 +74,7 @@
                                     </select>
                                 </li>
                                 <li>综合查询
-                                    <input id="search" name="search" value="${search}" placeholder="请输入课程或项目名称" />
+                                    <input id="search" name="search" value="${search}" placeholder="请在此输入" />
                                 </li>
                                 <li>
                                     <input type="submit" value="查询"/>

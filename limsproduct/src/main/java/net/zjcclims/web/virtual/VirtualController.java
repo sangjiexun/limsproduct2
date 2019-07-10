@@ -1,6 +1,7 @@
 package net.zjcclims.web.virtual;
 
 import com.alibaba.fastjson.JSON;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -13,18 +14,14 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.device.LabRoomDeviceService;
 import net.zjcclims.service.virtual.VirtualService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.vo.CourseSchedule;
 import net.zjcclims.vo.virtual.VirtualImageReservationVO;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -42,8 +39,6 @@ public class VirtualController<JsonResult> {
     private ShareService shareService;
     @Autowired
     private VirtualService virtualService;
-    @Autowired
-    PConfig pConfig;
     @Autowired
     private UserDAO userDAO;
     @Autowired
@@ -325,6 +320,7 @@ public class VirtualController<JsonResult> {
     @RequestMapping("/virtualImageReservationList")
     public ModelAndView labReserveList(@ModelAttribute VirtualImageReservation virtualImageReservation, Integer page, Integer isaudit, Integer tage, @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         User user = shareService.getUserDetail();
         int pageSize = 15;
         List<VirtualImageReservationVO> virtualImageReservations = virtualService.findAllVirtualImageReservation(virtualImageReservation, page, pageSize, tage, isaudit);
@@ -346,9 +342,9 @@ public class VirtualController<JsonResult> {
                /* // 获取当前审核状态
                 Map<String, String> params2 = new HashMap<>();
                 String businessType = "VirtualImageReservation";
-                params2.put("businessType", pConfig.PROJECT_NAME + businessType);
+                params2.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
                 params2.put("businessAppUid", virtualImageReservations.get(i).getId().toString());
-                String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+                String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
                 com.alibaba.fastjson.JSONObject jsonObject2 = JSON.parseObject(s2);
                 String status2 = jsonObject2.getString("status");
                 Integer auditNumber = null;
@@ -364,10 +360,10 @@ public class VirtualController<JsonResult> {
                 }
                 // 获取所有审核状态
                 Map<String, String> allAuditStateParams = new HashMap<>();
-                allAuditStateParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+                allAuditStateParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
                 allAuditStateParams.put("businessAppUid", virtualImageReservations.get(i).getId().toString());
                 allAuditStateParams.put("businessUid", "-1");
-                String allAuditStateStr = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
+                String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 com.alibaba.fastjson.JSONObject allAuditStateJSON = com.alibaba.fastjson.JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
                 if(!"fail".equals(status2)) {
@@ -467,7 +463,7 @@ public class VirtualController<JsonResult> {
         mav.addObject("pageSize", pageSize);
         mav.addObject("isAudit", isaudit);
         mav.addObject("tage", tage);
-        mav.addObject("jobReservation", pConfig.jobReservation);
+        mav.addObject("jobReservation", pConfigDTO.jobReservation);
         mav.addObject("user", user);
         mav.setViewName("/virtual/virtualImageReservationList.jsp");
         return mav;
@@ -484,6 +480,7 @@ public class VirtualController<JsonResult> {
     public ModelAndView checkButtonforlabRoomLend(@RequestParam int id, int tage, int state, Integer page, HttpServletRequest request,
                                                   @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
         VirtualImage virtualImage = virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId());
 //        state = labRoomService.getAuditNumber(labRoom, state);
@@ -499,8 +496,8 @@ public class VirtualController<JsonResult> {
         Map<String, String> params = new HashMap<>();
         String businessType = "VirtualImageReservation";
         params.put("businessUid", "-1");
-        params.put("businessType", pConfig.PROJECT_NAME + businessType);
-        String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+        String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
         if("success".equals(status)) {
@@ -532,16 +529,17 @@ public class VirtualController<JsonResult> {
     public ModelAndView virtualImageReservationAllAudit(@RequestParam int id, int tage,int state,Integer page, HttpServletRequest request,
                                                @ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         VirtualImageReservation virtualImageReservation =virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
         User user = shareService.getUserDetail();
         List<User> isAuditUsers = new ArrayList<>();
         com.alibaba.fastjson.JSONObject resultObject = new com.alibaba.fastjson.JSONObject();
         Map<String, String> allParams = new HashMap<>();
         String businessType = "VirtualImageReservation";
-        allParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+        allParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         allParams.put("businessAppUid", virtualImageReservation.getId().toString());
         allParams.put("businessUid", "-1");
-        String allString = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
+        String allString = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
         com.alibaba.fastjson.JSONObject allObject = JSON.parseObject(allString);
         String allStatus = allObject.getString("status");
         com.alibaba.fastjson.JSONArray allJSONArray = allObject.getJSONArray("data");
@@ -555,9 +553,9 @@ public class VirtualController<JsonResult> {
             }
         }
         Map<String, String> curParams = new HashMap<>();
-        curParams.put("businessType", pConfig.PROJECT_NAME + businessType);
+        curParams.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
         curParams.put("businessAppUid", virtualImageReservation.getId().toString());
-        String curString = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", curParams);
+        String curString = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", curParams);
         com.alibaba.fastjson.JSONObject curObject = com.alibaba.fastjson.JSONObject.parseObject(curString);
         String curPassStatus = curObject.getString("status");
         com.alibaba.fastjson.JSONArray curJSONArray = curObject.getJSONArray("data");
@@ -631,6 +629,7 @@ public class VirtualController<JsonResult> {
     @ResponseBody
     public String saveLabCenterManagerAuditforlabRoomlend(@RequestParam int id, int tage, int state, Integer page, String auditResult,HttpServletRequest request,
                                                           @ModelAttribute("selected_academy") String acno) throws NoSuchAlgorithmException {
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         VirtualImageReservation virtualImageReservation = virtualImageReservationDAO.findVirtualImageReservationByPrimaryKey(id);
 //        LabReservationAudit labReservationAudit = new LabReservationAudit();
 //        labReservationAudit.setResult(auditResult);
@@ -638,9 +637,9 @@ public class VirtualController<JsonResult> {
             User user = shareService.getUserDetail();
             String businessType = "VirtualImageReservation";
             Map<String, String> params2 = new HashMap<>();
-            params2.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params2.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             params2.put("businessAppUid", virtualImageReservation.getId().toString());
-            String s2 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params2);
+            String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
             com.alibaba.fastjson.JSONObject jsonObject2 = com.alibaba.fastjson.JSONObject.parseObject(s2);
             if (!"success".equals(jsonObject2.getString("status"))) {
                 return null;
@@ -657,19 +656,19 @@ public class VirtualController<JsonResult> {
             Integer auditNumber = virtualService.getAuditNumber(virtualService.getVirtualImageByVirtualImageReservationID(virtualImageReservation.getId()), state);
 
             Map<String, String> params = new HashMap<>();
-            params.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             params.put("businessAppUid", virtualImageReservation.getId().toString());
             params.put("businessUid", "-1");
             params.put("result", auditResult1 == 1 ? "pass" : "fail");
             params.put("info", request.getParameter("remark"));
             params.put("username", user.getUsername());
-            String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/saveBusinessLevelAudit", params);
+            String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/saveBusinessLevelAudit", params);
             com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(s);
             String status = jsonObject.getString("status");
             Map<String, String> params4 = new HashMap<>();
-            params4.put("businessType", pConfig.PROJECT_NAME + businessType);
+            params4.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
             params4.put("businessAppUid", virtualImageReservation.getId().toString());
-            String s4 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getCurrAuditStage", params4);
+            String s4 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params4);
             com.alibaba.fastjson.JSONObject jsonObject5 = JSON.parseObject(s4);
             com.alibaba.fastjson.JSONArray jsonArrayCurStage = jsonObject5.getJSONArray("data");
             if(jsonArrayCurStage.size() != 0){
@@ -683,8 +682,8 @@ public class VirtualController<JsonResult> {
             String[] RSWITCH = {"on", "off"};
             Map<String, String> params1 = new HashMap<>();
             params1.put("businessUid", "-1");
-            params1.put("businessType", pConfig.PROJECT_NAME + businessType);
-            String s1 = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params1);
+            params1.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+            String s1 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params1);
             com.alibaba.fastjson.JSONObject jsonObject1 = JSON.parseObject(s1);
             String status1 = jsonObject1.getString("status");
             Map auditConfigs = JSON.parseObject(jsonObject1.getString("data"), Map.class);

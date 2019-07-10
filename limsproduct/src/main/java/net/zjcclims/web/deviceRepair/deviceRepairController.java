@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.DeviceRepair.DeviceRepairService;
 import net.gvsun.lims.service.auditServer.AuditService;
 import net.zjcclims.constant.WordHandler;
@@ -14,7 +15,6 @@ import net.zjcclims.dao.LabRoomDAO;
 import net.zjcclims.dao.SchoolDeviceDAO;
 import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -50,8 +50,6 @@ public class deviceRepairController {
     private ShareService shareService;
 
     @Autowired
-    private PConfig pConfig;
-    @Autowired
     private DeviceRepairDAO deviceRepairDAO;
     @Autowired
     private SchoolDeviceDAO schoolDeviceDAO;
@@ -79,13 +77,14 @@ public class deviceRepairController {
     @RequestMapping("/allStandardDeviceList")
     public ModelAndView allStandardDeviceList(@ModelAttribute("selected_academy") String acno) {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         // 实验室
         List<LabRoom> labRooms = deviceRepairService.getLabRoomByAcno(acno);
         mav.addObject("labRooms", labRooms);
         // 报修人列表
         List<User> users = deviceRepairService.findUsersByAuthorityNameAndAcademy("TEACHER", acno);
         mav.addObject("users", users);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/allStandardLabRoomDeviceList.jsp");
         return mav;
     }
@@ -120,8 +119,9 @@ public class deviceRepairController {
     @RequestMapping("/viewMyDeviceRepairApply")
     public ModelAndView viewMyDeviceRepairApply() {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("auditStage", 0);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/myDeviceRepairApplyList.jsp");
         return mav;
     }
@@ -148,8 +148,9 @@ public class deviceRepairController {
     @RequestMapping("/deviceRepairCheckList")
     public ModelAndView deviceRepairCheckList() {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("auditStage", 1);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/deviceRepairCheckList.jsp");
         return mav;
     }
@@ -163,8 +164,9 @@ public class deviceRepairController {
     @RequestMapping("/passDeviceRepairList")
     public ModelAndView passDeviceRepairList() {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("auditStage", 2);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/deviceRepairCheckList.jsp");
         return mav;
     }
@@ -178,8 +180,9 @@ public class deviceRepairController {
     @RequestMapping("/rejectedDeviceRepairList")
     public ModelAndView rejectedDeviceRepairList() {
         ModelAndView mav = new ModelAndView();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         mav.addObject("auditStage", 3);
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/deviceRepairCheckList.jsp");
         return mav;
     }
@@ -344,7 +347,8 @@ public class deviceRepairController {
     @RequestMapping("/deviceRepairConfirmList")
     public ModelAndView deviceRepairConfirmList() {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/deviceRepairConfirmList.jsp");
         return mav;
     }
@@ -492,7 +496,8 @@ public class deviceRepairController {
     @RequestMapping("/deviceRepairViewList")
     public ModelAndView deviceRepairViewList() {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("proj_name", pConfig.PROJECT_NAME);
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        mav.addObject("proj_name", pConfigDTO.PROJECT_NAME);
         mav.setViewName("/deviceRepair/deviceRepairViewList.jsp");
         return mav;
     }
@@ -565,6 +570,7 @@ public class deviceRepairController {
     @RequestMapping("/exportDeviceRepairApply")
     public void exportDeviceRepairApply(@RequestParam int id, HttpServletResponse response) throws Exception {
         response.setContentType("application/doc;charset=UTF-8");
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         //id对应的设备维修记录
         DeviceRepair deviceRepair = deviceRepairService.getDeviceRepairById(id);
         if(deviceRepair.getAuditStage() == 8){
@@ -576,7 +582,7 @@ public class deviceRepairController {
         User acceptanceUser = shareService.findUserByUsername(deviceRepair.getAcceptanceUser());
         Map map = new HashMap();
         // 学校名称
-        map.put("schoolName", pConfig.schoolName);
+        map.put("schoolName", pConfigDTO.schoolName);
         // 所属单位
         if(deviceRepair.getType() == 1) {
             LabRoomDevice labRoomDevice = deviceRepairService.getLabRoomDevice(deviceRepair.getDeviceNumber(), deviceRepair.getLabAddress());
@@ -806,6 +812,7 @@ public class deviceRepairController {
     @RequestMapping("/exportDeviceRepairCount")
     public void exportDeviceRepairCount(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // sql查询语句
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         StringBuilder sql = new StringBuilder("select dr from DeviceRepair dr where 1=1 ");
         //查询条件
         String search = request.getParameter("search");
@@ -957,20 +964,32 @@ public class deviceRepairController {
             }
             map.put("confirmContent", confirmContent);
             //实际维修费用
-            String confirmAmount ="";
+            double confirmAmount =0.00;
             if(Objects.nonNull(d.getConfirmAmount())){
-                confirmAmount = d.getConfirmAmount().toString();
+                confirmAmount = d.getConfirmAmount().doubleValue();
             }
             map.put("confirmAmount", confirmAmount);
             list.add(map);
         }
-        String title = pConfig.schoolName+"设备维修统计表";
+
+        List<List<Map>> wrapList=new ArrayList<>();
+        int quantity=60000;
+        int count=0;
+        while(count<list.size()){
+            wrapList.add(new ArrayList<Map>(list.subList(count,(count + quantity)>list.size() ? list.size() : count + quantity)));
+            count += quantity;
+        }
+        String title = pConfigDTO.schoolName+"设备维修统计表";
         String[] hearders = new String[]{"序号", "申请人", "所属单位", "所属部门", "设备编号", "设备名称", "型号", "设备价格", "报修人", "报修人联系方式", "预计费用"
                 , "报修日期", "故障现象及损坏原因(简要描述)", "验收结果", "验收结果备注", "维修配件清单及维修费用", "实际维修费用", "维修状态"};//表头数组
         String[] fields = new String[]{"num", "creator", "academyName", "academyName", "deviceNumber", "deviceName", "devicePattern", "devicePrice", "reportUsername", "telephone",
                 "expectAmountStr", "createDate", "content", "result", "acceptanceMemo", "confirmContent", "confirmAmount", "status"};
-        TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
-        JsGridReportBase report = new JsGridReportBase(request, response);
-        report.exportExcelse(title, "", "", td, start, end);
+        List<TableData> tableDataList=new ArrayList<TableData>();
+        for (List<Map> tempList : wrapList){
+            TableData td=ExcelUtils.createTableData(tempList,ExcelUtils.createTableHeader(hearders),fields);
+            tableDataList.add(td);
+        }
+        JsGridReportBase report=new JsGridReportBase(request,response);
+        report.exportToExcelForRepair(title,shareService.getUserDetail().getCname(),tableDataList);
     }
 }

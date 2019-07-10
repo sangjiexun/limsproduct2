@@ -12,16 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import excelTools.ExcelUtils;
 import excelTools.JsGridReportBase;
 import excelTools.TableData;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.common.LabAttendance;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
-import net.zjcclims.service.EmptyUtil;
 import net.zjcclims.service.common.ShareService;
 
-import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +51,6 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	private LabRoomAgentDAO labRoomAgentDAO;
 	@PersistenceContext
 	EntityManager entityManager;
-	@Autowired
-	private PConfig pConfig;
 	
 	
 	/*************************************************************************************
@@ -412,6 +406,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	@Override
 	public List<LabAttendance> findLabRoomAccessByIp(CommonHdwlog commonHdwlog,String ip,String port, Integer page,
 			int pageSize,HttpServletRequest request) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql="select c from CommonHdwlog c where 1=1";
 
 		if(port!=null&&!port.equals("")){
@@ -419,7 +414,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 
 		if(ip!=null&&!ip.equals("")){
-			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+			if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
 				sql += " and c.doorindex = '"+ ip +"'";
 			}else {
 				sql+=" and c.hardwareid='"+ip+"' ";
@@ -511,6 +506,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 	 *************************************************************************************/
 	@Override
 	public int findLabRoomAccessByIpCount(CommonHdwlog commonHdwlog,String ip,String port,HttpServletRequest request) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql="select count(*) from CommonHdwlog c where 1=1";
 		
 		if(port!=null&&!port.equals("")){
@@ -518,7 +514,7 @@ public class CMSShowServiceServiceImpl implements  CMSShowService {
 		}
 		
 		if(ip!=null&&!ip.equals("")){
-			if (pConfig.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
+			if (pConfigDTO.PROJECT_NAME.equals("zisulims")) {//浙外临时方法
 				sql += " and c.doorindex = '"+ ip +"'";
 			}else {
 				sql+=" and c.hardwareid='"+ip+"' ";

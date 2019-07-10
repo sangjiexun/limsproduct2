@@ -9,6 +9,7 @@ package net.zjcclims.web.device;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.auditServer.AuditService;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -22,7 +23,6 @@ import net.zjcclims.service.device.SchoolDeviceService;
 import net.zjcclims.service.dictionary.CDictionaryService;
 import net.zjcclims.service.lab.LabRoomService;
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -101,8 +101,6 @@ public class DeviceControllerRest<JsonResult> {
 	MessageDAO messageDAO;
 	@Autowired
 	private SchoolAcademyDAO schoolAcademyDAO;
-	@Autowired
-	PConfig pConfig;
 	@Autowired
 	CommonServerDAO commonServerDAO;
 	@Autowired
@@ -292,6 +290,7 @@ public class DeviceControllerRest<JsonResult> {
 										   @PathVariable int page,@PathVariable String schoolDevice_allowAppointment,@PathVariable int id, Model model,
 										   @ModelAttribute("selected_academy") String acno) {
 		// 新建ModelAndView对象；
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		ModelAndView mav = new ModelAndView();
 		LabRoomDevice device = labRoomDeviceService.findLabRoomDeviceByPrimaryKey(id);
 		mav.addObject("device", device);
@@ -311,7 +310,7 @@ public class DeviceControllerRest<JsonResult> {
 		List<CDictionary> types = shareService.getOnlyCDictionaryData("c_agent_type",String.valueOf(4));//只取电源控制器
 		mav.addObject("types", types);
 		// 云台参数
-		mav.addObject("yuntai",pConfig.yuntai);
+		mav.addObject("yuntai",pConfigDTO.yuntai);
 		mav.addObject("labRoomId", labRoomId);
 		mav.addObject("deviceName", deviceName);
 		mav.addObject("deviceNumber", deviceNumber);
@@ -1859,6 +1858,7 @@ public class DeviceControllerRest<JsonResult> {
 			@ModelAttribute("selected_academy") String acno) {
 		// 新建ModelAndView对象；
 		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// id对应的实验室设备
 		LabRoomDevice device = labRoomDeviceService.findLabRoomDeviceByPrimaryKey(id);
 		String academy="";
@@ -1962,8 +1962,8 @@ public class DeviceControllerRest<JsonResult> {
 		boolean flag = false;
 		Map<String, String> params = new HashMap<>();
 		params.put("businessUid", device.getId().toString());
-		params.put("businessType", pConfig.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
 		JSONObject jsonObject = JSONObject.parseObject(s);
 		if("success".equals(jsonObject.getString("status"))) {
 			Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
@@ -2068,6 +2068,7 @@ public class DeviceControllerRest<JsonResult> {
 											@PathVariable String deviceNumber, @PathVariable String deviceName, @PathVariable String username,@PathVariable int page,
 											@PathVariable int id, @PathVariable int currpage,@PathVariable String schoolDevice_allowAppointment,HttpServletRequest request, @ModelAttribute LabRoomDeviceReservation reservation,
 											@ModelAttribute("selected_academy") String acno) {
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		// 新建ModelAndView对象；
 		ModelAndView mav = new ModelAndView();
 		// id对应的实验室设备
@@ -2177,8 +2178,8 @@ public class DeviceControllerRest<JsonResult> {
 		boolean flag = false;
 		Map<String, String> params = new HashMap<>();
 		params.put("businessUid", device.getId().toString());
-		params.put("businessType", pConfig.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
-		String s = HttpClientUtil.doPost(pConfig.auditServerUrl + "audit/getBusinessAuditConfigs", params);
+		params.put("businessType", pConfigDTO.PROJECT_NAME + "DeviceReservation" + device.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+		String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
 		JSONObject jsonObject = JSONObject.parseObject(s);
 		if("success".equals(jsonObject.getString("status"))) {
 			Map auditConfigs = JSON.parseObject(jsonObject.getString("data"), Map.class);
@@ -2261,12 +2262,12 @@ public class DeviceControllerRest<JsonResult> {
 		mav.addObject("pageSize", pageSize);
 
 		mav.addObject("isView", 1);
-		mav.addObject("zuulServerUrl", pConfig.zuulServerUrl);
+		mav.addObject("zuulServerUrl", pConfigDTO.zuulServerUrl);
 		String applyUserName = shareService.getUserDetail().getUsername();
 		mav.addObject("applyUserName",applyUserName);
-        String project = pConfig.PROJECT_NAME;
+        String project = pConfigDTO.PROJECT_NAME;
         mav.addObject("project",project);
-        String auditServerUrl = pConfig.auditServerUrl;
+        String auditServerUrl = pConfigDTO.auditServerUrl;
         mav.addObject("auditServerUrl",auditServerUrl);
 
 		mav.setViewName("/device/lab_room_device/apireservationDevice.jsp");

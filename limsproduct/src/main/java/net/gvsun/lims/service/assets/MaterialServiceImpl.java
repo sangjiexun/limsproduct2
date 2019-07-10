@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.assets.*;
+import net.gvsun.lims.dto.common.PConfigDTO;
 import net.gvsun.lims.service.auditServer.AuditService;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -11,7 +12,6 @@ import net.zjcclims.service.common.ShareService;
 import net.zjcclims.util.HttpClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import net.zjcclims.web.common.PConfig;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -53,8 +53,7 @@ public class MaterialServiceImpl implements MaterialService {
     AssetClassificationDAO assetClassificationDAO;
     @Autowired
     AssetCabinetAccessRecordDAO assetCabinetAccessRecordDAO;
-    @Autowired
-    private PConfig pConfig;
+
     @Autowired
     private AuditService auditService;
     @Autowired
@@ -2492,6 +2491,7 @@ public class MaterialServiceImpl implements MaterialService {
      */
     public MaterialKindDTO findAssetClassificationById(Integer id){
         MaterialKindDTO materialKindDTO=new MaterialKindDTO();
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         String sql="select id,cname,ename,info,is_need_return from asset_classification c where id='"+id+"'";
         Query query=entityManager.createNativeQuery(sql);
         List<Object[]> objects=query.getResultList();
@@ -2511,12 +2511,12 @@ public class MaterialServiceImpl implements MaterialService {
             }
         }
         //获取审核层级
-        String project = pConfig.PROJECT_NAME;
+        String project = pConfigDTO.PROJECT_NAME;
         String businessType = project + "AssetsClassification";
         //申领审核
         Map<String, String> param1 = new HashMap<>();
         param1.put("businessType",businessType+"ApplyAudit"+id);
-        String result1 = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessAuditConfigLevel", param1);
+        String result1 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessAuditConfigLevel", param1);
         JSONArray applyArray = JSON.parseObject(result1).getJSONArray("data");
         Integer applyAuditLevel = 0;
         String applyAudit="";
@@ -2535,7 +2535,7 @@ public class MaterialServiceImpl implements MaterialService {
         //入库审核
         Map<String, String> param2 = new HashMap<>();
         param2.put("businessType",businessType+"StorageAudit"+id);
-        String result2 = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessAuditConfigLevel", param2);
+        String result2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessAuditConfigLevel", param2);
         JSONArray storageArray = JSON.parseObject(result2).getJSONArray("data");
         Integer storageAuditLevel = 0;
         String storageAudit="";
@@ -2554,7 +2554,7 @@ public class MaterialServiceImpl implements MaterialService {
         //领用审核
         Map<String, String> param3 = new HashMap<>();
         param3.put("businessType",businessType+"ReceiveAudit"+id);
-        String result3 = HttpClientUtil.doPost(pConfig.auditServerUrl+"/audit/getBusinessAuditConfigLevel", param3);
+        String result3 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessAuditConfigLevel", param3);
         JSONArray receiveArrary = JSON.parseObject(result3).getJSONArray("data");
         Integer receiveLevel = 0;
         String receiveAudit="";
