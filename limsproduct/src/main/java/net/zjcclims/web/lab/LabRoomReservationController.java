@@ -1208,41 +1208,29 @@ public class LabRoomReservationController<JsonResult> {
         Map<String, Integer> pageModel = shareService.getPage(currpage, pageSize, totalRecords);
         // 根据分页信息查询出来的记录
         List<LabRoomStationReservation> listLabRoomStationReservation = labRoomReservationService.findLabRoomreservatioList(labRoomStationReservation, tage, currpage, pageSize, acno, isaudit);
-        //判断所处审核阶段，关联到前端的按钮
-        if(isaudit == 1){
-            if (listLabRoomStationReservation != null) {
-                for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                    if(labRoomStationReservation2.getResult()!= null){
-                        if(labRoomStationReservation2.getResult() == 2 || labRoomStationReservation2.getResult() == 3){
-                            //审核
-                            labRoomStationReservation2.setButtonMark(1);
-                        }else {
-                            //查看
-                            labRoomStationReservation2.setButtonMark(0);
-                        }
-                    }
-                }
-            }
-        }
-        if(isaudit == 2){
-            if (listLabRoomStationReservation != null) {
-                for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                    //查看
-                    labRoomStationReservation2.setButtonMark(0);
-                }
-            }
-        }
 
         Object[] objects = new Object[pageSize];
         List<Integer> auditState = new ArrayList<>();
         boolean isGraded = shareService.getAuditOrNot("LabRoomStationGradedOrNot");
         int count = 0;
+        //判断所处审核阶段，关联到前端的按钮
+        int m =0;
+        //取消提前12小时设置
         boolean[] isBeforeTime = new boolean[listLabRoomStationReservation.size()];
+        Calendar currentTime = Calendar.getInstance();
+        currentTime.add(Calendar.HOUR, Integer.parseInt(pConfigDTO.advanceCancelTime));
+        for (LabRoomStationReservation stationReservation : listLabRoomStationReservation) {
+            //全部设置为查看按钮  下面根据是否是当前登录用户审核的数据设置为审核按钮
+            stationReservation.setButtonMark(0);
+            //提前12小时取消
+            Calendar theDay = stationReservation.getReservation();
+            Calendar theTime = stationReservation.getStartTime();
+            theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));
+            theDay.set(Calendar.MINUTE, theTime.get(Calendar.MINUTE));
+            isBeforeTime[m] = currentTime.before(theDay);
+            m++;
+        }
         for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
-            int m =0;
-            //取消提前12小时设置
-            Calendar currentTime = Calendar.getInstance();
-            currentTime.add(Calendar.HOUR, Integer.parseInt(pConfigDTO.advanceCancelTime));
             // 审核记录
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", stationReservation.getLabRoom().getId().toString());
@@ -1260,7 +1248,7 @@ public class LabRoomReservationController<JsonResult> {
                 businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
             }
             //判断是否是取消预约的数据，切换businessAppUid
-            if(stationReservation.getResult()==5){
+            if(stationReservation.getResult()==5 || stationReservation.getResult()==6 || stationReservation.getResult()==7){
                 params.put("businessUid", "-1");
             }
             params.put("businessAppUid", businessAppUid);
@@ -1302,21 +1290,73 @@ public class LabRoomReservationController<JsonResult> {
                 JSONArray jsonArray = jsonObject2.getJSONArray("data");
                 if(jsonArray != null) {
                     JSONObject jsonObject3 = jsonArray.getJSONObject(0);
-                    if(jsonObject3.getIntValue("level")==-1){            //审核通过更新为查看按钮
-                        stationReservation.setButtonMark(0);
+                    auditNumber = jsonObject3.getIntValue("level");
+                    if(auditNumber != 0 && auditNumber !=-1){
+                        String userRole = request.getSession().getAttribute("selected_role").toString();
+                        String username = user.getUsername();
+                        if (userRole.equals("ROLE_" + jsonObject3.getString("result"))) {
+                            //筛选当前的登陆人的审核记录
+                            //是当前登录用户审核的数据设置为审核按钮
+                            switch (userRole) {
+                                case "ROLE_TEACHER":
+                                    if (username.equals(stationReservation.getUserByTeacher().getUsername())) {
+                                        stationReservation.setButtonMark(1);
+                                    }
+                                    break;
+                                case "ROLE_CFO":
+                                    //根据预约人查找所属学院的系主任
+                                    User user3 = stationReservation.getUser();
+                                    List<User> deans = userService.findDeansByAcademyNumber(user3.getSchoolAcademy().getAcademyNumber());
+                                    for (User user2 : deans) {
+                                        if (username.equals(user2.getUsername())) {
+                                            stationReservation.setButtonMark(1);
+                                        }
+                                    }
+                                    break;
+                                case "ROLE_LABMANAGER":
+                                    Set<LabRoomAdmin> labRoomAdmins = stationReservation.getLabRoom().getLabRoomAdmins();
+                                    for (LabRoomAdmin labRoomAdmin : labRoomAdmins) {
+                                        if (username.equals(labRoomAdmin.getUser().getUsername())) {
+                                            stationReservation.setButtonMark(1);
+                                        }
+                                    }
+                                    break;
+                                case "ROLE_EXCENTERDIRECTOR":
+                                    LabCenter labCenter = stationReservation.getLabRoom().getLabCenter();
+                                    if (username.equals(labCenter.getUserByCenterManager().getUsername())) {
+                                        stationReservation.setButtonMark(1);
+                                    }
+                                    break;
+                                case "ROLE_PREEXTEACHING":
+                                    List<User> labRoomMasters = userService.findUserByAuthorityName("PREEXTEACHING");
+                                    for (User user2 : labRoomMasters) {
+                                        if (username.equals(user2.getUsername())) {
+                                            stationReservation.setButtonMark(1);
+                                        }
+                                    }
+                                    break;
+                                case "ROLE_ACADEMYLEVELM":
+                                    boolean isACADEMYLEVELM = false;
+                                    Set<Authority> authorities = user.getAuthorities();
+                                    for (Authority authority : authorities) {
+                                        if (authority.getAuthorityName().equals("ACADEMYLEVELM")) {
+                                            isACADEMYLEVELM = true;
+                                        }
+                                    }
+                                    if (isACADEMYLEVELM) {
+                                        if (user.getSchoolAcademy().getAcademyNumber().equals(stationReservation.getLabRoom().getSchoolAcademy().getAcademyNumber())) {
+                                            stationReservation.setButtonMark(1);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
                     }
-                    auditState.add(jsonObject3.getIntValue("level"));
                 }
+                auditState.add(auditNumber);
             }else{
                 auditState.add(-2);
             }
-            //提前12小时取消
-            Calendar theDay = stationReservation.getReservation();
-            Calendar theTime = stationReservation.getStartTime();
-            theDay.set(Calendar.HOUR_OF_DAY, theTime.get(Calendar.HOUR_OF_DAY));
-            theDay.set(Calendar.MINUTE, theTime.get(Calendar.MINUTE));
-            isBeforeTime[m] = currentTime.before(theDay);
-            m++;
         }
         mav.addObject("isBeforeTime", isBeforeTime);
 
@@ -1334,13 +1374,9 @@ public class LabRoomReservationController<JsonResult> {
         if(labRoomStationReservation.getResult()!=null){
             mav.addObject("auditStatus",labRoomStationReservation.getResult());
         }else {
-            if(isaudit==2){  //我的预约页面默认所有
-                mav.addObject("auditStatus",-1);
-            }else {      //我的审核页面默认审核中
-                mav.addObject("auditStatus",2);
-            }
+             //默认所有
+            mav.addObject("auditStatus",-1);
         }
-
 //        mav.addObject("isGraded", shareService.getAuditOrNot("LabRoomStationGradedOrNot"));
         mav.setViewName("/labroom/labRoomStationReservationList.jsp");
         return mav;
@@ -1367,28 +1403,9 @@ public class LabRoomReservationController<JsonResult> {
         // 根据分页信息查询出来的记录
         List<LabRoomStationReservation> listLabRoomStationReservation = labRoomReservationService.findAllLabRoomreservatioList(labRoomStationReservation, tage, currpage, pageSize, acno, isaudit);
         //判断所处审核阶段，关联到前端的按钮
-        if(isaudit == 1){
-            if (listLabRoomStationReservation != null) {
-                for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                    if(labRoomStationReservation2.getResult()!= null){
-                        if(labRoomStationReservation2.getResult() == 2 || labRoomStationReservation2.getResult() == 3){
-                            //审核
-                            labRoomStationReservation2.setButtonMark(1);
-                        }else {
-                            //查看
-                            labRoomStationReservation2.setButtonMark(0);
-                        }
-                    }
-                }
-            }
-        }
-        if(isaudit == 2){
-            if (listLabRoomStationReservation != null) {
-                for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
-                    //查看
-                    labRoomStationReservation2.setButtonMark(0);
-                }
-            }
+        for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
+            //全部设置为审核按钮
+            labRoomStationReservation2.setButtonMark(1);
         }
 
         Object[] objects = new Object[pageSize];
@@ -1479,7 +1496,7 @@ public class LabRoomReservationController<JsonResult> {
                         //筛选当前的登陆人的审核记录
                         switch (userRole) {
                             case "ROLE_TEACHER":
-                                if(username.equals(stationReservation.getUserByTeacher().getUsername())){
+                                if (username.equals(stationReservation.getUserByTeacher().getUsername())) {
                                     labRoomStationReservationArrayList.add(stationReservation);
                                 }
                                 break;
@@ -1488,7 +1505,7 @@ public class LabRoomReservationController<JsonResult> {
                                 User user3 = stationReservation.getUser();
                                 List<User> deans = userService.findDeansByAcademyNumber(user3.getSchoolAcademy().getAcademyNumber());
                                 for (User user2 : deans) {
-                                    if(username.equals(user2.getUsername())){
+                                    if (username.equals(user2.getUsername())) {
                                         labRoomStationReservationArrayList.add(stationReservation);
                                     }
                                 }
@@ -1496,21 +1513,35 @@ public class LabRoomReservationController<JsonResult> {
                             case "ROLE_LABMANAGER":
                                 Set<LabRoomAdmin> labRoomAdmins = stationReservation.getLabRoom().getLabRoomAdmins();
                                 for (LabRoomAdmin labRoomAdmin : labRoomAdmins) {
-                                    if(username.equals(labRoomAdmin.getUser().getUsername())){
+                                    if (username.equals(labRoomAdmin.getUser().getUsername())) {
                                         labRoomStationReservationArrayList.add(stationReservation);
                                     }
                                 }
                                 break;
                             case "ROLE_EXCENTERDIRECTOR":
                                 LabCenter labCenter = stationReservation.getLabRoom().getLabCenter();
-                                if(username.equals(labCenter.getUserByCenterManager().getUsername())){
+                                if (username.equals(labCenter.getUserByCenterManager().getUsername())) {
                                     labRoomStationReservationArrayList.add(stationReservation);
                                 }
                                 break;
                             case "ROLE_PREEXTEACHING":
                                 List<User> labRoomMasters = userService.findUserByAuthorityName("PREEXTEACHING");
                                 for (User user2 : labRoomMasters) {
-                                    if(username.equals(user2.getUsername())){
+                                    if (username.equals(user2.getUsername())) {
+                                        labRoomStationReservationArrayList.add(stationReservation);
+                                    }
+                                }
+                                break;
+                            case "ROLE_ACADEMYLEVELM":
+                                boolean isACADEMYLEVELM = false;
+                                Set<Authority> authorities = user.getAuthorities();
+                                for (Authority authority : authorities) {
+                                    if (authority.getAuthorityName().equals("ACADEMYLEVELM")) {
+                                        isACADEMYLEVELM = true;
+                                    }
+                                }
+                                if (isACADEMYLEVELM) {
+                                    if (user.getSchoolAcademy().getAcademyNumber().equals(stationReservation.getLabRoom().getSchoolAcademy().getAcademyNumber())) {
                                         labRoomStationReservationArrayList.add(stationReservation);
                                     }
                                 }
@@ -1546,11 +1577,8 @@ public class LabRoomReservationController<JsonResult> {
         if(labRoomStationReservation.getResult()!=null){
             mav.addObject("auditStatus",labRoomStationReservation.getResult());
         }else {
-            if(isaudit==2){  //我的预约页面默认所有
-                mav.addObject("auditStatus",-1);
-            }else {      //我的审核页面默认审核中
-                mav.addObject("auditStatus",2);
-            }
+            //我的审核页面默认审核中
+            mav.addObject("auditStatus",2);
         }
         mav.setViewName("/labroom/labRoomStationReservationAuditList.jsp");
         return mav;
