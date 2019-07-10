@@ -2,6 +2,7 @@
 var directoryEngineHost;
 var resourceContainerHost;
 var visualHost;
+var apiGateWayHost;
 var getAuthorizationUrl="../shareApi/getAuthorization";
 var getHostsUrl="../shareApi/getHosts";
 function initDirectoryEngine(jsonData){
@@ -10,20 +11,26 @@ function initDirectoryEngine(jsonData){
             getAuthorizationUrl=jsonData.getAuthorizationUrl;
         }
         if(jsonData.getHostsUrl!=null){
-            getHostsUrl=jsonData.getHostsUrl;
+            if(jsonData.getHostsUrl=='notNeed'){
+                getHostsUrl=null;
+            }else{
+                getHostsUrl=jsonData.getHostsUrl;
+            }
         }
     }
-    $.ajax({
-        url:getHostsUrl,
-        type:"get",
-        dataType:"json",
-        async:false,
-        success:function (data) {
-            $.each(data,function (key,value) {
-                eval(key+"='"+value+"';");
-            });
-        }
-    });
+    if(getHostsUrl!=null){
+        $.ajax({
+            url:getHostsUrl,
+            type:"get",
+            dataType:"json",
+            async:false,
+            success:function (data) {
+                $.each(data,function (key,value) {
+                    eval(key+"='"+value+"';");
+                });
+            }
+        });
+    }
 }
 function getDirectoryId(dataJson) {
     if(dataJson.directoryCds!=null){

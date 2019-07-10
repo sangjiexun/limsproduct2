@@ -1012,5 +1012,46 @@ public class visualizationController<JsonResult> {
 		}
 		return dynamicData;
 	}
+	/**
+	 * @Description 保存楼层图，资源容器
+	 * @author 刘博越
+	 * @data 2019-7-10
+	 */
+	@RequestMapping("/visualization/saveSystemFloorPic")
+	@ResponseBody
+	public String saveSystemFloorPic(String buildNumber, Integer floor, String photoUrl) throws Exception {
 
+		//保存图片
+		SystemFloorPic floorPic = new SystemFloorPic();
+		//根据楼宇和楼层获取图片
+		List<SystemFloorPic> systemFloorPics = visualizationService.findSystemFloorPic(buildNumber, floor);
+		if(systemFloorPics != null && systemFloorPics.size() != 0){
+			floorPic = systemFloorPics.get(0);
+		}
+		floorPic.setPhotoUrl(photoUrl);
+		floorPic.setSystemBuild(buildNumber);
+		floorPic.setFloorNo(floor);
+		systemFloorPicDAO.store(floorPic);
+		return "ok";
+	}
+
+	/**
+	 * @Description 删除楼层图，资源容器
+	 * @author 刘博越
+	 * @data 2019-7-30
+	 */
+	@RequestMapping("/visualization/deleteSystemFloorPicPhotoUrl")
+	public ModelAndView deleteSystemFloorPicPhotoUrl(HttpServletRequest request, @RequestParam Integer picId) {
+		ModelAndView mav = new ModelAndView();
+
+		String rootPath = request.getSession().getServletContext().getRealPath("/");
+		//根据id获取楼层图片
+		SystemFloorPic floorPic = systemFloorPicDAO.findSystemFloorPicById(picId);
+		floorPic.setPhotoUrl(null);
+
+		systemFloorPicDAO.store(floorPic);
+		systemFloorPicDAO.flush();
+		mav.setViewName("redirect:/visualization/getSystemFloorPic?buildNumber="+floorPic.getSystemBuild());
+		return mav;
+	}
 }
