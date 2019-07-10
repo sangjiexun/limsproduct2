@@ -931,7 +931,13 @@ public class LabRoomLendingController<JsonResult> {
                 }
                 // 获取当前审核状态
                 Map<String, String> params2 = new HashMap<>();
+                String businessUid = labReservations.get(i).getLabRoom().getId().toString();
                 String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labReservations.get(i).getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
+                //判断是不是取消审核的数据  切换businessType businessAppUid
+                if(labReservations.get(i).getAuditStage()!=null && labReservations.get(i).getAuditStage()==7){
+                    businessUid = "-1";
+                    businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomReservation";
+                }
                 // 业务转流水号，保存并返回流水号
                 String businessAppUid = "";
                 if(shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType)=="fail"){
@@ -941,6 +947,7 @@ public class LabRoomLendingController<JsonResult> {
                     businessAppUid = shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType);
                     //有流水单号用流水单号做业务id
                 }
+
 //                String businessAppUid = shareService.getSerialNumber(labReservations.get(i).getId().toString(), businessType);
                 params2.put("businessType", businessType);
                 params2.put("businessAppUid", businessAppUid);
@@ -965,7 +972,7 @@ public class LabRoomLendingController<JsonResult> {
                 Map<String, String> allAuditStateParams = new HashMap<>();
                 allAuditStateParams.put("businessType", businessType);
                 allAuditStateParams.put("businessAppUid", businessAppUid);
-                allAuditStateParams.put("businessUid", labReservations.get(i).getLabRoom().getId().toString());
+                allAuditStateParams.put("businessUid", businessUid);
                 String allAuditStateStr = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allAuditStateParams);
                 JSONObject allAuditStateJSON = JSONObject.parseObject(allAuditStateStr);
                 String htmlStr = "";
@@ -1165,9 +1172,14 @@ public class LabRoomLendingController<JsonResult> {
         List<String> titles = new ArrayList<>();
         List<Integer> isOpens = new ArrayList<>();
         Map<String, String> params = new HashMap<>();
-        String businessType = "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
-        params.put("businessUid", labRoom.getId().toString());
-        params.put("businessType", pConfigDTO.PROJECT_NAME + businessType);
+        String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labRoom.getLabCenter().getSchoolAcademy().getAcademyNumber();
+        String businessUid = labRoom.getId().toString();
+        if(labReservation.getAuditStage()!=null && labReservation.getAuditStage()==7){
+            businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomReservation";
+            businessUid = "-1";
+        }
+        params.put("businessUid", businessUid);
+        params.put("businessType", businessType);
         String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessAuditConfigs", params);
         JSONObject jsonObject = JSON.parseObject(s);
         String status = jsonObject.getString("status");
@@ -1545,6 +1557,11 @@ public class LabRoomLendingController<JsonResult> {
         String businessType = pConfigDTO.PROJECT_NAME + "LabRoomReservation" + labReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber();
         // 业务转流水号，保存并返回流水号
         String businessAppUid = "";
+        String businessUid = labReservation.getLabRoom().getId().toString();
+        if(labReservation.getAuditStage()!=null && labReservation.getAuditStage()==7){
+            businessUid = "-1";
+            businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomReservation";
+        }
         if(shareService.getSerialNumber(labReservation.getId().toString(), businessType)=="fail"){
             //没有流水单号就是用预约id用作业务id
             businessAppUid = labReservation.getId().toString();
@@ -1555,7 +1572,7 @@ public class LabRoomLendingController<JsonResult> {
 //        String businessAppUid = shareService.getSerialNumber(labReservation.getId().toString(), businessType);
         allParams.put("businessType", businessType);
         allParams.put("businessAppUid", businessAppUid);
-        allParams.put("businessUid", labReservation.getLabRoom().getId().toString());
+        allParams.put("businessUid", businessUid);
         String allString = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getBusinessLevelStatus", allParams);
         JSONObject allObject = JSON.parseObject(allString);
         String allStatus = allObject.getString("status");

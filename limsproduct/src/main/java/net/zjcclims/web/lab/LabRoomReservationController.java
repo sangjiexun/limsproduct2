@@ -1236,7 +1236,7 @@ public class LabRoomReservationController<JsonResult> {
             params.put("businessUid", stationReservation.getLabRoom().getId().toString());
             String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
             //判断是否是取消预约的数据，切换businessType
-            if(stationReservation.getResult()==5){
+            if(stationReservation.getResult()==5 || stationReservation.getResult()==6 || stationReservation.getResult()==7){
                 businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomStationReservation";
             }
             String businessAppUid = "";
@@ -1316,8 +1316,10 @@ public class LabRoomReservationController<JsonResult> {
                                 case "ROLE_LABMANAGER":
                                     Set<LabRoomAdmin> labRoomAdmins = stationReservation.getLabRoom().getLabRoomAdmins();
                                     for (LabRoomAdmin labRoomAdmin : labRoomAdmins) {
-                                        if (username.equals(labRoomAdmin.getUser().getUsername())) {
-                                            stationReservation.setButtonMark(1);
+                                        if(labRoomAdmin.getTypeId()==1){   //区别是实验室管理员
+                                            if (username.equals(labRoomAdmin.getUser().getUsername())) {
+                                                stationReservation.setButtonMark(1);
+                                            }
                                         }
                                     }
                                     break;
@@ -1513,8 +1515,10 @@ public class LabRoomReservationController<JsonResult> {
                             case "ROLE_LABMANAGER":
                                 Set<LabRoomAdmin> labRoomAdmins = stationReservation.getLabRoom().getLabRoomAdmins();
                                 for (LabRoomAdmin labRoomAdmin : labRoomAdmins) {
-                                    if (username.equals(labRoomAdmin.getUser().getUsername())) {
-                                        labRoomStationReservationArrayList.add(stationReservation);
+                                    if(labRoomAdmin.getTypeId()==1){   //区别是实验室管理员
+                                        if (username.equals(labRoomAdmin.getUser().getUsername())) {
+                                            labRoomStationReservationArrayList.add(stationReservation);
+                                        }
                                     }
                                 }
                                 break;
