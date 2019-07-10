@@ -136,6 +136,14 @@ public interface LabRoomReservationService {
 	 * @date 2019-7-7
 	 *************************************************************************************/
 	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit);
+    /*************************************************************************************
+     * Description 获得需要用户审核的实验室预约记录列表
+     *
+     * @author Hezhaoyi
+     * @date 2019-7-10
+     *************************************************************************************/
+    public List<LabRoomStationReservation>findLabRoomreservatioUserAuditList(LabRoomStationReservation labRoomStationReservation, Integer currpage,
+                                                                             Integer tage, Integer isaudit, String acno, Integer pageSize,HttpServletRequest request);
 	/*************************************************************************************
 	 * Description 保存不同身份的审核结果
 	 * @author 孙虎
