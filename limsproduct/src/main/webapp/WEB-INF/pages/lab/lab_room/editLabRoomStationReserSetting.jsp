@@ -86,7 +86,9 @@ function cancel(){
     })
     //是否需要审核的联动
     $(document).ready(function(){
-        document.getElementById("1staudit").style.display="None";
+        if(${flag == true}){
+            document.getElementById("1staudit").style.display = "None";
+        }
         document.getElementById("isAudit").style.display="None";
         document.getElementById("labRoomWorkers").style.display="None";
         if (${empty isAppointment}) {
@@ -114,7 +116,9 @@ function cancel(){
 //        document.getElementById("trainingType").style.display = "None";
             } else if(${isAudit1 == 1}){
                 document.getElementById('needAudit1').checked = true;
-                document.getElementById("1staudit").style.display="";
+                if(${flag == true}){
+                    document.getElementById("1staudit").style.display = "";
+                }
             } else if(${isAudit1 == 0}){
                 document.getElementById('needAudit0').checked = true;
                 if(needAllAudits[0]) {
@@ -140,7 +144,10 @@ function cancel(){
             // document.getElementById("labManager").style.display="";
             // document.getElementById("trainingCenterDirector").style.display="";
             // document.getElementById("trainingDepartmentDirrector").style.display="";
-            document.getElementById("1staudit").style.display="";
+//            document.getElementById("1staudit").style.display="";
+            if(${flag == true}){
+                document.getElementById("1staudit").style.display = "";
+            }
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "";
@@ -153,7 +160,9 @@ function cancel(){
             // document.getElementById("labManager").style.display="None";
             // document.getElementById("trainingCenterDirector").style.display="None";
             // document.getElementById("trainingDepartmentDirrector").style.display="None";
-            document.getElementById("1staudit").style.display="None";
+            if(${flag == true}){
+                document.getElementById("1staudit").style.display = "None";
+            }
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "None";
@@ -177,7 +186,9 @@ function cancel(){
 //            document.getElementById("isAudit").style.display = "None";
                 document.getElementById('needAudit1').checked = "";
                 document.getElementById('needAudit0').checked = "";
-                document.getElementById("1staudit").style.display="None";
+                if(${flag == true}){
+                    document.getElementById("1staudit").style.display = "None";
+                }
 //            $("#rdo1").removeAttr("checked");
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
@@ -188,10 +199,14 @@ function cancel(){
             } else if(${isAudit1 == 1}){
                 document.getElementById('needAudit1').checked = true;
                 document.getElementById("selectAcademy").style.display="";
-                document.getElementById("1staudit").style.display="";
+                if(${flag == true}){
+                    document.getElementById("1staudit").style.display = "";
+                }
             } else if(${isAudit1 == 0}){
                 document.getElementById('needAudit0').checked = true;
-                document.getElementById("1staudit").style.display="None";
+                if(${flag == true}){
+                    document.getElementById("1staudit").style.display = "None";
+                }
                 if(needAllAudits[0]) {
                     for (var i = 0; i < needAllAudits.length; i++) {
                         document.getElementById(needAllAudits[i]).style.display = "None";
@@ -203,7 +218,9 @@ function cancel(){
 //            document.getElementById("allowSecurityAccess").style.display="None";
             document.getElementById("isAudit").style.display="None";
             document.getElementById("labRoomWorkers").style.display="None";
-            document.getElementById("1staudit").style.display="None";
+            if(${flag == true}){
+                document.getElementById("1staudit").style.display = "None";
+            }
 //            document.getElementById("selectAcademy").style.display="None";
             // document.getElementById("labManager").style.display="None";
             // document.getElementById("dean").style.display="None";
