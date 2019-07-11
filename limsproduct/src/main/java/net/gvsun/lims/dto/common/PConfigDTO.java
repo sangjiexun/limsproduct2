@@ -88,10 +88,19 @@ public class PConfigDTO implements Serializable {
 
     public String advanceCancelTime;
 
+    public String messageServiceUrl;
+
+    public String messageProject;
+
     public PConfigDTO() {
     }
 
-    public PConfigDTO(String PROJECT_NAME, String annexManage, String softManage, String baseManage, String jobReservation, String deviceLend, String stationNum, String auditServerUrl, String schoolCode, String siteEnName, String siteSecret, String apiGateWayHost, String zuulServerUrl, String authTimetableType, String professorIntroductionUrl, String cmsSiteUrl, String cmsUrl, String backToCms, String cmsAccess, String cms, String schoolName, String userOperation, String showroom, String yuntai, String labAddAdim, String eduDirect, String eduAjust, String eduBatch, String eduNoBatch, String selfBatch, String selfNoBatch, String noREC, String directTimetable, String operationItemName, String refuseTitle, String selfRefuseTitle, String newServer, String virtual, String limsUrl, String advanceCancelTime) {
+    public PConfigDTO(String PROJECT_NAME, String annexManage, String softManage, String baseManage, String jobReservation, String deviceLend, String stationNum, String auditServerUrl,
+                      String schoolCode, String siteEnName, String siteSecret, String apiGateWayHost, String zuulServerUrl, String authTimetableType, String professorIntroductionUrl,
+                      String cmsSiteUrl, String cmsUrl, String backToCms, String cmsAccess, String cms, String schoolName, String userOperation, String showroom, String yuntai,
+                      String labAddAdim, String eduDirect, String eduAjust, String eduBatch, String eduNoBatch, String selfBatch, String selfNoBatch, String noREC, String directTimetable,
+                      String operationItemName, String refuseTitle, String selfRefuseTitle, String newServer, String virtual, String limsUrl, String advanceCancelTime, String messageServiceUrl,
+                      String messageProject) {
         this.PROJECT_NAME = PROJECT_NAME;
         this.annexManage = annexManage;
         this.softManage = softManage;
@@ -132,6 +141,8 @@ public class PConfigDTO implements Serializable {
         this.virtual = virtual;
         this.limsUrl = limsUrl;
         this.advanceCancelTime = advanceCancelTime;
+        this.messageServiceUrl = messageServiceUrl;
+        this.messageProject = messageProject;
     }
 
     public String getPROJECT_NAME() {
@@ -453,4 +464,21 @@ public class PConfigDTO implements Serializable {
     public void setAdvanceCancelTime(String advanceCancelTime) {
         this.advanceCancelTime = advanceCancelTime;
     }
+
+    public String getMessageServiceUrl() {
+        return messageServiceUrl;
+    }
+
+    public void setMessageServiceUrl(String messageServiceUrl) {
+        this.messageServiceUrl = messageServiceUrl;
+    }
+
+    public String getMessageProject() {
+        return messageProject;
+    }
+
+    public void setMessageProject(String messageProject) {
+        this.messageProject = messageProject;
+    }
+
 }

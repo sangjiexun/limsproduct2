@@ -1644,11 +1644,11 @@ public class VirtualServiceImpl implements VirtualService {
         messageDAO.store(message);
         messageDAO.flush();
         if (receiveUser.getTelephone() != null) {
-//            try {
-//                String result = shareService.sendMessage(receiveUser.getTelephone(), message.getTitle());
-//            } catch (InterruptedException | NoSuchAlgorithmException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                String result = shareService.sendMessage(receiveUser.getTelephone(), message.getTitle());
+            } catch (InterruptedException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         }
     }
 

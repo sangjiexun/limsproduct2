@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/docsupport/prism.css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/chosen/chosen.css"/>
     <!-- 下拉的样式结束 -->
-    <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link href="${pageContext.request.contextPath}/css/iconFont.css" rel="stylesheet">
+    <%--<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link href="${pageContext.request.contextPath}/css/iconFont.css" rel="stylesheet">--%>
 
     <!-- 文件上传的样式和js -->
     <script type="text/javascript" src="${pageContext.request.contextPath}/jquery/js/jquery.easyui.min.js"></script>
@@ -18,6 +18,11 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/swfupload/uploadify.css"/>
     <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/swfupload.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/swfupload/jquery.uploadify.min.js"></script>
+    <!--资源容器-->
+    <link href="${pageContext.request.contextPath}/css/resourceContainer/resourceContainer.css" rel="stylesheet" type="text/css">
+    <link href="${pageContext.request.contextPath}/css/resourceContainer/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/resourceContainer/resourceContainer.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/directoryEngine/directoryEngine-core.js"></script>
 
     <script type="text/javascript">
         //上传图片
@@ -125,7 +130,29 @@
                                        href="${pageContext.request.contextPath}/visualization/deleteSystemFloorPic?picId=${curr.id}">删除</a>
                                 </li>
                             </ul>
+                            <form id="rc_upLoadWindow" style="display: none;" method="post" enctype="multipart/form-data"></form>
+                            <div class="page-title">编辑楼层图片</div>
+                            <input type="hidden" id="uploadFileHost" value="${uploadFileHost}" />
+                            <div class="col-md-3">
+                                <div>楼层图片</div>
+                                <c:if test="${curr.photoUrl eq null || curr.photoUrl eq ''}">
+                                <img src="http://www.gvsun.com/gvsuntms/images/tCourseSite/system/userInfo/default_user_photo.png" alt=""  class="block ma"/>
+                                </c:if>
+                                <c:if test="${curr.photoUrl ne null}">
+                                <img class="course-banner" data="${curr.photoUrl}" state=" " width="200" height="160" alt=""/>
+                                </c:if>
+                                <div class=" course-banner">
+                                    <button type="button" class="layui-btn" onclick="openUploadWindowByPath('实验室管理平台/可视化管理/楼层图片/'+${buildNumber}+'/'+${curr.floorNo})"><i class="fa fa-cloud-upload fa-lg"></i>图片上传（资源容器）
+                                    </button>
+                                    <button type="button" title="删除"
+                                            c:if="${curr.photoUrl ne null}" onclick=""${pageContext.request.contextPath}/visualization/deleteSystemFloorPicPhotoUrl?picId=${curr.id}"">删除图片<i
+                                            class="fa fa-trash-o fa-lg"></i></button>
+                                </div>
+                            </div>
+
                         </fieldset>
+
+
                     </c:forEach>
                     <div id="searchFile" class="easyui-window" title="上传图片" closed="true" iconCls="icon-add"
                          style="width:400px;height:200px">
@@ -155,6 +182,89 @@
 <script src="${pageContext.request.contextPath}/chosen/chosen.jquery.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/chosen/docsupport/prism.js" type="text/javascript"
         charset="utf-8"></script>
+<script th:inline="javascript">
+    //读图片
+    $(function () {
+        $.each($(".course-banner"),function (index,obj) {
+            if($(obj).attr("state")==1){
+                if($(obj).attr("data").indexOf("/")==-1){
+                    getFile({
+                        fileId:$(obj).attr("data"),
+                        success:function (data) {
+                            alert(data);
+                            $(obj).attr("src",data.url);
+                        }
+                    });
+
+                }else{
+                    $(obj).attr("src",$(obj).attr("data"));
+                }
+            }
+        });
+
+    });
+    $(function(){
+        initDirectoryEngine({
+            getHostsUrl:"${pageContext.request.contextPath}/shareApi/getHosts"
+        });
+        initUploadWindow({
+            username: [[${createUser}]],
+            //   cnameUrl: "../teach/resource/getCnames",
+            beforeUpLoad:function (form) {
+                var fileName = form.get("fileName");
+                var testFile = fileName.substring(fileName.lastIndexOf(".")+1).toUpperCase();
+                var targetTitle = form.get("targetTitle");
+                if(targetTitle.split("/")[targetTitle.split("/").length-3]=="楼层图片"){
+                    var imageRegx=/JPG|GIF|PNG|JEPG|BMP/;
+                    var imgTest =testFile.match(imageRegx);
+                    if (!imgTest){
+                        alert("请上传正确格式的文件！");
+                        return false;
+                    }else {
+                        return true;
+                    }
+                }
+            },
+            afterUpLoad:function (form,state,fileid) {
+                getFile({
+                    fileId:fileid,
+                    success:function (data) {
+                        var targetTitle = form.get("targetTitle");
+                        alert(targetTitle);
+                        var floorNo = targetTitle.split("/")[targetTitle.split("/").length-1];
+                        var url = "";
+                        var fd = new FormData();
+                        fd.append("photoUrl",fileid);
+                        fd.append("buildNumber",${buildNumber});
+                        fd.append("floor",floorNo);
+                        if(targetTitle.split("/")[targetTitle.split("/").length-3]=="楼层图片"){
+                            url="${pageContext.request.contextPath}/visualization/saveSystemFloorPic";
+                        }
+                        if(state.indexOf("success")!=-1){
+                            $.ajax({
+                                url:url,
+                                type:"POST",
+                                data:fd,
+                                processData: false,
+                                contentType: false,
+                                success:function () {
+                                    alert("上传成功！");
+                                    location.reload(true);
+                                },
+                                error:function () {
+                                    alert("上传失败");
+                                }
+                            });
+
+                        }
+
+                    }
+                });
+            }
+        });
+    });
+
+</script>
 <script type="text/javascript">
     var config = {
         '.chzn-select': {search_contains: true},

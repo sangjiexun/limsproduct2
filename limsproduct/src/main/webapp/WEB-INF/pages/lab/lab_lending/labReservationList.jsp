@@ -187,7 +187,7 @@ $(function(){
                         		<td>审核拒绝</td>
                         	</c:if>
                         	<td>
-                        	<c:if test="${isAudit eq 1 && auditState.get(i.count-1)!=-2 }">
+                        	<c:if test="${isAudit eq 1 && auditState.get(i.count-1)!=-2 && current.auditStage ne 7}">
 								<c:if test="${current.buttonMark eq -1}">
 									<a href="${pageContext.request.contextPath}/labRoomLending/checkButton?id=${current.id}&tage=${tage}&state=${current.buttonMark}&page=${page}">查看</a>
 								</c:if>
@@ -233,7 +233,7 @@ $(function(){
 								|| sessionScope.selected_role eq 'ROLE_ACADEMYLEVELM'|| sessionScope.selected_role eq 'ROLE_LABMANAGER' )&& isAudit eq 1}">
 								<a href="${pageContext.request.contextPath}/labRoomLending/deletelabReservation?id=${current.id}&page=${page}&isaudit=${isAudit}&tage=${tage}" onclick="return confirm('确定删除吗？');">删除</a>
 								</c:if>--%>
-								<c:if test="${(sessionScope.selected_role eq 'ROLE_LABMANAGER') && isAudit eq 1 && (auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0)}">
+								<c:if test="${(sessionScope.selected_role eq 'ROLE_LABMANAGER') && isAudit eq 1 && (auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0) && current.auditStage ne 7}">
 									<c:forEach items="${current.labRoom.labRoomAdmins}" var="la">
 										<c:if test="${la.user.username eq user.username}">
 											<a href="javascript:void(0)"
@@ -245,9 +245,12 @@ $(function(){
 											<a href="javascript:void(0)"
 											   onclick="cancelLabReservation('${current.id}')">取消预约</a>
 								</c:if>
-								<c:if test="${isAudit eq 1 && current.auditStage eq 7}">
+								<c:if test="${isAudit eq 1 && auditState.get(i.count-1)!=-1 && auditState.get(i.count-1)!=0 && current.auditStage eq 7 }">
 									<a href="javascript:void(0)"
-									   onclick="openCancelLabReservationAudit('${current.id}')">审核取消</a>
+									   onclick="openCancelLabReservationAudit('${current.id}')">取消审核</a>
+								</c:if>
+								<c:if test="${(auditState.get(i.count-1)==-1 || auditState.get(i.count-1)==0) && current.auditStage eq 7 }">
+									<a href="${pageContext.request.contextPath}/labRoomLending/checkButton?id=${current.id}&tage=${tage}&state=${current.buttonMark}&page=${page}">查看</a>
 								</c:if>
 
 			    			</td>

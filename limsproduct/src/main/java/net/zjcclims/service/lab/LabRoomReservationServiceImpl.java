@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import net.gvsun.lims.dto.common.PConfigDTO;
+import net.gvsun.lims.service.user.UserService;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
 import net.zjcclims.domain.*;
@@ -27,7 +28,7 @@ import java.util.*;
 
 @Service("LabRoomReservationService")
 public class LabRoomReservationServiceImpl implements LabRoomReservationService {
-	
+
 	@Autowired
 	private LabWorkRoomDAO labWorkRoomDAO;
 	@Autowired
@@ -55,6 +56,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	@Autowired private LabReservationAuditDAO labReservationAuditDAO;
 	@Autowired private LabRoomDeviceService labRoomDeviceService;
 	@Autowired private LabRoomService labRoomService;
+	@Autowired private UserService userService;
 	@Autowired private SchoolWeekDAO schoolWeekDAO;
 	@Autowired private SystemTimeDAO systemTimeDAO;
 	@Autowired private LabRelevantConfigDAO labRelevantConfigDAO;
@@ -64,7 +66,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	/***************************** 
+	/*****************************
 	*Description 根据学院找到用户信誉积分
 	*
 	*@author:余南新
@@ -85,8 +87,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		sql += " and schoolAcademy.academyNumber ='"+academyNumber+"'";
 		return userDAO.executeQuery(sql, pageSize*(currpage-1),pageSize);
 	}
-	
-	/***************************** 
+
+	/*****************************
 	*Description 根据学院找到用户信誉积分
 	*
 	*@author:余南新
@@ -107,7 +109,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		sql += " and schoolAcademy.academyNumber ='"+academyNumber+"'";
 		return ((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
 	}
-	/***************************** 
+	/*****************************
 	*Description 找到教师信誉积分
 	*
 	*@author:周志辉
@@ -126,7 +128,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		return ((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
 	}
-	/***************************** 
+	/*****************************
 	*Description 找到教师信誉积分并分页
 	*
 	*@author:周志辉
@@ -145,7 +147,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		return userDAO.executeQuery(sql, pageSize*(currpage-1),pageSize);
 	}
-	/***************************** 
+	/*****************************
 	*Description 找到学生信誉积分
 	*
 	*@author:周志辉
@@ -166,7 +168,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		return ((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
 	}
-	/***************************** 
+	/*****************************
 	*Description 找到学生信誉积分并分页
 	*
 	*@author:周志辉
@@ -189,7 +191,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	}
 	/*************************************************************************************
 	 * Description 根据实验室预约的id查找所有扣分项
-	 * 
+	 *
 	 * @param id
 	 * @author 孙虎
 	 * @date 2017-08-16
@@ -197,12 +199,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	@Override
 	public List<LabRoomReservationCredit> findlabRoomReservationCreditOptionById(Integer id) {
 		// TODO Auto-generated method stub
-		String hql="select c from LabRoomReservationCredit c where 1=1 and c.labReservation.id="+id;	 
+		String hql="select c from LabRoomReservationCredit c where 1=1 and c.labReservation.id="+id;
 		return labRoomReservationCreditDAO.executeQuery(hql, 0,-1);
 	}
 	/*************************************************************************************
 	 * Description 分页查询实验室列表（实验室预约）
-	 * 
+	 *
 	 * @author 孙虎
 	 * @date 2017-09-20
 	 *************************************************************************************/
@@ -216,7 +218,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		String searchflg = request.getParameter("searchflg");
 		if(searchflg != null && searchflg != ""){
 			if(worker != null && worker != ""){
-				
+
 				if(searchflg.equals("1")){
 					hql+=" and l.labRoomWorker = " + worker;
 				}else if(searchflg.equals("2")){
@@ -439,12 +441,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	}
 	/*************************************************************************************
 	 * Description 根据所选时间段查询剩余工位数（实验室预约-预约）
-	 * 
+	 *
 	 * @author 孙虎
 	 * @date 2017-09-21
 	 *************************************************************************************/
 	public int findRestReservationStations(Integer labRoomId, Calendar reservationTime,  Calendar startTime,  Calendar endTime) {
-		
+
 		LabRoom labRoom = labRoomDAO.findLabRoomByPrimaryKey(labRoomId);
 		List<LabRoomStationReservation> labRoomStationReservations = this.getLabRoomStationReversationList(labRoomId, reservationTime);
 		//已预约的工位数
@@ -463,9 +465,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			//和本身的预约逻辑做判断
 			if(labRoomStationReservations != null){
 				for (LabRoomStationReservation labRoomStationReservation : labRoomStationReservations) {
-					if(labRoomStationReservation.getStartTime().after(endTime) || 
-							labRoomStationReservation.getEndTime().before(startTime) || 
-							labRoomStationReservation.getStartTime().equals(endTime) || 
+					if(labRoomStationReservation.getStartTime().after(endTime) ||
+							labRoomStationReservation.getEndTime().before(startTime) ||
+							labRoomStationReservation.getStartTime().equals(endTime) ||
 							labRoomStationReservation.getEndTime().equals(startTime)){//未和所选时间冲突
 					}else{//和所选时间冲突
 						reservationStationNum +=labRoomStationReservation.getStationCount();
@@ -502,12 +504,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			return labRoomWorker-reservationStationNum;
 		}
 	}
-	
+
 	/*************************************************************************************
 	 * Description 保存实验室预约（实验室预约-预约）
-	 * 
+	 *
 	 * @author 孙虎
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException
 	 * @date 2017-09-21
 	 *************************************************************************************/
 	@Transactional
@@ -528,7 +530,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		labRoomStationReservation.setSchoolTerm(schoolTerm);
 		labRoomStationReservation.setUser(shareService.getUserDetail());
 		labRoomStationReservation.setStationCount(array.length);
-		
+
 		CDictionary status = shareService.getCDictionaryByCategory("lab_room_station_reservation_user_role", userRole);
 		labRoomStationReservation.setCDictionary(status);
 		//判断实验室等级
@@ -599,7 +601,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
 		labRoomStationReservation = labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
-		
+
 		//在保存对应的多表
 		if(array != null && !array.equals("")){
 		Set<LabRoomStationReservationStudent> labRoomStationReservationStudents = new HashSet<LabRoomStationReservationStudent>();
@@ -613,14 +615,14 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 					labRoomStationReservationStudentDAO.store(labRoomStationReservationStudent);
 					labRoomStationReservationStudentDAO.flush();
 				}
-				
+
 			}
 		}
-		
+
 	}
 	/*************************************************************************************
 	 * Description 判断所传数组是否是正确学生编号 返回错误的学号组
-	 * 
+	 *
 	 * @author 孙虎
 	 * @date 2017-09-22
 	 *************************************************************************************/
@@ -634,11 +636,11 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		return sudents;
 	}
-	
+
 
 	/*************************************************************************************
 	 * Description 根据登陆人权限得到实验室预约列表
-	 * 
+	 *
 	 * @author 孙虎
 	 * @date 2017-09-25
 	 *************************************************************************************/
@@ -649,14 +651,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                 sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
             }else if(labRoomStationReservation.getResult()==-1){    //所有
 		        //do nothing
-		    }else {
+		    }else if(labRoomStationReservation.getResult()==1){   //审核通过包括取消预约审核通过
+                sql += " and (l.result = 1 or l.result = 6)";
+            }else if(labRoomStationReservation.getResult()==4){   //审核拒绝包括取消预约审核拒绝
+                sql += " and (l.result = 4 or l.result = 7)";
+            } else {
                 sql += " and l.result ="+ labRoomStationReservation.getResult();
-            }
-        }else{
-		    if(isAudit == 2){        //我的预约页面默认所有
-		        //do nothing
-            }else {               //我的审核页面默认审核中-包括未审核状态和取消预约未审核
-                sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
             }
         }
 		if(labRoomStationReservation.getLabRoom() != null){
@@ -668,7 +668,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if(isAudit == 1){
 			//实验部主任权限可以看到所有
 			if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().indexOf("ROLE_PREEXTEACHING") != -1){
-				
+
 			}else{
 				// qun 判断 登陆者是不是超级管理员，实验教务 是的话下边权限不能进入
 				int qun = 0;
@@ -757,7 +757,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}else{
 			sql += " and l.user.username='" + shareService.getUser().getUsername() + "' ";
 		}
-		
+
 		// 通过
 		if (tage == 1) {
 			sql += " and l.result=1";
@@ -776,7 +776,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}
 		sql += "   order by l.id desc";
 		List<LabRoomStationReservation> lll = labRoomStationReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
-		
+
 		return lll;
 	}
 	/*************************************************************************************
@@ -787,21 +787,19 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 *************************************************************************************/
 	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit) {
 		String sql = "select distinct l from LabRoomStationReservation l where 1=1 ";
-		if(labRoomStationReservation.getResult()!=null){
-			if(labRoomStationReservation.getResult()==2){   //审核中包括未审核状态和取消预约未审核
-				sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
-			}else if(labRoomStationReservation.getResult()==-1){    //所有
-				//do nothing
-			}else {
-				sql += " and l.result ="+ labRoomStationReservation.getResult();
-			}
-		}else{
-			if(isAudit == 2){        //我的预约页面默认所有
-				//do nothing
-			}else {               //我的审核页面默认审核中-包括未审核状态和取消预约未审核
-				sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
-			}
-		}
+//        if(labRoomStationReservation.getResult()!=null){
+//            if(labRoomStationReservation.getResult()==2){   //审核中包括未审核状态和取消预约未审核
+//                sql += " and (l.result = 2 or l.result = 3 or l.result=5)";
+//            }else if(labRoomStationReservation.getResult()==-1){    //所有
+//                //do nothing
+//            }else if(labRoomStationReservation.getResult()==1){   //审核通过包括取消预约审核通过
+//                sql += " and (l.result = 1 or l.result = 6)";
+//            }else if(labRoomStationReservation.getResult()==4){   //审核拒绝包括取消预约审核拒绝
+//                sql += " and (l.result = 4 or l.result = 7)";
+//            } else {
+//                sql += " and l.result ="+ labRoomStationReservation.getResult();
+//            }
+//        }
 		if(labRoomStationReservation.getLabRoom() != null){
 			if (labRoomStationReservation.getLabRoom().getLabRoomName() != null && !labRoomStationReservation.getLabRoom().getLabRoomName().equals("")) {
 				sql += " and (l.labRoom.labRoomName like '%" + labRoomStationReservation.getLabRoom().getLabRoomName()+"%'"+ "or  l.labRoom.labRoomNumber like '%"  + labRoomStationReservation.getLabRoom().getLabRoomName() + "%' )";
@@ -828,15 +826,178 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
 		return lll;
 	}
+
+    /*************************************************************************************
+     * Description 获得需要用户审核的实验室预约记录列表
+     *
+     * @author Hezhaoyi
+     * @date 2019-7-10
+     *************************************************************************************/
+    public List<LabRoomStationReservation>findLabRoomreservatioUserAuditList(LabRoomStationReservation labRoomStationReservation, Integer currpage,
+                                                                             Integer tage, Integer isaudit, String acno,Integer pageSize, HttpServletRequest request){
+        PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+        User user = shareService.getUser();
+        // 根据分页信息查询出来的记录
+        List<LabRoomStationReservation> listLabRoomStationReservation = this.findAllLabRoomreservatioList(labRoomStationReservation, tage, currpage, pageSize, acno, isaudit);
+        //判断所处审核阶段，关联到前端的按钮
+        for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
+            //全部设置为审核按钮
+            labRoomStationReservation2.setButtonMark(1);
+        }
+
+
+        List<LabRoomStationReservation> labRoomStationReservationArrayList = new ArrayList<>();
+        for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
+            String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
+            //判断是否是取消预约的数据，切换审核businessType
+            if(stationReservation.getResult()==5){
+                businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomStationReservation";
+            }
+            String businessAppUid = "";
+            if(shareService.getSerialNumber(stationReservation.getId().toString(), businessType)=="fail"){
+                //没有流水单号就是用预约id用作业务id
+                businessAppUid = stationReservation.getId().toString();
+            }else {
+                //有流水单号用流水单号做业务id
+                businessAppUid = shareService.getSerialNumber(stationReservation.getId().toString(), businessType);
+            }
+            if(labRoomStationReservation.getResult()==0||labRoomStationReservation.getResult()==2 || labRoomStationReservation.getResult()==-1){
+                // 审核记录
+                Map<String, String> params = new HashMap<>();
+                params.put("businessUid", stationReservation.getLabRoom().getId().toString());
+
+                //判断是否是取消预约的数据，切换审核businessUid
+                if(stationReservation.getResult()==5){
+                    params.put("businessUid", "-1");
+                }
+                params.put("businessAppUid", businessAppUid);
+                params.put("businessType", businessType);
+                String s = HttpClientUtil.doPost(pConfigDTO.auditServerUrl+"/audit/getBusinessLevelStatus", params);
+                JSONArray curJSONArray = JSONObject.parseObject(s).getJSONArray("data");
+                if (curJSONArray.size() != 0) {
+                    for (int i = 0; i < curJSONArray.size(); i++) {
+                        JSONObject curJSONObject = curJSONArray.getJSONObject(i);
+                        if (curJSONObject.getString("auditUser") != null) {
+                            User auditUser = shareService.findUserByUsername(curJSONObject.getString("auditUser"));
+                            if(user.getUsername().equals(auditUser.getUsername())){
+                                //筛选审核通过和审核拒绝的数据
+                                if("审核拒绝".equals(curJSONObject.getString("result")) && (labRoomStationReservation.getResult()==0 || labRoomStationReservation.getResult()==-1)){
+                                    labRoomStationReservationArrayList.add(stationReservation);
+                                }else if("审核通过".equals(curJSONObject.getString("result")) && (labRoomStationReservation.getResult()==2 || labRoomStationReservation.getResult()==-1)){
+                                    labRoomStationReservationArrayList.add(stationReservation);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //筛选审核中记录
+            if(labRoomStationReservation.getResult()==1 || labRoomStationReservation.getResult()==-1){
+                //关联前端取消、撤回、作废按钮
+                Map<String, String> params2 = new HashMap<>();
+                params2.put("businessType", businessType);
+                params2.put("businessAppUid", businessAppUid);
+                String s2 = HttpClientUtil.doPost(pConfigDTO.auditServerUrl + "audit/getCurrAuditStage", params2);
+                JSONObject jsonObject2 = JSON.parseObject(s2);
+                Integer auditNumber = null;
+                //未审核和审核中
+                if("success".equals(jsonObject2.getString("status")) &&
+                        jsonObject2.getJSONArray("data") != null &&
+                        jsonObject2.getJSONArray("data").size() > 0) {
+                    JSONArray jsonArray = jsonObject2.getJSONArray("data");
+                    JSONObject jsonObject3 = jsonArray.getJSONObject(0);
+                    auditNumber = jsonObject3.getIntValue("level");
+                    if(auditNumber != 0 && auditNumber !=-1){
+                        JSONObject o = jsonObject2.getJSONArray("data").getJSONObject(0);
+                        String userRole = request.getSession().getAttribute("selected_role").toString();
+                        String username = user.getUsername();
+                        if (userRole.equals("ROLE_" + o.getString("result"))) {
+                            //筛选当前的登陆人的审核记录
+                            switch (userRole) {
+                                case "ROLE_TEACHER":
+                                    if (username.equals(stationReservation.getUserByTeacher().getUsername())) {
+                                        labRoomStationReservationArrayList.add(stationReservation);
+                                    }
+                                    break;
+                                case "ROLE_CFO":
+                                    //根据预约人查找所属学院的系主任
+                                    User user3 = stationReservation.getUser();
+                                    List<User> deans = userService.findDeansByAcademyNumber(user3.getSchoolAcademy().getAcademyNumber());
+                                    for (User user2 : deans) {
+                                        if (username.equals(user2.getUsername())) {
+                                            labRoomStationReservationArrayList.add(stationReservation);
+                                        }
+                                    }
+                                    break;
+                                case "ROLE_LABMANAGER":
+                                    Set<LabRoomAdmin> labRoomAdmins = stationReservation.getLabRoom().getLabRoomAdmins();
+                                    for (LabRoomAdmin labRoomAdmin : labRoomAdmins) {
+                                        if(labRoomAdmin.getTypeId()==1){   //区别是实验室管理员
+                                            if (username.equals(labRoomAdmin.getUser().getUsername())) {
+                                                labRoomStationReservationArrayList.add(stationReservation);
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case "ROLE_EXCENTERDIRECTOR":
+                                    LabCenter labCenter = stationReservation.getLabRoom().getLabCenter();
+                                    if (username.equals(labCenter.getUserByCenterManager().getUsername())) {
+                                        labRoomStationReservationArrayList.add(stationReservation);
+                                    }
+                                    break;
+                                case "ROLE_PREEXTEACHING":
+                                    List<User> labRoomMasters = userService.findUserByAuthorityName("PREEXTEACHING");
+                                    for (User user2 : labRoomMasters) {
+                                        if (username.equals(user2.getUsername())) {
+                                            labRoomStationReservationArrayList.add(stationReservation);
+                                        }
+                                    }
+                                    break;
+                                case "ROLE_ACADEMYLEVELM":
+                                    boolean isACADEMYLEVELM = false;
+                                    Set<Authority> authorities = user.getAuthorities();
+                                    for (Authority authority : authorities) {
+                                        if (authority.getAuthorityName().equals("ACADEMYLEVELM")) {
+                                            isACADEMYLEVELM = true;
+                                        }
+                                    }
+                                    if (isACADEMYLEVELM) {
+                                        if (user.getSchoolAcademy().getAcademyNumber().equals(stationReservation.getLabRoom().getSchoolAcademy().getAcademyNumber())) {
+                                            labRoomStationReservationArrayList.add(stationReservation);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+//            if()
+        }
+        List<LabRoomStationReservation> labRoomStationReservationList = new ArrayList<>();
+        int firstResult = (Integer.valueOf(currpage)-1) * Integer.valueOf(pageSize);
+        int targetLimit = firstResult+Integer.valueOf(pageSize);
+        if(labRoomStationReservationArrayList.size()>0){
+            if(targetLimit<=labRoomStationReservationArrayList.size()){
+                //do nothing
+            }else{
+                targetLimit = labRoomStationReservationArrayList.size();
+            }
+            for(int i=firstResult;i<targetLimit;i++) {
+                labRoomStationReservationList.add(labRoomStationReservationArrayList.get(i));;
+            }
+        }
+        return labRoomStationReservationList;
+    }
 	/*************************************************************************************
 	 * Description 根据登陆人权限得到实验室预约列表
-	 * 
+	 *
 	 * @author 孙虎
 	 * @date 2017-09-25
 	 *************************************************************************************/
 	public List<LabRoomDeviceReservation> findLabRoomDeviceReservation(LabRoomDevice labRoomDevice, int tage, int currpage,
 			int pageSize, String acno,int isAudit,HttpServletRequest request) {
-		
+
 		String status = String.valueOf(request.getParameter("status"));
 		//String begintime = String.valueOf(request.getParameter("begintime"));
 		//String endtime = String.valueOf(request.getParameter("endtime"));
@@ -850,7 +1011,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if(isAudit == 1){
 			//实验部主任权限可以看到所有
 			if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().indexOf("ROLE_PREEXTEACHING") != -1){
-				
+
 			}else{
 				// qun 判断 登陆者是不是超级管理员，实验教务 是的话下边权限不能进入
 				int qun = 0;
@@ -934,7 +1095,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}else{
 			sql += " and l.userByReserveUser.username='" + shareService.getUser().getUsername() + "' ";
 		}
-		
+
 		// 1通过
 		if (tage == 1) {
 			sql += " and l.CDictionaryByCAuditResult.CNumber='2'";
@@ -973,11 +1134,11 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		String begin = request.getParameter("begintime");
 		String begin1 = request.getParameter("begintime1");
 		if(begin!=null && begin.length()>0 && begin1!=null&& begin1.length()>0){
-			
+
 				/*String begintime=sdf1.format(sdf2.parse(request.getParameter("begintime")));
 				String begintime1=sdf1.format(sdf2.parse(request.getParameter("begintime1")));*/
 				sql+= " and l.begintime between '"+begin+"' and '"+begin1+"'";
-			
+
 		}
 		/*if(!begintime.equals("null") && !begintime.equals("")){
 			if(!endtime.equals("null") && !endtime.equals("")){
@@ -986,12 +1147,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		}*/
 		sql += "   order by l.id desc";
 		List<LabRoomDeviceReservation> lll = labRoomDeviceReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
-		
+
 		return lll;
 	}
 	/*************************************************************************************
 	 * Description 获取所有我的申请信息
-	 * 
+	 *
 	 * @author 张德冰
 	 * @date 2018.03.07
 	 *************************************************************************************/
@@ -1013,7 +1174,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	/*************************************************************************************
 	 * Description 保存不同身份的审核结果
 	 * @author 孙虎
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException
 	 * @date 2017-09-27
 	 *************************************************************************************/
 	@Transactional
@@ -1086,7 +1247,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				shareService.sendMsg(labRoomStationReservation.getUser(), message);
 			}
 		}
-		
+
 		labRoomStationReservation = labRoomStationReservationDAO.store(labRoomStationReservation);
 		labRoomStationReservationDAO.flush();
 		labRoomStationReservationResult.setLabRoomStationReservation(labRoomStationReservation);
@@ -1099,7 +1260,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	/*************************************************************************************
 	 * Description 保存不同身份的审核结果
 	 * @author 孙虎
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException
 	 * @date 2017-10-19
 	 *************************************************************************************/
 	@Transactional
@@ -1115,7 +1276,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		message.setMessageState(0);//设置未读
 		message.setCreateTime(Calendar.getInstance());
 		message.setSendCparty(user.getSchoolAcademy().getAcademyName());
-		
+
 		if(labRoomDeviceReservation.getState() == 1){//导师审核结果保存
 			if("2".equals(auditResult)){//不通过
 				labRoomDeviceReservation.setCAuditResult(shareService.getCDictionaryByCategory("c_audit_result", "3"));
@@ -1352,7 +1513,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 //					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
-			}			
+			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
 			messageDAO.flush();
@@ -1460,7 +1621,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			messageDAO.store(message);
 			messageDAO.flush();
 		}
-		
+
 		labRoomDeviceReservation = labRoomDeviceReservationDAO.store(labRoomDeviceReservation);
 		labRoomStationReservationDAO.flush();
 		labRoomDeviceReservationResult.setLabRoomDeviceReservation(labRoomDeviceReservation);
@@ -1476,15 +1637,15 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		String sql="update user set credit_score=100";
 		Query query=entityManager.createQuery(sql);
 		query.executeUpdate();
-		
+
 	}
 
 	@Override
 	public void initializeStudentCredit() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	/***************************** 
+	/*****************************
 	*Description 找到教师
 	*
 	*@author:周志辉
@@ -1495,7 +1656,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		String sql = "select u from User u where 1=1 and u.userRole=1";
 		return userDAO.executeQuery(sql,0,-1);
 	}
-	/***************************** 
+	/*****************************
 	*Description 找到学生
 	*
 	*@author:周志辉
@@ -1506,7 +1667,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		String sql = "select u from User u where 1=1 and userRole=0";
 		return userDAO.executeQuery(sql,0,-1);
 	}
-	/***************************** 
+	/*****************************
 	*Description 筛选实验室预约
 	*@author:孙虎
 	*@param:
@@ -1521,7 +1682,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	/****************************************************************************
 	 * 功能：查询信誉登记纪录by username
 	 * 作者：周志辉
-	 * @return 
+	 * @return
 	 ****************************************************************************/
 	@Override
 	public List<LabRoomStationReservationCredit> findCreditByUsername(
@@ -1533,8 +1694,8 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	/*************************************************************************************
 	 * Description 保存不同身份的审核结果
 	 * @author 孙虎
-	 * @throws NoSuchAlgorithmException 
-	 * @throws InterruptedException 
+	 * @throws NoSuchAlgorithmException
+	 * @throws InterruptedException
 	 * @date 2017-11-5
 	 *************************************************************************************/
 	public SoftwareReserve saveAuditResultForSoftware(SoftwareReserve softwareReserve, SoftwareReserveAudit softwareReserveAudit) throws NoSuchAlgorithmException, InterruptedException {
@@ -1556,7 +1717,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
         nextMessage.setTage(2);
 		//审核结果
 		Integer auditResult = Integer.valueOf(softwareReserveAudit.getResult());
-		
+
 		if(softwareReserve.getState() == 2){//系主任审核结果保存
 			if(auditResult == 0){//不通过
 				softwareReserve.setApproveState(3);
@@ -1610,7 +1771,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 						shareService.sendMsg(softwareReserve.getLabRoom().getLabCenter().getUserByCenterManager(), nextMessage);
 					}
 				}
-				
+
 				message.setTitle("软件安装申请实验室管理员通过");
 				message.setContent("<a onclick='changeMessage(this)' href=\"../SoftwareReservation/checkButton?id="+softwareReserve.getId()+"&tage=0&state="+softwareReserve.getState()+"&page=1\">查看</a>");//消息内容
 				message.setTage(1);
@@ -1636,7 +1797,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 						shareService.sendMsg(trainingDepartmentDirrector, nextMessage);
 					}
 				}
-				
+
 				message.setTitle("软件安装申请实验中心主任通过");
 				message.setContent("<a onclick='changeMessage(this)' href=\"../SoftwareReservation/checkButton?id="+softwareReserve.getId()+"&tage=0&state="+softwareReserve.getState()+"&page=1\">查看</a>");//消息内容
 				message.setTage(1);
@@ -1660,7 +1821,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			softwareReserveAudit.setStatus(5);
 			shareService.sendMsg(softwareReserve.getUser(), message);
 		}
-		
+
 		softwareReserve = softwareReserveDAO.store(softwareReserve);
 		softwareReserveDAO.flush();
 		softwareReserveAudit.setSoftwareReserve(softwareReserve);
@@ -2341,15 +2502,26 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 
         refuseItemBackupDAO.store(refuseItemBackup);
         refuseItemBackupDAO.flush();
-        //删除相关数据
-        Set<LabRoomStationReservationStudent> labRoomStationReservationStudentSet = labRoomStationReservation.getLabRoomStationReservationStudents();
-        for(LabRoomStationReservationStudent labRoomStationReservationStudent:labRoomStationReservationStudentSet){
-            labRoomStationReservationStudentDAO.remove(labRoomStationReservationStudent);
-            labRoomStationReservationStudentDAO.flush();
-			labRoomStationReservation.setLabRoomStationReservationStudents(null);
+        //删除相关数据 --保留数据
+//        Set<LabRoomStationReservationStudent> labRoomStationReservationStudentSet = labRoomStationReservation.getLabRoomStationReservationStudents();
+//        for(LabRoomStationReservationStudent labRoomStationReservationStudent:labRoomStationReservationStudentSet){
+//            labRoomStationReservationStudentDAO.remove(labRoomStationReservationStudent);
+//            labRoomStationReservationStudentDAO.flush();
+//			labRoomStationReservation.setLabRoomStationReservationStudents(null);
+//        }
+//        labRoomStationReservationDAO.remove(labRoomStationReservation);
+//        labRoomStationReservationDAO.flush();
+        //type 2为取消预约
+        if(type == 2){
+            //设置结果为取消预约审核通过=6
+            labRoomStationReservation.setResult(6);
+            labRoomStationReservationDAO.store(labRoomStationReservation);
+        }else if(type ==1){  //type 1为预约作废
+            //设置结果为预约作废=8
+            labRoomStationReservation.setResult(8);
+            labRoomStationReservationDAO.store(labRoomStationReservation);
         }
-        labRoomStationReservationDAO.remove(labRoomStationReservation);
-        labRoomStationReservationDAO.flush();
+
         return "success";
     }
 

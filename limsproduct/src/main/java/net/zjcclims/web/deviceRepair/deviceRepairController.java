@@ -964,20 +964,32 @@ public class deviceRepairController {
             }
             map.put("confirmContent", confirmContent);
             //实际维修费用
-            String confirmAmount ="";
+            double confirmAmount =0.00;
             if(Objects.nonNull(d.getConfirmAmount())){
-                confirmAmount = d.getConfirmAmount().toString();
+                confirmAmount = d.getConfirmAmount().doubleValue();
             }
             map.put("confirmAmount", confirmAmount);
             list.add(map);
+        }
+
+        List<List<Map>> wrapList=new ArrayList<>();
+        int quantity=60000;
+        int count=0;
+        while(count<list.size()){
+            wrapList.add(new ArrayList<Map>(list.subList(count,(count + quantity)>list.size() ? list.size() : count + quantity)));
+            count += quantity;
         }
         String title = pConfigDTO.schoolName+"设备维修统计表";
         String[] hearders = new String[]{"序号", "申请人", "所属单位", "所属部门", "设备编号", "设备名称", "型号", "设备价格", "报修人", "报修人联系方式", "预计费用"
                 , "报修日期", "故障现象及损坏原因(简要描述)", "验收结果", "验收结果备注", "维修配件清单及维修费用", "实际维修费用", "维修状态"};//表头数组
         String[] fields = new String[]{"num", "creator", "academyName", "academyName", "deviceNumber", "deviceName", "devicePattern", "devicePrice", "reportUsername", "telephone",
                 "expectAmountStr", "createDate", "content", "result", "acceptanceMemo", "confirmContent", "confirmAmount", "status"};
-        TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders), fields);
-        JsGridReportBase report = new JsGridReportBase(request, response);
-        report.exportExcelse(title, "", "", td, start, end);
+        List<TableData> tableDataList=new ArrayList<TableData>();
+        for (List<Map> tempList : wrapList){
+            TableData td=ExcelUtils.createTableData(tempList,ExcelUtils.createTableHeader(hearders),fields);
+            tableDataList.add(td);
+        }
+        JsGridReportBase report=new JsGridReportBase(request,response);
+        report.exportToExcelForRepair(title,shareService.getUserDetail().getCname(),tableDataList);
     }
 }

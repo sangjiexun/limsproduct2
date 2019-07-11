@@ -175,16 +175,21 @@ public class AuditController<JsonResult> {
         } else {
             List<User> isAuditUser = new ArrayList<>();
             // 判断业务类型分别取审核人
-            switch (businessType){
- //               case "StationReservation":
+//            switch (businessType){
+//                case "StationReservation":
 //                case "1StationReservation":
 //                case "2StationReservation":
 //                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid);
-                case "CancelLabRoomReservation":
-                    isAuditUser = labRoomLendingService.getNextUsers(authName, businessAppUid);
-                    break;
-                default:
-                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid,businessType);
+//                case "CancelLabRoomReservation":
+//                    isAuditUser = labRoomLendingService.getNextUsers(authName, businessAppUid);
+//                    break;
+//                default:
+//                    isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid,businessType);
+//            }
+            if(businessType.contains("CancelLabRoomReservation")){
+                isAuditUser = labRoomLendingService.getNextUsers(authName, businessAppUid);
+            }else {
+                isAuditUser = labRoomReservationService.getNextAuditUser(authName, businessAppUid,businessType);
             }
             // 如果当前登录人的权限是当前审核权限，则判断是否是审核人并且是否当前页面权限是当前审核权限
             if (request.getSession().getAttribute("selected_role").equals("ROLE_" + curAuthName)) {
@@ -264,9 +269,16 @@ public class AuditController<JsonResult> {
                     labRoomService.sendAgentInfoTodayToIOT(labRoomStationReservation.getLabRoom().getId());
                 }
             }else if(nextAuthName.equals("fail")){         //审核拒绝
-                labRoomStationReservation.setResult(4);
-                labRoomStationReservationDAO.store(labRoomStationReservation);
-                labRoomStationReservationDAO.flush();
+                if(auditSaveParamDTO.getBusinessType().contains("CancelLabRoomStationReservation")){
+                    //工位预约取消审核 设为审核拒绝==7
+                    labRoomStationReservation.setResult(7);
+                    labRoomStationReservationDAO.store(labRoomStationReservation);
+                    labRoomStationReservationDAO.flush();
+                }else {
+                    labRoomStationReservation.setResult(4);
+                    labRoomStationReservationDAO.store(labRoomStationReservation);
+                    labRoomStationReservationDAO.flush();
+                }
             }else {
                 if(auditSaveParamDTO.getBusinessType().contains("CancelLabRoomStationReservation")){
                     //工位预约取消审核 do nothing

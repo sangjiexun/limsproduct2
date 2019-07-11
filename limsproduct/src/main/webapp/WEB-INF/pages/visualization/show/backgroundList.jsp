@@ -73,7 +73,7 @@
 		</ul>
 	</div>
 </div>
-<form id="upLoadWindow" style="display: none;" method="post" enctype="multipart/form-data"></form>
+<form id="rc_upLoadWindow" style="display: none;" method="post" enctype="multipart/form-data"></form>
 <!-- 查询表单 -->
 <div class="right-content">
 	<div id="TabbedPanels1" class="TabbedPanels">
