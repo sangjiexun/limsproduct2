@@ -972,22 +972,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                     }
                 }
             }
-//            if()
         }
-        List<LabRoomStationReservation> labRoomStationReservationList = new ArrayList<>();
-        int firstResult = (Integer.valueOf(currpage)-1) * Integer.valueOf(pageSize);
-        int targetLimit = firstResult+Integer.valueOf(pageSize);
-        if(labRoomStationReservationArrayList.size()>0){
-            if(targetLimit<=labRoomStationReservationArrayList.size()){
-                //do nothing
-            }else{
-                targetLimit = labRoomStationReservationArrayList.size();
-            }
-            for(int i=firstResult;i<targetLimit;i++) {
-                labRoomStationReservationList.add(labRoomStationReservationArrayList.get(i));;
-            }
-        }
-        return labRoomStationReservationList;
+
+        return labRoomStationReservationArrayList;
     }
 	/*************************************************************************************
 	 * Description 根据登陆人权限得到实验室预约列表
