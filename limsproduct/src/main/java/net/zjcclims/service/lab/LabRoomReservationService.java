@@ -135,7 +135,7 @@ public interface LabRoomReservationService {
 	 * @author Hezhaoyi
 	 * @date 2019-7-7
 	 *************************************************************************************/
-	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit);
+	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, String acno,int isAudit);
     /*************************************************************************************
      * Description 获得需要用户审核的实验室预约记录列表
      *
