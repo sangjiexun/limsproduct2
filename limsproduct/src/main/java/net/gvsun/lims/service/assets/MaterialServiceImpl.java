@@ -2214,12 +2214,7 @@ public class MaterialServiceImpl implements MaterialService {
             return "insufficient";
         }else{
             AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(cabinetId,assetsId);
-            if(itemId!=null&&!itemId.equals("")&& itemId != 0) {
-                AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(itemId);
-                assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber()+assetReceiveRecord.getQuantity().intValue()-quantity);
-            }else{
-                assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
-            }
+            assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
             assetCabinetRecordDAO.store(assetCabinetRecord);
             //如果是智能柜的情况
             AssetCabinet assetCabinet=assetCabinetDAO.findAssetCabinetByPrimaryKey(cabinetId);
@@ -2241,12 +2236,7 @@ public class MaterialServiceImpl implements MaterialService {
                 }
                 //扣除智能柜库存
                 AssetCabinetWarehouseRecord assetCabinetWarehouseRecord=this.findAssetsCabinetWarehouseRecordByWareHouseAndAssets(warehouseId,assetsId);
-                if(itemId!=null&&!itemId.equals("")&& itemId != 0) {
-                    AssetReceiveRecord assetReceiveRecord=assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(itemId);
-                    assetCabinetWarehouseRecord.setStockNumber(assetCabinetRecord.getStockNumber()+assetReceiveRecord.getQuantity().intValue()-quantity);
-                }else{
-                    assetCabinetWarehouseRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
-                }
+                assetCabinetWarehouseRecord.setStockNumber(assetCabinetRecord.getStockNumber() - quantity);
                 assetCabinetWarehouseRecordDAO.store(assetCabinetWarehouseRecord);
                 return cabinetId.toString()+"-"+warehouseId.toString();
             }else{
@@ -2254,13 +2244,34 @@ public class MaterialServiceImpl implements MaterialService {
             }
         }
     }
-
+    /**
+     * 编辑申领条目时，先返回物资数量
+     *
+     * * @return
+     * @author 吴奇臻 2019-7-11
+     */
+    public void returnCabinetRecordFromAssetsReceiveRecord(Integer id) {
+        //返还物品柜库存
+        AssetReceiveRecord assetReceiveRecord = assetReceiveRecordDAO.findAssetReceiveRecordByPrimaryKey(id);
+        AssetCabinetRecord assetCabinetRecord = this.findAssetsCabinetRecordByCabinetAndAssets(assetReceiveRecord.getCabinetId(), assetReceiveRecord.getAsset().getId());
+        assetCabinetRecord.setStockNumber(assetCabinetRecord.getStockNumber() + assetReceiveRecord.getQuantity().intValue());
+        assetCabinetRecordDAO.store(assetCabinetRecord);
+        //如果是智能柜的情况
+        AssetCabinet assetCabinet = assetCabinetDAO.findAssetCabinetByPrimaryKey(assetReceiveRecord.getCabinetId());
+        if (assetCabinet.getType() != null && assetCabinet.getType() == 2) {//智能柜类型
+            //返还智能柜库存
+            AssetCabinetWarehouseRecord assetCabinetWarehouseRecord = this.findAssetsCabinetWarehouseRecordByWareHouseAndAssets(assetReceiveRecord.getWarehouseId(), assetReceiveRecord.getAsset().getId());
+            assetCabinetWarehouseRecord.setStockNumber(assetCabinetRecord.getStockNumber() + assetReceiveRecord.getQuantity().intValue());
+            assetCabinetWarehouseRecordDAO.store(assetCabinetWarehouseRecord);
+        }
+    }
     /**
      * 根据物资及数量自动获取库存数最大的物品柜
      *
      * * @return 状态字符串
      * @author 吴奇臻 2019-4-8
      */
+
     public Integer getMaxAmountCabinetFromAssets(Integer assetsId,Integer quantity){
         String sql="select cabinet_id,stock_number from asset_cabinet_record acr where acr.asset_id="+assetsId;//查询物品柜记录
         Query query=entityManager.createNativeQuery(sql);

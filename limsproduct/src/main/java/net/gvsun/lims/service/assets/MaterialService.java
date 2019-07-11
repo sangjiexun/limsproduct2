@@ -469,6 +469,14 @@ public interface MaterialService {
     String allocateCabinetFromAssets(Integer assetsId,Integer quantity,Integer itemId,Integer appId);
 
     /**
+     * 编辑申领条目时，先返回物资数量
+     *
+     * * @return
+     * @author 吴奇臻 2019-7-11
+     */
+    void returnCabinetRecordFromAssetsReceiveRecord(Integer id);
+
+    /**
      * 根据物资及数量自动获取库存数最大的物品柜
      *
      * * @return 状态字符串
