@@ -155,12 +155,12 @@ public class UserDetailServiceImpl implements UserDetailService {
 		//得出用户数量（由于用户的数据量比较多，不能够使用userDAO.findAllUsers()方法查找用户）
 		String sql="select u from User u where 1=1";
 		if(number != null && !number.equals("")) {
-			sql += "and u.schoolAcademy.academyNumber = '" + number + "'";
+			sql += " and u.schoolAcademy.academyNumber = '" + number + "'";
 		}
 		if(user!=null&&user.getUsername() != null){
 			sql+=" and (u.username like '%"+user.getUsername()+"%' or u.cname like '%"+ user.getUsername() +"%') ";
 		}
-		sql += " and userStatus = 1";
+		sql += " and u.userStatus = 1 and u.enabled = 1";
 		return  userDAO.executeQuery(sql, (currpage-1)*pageSize,pageSize);
 	}
 
@@ -431,6 +431,13 @@ public class UserDetailServiceImpl implements UserDetailService {
 							u.setAuthorities(authorities);
 							userDAO.store(u);
 						}
+						// 初始卡号88888888
+						UserCard userCard = new UserCard();
+						userCard.setCardNo("88888888");
+						userCard.setEnabled("1");
+						userCard.setUser(u);
+						userCardDAO.store(userCard);
+						userCardDAO.flush();
 					}
 				}
 			}
@@ -817,7 +824,7 @@ public class UserDetailServiceImpl implements UserDetailService {
 	 * 2018年9月3日
 	 */
 	public List<UserCard> findCardNoByUserName(String username){
-		String sql="select u from UserCard u where 1=1";
+		String sql="select u from UserCard u where u.enabled=1";
 		sql+=" and u.user.username='"+username+"'";
 		List<UserCard> userCards=userCardDAO.executeQuery(sql,0,-1);
 		return userCards;

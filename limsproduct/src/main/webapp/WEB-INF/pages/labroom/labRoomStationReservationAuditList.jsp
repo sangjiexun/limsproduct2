@@ -323,10 +323,10 @@
                 <div class="page">
                     共 ${totalRecords}条记录, 总页数:${pageModel.totalPage}页 <input type="hidden" value="${pageModel.lastPage}" id="totalpage" />&nbsp;
                     <input type="hidden" value="${currpage}" id="currpage" /><input type="hidden" value="${tage}" id="tage" />
-                    <a href="javascript:void(0)" onclick="first('${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=${tage}&currpage=1&isaudit=${isAudit}')" target="_self">首页</a>
-                    <a href="javascript:void(0)" onclick="previous('${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=${tage}&isaudit=${isAudit}'+'&currpage=')" target="_self">上一页</a>
-                    <a href="javascript:void(0)" onclick="next('${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=${tage}&isaudit=${isAudit}'+'&currpage=')" target="_self">下一页</a>
-                    <a href="javascript:void(0)" onclick="last('${pageContext.request.contextPath}/LabRoomReservation/labRoomReservationList?tage=${tage}&isaudit=${isAudit}&currpage=${pageModel.totalPage}')" target="_self">末页</a>
+                    <a href="javascript:void(0)" onclick="first('${pageContext.request.contextPath}/LabRoomReservation/labRoomStationReservationAuditList??tage=${tage}&currpage=1&isaudit=${isAudit}')" target="_self">首页</a>
+                    <a href="javascript:void(0)" onclick="previous('${pageContext.request.contextPath}/LabRoomReservation/labRoomStationReservationAuditList?tage=${tage}&isaudit=${isAudit}'+'&currpage=')" target="_self">上一页</a>
+                    <a href="javascript:void(0)" onclick="next('${pageContext.request.contextPath}/LabRoomReservation/labRoomStationReservationAuditList?tage=${tage}&isaudit=${isAudit}'+'&currpage=')" target="_self">下一页</a>
+                    <a href="javascript:void(0)" onclick="last('${pageContext.request.contextPath}/LabRoomReservation/labRoomStationReservationAuditList?tage=${tage}&isaudit=${isAudit}&currpage=${pageModel.totalPage}')" target="_self">末页</a>
                 </div>
             </div></div></div>
 </body>

@@ -785,7 +785,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 	 * @author Hezhaoyi
 	 * @date 2019-7-7
 	 *************************************************************************************/
-	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, int currpage,int pageSize, String acno,int isAudit) {
+	public List<LabRoomStationReservation> findAllLabRoomreservatioList(LabRoomStationReservation labRoomStationReservation, int tage, String acno,int isAudit) {
 		String sql = "select distinct l from LabRoomStationReservation l where 1=1 ";
 //        if(labRoomStationReservation.getResult()!=null){
 //            if(labRoomStationReservation.getResult()==2){   //审核中包括未审核状态和取消预约未审核
@@ -822,7 +822,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			sql += " and l.result=4";
 		}
 		sql += "   order by l.id desc";
-		List<LabRoomStationReservation> lll = labRoomStationReservationDAO.executeQuery(sql, (currpage - 1) * pageSize, pageSize);
+		List<LabRoomStationReservation> lll = labRoomStationReservationDAO.executeQuery(sql, 0,-1);
 
 		return lll;
 	}
@@ -838,7 +838,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
         PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
         User user = shareService.getUser();
         // 根据分页信息查询出来的记录
-        List<LabRoomStationReservation> listLabRoomStationReservation = this.findAllLabRoomreservatioList(labRoomStationReservation, tage, currpage, pageSize, acno, isaudit);
+        List<LabRoomStationReservation> listLabRoomStationReservation = this.findAllLabRoomreservatioList(labRoomStationReservation, tage, acno, isaudit);
         //判断所处审核阶段，关联到前端的按钮
         for (LabRoomStationReservation labRoomStationReservation2 : listLabRoomStationReservation) {
             //全部设置为审核按钮
@@ -850,7 +850,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
         for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
             String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
             //判断是否是取消预约的数据，切换审核businessType
-            if(stationReservation.getResult()==5){
+            if(stationReservation.getResult()!=null &&stationReservation.getResult()==5){
                 businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomStationReservation";
             }
             String businessAppUid = "";
@@ -867,7 +867,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                 params.put("businessUid", stationReservation.getLabRoom().getId().toString());
 
                 //判断是否是取消预约的数据，切换审核businessUid
-                if(stationReservation.getResult()==5){
+                if(stationReservation.getResult()!=null && stationReservation.getResult()==5){
                     params.put("businessUid", "-1");
                 }
                 params.put("businessAppUid", businessAppUid);
@@ -972,22 +972,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                     }
                 }
             }
-//            if()
         }
-        List<LabRoomStationReservation> labRoomStationReservationList = new ArrayList<>();
-        int firstResult = (Integer.valueOf(currpage)-1) * Integer.valueOf(pageSize);
-        int targetLimit = firstResult+Integer.valueOf(pageSize);
-        if(labRoomStationReservationArrayList.size()>0){
-            if(targetLimit<=labRoomStationReservationArrayList.size()){
-                //do nothing
-            }else{
-                targetLimit = labRoomStationReservationArrayList.size();
-            }
-            for(int i=firstResult;i<targetLimit;i++) {
-                labRoomStationReservationList.add(labRoomStationReservationArrayList.get(i));;
-            }
-        }
-        return labRoomStationReservationList;
+
+        return labRoomStationReservationArrayList;
     }
 	/*************************************************************************************
 	 * Description 根据登陆人权限得到实验室预约列表
@@ -1356,12 +1343,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1437,12 +1424,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1507,12 +1494,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1568,12 +1555,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(1);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1610,12 +1597,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 				message.setTage(4);
 			}
 			if(labRoomDeviceReservation.getUserByReserveUser().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(labRoomDeviceReservation.getUserByReserveUser().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			message.setUsername(labRoomDeviceReservation.getUserByReserveUser().getUsername());
 			messageDAO.store(message);
@@ -1744,12 +1731,12 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 			}
 			softwareReserveAudit.setStatus(2);
 			if(shareService.getUserDetail().getTelephone() != null){
-//				try {
-//					String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					String result = shareService.sendMessage(shareService.getUserDetail().getTelephone(), message.getTitle());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			shareService.sendMsg(softwareReserve.getUser(), message);
 		}else if(softwareReserve.getState() == 3){//实验室管理员审核结果保存

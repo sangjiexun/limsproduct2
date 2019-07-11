@@ -275,6 +275,10 @@ public class MaterialController {
     @RequestMapping("/saveAddAssetsReceiveDetail")
     @ResponseBody
     public String saveAddAssetsReceiveDetail(@RequestBody AssetsApplyItemDTO assetsApplyItemDTO){
+       //编辑时先返还库存
+        if(assetsApplyItemDTO.getId()!=null){
+            materialService.returnCabinetRecordFromAssetsReceiveRecord(assetsApplyItemDTO.getId());
+        }
         String s= materialService.allocateCabinetFromAssets(Integer.parseInt(assetsApplyItemDTO.getAssetsId()), assetsApplyItemDTO.getQuantity(), assetsApplyItemDTO.getId(),Integer.parseInt(assetsApplyItemDTO.getAppId()));
         if(!s.equals("insufficient")&&!s.equals("notEnough")){
             if(s.contains("-")) {

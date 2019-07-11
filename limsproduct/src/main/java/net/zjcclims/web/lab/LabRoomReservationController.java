@@ -1402,11 +1402,11 @@ public class LabRoomReservationController<JsonResult> {
         if(labRoomStationReservation.getResult()==null){
             labRoomStationReservation.setResult(1);
         }
-        List<LabRoomStationReservation>labRoomStationReservationList = labRoomReservationService.findLabRoomreservatioUserAuditList(labRoomStationReservation,currpage, tage,isaudit,acno, pageSize,request);
-        Object[] objects = new Object[labRoomStationReservationList.size()];
+        List<LabRoomStationReservation>labRoomStationReservationArrayList = labRoomReservationService.findLabRoomreservatioUserAuditList(labRoomStationReservation,currpage, tage,isaudit,acno, pageSize,request);
+        Object[] objects = new Object[labRoomStationReservationArrayList.size()];
         List<Integer> auditState = new ArrayList<>();
         int count = 0;
-        for(LabRoomStationReservation labStationReservation:labRoomStationReservationList){
+        for(LabRoomStationReservation labStationReservation:labRoomStationReservationArrayList){
             // 审核记录
             Map<String, String> params = new HashMap<>();
             params.put("businessUid", labStationReservation.getLabRoom().getId().toString());
@@ -1472,8 +1472,21 @@ public class LabRoomReservationController<JsonResult> {
                 auditState.add(-2);
             }
         }
+        List<LabRoomStationReservation> labRoomStationReservationList = new ArrayList<>();
+        int firstResult = (Integer.valueOf(currpage)-1) * Integer.valueOf(pageSize);
+        int targetLimit = firstResult+Integer.valueOf(pageSize);
+        if(labRoomStationReservationArrayList.size()>0){
+            if(targetLimit<=labRoomStationReservationArrayList.size()){
+                //do nothing
+            }else{
+                targetLimit = labRoomStationReservationArrayList.size();
+            }
+            for(int i=firstResult;i<targetLimit;i++) {
+                labRoomStationReservationList.add(labRoomStationReservationArrayList.get(i));;
+            }
+        }
         // 查询出来的总记录条数
-        int totalRecords = labRoomStationReservationList.size();
+        int totalRecords = labRoomStationReservationArrayList.size();
         // 分页信息
         Map<String, Integer> pageModel = shareService.getPage(currpage, pageSize, totalRecords);
         mav.addObject("auditState",auditState);

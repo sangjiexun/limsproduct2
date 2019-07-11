@@ -1175,7 +1175,7 @@ public class ShareServiceImpl implements ShareService {
 	@Override
 	public List<SchoolAcademy> findAllSchoolAcademys() {
 		// TODO Auto-generated method stub
-		String sql="select s from SchoolAcademy s where 1=1";//where s.academyNumber like '02__'  2015.10.02贺子龙
+		String sql="select s from SchoolAcademy s where s.isVaild=1";//where s.academyNumber like '02__'  2015.10.02贺子龙
 		List<SchoolAcademy> s=schoolAcademyDAO.executeQuery(sql, 0,-1);
 		return s;
 	}
