@@ -1114,7 +1114,7 @@ public class LabRoomServiceImpl implements LabRoomService {
 	public List<LabRoom> findLabRoomWithDevices(LabRoomDevice device, Integer page, int pageSize, Integer isReservation, String acno, HttpServletRequest request) {
 		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
 		String sql = "select distinct m from LabRoom m, LabRoomDevice lr, LabRoomAdmin la where 1=1 and m.id=lr.labRoom.id";
-		if (device.getLabRoom() != null) {
+		if (device != null && device.getLabRoom() != null) {
 			if (device.getLabRoom().getId() != null && !device.getLabRoom().getId().equals("")) {
 				sql += " and m.id=" + device.getLabRoom().getId();
 			}

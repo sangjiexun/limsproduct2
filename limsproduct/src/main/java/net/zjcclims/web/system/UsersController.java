@@ -411,39 +411,33 @@ public class UsersController<JsonResult>
 		ModelAndView mav = new ModelAndView();
 		User user =userDAO.findUserByUsername(username);
 		mav.addObject("users",user);
-		String userCards=" ";
-		if(user.getUserCards().size()>0){
-			for(UserCard userCard:user.getUserCards()){
-				userCards=userCard.getCardNo();
-			}
-		}
-		mav.addObject("cardNo",userCards);
+		mav.addObject("userCards",userDetailService.findCardNoByUserName(username));
 		mav.setViewName("system/user/cardBlind.jsp");
 		return mav;
 	}
+
 	/**
-	 * 功能：保存卡号
-	 * 作者：廖文辉
-	 * 日期：2018.9.3
+	 * Description 保存卡号，并更新物联相关数据
+	 * @param username 用户名
+	 * @param cardno 修改后的卡号
+	 * @param cardId user_card的id
+	 * @return
+	 * @author 廖文辉 2018.9.3
+	 * @author 陈乐为 2019-7-11 修改
 	 */
 	@RequestMapping("/system/saveCardBlind")
 	@ResponseBody
-	public String saveCardBlind(@RequestParam String username,String cardno){
-		List <UserCard> u=userDetailService.findCardNoByUserName(username);
-		if(u.size()==0){
-			UserCard userCard =new UserCard();
-			User user=userDAO.findUserByUsername(username);
-			userCard.setUser(user);
-			userCard.setCardNo(cardno);
-			userCard.setEnabled(String.valueOf(1));
-			userCardDAO.store(userCard);
-			userCardDAO.flush();
-		}else{
-			UserCard userCard=u.get(0);
+	public String saveCardBlind(@RequestParam String username,String cardno, Integer cardId){
+		// 旧卡号
+		String old_card_no = "";
+		String old_acl_card = "";
+		// 新卡号
+		String new_card_no = "";
+		String new_acl_card = "";
+		UserCard userCard = userCardDAO.findUserCardById(cardId);
+		if (userCard != null) {
 			// 保存前取到旧卡号
-			String old_card_no = "";
-			String old_acl_card = "";
-			String oldSQL = "select * from view_user where username='"+ username +"'";
+			String oldSQL = "select * from view_user where id = " + cardId;
 			Query query = entityManager.createNativeQuery(oldSQL);
 			List<Object[]> list = query.getResultList();
 			for (Object[] obj : list) {
@@ -453,15 +447,13 @@ public class UsersController<JsonResult>
 					break;
 				}
 			}
-
+			// 保存对象
 			userCard.setCardNo(cardno);
 			userCard.setEnabled(String.valueOf(1));
 			userCardDAO.store(userCard);
 			userCardDAO.flush();
 			// 保存后，获取新卡号
-			String new_card_no = "";
-			String new_acl_card = "";
-			String newSQL = "select * from view_user where username='"+ username +"'";
+			String newSQL = "select * from view_user where id = " + cardId;
 			Query newQuery = entityManager.createNativeQuery(newSQL);
 			List<Object[]> newList = newQuery.getResultList();
 			for (Object[] obj : newList) {
@@ -471,7 +463,6 @@ public class UsersController<JsonResult>
 					break;
 				}
 			}
-
 			// 同步卡号
 			Set<CommonServer> commonServers = commonServerDAO.findAllCommonServers();
 			for (CommonServer server : commonServers) {
@@ -484,7 +475,6 @@ public class UsersController<JsonResult>
 					String s = HttpClientUtil.doPost(url);
 				}
 			}
-
 		}
 		return "success";
 	}

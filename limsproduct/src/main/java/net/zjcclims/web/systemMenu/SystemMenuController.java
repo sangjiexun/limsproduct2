@@ -7,6 +7,7 @@ import net.zjcclims.domain.Authority;
 import net.zjcclims.domain.AuthorityMenu;
 import net.zjcclims.domain.SchoolAcademy;
 import net.zjcclims.domain.SystemMenu;
+import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.system.SystemAuthorityService;
 import net.zjcclims.service.system.showAcademyAuthority;
 import net.zjcclims.service.systemMenu.SystemMenuService;
@@ -42,7 +43,7 @@ public class SystemMenuController<JsonResult> {
     private AuthorityMenuDAO authorityMenuDAO;
 
     @Autowired
-    private SchoolAcademyDAO schoolAcademyDAO;
+    private ShareService shareService;
 
     /**
      * Description 列出所有可调整菜单的权限列表
@@ -108,7 +109,7 @@ public class SystemMenuController<JsonResult> {
         mav.addObject("allSystemMenuChild", allSystemMenuChild);
 
         // 获取所有学院
-        List<SchoolAcademy> schoolAcademies = new ArrayList<>(schoolAcademyDAO.findAllSchoolAcademys());
+        List<SchoolAcademy> schoolAcademies = shareService.findAllSchoolAcademys();
         mav.addObject("schoolAcademies", schoolAcademies);
 
         mav.setViewName("/systemMenu/editAuthorityMenu.jsp");

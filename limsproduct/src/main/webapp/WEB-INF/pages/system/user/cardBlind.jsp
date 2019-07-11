@@ -12,27 +12,39 @@
 </head>
 <body>
 <script type="text/javascript">
-    function saveCardBlind(username){
-        var cardNo = $("#cardNo").val();
-        if(cardNo==null || cardNo=="") {
+    // 编辑卡号
+    function editUserCard(card_id) {
+        if ($("#cardNo_" + card_id).text() == "确定") {
+            var newCard = $("#input_"+card_id).val();
+            // 保存
+            saveUserCard(card_id, newCard);
+            $('#div_' + card_id).hide();
+            $("#cardNo_" + card_id).text("点击修改：" + newCard);
+            $(':button').removeAttr("disabled");
+        }else {
+            $('#div_' + card_id).show();
+            $("#cardNo_" + card_id).text('确定');
+            $(':button').attr("disabled", "true");
+            $("#cardNo_" + card_id).removeAttr("disabled");
+        }
+    }
+
+    // 保存卡号
+    function saveUserCard(card_id, new_card_no) {
+        var username = $("#username").val();
+        if(new_card_no==null || new_card_no=="") {
             alert("请填写卡号！");
         }else {
             $.ajax({
                 url:"${pageContext.request.contextPath}/system/saveCardBlind",
                 type: 'POST',
                 datatype: 'text',
-                data: {username:username,cardno:$("#cardNo").val()},
+                data: {username:username,cardno:new_card_no,cardId:card_id},
                 complete:function(data){
-                    window.parent.location.reload();
-                    window.close();
+                    // window.parent.location.reload();
+                    // window.close();
                 }
             })
-        }
-    }
-
-    function EnterPress(){ //传入 event
-        if (event.keyCode == 13) {
-            saveCardBlind('${users.username}');
         }
     }
 </script>
@@ -44,7 +56,8 @@
         <table>
             <tr>
                 <th>学号/工号:</th>
-                <td>${users.username}</td>
+                <td>${users.username}
+                    <input value="${users.username}" type="hidden" id="username" /></td>
             <tr>
             <tr>
                 <th>用户姓名:</th>
@@ -63,16 +76,16 @@
                     </tr>
                 </c:when>
             </c:choose>
-            <tr>
-                <th>卡号:</th>
-              <td><input id="cardNo" name="cardNo" value="${cardNo}" onkeypress="EnterPress();"></td>
-            </tr>
-            <tr>
-                <td><a href="" onclick="saveCardBlind('${users.username}')">保存</a>
-                 </td>
-            </tr>
+            <c:forEach var="curr" items="${userCards}" varStatus="i">
+                <tr>
+                    <th>卡号${i.count}</th>
+                    <td>
+                        <div id="div_${curr.id}" style="display: none; float:center"><input id="input_${curr.id}" type='text' value='${curr.cardNo}' style="width:150px;"></div>
+                        <button id='cardNo_${curr.id}' class='btn btn-xs green' onclick="editUserCard('${curr.id}')" title='编辑' ><span class='glyphicon glyphicon'>点击修改：${curr.cardNo}</span></button></td>
+                </tr>
+            </c:forEach>
+            <tr></tr>
         </table>
-       <%--</form:form>--%>
     </div>
 </div>
 </div>
