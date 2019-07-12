@@ -510,7 +510,7 @@ public class LabRoomReservationController<JsonResult> {
             mav.addObject("listLabRoom", listLabRoom);
         } else {
             List<LabRoom> listLabRoom = labRoomReservationService.findLabRoom(labRoom, currpage, pageSize, acno, request);
-            totalRecords =  labRoomReservationService.findLabRoom(labRoom, currpage, pageSize, acno, request).size();
+            totalRecords =  labRoomReservationService.findLabRoom(labRoom,1, Integer.MAX_VALUE , acno, request).size();
             mav.addObject("listLabRoom", listLabRoom);
         }
         // 分页信息
