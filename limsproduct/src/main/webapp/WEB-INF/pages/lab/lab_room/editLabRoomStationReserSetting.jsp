@@ -419,7 +419,9 @@ margin-left:3px;
 
 
 <body>
-
+<div class="tit-box">
+	${device.labRoomName}
+</div>
 <div class="right-content">	
 	<%--<div class="tool-box1">
 		<table class="equip_tab">

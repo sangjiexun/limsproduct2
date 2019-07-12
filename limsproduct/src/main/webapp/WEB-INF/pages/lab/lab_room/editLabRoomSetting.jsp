@@ -349,7 +349,9 @@ $(document).ready(function(){
             // document.getElementById("dean").style.display = "None";
             // document.getElementById("trainingCenterDirector").style.display = "None";
             // document.getElementById("trainingDepartmentDirrector").style.display = "None";
-             document.getElementById("1staudit").style.display = "None";
+			if(${flag == true}){
+                document.getElementById("1staudit").style.display = "None";
+			}
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "None";
@@ -385,7 +387,9 @@ $("#needAudit1").change(function(){
 	// document.getElementById("labManager").style.display="";
 	// document.getElementById("trainingCenterDirector").style.display="";
 	// document.getElementById("trainingDepartmentDirrector").style.display="";
-    document.getElementById("1staudit").style.display = "";
+    if(${flag == true}){
+        document.getElementById("1staudit").style.display = "";
+    }
     if(needAllAudits[0]) {
         for (var i = 0; i < needAllAudits.length; i++) {
             document.getElementById(needAllAudits[i]).style.display = "";
@@ -401,7 +405,9 @@ $("#needAudit1").change(function(){
 $("#appointment1").change(function(){
 	document.getElementById("allowSecurityAccess").style.display="";
 	document.getElementById("isAudit").style.display="";
-    document.getElementById("1staudit").style.display="None";
+    if(${flag == true}){
+        document.getElementById("1staudit").style.display = "None";
+    }
     //document.getElementById("selectAcademy").style.display="";
 	if(${empty isAudit}){//是否需要审核联动
         // document.getElementById("teacher").style.display="None";
@@ -411,14 +417,18 @@ $("#appointment1").change(function(){
         // document.getElementById("trainingDepartmentDirrector").style.display="None";
         document.getElementById('needAudit1').checked = "";
         document.getElementById('needAudit2').checked = "";
-        document.getElementById("1staudit").style.display="None";
+        if(${flag == true}){
+            document.getElementById("1staudit").style.display = "None";
+        }
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
             }
         }
     }else if(${isAudit==2}){
-        document.getElementById("1staudit").style.display="None";
+        if(${flag == true}){
+            document.getElementById("1staudit").style.display = "None";
+        }
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
@@ -431,7 +441,9 @@ $("#appointment1").change(function(){
         // document.getElementById("labManager").style.display="";
         // document.getElementById("trainingCenterDirector").style.display="";
         // document.getElementById("trainingDepartmentDirrector").style.display="";
-            document.getElementById("1staudit").style.display="";
+            if(${flag == true}){
+                document.getElementById("1staudit").style.display="";
+            }
             if(needAllAudits[0]) {
                 for (var i = 0; i < needAllAudits.length; i++) {
                     document.getElementById(needAllAudits[i]).style.display = "";
@@ -455,7 +467,9 @@ $(document).ready(function(){
 		// document.getElementById("labManager").style.display="None";
 		// document.getElementById("trainingCenterDirector").style.display="None";
 		// document.getElementById("trainingDepartmentDirrector").style.display="None";
-        document.getElementById("1staudit").style.display = "None";
+        if(${flag == true}){
+            document.getElementById("1staudit").style.display = "None";
+        }
         if(needAllAudits[0]) {
             for (var i = 0; i < needAllAudits.length; i++) {
                 document.getElementById(needAllAudits[i]).style.display = "None";
@@ -583,7 +597,10 @@ margin-left:3px;
 
 
 <body>
-
+<!-- 实训室信息开始 -->
+<div class="tit-box">
+	${device.labRoomName}
+</div>
 <div class="right-content">	
 	<%--<div class="tool-box1">
 		<table class="equip_tab">

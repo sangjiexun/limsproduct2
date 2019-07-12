@@ -139,7 +139,9 @@ function findLabRoomTrainingPeopleByTrainIdRest(id,toChangeAudit){
 
 
 <body>
-
+<div class="tit-box">
+	${labRoom.labRoomName}
+</div>
 <div class="right-content">	
 	<div id="TabbedPanels1" class="TabbedPanels">
 	   <ul class="TabbedPanelsTabGroup">
