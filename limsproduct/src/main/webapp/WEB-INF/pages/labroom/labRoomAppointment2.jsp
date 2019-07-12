@@ -240,11 +240,25 @@
         }
 
         //实验室设置
-        function openSetupLink(labRoomId, currpage) {//将labRoomId page传递到后台
-            //alert(labRoomId);
-            var url = "${pageContext.request.contextPath}/device/editLabRoomSettingRest/" + labRoomId + "/" + currpage + "/1";
+        <%--function openSetupLink(labRoomId, currpage) {//将labRoomId page传递到后台--%>
+            <%--//alert(labRoomId);--%>
+            <%--var url = "${pageContext.request.contextPath}/device/editLabRoomSettingRest/" + labRoomId + "/" + currpage + "/1";--%>
 
-            window.location.href = url;
+            <%--window.location.href = url;--%>
+        <%--}--%>
+        //设置
+        function openSetupLink(labRoomId,currpage,type){//将labRoomId page传递到后台
+            var index = layer.open({
+                type: 2,
+                title: '设置',
+                maxmin: true,
+                shadeClose: true,
+                content: "${pageContext.request.contextPath}/device/editLabRoomSettingRest/"+labRoomId+"/"+currpage+"/"+type,
+                end: function(){
+                    window.location.href="${pageContext.request.contextPath}/LabRoomReservation/labRoomList?currpage=1";
+                }
+            });
+            layer.full(index);
         }
 
         //培训预约(编辑--针对老师)
@@ -609,6 +623,11 @@
                                         <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
                                         <td>
                                             <a href="javascript:void(0)" onclick="viewLabRoomTrainingRest(${s.id})">预约培训</a>
+                                            <c:forEach items="${s.labRoomAdmins}" var="la">
+                                                <c:if test="${la.user.username eq user.username}">
+                                                    <a  href="javascript:void(0)" onclick="openSetupLink(${s.id},${pageModel.currpage},1)">设置</a>
+                                                </c:if>
+                                            </c:forEach>
                                         </td>
                                         </c:if>
                                     </tr>
