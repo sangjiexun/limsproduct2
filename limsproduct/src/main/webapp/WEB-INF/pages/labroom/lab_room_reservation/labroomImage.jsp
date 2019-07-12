@@ -94,7 +94,9 @@ function closeMyWindow(){
 
 
 <body>
-
+<div class="tit-box">
+	${device.labRoomName}
+</div>
 <div class="right-content">	
 	<div id="TabbedPanels1" class="TabbedPanels">
 	 <ul class="TabbedPanelsTabGroup">
