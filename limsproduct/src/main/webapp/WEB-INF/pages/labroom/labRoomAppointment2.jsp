@@ -589,9 +589,7 @@
                                     <c:if test="${jobReservation eq 'true'}">
                                         <th>可预约工位数</th>
                                     </c:if>
-                                    <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
-                                    <th>操作</th>
-                                    </c:if>
+                                    <th>操作1</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -620,16 +618,18 @@
                                         <c:if test="${jobReservation eq 'true'}">
                                             <td>${s.labRoomWorker}</td>
                                         </c:if>
-                                        <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
+
                                         <td>
-                                            <a href="javascript:void(0)" onclick="viewLabRoomTrainingRest(${s.id})">预约培训</a>
+                                            <c:if test="${sessionScope.selected_role eq 'ROLE_STUDENT'}">
+                                                <a href="javascript:void(0)" onclick="viewLabRoomTrainingRest(${s.id})">预约培训</a>
+                                            </c:if>
                                             <c:forEach items="${s.labRoomAdmins}" var="la">
                                                 <c:if test="${la.user.username eq user.username}">
                                                     <a  href="javascript:void(0)" onclick="openSetupLink(${s.id},${pageModel.currpage},1)">设置</a>
                                                 </c:if>
                                             </c:forEach>
                                         </td>
-                                        </c:if>
+
                                     </tr>
                                 </c:forEach>
                                 </tbody>
