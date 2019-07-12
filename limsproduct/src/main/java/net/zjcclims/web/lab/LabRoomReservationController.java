@@ -500,19 +500,21 @@ public class LabRoomReservationController<JsonResult> {
         }
         mav.addObject("labRoom", labRoom);
         int pageSize = 20;
-        // 查询出来的总记录条数
-        int totalRecords = labRoomReservationService.findLabRoomReservation(labRoom, 1, Integer.MAX_VALUE, acno, request).size();
-        // 分页信息
-        Map<String, Integer> pageModel = shareService.getPage(currpage, pageSize, totalRecords);
+        int totalRecords = 0;
         // 根据分页信息查询出来的记录
         String a=pConfigDTO.softManage;
         if (a.equals("true")) {
+            // 查询出来的总记录条数
+            totalRecords = labRoomReservationService.findLabRoomReservation(labRoom, 1, Integer.MAX_VALUE, acno, request).size();
             List<LabRoom> listLabRoom = labRoomReservationService.findLabRoomReservation(labRoom, currpage, pageSize, acno, request);
             mav.addObject("listLabRoom", listLabRoom);
         } else {
             List<LabRoom> listLabRoom = labRoomReservationService.findLabRoom(labRoom, currpage, pageSize, acno, request);
+            totalRecords =  labRoomReservationService.findLabRoom(labRoom, currpage, pageSize, acno, request).size();
             mav.addObject("listLabRoom", listLabRoom);
         }
+        // 分页信息
+        Map<String, Integer> pageModel = shareService.getPage(currpage, pageSize, totalRecords);
         //获取当前登陆人
         User user = shareService.getUser();
         mav.addObject("user", user);
@@ -1412,7 +1414,7 @@ public class LabRoomReservationController<JsonResult> {
             params.put("businessUid", labStationReservation.getLabRoom().getId().toString());
             String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (labStationReservation.getLabRoom().getLabCenter() == null ? "-1" : labStationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
             //判断是否是取消预约的数据，切换审核businessType businessUid
-            if(labStationReservation.getResult()==5){
+            if(labStationReservation.getResult()==5 ||labStationReservation.getResult()==6||labStationReservation.getResult()==7){
                 businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomStationReservation";
                 params.put("businessUid", "-1");
             }

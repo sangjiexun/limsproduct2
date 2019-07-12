@@ -323,9 +323,9 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
 		if (labRoom.getLabRoomWorker() != null) {
 			hql += " and  l.labRoomWorker = " + labRoom.getLabRoomWorker();
 		}
-		if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN")){
-			hql += " and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')";
-		}
+//		if(request.getSession().getAttribute("selected_role").equals("ROLE_LABMANAGER") || request.getSession().getAttribute("selected_role").equals("ROLE_CABINETADMIN")){
+//			hql += " and l not in (select l from LabRoomAdmin lra, LabRoom l where lra.labRoom = l and lra.user.username = '" + shareService.getUserDetail().getUsername() + "')";
+//		}
 		User user = shareService.getUser();
 		Set<Authority> authorities = user.getAuthorities();
 		if(acno!=null && !acno.equals("-1")){// 20190506全校
@@ -850,7 +850,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
         for(LabRoomStationReservation stationReservation: listLabRoomStationReservation) {
             String businessType = pConfigDTO.PROJECT_NAME + "StationReservation" + (stationReservation.getLabRoom().getLabCenter() == null ? "-1" : stationReservation.getLabRoom().getLabCenter().getSchoolAcademy().getAcademyNumber());
             //判断是否是取消预约的数据，切换审核businessType
-            if(stationReservation.getResult()!=null &&stationReservation.getResult()==5){
+            if(stationReservation.getResult()!=null && (stationReservation.getResult()==5 || stationReservation.getResult()==6 ||stationReservation.getResult()==7)){
                 businessType = pConfigDTO.PROJECT_NAME + "CancelLabRoomStationReservation";
             }
             String businessAppUid = "";
@@ -867,7 +867,7 @@ public class LabRoomReservationServiceImpl implements LabRoomReservationService 
                 params.put("businessUid", stationReservation.getLabRoom().getId().toString());
 
                 //判断是否是取消预约的数据，切换审核businessUid
-                if(stationReservation.getResult()!=null && stationReservation.getResult()==5){
+                if(stationReservation.getResult()!=null && (stationReservation.getResult()==5 || stationReservation.getResult()==6 ||stationReservation.getResult()==7)){
                     params.put("businessUid", "-1");
                 }
                 params.put("businessAppUid", businessAppUid);
