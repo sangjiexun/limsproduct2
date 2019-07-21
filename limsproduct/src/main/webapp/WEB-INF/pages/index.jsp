@@ -207,7 +207,6 @@
             </div>
         </div>
     </div>
-
     <script type="text/javascript">
         $(".link_container").hover(
             function () {
@@ -243,7 +242,6 @@
             }
         )
         setInterval("TT()", 10);
-
         function TT() {
             var Height = $(window).height();
             $(".menu_box").height(Height);
@@ -277,7 +275,5 @@
             }
         )
     </script>
-
 </body>
-
 </html>

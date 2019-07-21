@@ -981,7 +981,6 @@ public class User implements Serializable {
 	public void setLabRoomDeviceLendingsForTeacher(Set<LabRoomDeviceLending> labRoomDeviceLendingsForTeacher) {
 		this.labRoomDeviceLendingsForTeacher = labRoomDeviceLendingsForTeacher;
 	}
-
 	/**
 	 */
 	@JsonIgnore
@@ -991,7 +990,6 @@ public class User implements Serializable {
 		}
 		return labRoomDeviceLendingsForTeacher;
 	}
-
 	/**
 	 */
 	public void setLabRoomDeviceLendingsForLendingUser(Set<LabRoomDeviceLending> labRoomDeviceLendingsForLendingUser) {

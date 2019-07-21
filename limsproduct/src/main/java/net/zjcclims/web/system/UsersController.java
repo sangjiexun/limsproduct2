@@ -10,13 +10,12 @@ package net.zjcclims.web.system;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Iterator;
+
 import net.gvsun.lims.dto.common.PConfigDTO;
 import net.zjcclims.constant.CommonConstantInterface;
 import net.zjcclims.dao.*;
@@ -24,14 +23,12 @@ import net.zjcclims.domain.*;
 import net.zjcclims.service.common.ShareService;
 import net.zjcclims.service.lab.LabCenterService;
 //import net.zjcclims.service.system.TimeDetailService;
+import net.zjcclims.service.system.User2DetailService;
 import net.zjcclims.service.system.UserDetailService;
 
 import net.zjcclims.util.HttpClientUtil;
-import net.zjcclims.web.common.PConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -70,13 +67,16 @@ public class UsersController<JsonResult>
 	private EntityManager entityManager;
 	@Autowired
 	UserDetailService userDetailService;
-
+	@Autowired(required = false)
+	User2DetailService user2DetailService;
 	@Autowired
 	ShareService shareService;
 	@Autowired
 	LabCenterService labCenterService;
 	@Autowired
 	UserDAO userDAO;
+	@Autowired
+	SchoolAcademyDAO schoolAcademyDAO;
 	@Autowired
 	SchoolClassesDAO schoolClassesDAO;
 	@Autowired
@@ -101,25 +101,50 @@ public class UsersController<JsonResult>
 		}
 		// 设置用户的总记录数并赋值
 		int totalRecords = userDetailService.getUserTotalRecords(user,acno);
-		
+
 		Map<String, Integer> pageModel = shareService.getPage( currpage, pageSize,totalRecords);
 		//
 		mav.addObject("newFlag", true);
 		//将pageModel映射到pageModel
-		mav.addObject("pageModel", pageModel);
+		mav.addObject("pageModel", pageModel);//总页数
 		//将currpage映射到page，用来获取当前页的页码
-		mav.addObject("page", currpage);
+		mav.addObject("page", currpage);//方框中的页数
 		//将totalRecords映射到totalRecords，用来获取总记录数
-		mav.addObject("totalRecords", totalRecords);
+		mav.addObject("totalRecords", totalRecords);//总记录数
 		mav.addObject("userOperation", pConfigDTO.userOperation);
-		
+
 		//获取用户列表
 		mav.addObject("userMap", userDetailService.getUserTotalRecords(user,acno,currpage,pageSize));
 		// 将该Model映射到listUser.jsp
 		mav.setViewName("system/user/listUser.jsp");
 		return mav;
 	}
-	
+	@RequestMapping("/system/user/student")
+	public ModelAndView student(@ModelAttribute User user,@RequestParam int currpage)
+	{
+		ModelAndView mav = new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+		// 设置分页变量并赋值为20
+		int pageSize = CommonConstantInterface.INT_PAGESIZE;
+		// 设置用户的总记录数并赋值
+		int totalRecords = userDetailService.getUserTotalRecords("4444");
+		Map<String, Integer> pageModel = shareService.getPage( currpage, pageSize,totalRecords);
+		//
+		mav.addObject("newFlag", true);
+		//将pageModel映射到pageModel
+		mav.addObject("pageModel", pageModel);//总页数
+		//将currpage映射到page，用来获取当前页的页码
+		mav.addObject("page", currpage);//方框中的页数
+		//将totalRecords映射到totalRecords，用来获取总记录数
+		mav.addObject("totalRecords", totalRecords);//总记录数
+		mav.addObject("userOperation", pConfigDTO.userOperation);
+		//获取用户列表
+		mav.addObject("userMap", userDetailService.getUserTotalRecords(user,"4444",currpage,pageSize));
+		// 将该Model映射到listUser.jsp
+		mav.setViewName("system/user/student.jsp");
+		return mav;
+
+	}
 	/************************************************************
 	 * @内容：显示用户详细信息
 	 * @作者：叶明盾
@@ -137,7 +162,43 @@ public class UsersController<JsonResult>
 		mav.setViewName("system/user/userDetailInfo.jsp");
 		return mav;
 	}
-	
+	@RequestMapping("/system/userAdd")
+	public  ModelAndView userAdd(@RequestParam String num,@ModelAttribute User user,@RequestParam int currpage)
+	{
+
+		ModelAndView mav=new ModelAndView();
+		PConfigDTO pConfigDTO = shareService.getCurrentDataSourceConfiguration();
+		// 设置分页变量并赋值为20
+		int pageSize = CommonConstantInterface.INT_PAGESIZE;
+		// 设置用户的总记录数并赋值
+		int totalRecords = userDetailService.getUserTotalRecords("4444");
+		Map<String, Integer> pageModel = shareService.getPage( currpage, pageSize,totalRecords);
+		//
+		mav.addObject("newFlag", true);
+		//将pageModel映射到pageModel
+		mav.addObject("pageModel", pageModel);//总页数
+		//将currpage映射到page，用来获取当前页的页码
+		mav.addObject("page", currpage);//方框中的页数
+		//将totalRecords映射到totalRecords，用来获取总记录数
+		mav.addObject("totalRecords", totalRecords);//总记录数
+		mav.addObject("userOperation", pConfigDTO.userOperation);
+		user.setUsername("1111116");
+		user.setCname("梁正浩");
+		user.setPassword("123456");
+		SchoolAcademy a =schoolAcademyDAO.findSchoolAcademyByAcademyNumber("444");
+		user.setSchoolAcademy(a);
+		userDetailService.saveUser(user);
+		//获取用户列表
+		mav.addObject("userMap", userDetailService.getUserTotalRecords(null,"4444",currpage,pageSize));
+		// 将该Model映射到listUser.jsp
+		//将前端获取到的Username传递给后台
+		mav.addObject("num", num);
+		//根据用户的Username查找出用户
+		mav.addObject("users", userDetailService.findUserByNum(num));
+		//将该Model映射将该Model映射到userDetailInfo.jsp
+		mav.setViewName("system/user/student.jsp");
+		return mav;
+	}
 	/***********************************************************************************
 	 * @description：系统管理--用户管理（导入用户）
 	 * @author 郑昕茹
@@ -188,10 +249,20 @@ public class UsersController<JsonResult>
 			user.setUserStatus("0");
 			userDAO.store(user);
 		}
-		return "redirect:/system/listUser?currpage=1";
+		return "redirect:/system/user/listUser?currpage=1";
 	
 	}
+	@RequestMapping("/system/deleteStudent")
+	public String deleteStudent(@RequestParam String username)
+	{
+		User user = userDAO.findUserByPrimaryKey(username);
+		if(user != null){
+			user.setUserStatus("0");
+			userDAO.store(user);
+		}
+		return "redirect:/system/user/student?currpage=1";
 
+	}
 	/**************************************************************************
 	 * @Description 重置密码
 	 * @author 张德冰

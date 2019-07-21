@@ -10,7 +10,7 @@ import org.skyway.spring.util.dao.JpaDao;
 import org.springframework.dao.DataAccessException;
 
 /**
- * DAO to manage User entities.
+ * DAO to manage User entities.f
  * 
  */
 public interface UserDAO extends JpaDao<User> {

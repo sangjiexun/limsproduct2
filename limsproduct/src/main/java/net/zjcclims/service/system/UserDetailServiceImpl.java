@@ -69,6 +69,7 @@ public class UserDetailServiceImpl implements UserDetailService {
 			sql+=" and (u.username like '%"+user.getUsername()+"%' or u.cname like '%"+ user.getUsername() +"%') ";
 		}
 		sql += " and userStatus = 1";
+		System.out.println(((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue());
 		return  ((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
 	}
 	
@@ -228,6 +229,7 @@ public class UserDetailServiceImpl implements UserDetailService {
 		if(user!=null&&user.getSchoolAcademy()!= null&&user.getSchoolAcademy().getAcademyNumber()!="-1"){
 			sql+=" and u.schoolAcademy.academyNumber like '%"+user.getSchoolAcademy().getAcademyNumber()+"%'";
 		}
+		System.out.println(((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue()+"222222222222");
 		return  ((Long) userDAO.createQuerySingleResult(sql).getSingleResult()).intValue();
 	}
 
@@ -414,6 +416,7 @@ public class UserDetailServiceImpl implements UserDetailService {
 						if(!phone.equals("")){
 							u.setTelephone(phone);
 						}
+						u.setSchoolAcademy(schoolAcademyDAO.findSchoolAcademyByAcademyNumber("4444"));
 						u.setUserStatus("1");
 						u.setEnabled(true);
 						u = userDAO.store(u);
@@ -431,6 +434,7 @@ public class UserDetailServiceImpl implements UserDetailService {
 							u.setAuthorities(authorities);
 							userDAO.store(u);
 						}
+
 						// 初始卡号88888888
 						UserCard userCard = new UserCard();
 						userCard.setCardNo("88888888");

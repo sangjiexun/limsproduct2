@@ -267,6 +267,7 @@
 			<class>net.zjcclims.domain.ItemAssets</class>
 			<class>net.zjcclims.domain.ItemLabUsers</class>
 			<class>net.zjcclims.domain.ItemOpenTeacher</class>
+			<class>net.zjcclims.domain.User2</class>
             <exclude-unlisted-classes>true</exclude-unlisted-classes>
         </persistence-unit>
 

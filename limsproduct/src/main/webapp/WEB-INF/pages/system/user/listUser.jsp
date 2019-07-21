@@ -21,7 +21,7 @@
 	$("#my_show").jqprint();
 	});
 });
-</script> 
+</script>
 <script type="text/javascript">
 function exportSelect(){
 	 document.form.action="exportExcelSelectUser";
@@ -30,19 +30,19 @@ function exportSelect(){
 function importUser(){
   	$('#importUser').window({width:500,left:"30px",top:"30px"});
   	$("#importUser").window('open');
-  } 
+  }
 //AJAX验证是否有不规范的字段
 function checkRegex(){
 	var formData = new FormData(document.forms.namedItem("importForm"));
 	$.ajax({
         url:"${pageContext.request.contextPath}/labRoom/checkRegex",
-        type: 'POST',  
-        data: formData,  
-        async: false,  
-        cache: false,  
-        contentType: false,  
-        processData: false, 
-        
+        type: 'POST',
+        data: formData,
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+
         error: function(request) {
             alert("暂时不能判断该文档是否规范");
         },
@@ -145,7 +145,7 @@ function cardBlind(username){
 
 		<div class="content-box">
 				<%--<div class="title">用户管理</div>--%>
-            <table  id="my_show"> 
+            <table  id="my_show">
                 <thead>
                 <tr>
                     <th>序号</th>
@@ -159,7 +159,7 @@ function cardBlind(username){
                 </tr>
                 </thead>
                 <tbody>
-                	<c:forEach items="${userMap}" var="current"  varStatus="i">	
+                	<c:forEach items="${userMap}" var="current"  varStatus="i">
                         <tr>
                            <td>${i.count}</td>
                            <td>${current.username}</td>
@@ -243,7 +243,7 @@ function cardBlind(username){
       '.chzn-select-no-results': {no_results_text:'Oops, nothing found!'},
       '.chzn-select-width'     : {width:"95%"}
     }
-    for (var selector in config) {  	
+    for (var selector in config) {
       $(selector).chosen(config[selector]);
     }
 </script>
